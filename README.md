@@ -4,11 +4,11 @@ The name Hoaxy is a trademark of Indiana University. Neither the name "Hoaxy" no
 
 # Hoaxy frontend
 
-The is the frontend of [Hoaxy](http://hoaxy.iuni.iu.edu), and it is intended to be used in conjunction with an implementation of the Hoaxy backend platform, which is available at: 
+This is the frontend of [Hoaxy](http://hoaxy.iuni.iu.edu), and it is intended to be used in conjunction with an implementation of the Hoaxy backend platform, which is available at: 
 
     http://github.com/iunetsci/hoaxy-backend
 
-For more information, including a description of the application and information on how to collaborate with the Hoaxy team, please visit [the official Hoaxy website](http://hoaxy.iuni.iu.edu).
+We strongly recommend that you implement the Hoaxy backend before this frontend. For more information, including a description of the application and information on how to collaborate with the Hoaxy team, please visit [the official Hoaxy website](http://hoaxy.iuni.iu.edu).
 
 ## Requirements
 
@@ -16,7 +16,7 @@ For more information, including a description of the application and information
 
 Header, Footer, and Global Includes are located under `/includes/`.
 
-This site uses [Server Side Includes (SSI)](http://httpd.apache.org/docs/current/howto/ssi.html) to handle the header and footer. SSIs are built into Apache, but may need to be enabled.  As such, we recommend running this on an Apache server. More research may be required to utilize SSIs on non-Apache servers. Other methods of including the required files (such as the Flask templates) may require slight modifications of the code or installation of additional libraries. In the event that using SSIs is impractical or impossible, you should copy the code from the include files directly into `index.html` and `stats.html`.
+This site uses [Server Side Includes (SSI)](http://httpd.apache.org/docs/current/howto/ssi.html) to handle the header and footer. SSIs are built into Apache, but may need to be enabled.  As such, we recommend running this on an Apache server. More research may be required to utilize SSIs on non-Apache servers. Other methods of including the required files (such as the Flask templates) may require modifications of the code or installation of additional libraries. In the event that using SSIs is impractical or impossible, you should copy the code from the include files directly into `index.html` and `stats.html`.
 
 ### Dependencies
 
