@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Claim and Fact Checking Spreading Statistics</title>
+	<!--#include virtual="./includes/includes.html" -->
+</head>
+
+<body>
+	<!--#include virtual="./includes/header.html" -->
+	<nav class="container_fluid tab_container">
+		<ul class="nav nav-tabs container" role=tablist >
+			<li class="nav-item">
+				<a class="nav-link active" href="#popular_articles" role="tab" data-toggle="tab">Popular Articles</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="#influential_users" role="tab" data-toggle="tab">Influential Users</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="#active_users" role="tab" data-toggle="tab">Active Users</a>
+			</li>
+		</ul>
+	</nav>
+	<div class="tab-content">
+
+		<section class="tab-pane active container-fluid" role="tabpanel" id="popular_articles">
+			<div class="row">
+				<div class="col-md-6">
+					<p>Most popular <span class="">claims</span> articles in the last month</p>
+					<div class="table-responsive" id="popular_articles_claim"></div>
+				</div>
+				<div class="col-md-6">
+					<p>Most popular <span class="">fact checking</span> articles in the last month</p>
+					<div class="table-responsive" id="popular_articles_fact_checking"></div>
+				</div>
+			</div>
+		</section>
+
+
+		<section class="tab-pane container-fluid" role="tabpanel" id="influential_users">
+			<div class="row">
+				<div class="col-md-6">
+					<p>Most influential users sharing <span class="">claims</span> in the last month</p>
+					<div class="table-responsive" id="influential_users_claim"></div>
+				</div>
+				<div class="col-md-6">
+					<p>Most influential users sharing <span class="">fact checking</span> in the last month</p>
+					<div class="table-responsive" id="influential_users_fact_checking"></div>
+				</div>
+			</div>
+		</section>
+
+
+		<section class="tab-pane container-fluid" role="tabpanel" id="active_users">
+			<div class="row">
+				<div class="col-md-6">
+					<p>Most active users sharing <span class="">claims</span> in the last month</p>
+					<div class="table-responsive" id="active_users_claim"></div>
+				</div>
+				<div class="col-md-6">
+					<p>Most active users sharing <span class="">fact checking</span> in the last month</p>
+					<div class="table-responsive" id="active_users_fact_checking"></div>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<script>
+	(function() {
+		$.ajax({
+			url: configuration.top_articles_url,
+			headers: configuration.top_articles_headers,
+			dataType: 'json' ,
+			success: function(data) {
+				$("#popular_articles_claim").append('<tr><th>Capture date</th><th>Title</th><th>Tweets</th></tr>');
+				$("#popular_articles_fact_checking").append('<tr><th>Capture date</th><th>Title</th><th>Tweets</th></tr>');
+				$.each(data['articles'], function(i, h) {
+					var capture_date = h['capture_date'].split('T')[0];
+					var row = '<tr><td>' + capture_date + '</td>'
+					+ '<td><a href="' + h['canonical_url'] +
+					'" target="_blank">' + h['title'] + '</a></td><td>' +
+					h['number_of_tweets'] + '</td></tr>'
+					$("#popular_articles_" + h['site_type']).append(row);
+				});
+				$("#popular_articles_claim").wrapInner('<table class="table table-striped"></table>');
+				$("#popular_articles_fact_checking").wrapInner('<table class="table table-striped"></table>');
+			}
+		});
+		$.ajax({
+			url: configuration.top_users_url,
+			headers: configuration.top_users_headers,
+			dataType: 'json' ,
+			success: function(data) {
+				$("#active_users_claim").append('<tr><th>screen name</th><th>tweets</th></tr>');
+				$("#active_users_fact_checking").append('<tr><th>screen name</th><th>tweets</th></tr>');
+				$("#influential_users_claim").append('<tr><th>screen name</th><th>retweets</th></tr>');
+				$("#influential_users_fact_checking").append('<tr><th>screen name</th><th>retweets</th></tr>');
+				$.each(data['spreaders'], function(i, h) {
+					var bot_perc;
+					if (h['bot_score'] === null) {
+						bot_perc = 'n/a';
+					} else {
+						bot_perc = h['bot_score'] * 100;
+						bot_perc = bot_perc.toFixed() + '%';
+					}
+					var link = '<tr><td><a href="https://twitter.com/' + h['user_screen_name']
+					+ '" target="_blank">' + h['user_screen_name'] + '</a></td><td>'
+					+ h['number_of_tweets'] +
+					'</td></tr>';
+					if(h['spreading_type'] == 'active')
+					$("#active_users_" + h['site_type']).append(link);
+					else if(h['spreading_type'] == 'influential')
+					$("#influential_users_" + h['site_type']).append(link);
+				});
+				$("#active_users_claim").wrapInner('<table class="table table-striped"></table>');
+				$("#active_users_fact_checking").wrapInner('<table class="table table-striped"></table>');
+				$("#influential_users_claim").wrapInner('<table class="table table-striped"></table>');
+				$("#influential_users_fact_checking").wrapInner('<table class="table table-striped"></table>');
+			}
+		});
+
+	})();
+	</script>
+	<!--#include virtual="./includes/footer.html" -->
+</body>
+</html>

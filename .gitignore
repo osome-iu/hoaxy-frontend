@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.pyc
+
+.vagrant
+vagrantfile
+node_modules
+gulpfile.js
+package.json
+config.js

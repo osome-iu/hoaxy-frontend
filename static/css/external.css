@@ -1,0 +1,155 @@
+/*Header*/
+header
+{
+    margin-top: 2em;
+    margin-bottom: 3rem;
+}
+footer
+{
+    margin-top: 3rem;
+}
+
+section
+{
+    margin-bottom: 3rem;
+}
+
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+
+
+li.claim, li.claim a, .claim_label
+{
+    color: black;
+    background-color: orange;
+}
+li.fact_checking, li.fact_checking a, .fact_checking_label
+{
+    color: black;
+    background-color: green;
+}
+li label
+{
+    padding: 1rem;
+    display: inline-block;
+    width: 100%;
+}
+li
+{
+    margin-bottom: 1rem;
+}
+
+.claim_label, .fact_checking_label
+{
+    width: 1rem;
+    height: 1rem;
+    display: inline-block;
+}
+.tab-content .claim_label, .tab-content .fact_checking_label
+{
+    width: auto;
+    height: auto;
+}
+
+
+
+#visualize_top
+{
+    margin-top: .75rem;
+}
+
+#spinner
+{
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background: rgba(255, 255, 255, .7);
+	/*background: green;*/
+	z-index: 20000;
+}
+
+
+#sigmagraph
+{
+    position: relative;
+}
+#graph_help_text
+{
+    position: absolute;
+    bottom: 0em;
+    right: 2em;
+}
+#zoom_buttons
+{
+    position: absolute;
+    top: 2em;
+    right: 2em;
+}
+
+#focus_label
+{
+    margin-top: -80px;
+}
+
+
+.modal-content
+{
+    font-size: .875rem;
+}
+.modal-content h2
+{
+    font-size: 1.25rem;
+}
+.modal-content h3
+{
+    font-size: 1rem;
+    margin-left: 1rem;
+    margin-top: .75rem;
+}
+
+.modal-content .article_headline
+{
+    margin-left: 2rem;
+}
+ .modal-content .modal_links
+ {
+     margin-left: 3rem;
+ }
+
+
+#popular_articles_claim tr td:first-child,
+#popular_articles_fact_checking tr td:first-child
+{
+white-space: nowrap;
+}
