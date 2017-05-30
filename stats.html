@@ -91,22 +91,33 @@
 			headers: configuration.top_users_headers,
 			dataType: 'json' ,
 			success: function(data) {
-				$("#active_users_claim").append('<tr><th>screen name</th><th>tweets</th></tr>');
-				$("#active_users_fact_checking").append('<tr><th>screen name</th><th>tweets</th></tr>');
-				$("#influential_users_claim").append('<tr><th>screen name</th><th>retweets</th></tr>');
-				$("#influential_users_fact_checking").append('<tr><th>screen name</th><th>retweets</th></tr>');
+				$("#active_users_claim").append('<tr><th>screen name</th><th>tweets</th><th>Botometer score</th></tr>');
+				$("#active_users_fact_checking").append('<tr><th>screen name</th><th>tweets</th><th>Botometer score</th></tr>');
+				$("#influential_users_claim").append('<tr><th>screen name</th><th>retweets</th><th>Botometer score</th></tr>');
+				$("#influential_users_fact_checking").append('<tr><th>screen name</th><th>retweets</th><th>Botometer score</th></tr>');
+				var empty_or_na;
+				// test whether any bot_score exists
+				if (data['spreaders'].every(function(x){return x['bot_score'] === null})){
+					empty_or_na = 'Click';
+				}
+				else{
+					empty_or_na = 'n/a';
+				}
+
 				$.each(data['spreaders'], function(i, h) {
 					var bot_perc;
 					if (h['bot_score'] === null) {
-						bot_perc = 'n/a';
+						bot_perc = empty_or_na;
 					} else {
 						bot_perc = h['bot_score'] * 100;
 						bot_perc = bot_perc.toFixed() + '%';
 					}
 					var link = '<tr><td><a href="https://twitter.com/' + h['user_screen_name']
-					+ '" target="_blank">' + h['user_screen_name'] + '</a></td><td>'
-					+ h['number_of_tweets'] +
-					'</td></tr>';
+							+ '" target="_blank">' + h['user_screen_name'] + '</a></td><td>'
+							+ h['number_of_tweets']
+							+ '</td><td><a target="_blank" href="https://botometer.iuni.iu.edu/#!/?sn='
+							+ h['user_screen_name'] + '">' + bot_perc + '</a></td></tr>';
+
 					if(h['spreading_type'] == 'active')
 					$("#active_users_" + h['site_type']).append(link);
 					else if(h['spreading_type'] == 'influential')
