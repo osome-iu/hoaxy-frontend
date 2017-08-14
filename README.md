@@ -16,7 +16,7 @@ We strongly recommend that you implement the Hoaxy backend before this frontend.
 
 Header, Footer, and Global Includes are located under `/includes/`.
 
-This site uses [Server Side Includes (SSI)](http://httpd.apache.org/docs/current/howto/ssi.html) to handle the header and footer. SSIs are built into Apache, but may need to be enabled.  As such, we recommend running this on an Apache server. More research may be required to utilize SSIs on non-Apache servers. Other methods of including the required files (such as the Flask templates) may require modifications of the code or installation of additional libraries. In the event that using SSIs is impractical or impossible, you should copy the code from the include files directly into `index.html` and `stats.html`.
+This site uses [Server Side Includes (SSI)](http://httpd.apache.org/docs/current/howto/ssi.html) to handle the header and footer. SSIs are built into Apache, but may need to be enabled. To enable SSI for `.html` extension, you could follow this instruction [Basic SSI](https://stackoverflow.com/questions/12806314/basic-ssi-not-working). As such, we recommend running this on an Apache server. More research may be required to utilize SSIs on non-Apache servers. Other methods of including the required files (such as the Flask templates) may require modifications of the code or installation of additional libraries. In the event that using SSIs is impractical or impossible, you should copy the code from the include files directly into `index.html` and `stats.html`.
 
 ### Dependencies
 
