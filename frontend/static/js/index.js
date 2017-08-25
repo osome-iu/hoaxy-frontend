@@ -579,79 +579,81 @@ $(document).ready(function () {
 
 
 
-	function makeArticleItem(url)
-	{
+	// function makeArticleItem(url)
+	// {
+	//
+	// 	var string_element = "";
+	// 	var element_class = url.site_type;
+	// 	if(element_class !== "fact_checking")
+	// 	element_class = "claim";
+	//
+	// 	string_element += '<li class="rounded ' + element_class + '">';
+	// 	string_element += '	<label>';
+	// 	string_element += '		<input type="checkbox" id="' + url.url_id + '" value="' + url.url_id + '" />';
+	//
+	//
+	// 	var pub_date = new Date(url.pub_date);
+	// 	var dateline = $.datepicker.formatDate('M d, yy', pub_date);
+	// 	var id = Math.floor(Math.random() * 100000);
+	//
+	// 	string_element += '			<span class="article_title"><a href="' + url.url_raw + '" target="_blank">' + url.title + '</a></span>';
+	// 	string_element += '			<span class=""><span class="article_domain">From <a href="http://' + url.site_domain + '" target="_blank">' + url.site_domain + '</a></span>';
+	// 	string_element += '			<span class="article_date">on ' + dateline + '</span></span>';
+	// 	string_element += '			<span class="article_stats"><span><b>' + url.number_of_tweets + '</b> Tweets</span></span>';
+	// 	string_element += '			<div class="clearfix"></div>';
+	// 	string_element += '	</label>';
+	// 	string_element += '</li>';
+	//
+	// 	var f = function (id){
+	// 	}(id);
+	//
+	// 	return string_element;
+	// }
+	// var max_articles = 20;
+	// var articles_loaded = 0;
+	// var all_urls = null;
 
-		var string_element = "";
-		var element_class = url.site_type;
-		if(element_class !== "fact_checking")
-		element_class = "claim";
 
-		string_element += '<li class="rounded ' + element_class + '">';
-		string_element += '	<label>';
-		string_element += '		<input type="checkbox" id="' + url.url_id + '" value="' + url.url_id + '" />';
+	// function addArticles(){
+	// 	var starting_index = articles_loaded;
+	// 	for(var i = starting_index, x = all_urls.length; i < (max_articles + starting_index) && i < x; i++ )
+	// 	{
+	// 		var url = all_urls[i];
+	//
+	// 		var string_element = makeArticleItem(url);
+	//
+	// 		$("#article_list").append(string_element);
+	// 		articles_loaded ++;
+	// 	}
+	// 	// console.debug(articles_loaded);
+	// 	if(articles_loaded >= 100)
+	// 	{
+	// 		$("#load_more .text-muted").html("Your query has found too many matches for us to load. Please narrow down your query and try again to get more articles.");
+	// 		$("#load_more button").addClass("disabled").prop("disabled", true);
+	// 	}
+	// 	else if(articles_loaded >= all_urls.length && all_urls.length < 100)
+	// 	{
+	// 		$("#load_more .text-muted").html("We couldn't find any more articles for this query.");
+	// 		$("#load_more button").addClass("disabled").prop("disabled", true);
+	// 	}
+	// 	else
+	// 	{
+	// 		$("#load_more .text-muted").empty();
+	// 		$("#load_more button").removeClass("disabled").prop("disabled", false);
+	// 	}
+	// }
+
+	// $("#load_more button").on("click", function(){
+	// 	addArticles();
+	//
+	// 	original_bottom = $("#visualize").offset().top;
+	// });
 
 
-		var pub_date = new Date(url.pub_date);
-		var dateline = $.datepicker.formatDate('M d, yy', pub_date);
-		var id = Math.floor(Math.random() * 100000);
-
-		string_element += '			<span class="article_title"><a href="' + url.url_raw + '" target="_blank">' + url.title + '</a></span>';
-		string_element += '			<span class=""><span class="article_domain">From <a href="http://' + url.site_domain + '" target="_blank">' + url.site_domain + '</a></span>';
-		string_element += '			<span class="article_date">on ' + dateline + '</span></span>';
-		string_element += '			<span class="article_stats"><span><b>' + url.number_of_tweets + '</b> Tweets</span></span>';
-		string_element += '			<div class="clearfix"></div>';
-		string_element += '	</label>';
-		string_element += '</li>';
-
-		var f = function (id){
-		}(id);
-
-		return string_element;
-	}
-	var max_articles = 20;
-	var articles_loaded = 0;
-	var all_urls = null;
 	dontScroll = false;
-
-	function addArticles(){
-		var starting_index = articles_loaded;
-		for(var i = starting_index, x = all_urls.length; i < (max_articles + starting_index) && i < x; i++ )
-		{
-			var url = all_urls[i];
-
-			var string_element = makeArticleItem(url);
-
-			$("#article_list").append(string_element);
-			articles_loaded ++;
-		}
-		// console.debug(articles_loaded);
-		if(articles_loaded >= 100)
-		{
-			$("#load_more .text-muted").html("Your query has found too many matches for us to load. Please narrow down your query and try again to get more articles.");
-			$("#load_more button").addClass("disabled").prop("disabled", true);
-		}
-		else if(articles_loaded >= all_urls.length && all_urls.length < 100)
-		{
-			$("#load_more .text-muted").html("We couldn't find any more articles for this query.");
-			$("#load_more button").addClass("disabled").prop("disabled", true);
-		}
-		else
-		{
-			$("#load_more .text-muted").empty();
-			$("#load_more button").removeClass("disabled").prop("disabled", false);
-		}
-	}
-
-	$("#load_more button").on("click", function(){
-		addArticles();
-
-		original_bottom = $("#visualize").offset().top;
-	});
-
     $("#form form").submit(function (e) {
 
-		articles_loaded = 0;
+		// articles_loaded = 0;
 
 		e.preventDefault();
 		e.stopPropagation();
@@ -700,18 +702,22 @@ $(document).ready(function () {
 				return y;
 			});
 			// console.debug(urls_model);
-			all_urls = null;
-			all_urls = urls_model.urls;
+			// all_urls = null;
+			// all_urls = urls_model.urls;
 
-			$("#article_list").empty();
+
+			// $("#article_list").empty();
 			// console.log(urls_model.urls);
 			// for( var i in urls_model.urls)
 
 
-			addArticles();
+			// addArticles();
 
 
 			// $("#articles").show();
+
+			app.articles = urls_model.urls;
+			app.articles_to_show = max_articles;
 			app.show_articles = true;
 			var visualize_top = $("#visualize_top");
 			var visualize_bottom = $("#visualize");

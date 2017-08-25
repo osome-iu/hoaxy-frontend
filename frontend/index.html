@@ -4,6 +4,7 @@
 <head>
 	<title>Claim and Fact Checking Spreading Visualization</title>
 	<script src="/static/js/vue@2.4.0.js"></script>
+	<script src="/static/js/moment@2.18.1.js"></script>
 	<!--#include virtual="./includes/includes.html" -->
 
 
@@ -61,15 +62,26 @@
 				</p>
 
 				<ul class="list-unstyled" id="article_list">
-
+					<li v-for="article, index in getSubsetOfArticles()" :class="article.site_type" class="rounded">
+						<label>
+							{{index}}
+							<input type="checkbox" :id="article.url_id" :value="article.url_id" />
+							<span class="article_title"><a :href="article.url_raw" target="_blank">{{article.title}}</a></span>
+							<span class=""><span class="article_domain">From <a :href="'http://' + article.site_domain" target="_blank">{{article.site_domain}}</a></span>
+							<span class="article_date">on {{getDateline(article.pub_date)}}</span></span>
+							<span class="article_stats"><span><b>{{article.number_of_tweets}}</b> Tweets</span></span>
+							<div class="clearfix"></div>
+						</label>
+					</li>
 				</ul>
 
 				<div class="clearfix"></div>
 				<div class="text-xs-center">
 					<button class="btn btn-primary btn-blue" id="visualize"> Visualize </button>
 
-					<span class="text-xs-center" id="load_more">
-						<button class="btn btn-warning" id="load_more_button"> Load More </button>
+					<span class="text-xs-center" id="">
+						<!-- <button class="btn btn-warning" id="load_more_button"> Load More - old</button> -->
+						<button class="btn btn-warning" :disabled="articles_to_show >= articles.length" @click="loadMore()"> Load More </button>
 						<div class="text-muted"></div>
 					</span>
 				</div>
