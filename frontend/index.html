@@ -49,7 +49,7 @@
 			</div>
 		</section>
 
-		<section id="articles" v-if="show_articles" class="container-fluid">
+		<section id="articles" v-bind:class="{'hidden': !show_articles}" class="container-fluid">
 			<div class="container">
 				<div>
 					<p>Select claims and fact checking articles to visualize.</p>
@@ -80,7 +80,7 @@
 
 
 
-		<section id="graphs" v-if="show_graphs" class="container-fluid">
+		<section id="graphs" v-bind:class="{'hidden': !show_graphs}" class="container-fluid">
 			<div class="col-md-12 text-xs-center" id="legend">
 				<label><span class="rounded-circle claim_label">&nbsp;</span> Claims</label>
 				<label><span class="rounded-circle fact_checking_label">&nbsp;</span> Fact-Checks</label>
@@ -101,8 +101,8 @@
 					Click on network nodes and edges for details.
 				</div>
 				<div id="zoom_buttons">
-					<button class="btn btn-primary" type="button" value ="-" id="zoom-out" style="display: none;"><i class="fa fa-minus" aria-hidden="true"></i></button>
-					<button class="btn btn-primary" type="button" value ="+" id="zoom-in" style="display: none;"><i class="fa fa-plus" aria-hidden="true"></i></button>
+					<button class="btn btn-primary" type="button" value ="-" id="zoom-out" v-if="show_zoom_buttons"><i class="fa fa-minus" aria-hidden="true"></i></button>
+					<button class="btn btn-primary" type="button" value ="+" id="zoom-in" v-if="show_zoom_buttons"><i class="fa fa-plus" aria-hidden="true"></i></button>
 				</div>
 			</div>
 

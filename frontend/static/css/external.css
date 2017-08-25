@@ -157,3 +157,9 @@ li
 {
 white-space: nowrap;
 }
+
+#articles.hidden,
+#graphs.hidden
+{
+    display: none;
+}

@@ -185,6 +185,7 @@ function resizeSigma(c)
 {
 	$("#zoom-in").show();
 	$("#zoom-out").show();
+	app.show_zoom_buttons = true;
 
 	// Zoom out - single frame :
 	$("#zoom-out").bind("click",function(){
@@ -717,7 +718,7 @@ $(document).ready(function () {
 
 			if(!dontScroll)
 			{
-				window.scroll(0,$("#articles").offset().top);
+				app.scrollToElement("articles");
 			}
 			else
 			{
