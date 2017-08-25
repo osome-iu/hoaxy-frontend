@@ -657,7 +657,8 @@ $(document).ready(function () {
 
 		disableInput();
 		spinStart();
-		$("#articles, #graphs").hide();
+		// $("#articles, #graphs").hide();
+		app.show_articles = false;
 		$("#select_all").prop("checked", false);
 
 		if(!$("#query").val())
@@ -709,7 +710,8 @@ $(document).ready(function () {
 			addArticles();
 
 
-			$("#articles").show();
+			// $("#articles").show();
+			app.show_articles = true;
 			var visualize_top = $("#visualize_top");
 			var visualize_bottom = $("#visualize");
 
@@ -741,7 +743,8 @@ $(document).ready(function () {
 		spinStart();
 		//Timeline
 		var url_ids = [];
-		$("#graphs").hide();
+		// $("#graphs").hide();
+		app.show_graphs = false;
 
 		if(s)
 		{
@@ -789,7 +792,8 @@ $(document).ready(function () {
 		});
 		timeline_request.done(function (msg) {
 			//nvd3 charts
-			$("#graphs").show();
+			// $("#graphs").show();
+			app.show_graphs = true;
             retrieveTimeSeriesData(msg.timeline);
 
 			window.scroll(0,$("#graphs").offset().top);
@@ -834,7 +838,9 @@ $(document).ready(function () {
 
 	spinStop();
 
-	$("#articles, #graphs").hide();
+	// $("#articles, #graphs").hide();
+	app.show_articles = false;
+	app.show_graphs = false;
 	loadURLParams();
 });
 

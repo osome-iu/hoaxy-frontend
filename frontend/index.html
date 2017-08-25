@@ -49,7 +49,7 @@
 			</div>
 		</section>
 
-		<section id="articles" class="container-fluid">
+		<section id="articles" v-if="show_articles" class="container-fluid">
 			<div class="container">
 				<div>
 					<p>Select claims and fact checking articles to visualize.</p>
@@ -80,7 +80,7 @@
 
 
 
-		<section id="graphs" class="container-fluid">
+		<section id="graphs" v-if="show_graphs" class="container-fluid">
 			<div class="col-md-12 text-xs-center" id="legend">
 				<label><span class="rounded-circle claim_label">&nbsp;</span> Claims</label>
 				<label><span class="rounded-circle fact_checking_label">&nbsp;</span> Fact-Checks</label>
