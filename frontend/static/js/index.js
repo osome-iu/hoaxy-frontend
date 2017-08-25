@@ -2,26 +2,14 @@
 
 
 function disableInput() {
-	$('#loader').show(); //loading sign appear
-	$("#query, input[name=include_user_mentions], input[name=sort_by]").prop('disabled', true);
+	console.debug("Legacy disableInput called.");
+	app.input_disabled = true;
 }
 function enableInput() {
-	$('#loader').hide(); //loading sign disappear
-	$("#query, input[name=include_user_mentions], input[name=sort_by]").prop('disabled', false);
-
+	console.debug("Legacy enableInput called.");
+	app.input_disabled = false;
 }
 
-var colors = {
-	node_colors : {
-	"fact_checking" : 'darkblue',
-	"claim" : 'darkblue'},
-	edge_colors : {
-	"fact_checking" : 'green',
-	"fact_checking_dark" : 'green',
-	"claim" : 'orange',
-	"claim_dark" : 'orange'
-}
-};
 
 
 //opts 可从网站在线制作
@@ -577,174 +565,9 @@ $(document).ready(function () {
 
 	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking]); //color match with those of nodes
 
-
-
-	// function makeArticleItem(url)
-	// {
-	//
-	// 	var string_element = "";
-	// 	var element_class = url.site_type;
-	// 	if(element_class !== "fact_checking")
-	// 	element_class = "claim";
-	//
-	// 	string_element += '<li class="rounded ' + element_class + '">';
-	// 	string_element += '	<label>';
-	// 	string_element += '		<input type="checkbox" id="' + url.url_id + '" value="' + url.url_id + '" />';
-	//
-	//
-	// 	var pub_date = new Date(url.pub_date);
-	// 	var dateline = $.datepicker.formatDate('M d, yy', pub_date);
-	// 	var id = Math.floor(Math.random() * 100000);
-	//
-	// 	string_element += '			<span class="article_title"><a href="' + url.url_raw + '" target="_blank">' + url.title + '</a></span>';
-	// 	string_element += '			<span class=""><span class="article_domain">From <a href="http://' + url.site_domain + '" target="_blank">' + url.site_domain + '</a></span>';
-	// 	string_element += '			<span class="article_date">on ' + dateline + '</span></span>';
-	// 	string_element += '			<span class="article_stats"><span><b>' + url.number_of_tweets + '</b> Tweets</span></span>';
-	// 	string_element += '			<div class="clearfix"></div>';
-	// 	string_element += '	</label>';
-	// 	string_element += '</li>';
-	//
-	// 	var f = function (id){
-	// 	}(id);
-	//
-	// 	return string_element;
-	// }
-	// var max_articles = 20;
-	// var articles_loaded = 0;
-	// var all_urls = null;
-
-
-	// function addArticles(){
-	// 	var starting_index = articles_loaded;
-	// 	for(var i = starting_index, x = all_urls.length; i < (max_articles + starting_index) && i < x; i++ )
-	// 	{
-	// 		var url = all_urls[i];
-	//
-	// 		var string_element = makeArticleItem(url);
-	//
-	// 		$("#article_list").append(string_element);
-	// 		articles_loaded ++;
-	// 	}
-	// 	// console.debug(articles_loaded);
-	// 	if(articles_loaded >= 100)
-	// 	{
-	// 		$("#load_more .text-muted").html("Your query has found too many matches for us to load. Please narrow down your query and try again to get more articles.");
-	// 		$("#load_more button").addClass("disabled").prop("disabled", true);
-	// 	}
-	// 	else if(articles_loaded >= all_urls.length && all_urls.length < 100)
-	// 	{
-	// 		$("#load_more .text-muted").html("We couldn't find any more articles for this query.");
-	// 		$("#load_more button").addClass("disabled").prop("disabled", true);
-	// 	}
-	// 	else
-	// 	{
-	// 		$("#load_more .text-muted").empty();
-	// 		$("#load_more button").removeClass("disabled").prop("disabled", false);
-	// 	}
-	// }
-
-	// $("#load_more button").on("click", function(){
-	// 	addArticles();
-	//
-	// 	original_bottom = $("#visualize").offset().top;
-	// });
-
-
-	dontScroll = false;
-    $("#form form").submit(function (e) {
-
-		// articles_loaded = 0;
-
-		e.preventDefault();
-		e.stopPropagation();
-
-		disableInput();
-		spinStart();
-		// $("#articles, #graphs").hide();
-		app.show_articles = false;
-		$("#select_all").prop("checked", false);
-
-		if(!$("#query").val())
-		{
-			alert("You must input a claim.");
-			spinStop();
-			spinStop();
-			spinStop();
-			enableInput();
-			return false;
-		}
-		//URLS
-		var urls_paras = GetURLsParas();
-		changeURLParams();
-
-		var urls_request = $.ajax({
-			url: configuration.articles_url,
-            headers: configuration.articles_headers,
-            data: urls_paras,
-            dataType: "json",
-		});
-		urls_request.done(function (msg) {
-			// console.debug(msg);
-			var urls_model = msg;
-
-			if(!msg.articles || !msg.articles.length)
-			{
-				alert("Your query did not return any results.");
-				return false;
-			}
-
-			urls_model.urls = msg.articles.map(function(x){
-				y = x;
-				y.site_domain = x.domain;
-				y.url_id = x.id;
-				y.pub_date = x.publish_date;
-				y.url_raw = x.canonical_url;
-				return y;
-			});
-			// console.debug(urls_model);
-			// all_urls = null;
-			// all_urls = urls_model.urls;
-
-
-			// $("#article_list").empty();
-			// console.log(urls_model.urls);
-			// for( var i in urls_model.urls)
-
-
-			// addArticles();
-
-
-			// $("#articles").show();
-
-			app.articles = urls_model.urls;
-			app.articles_to_show = max_articles;
-			app.show_articles = true;
-			var visualize_top = $("#visualize_top");
-			var visualize_bottom = $("#visualize");
-
-			if(!dontScroll)
-			{
-				app.scrollToElement("articles");
-			}
-			else
-			{
-				dontScroll = false;
-			}
-		});
-		urls_request.fail(function (jqXHR, textStatus) {
-            alert("Get URLs Request failed: " + textStatus);
-			console.log('ERROR', textStatus);
-        });
-		urls_request.complete(function(){
-			spinStop(true);
-			enableInput();
-		});
-
-
-
+	$("#load_more button").on("click", function(){
+		original_bottom = $("#visualize").offset().top;
 	});
-
-
 
 	$("#visualize, #visualize_top").on("click", function(event){
 		spinStart();
@@ -841,54 +664,16 @@ $(document).ready(function () {
 		})
 	});
 
-
-
-	spinStop();
-
-	// $("#articles, #graphs").hide();
-	app.show_articles = false;
-	app.show_graphs = false;
-	loadURLParams();
 });
-
-var spin_timer = null;
 
 var spin_counter = 0;
 function spinStop(reset){
-	spin_counter --;
-	if(reset === true)
-	{
-		spin_counter = 0;
-	}
-
-	if(spin_counter <= 0)
-	{
-		spinner = undefined;
-		// $("#spinner").hide();
-		app.loading = false;
-		clearTimeout(spin_timer);
-		spin_timer = null;
-	}
-
+	console.debug("Legacy spinStop called. Use app.spinStart() instead.");
+	app.spinStop(reset);
 }
 function spinStart(){
-	console.debug("SPIN START");
-	spin_counter = 2;
-	// $("#spinner").show();
-	app.loading = true;
-	var target = document.getElementById('spinner');
-	spinner = new Spinner(opts).spin(target);
-	//timeout after 90 seconds so we're not stuck in an endless spinning loop.
-	if(spin_timer)
-	{
-		clearTimeout(spin_timer);
-		spin_timer = null;
-	}
-	spin_timer = setTimeout(function(){
-		alert("The app is taking too long to respond.  Please try again later.");
-		spinStop(true);
-		enableInput();
-	}, 90000);
+	console.debug("Legacy spinStart called. Use app.spinStart() instead.")
+	app.spinStart();
 }
 
 
