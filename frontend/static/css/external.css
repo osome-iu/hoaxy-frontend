@@ -94,9 +94,13 @@ li
 	left: 0;
 	bottom: 0;
 	right: 0;
-	background: rgba(255, 255, 255, .7);
+	background: rgba(200, 200, 255, 1);
 	/*background: green;*/
 	z-index: 20000;
+}
+#spinner.transparent
+{
+    background: rgba(200,200,255,.7);
 }
 
 

@@ -851,15 +851,18 @@ function spinStop(reset){
 	if(spin_counter <= 0)
 	{
 		spinner = undefined;
-		$("#spinner").hide();
+		// $("#spinner").hide();
+		app.loading = false;
 		clearTimeout(spin_timer);
 		spin_timer = null;
 	}
 
 }
 function spinStart(){
+	console.debug("SPIN START");
 	spin_counter = 2;
-	$("#spinner").show();
+	// $("#spinner").show();
+	app.loading = true;
 	var target = document.getElementById('spinner');
 	spinner = new Spinner(opts).spin(target);
 	//timeout after 90 seconds so we're not stuck in an endless spinning loop.
