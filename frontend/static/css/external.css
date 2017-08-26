@@ -102,7 +102,35 @@ li
 {
     background: rgba(200,200,255,.7);
 }
+#spinner i
+{
 
+    font-size: 149px;
+    line-height: 149px;
+}
+#spinner span
+{
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+    height: 150px;
+    width: 150px;
+    margin-left: -75px;
+    margin-top: -75px;
+    vertical-align: middle;
+    text-align: center;
+
+    /*font-size: 6rem;*/
+    /*height: 6rem;
+    width: 6rem;*/
+    /*display: inline-block;
+    vertical-align: middle;
+    text-align: center;*/
+    /*line-height: 10rem;
+    margin-top: -3rem;
+    margin-left: -3rem;*/
+}
 
 #sigmagraph
 {

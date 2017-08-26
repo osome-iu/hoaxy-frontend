@@ -26,6 +26,8 @@ var app = new Vue({
         articles_to_show: max_articles,
         input_disabled: false,
         spin_counter: 0,
+        spinner_state: 1,
+        spinner_rotate: 0,
         spin_timer: null,
 
         query_text: "",
@@ -91,7 +93,7 @@ var app = new Vue({
 
         	if(this.spin_counter <= 0)
         	{
-        		spinner = undefined;
+        		// spinner = undefined;
         		this.loading = false;
         		clearTimeout(this.spin_timer);
         		this.spin_timer = null;
@@ -101,8 +103,8 @@ var app = new Vue({
         spinStart: function(){
         	this.spin_counter = 2;
         	this.loading = true;
-        	var target = document.getElementById('spinner');
-        	spinner = new Spinner(opts).spin(target);
+        	// var target = document.getElementById('spinner');
+        	// spinner = new Spinner(opts).spin(target);
         	//timeout after 90 seconds so we're not stuck in an endless spinning loop.
         	if(this.spin_timer)
         	{
@@ -199,6 +201,23 @@ var app = new Vue({
         this.show_articles = false;
         this.show_graphs = false;
 
+        var v = this;
+        var f = function(){
+            var counter = 0;
+            setInterval(function(){
+                // console.debug("out", counter);
+                if(v.loading){
+                    // console.debug("in", counter);
+                    counter ++;
+                    if(counter < 4)
+                        v.spinner_rotate = (v.spinner_state = counter)*0;
+                    else if (counter <= 12)
+                        v.spinner_rotate = (counter - 4) * 22.5;
+                    else
+                        counter = 0;
+                }
+            }, 100);
+        }();
         var params = location.hash.replace("#", "").split("&");
         for( var i in params)
         {

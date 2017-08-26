@@ -15,6 +15,7 @@
 <body>
 	<div id="vue-app">
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
+			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
 		</div>
 		<!--#include virtual="./includes/header.html" -->
 		<section id="form" class="container-fluid">
