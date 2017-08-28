@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from flask import Flask, jsonify
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import REAL, TEXT

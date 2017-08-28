@@ -1,5 +1,6 @@
 # -*- coding: utf8 -*-
 from dbmodels import api, Botbase
+from flask import jsonify
 #from flask.ext.sqlalchemy import SQLAlchemy
 
 @api.route("/")
