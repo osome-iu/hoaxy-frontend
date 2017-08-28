@@ -111,7 +111,13 @@ function HoaxyTimeline(updateDateRangeCallback){
 		}
 	}
 
+	function triggerUpdateRange(){
+		d3.select('#chart svg')
+		.call(chart);
+	}
+
 	returnObj.update = Update;
 	returnObj.chart = chart;
+	returnObj.updateDateRange = triggerUpdateRange;
 	return returnObj;
 }

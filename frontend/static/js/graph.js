@@ -8,10 +8,11 @@ function HoaxyGraph(options)
 	var s = null; //sigma instance
 
 	var graph = {};
-	var edges = {};
+	var edges = [];
 
 	function UpdateEdges(new_edges){
 		edges = new_edges;
+		console.debug("Edges updated.");
 		return edges;
 	}
 
@@ -19,7 +20,7 @@ function HoaxyGraph(options)
 	function UpdateGraph(start_time, end_time)
 	{
 		console.debug("Updating Graph");
-		if(!edges)
+		if(!edges || !edges.length)
 		{
 			throw "Tried to make graph, but there is no data.";
 		}
@@ -52,7 +53,12 @@ function HoaxyGraph(options)
 					tweet_created_at = (new Date(edge.tweet_created_at.substring(0, 10))).getTime();
 
 					//filter edges not fall into [start_time, end_time]
-					if (tweet_created_at < start_time || tweet_created_at > end_time)
+					// if (tweet_created_at < start_time || tweet_created_at > end_time)
+					// 	continue;
+
+					if(start_time && tweet_created_at < start_time)
+						continue;
+					if(end_time && tweet_created_at > end_time)
 						continue;
 
 					var url_raw = edge.url_raw, title = edge.title;
@@ -423,7 +429,7 @@ function HoaxyGraph(options)
 	}
 
 
-	// console.debug("Graph initialized");
+	console.debug("Graph initialized");
 
 	returnObj.updateEdges = UpdateEdges;
 	returnObj.updateGraph = UpdateGraph;

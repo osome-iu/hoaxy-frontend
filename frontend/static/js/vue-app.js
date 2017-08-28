@@ -295,6 +295,8 @@ var app = new Vue({
                         return y;
                     })
                 );
+                // v.graph.updateGraph(null, null);
+                v.timeline.updateDateRange();
             });
             graph_request.fail(function (jqXHR, textStatus) {
                 alert("Get Graph Request failed: " + textStatus);
@@ -372,6 +374,7 @@ var app = new Vue({
         //create the chart that is used to visualize the timeline
         this.timeline = new HoaxyTimeline(function(starting_time, ending_time){
     		v.spinStart();
+            console.debug("Timeline updated. Updating Graph.");
             v.graph.updateGraph(starting_time, ending_time);
             v.show_zoom_buttons = true;
             v.scrollToElement("graphs");
