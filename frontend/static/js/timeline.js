@@ -48,7 +48,8 @@ function HoaxyTimeline(updateDateRangeCallback){
 		// if (edges)
 		try
 		{
-			updateDateRangeCallback(edges, starting_time, ending_time);
+			// console.debug("timeline");
+			updateDateRangeCallback(starting_time, ending_time);
 		}
 		catch(e)
 		{
@@ -59,13 +60,13 @@ function HoaxyTimeline(updateDateRangeCallback){
 
 	}
 
-	var Update = function(edges){
-		if(!edges)
+	var Update = function(data){
+		if(!data)
 		{
 			return {"time": null, "factChecking_values": [], "fake_values": []};
 		}
-		time = edges.claim.timestamp,
-		volume_factchecking = edges.fact_checking.volume, volume_fake = edges.claim.volume,
+		time = data.claim.timestamp,
+		volume_factchecking = data.fact_checking.volume, volume_fake = data.claim.volume,
 		factChecking_values = [], fake_values = [];
 
 

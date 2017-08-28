@@ -39,6 +39,7 @@ var app = new Vue({
         checked_articles: [],
 
         timeline: null,
+        graph: null,
 
         edge_modal_content: {
             edge: {},
@@ -228,14 +229,6 @@ var app = new Vue({
             this.spinStart();
             this.show_graphs = false;
 
-            //kill sigma if it's currently a thing
-            if(s)
-            {
-                s.kill();
-                s = null;
-                console.debug("Killed Existing Sigma");
-            }
-
             if(this.checked_articles.length > 20)
             {
                 alert("You can visualize a maximum of 20 articles.");
@@ -294,13 +287,14 @@ var app = new Vue({
                 dataType: "json",
             });
             graph_request.done(function (msg){
-                edges = msg.edges.map(function(x){
-                    y = x;
-                    y.site_domain = x.domain;
-                    y.pub_date = x.publish_date;
-                    y.url_raw = x.canonical_url;
-                    return y;
-                });
+                v.graph.updateEdges(msg.edges.map(function(x){
+                        y = x;
+                        y.site_domain = x.domain;
+                        y.pub_date = x.publish_date;
+                        y.url_raw = x.canonical_url;
+                        return y;
+                    })
+                );
             });
             graph_request.fail(function (jqXHR, textStatus) {
                 alert("Get Graph Request failed: " + textStatus);
@@ -309,6 +303,13 @@ var app = new Vue({
             graph_request.complete(function(){
                 v.input_disabled = false;
             })
+        },
+
+        zoomInGraph: function(){
+            this.graph.zoomIn();
+        },
+        zoomOutGraph: function(){
+            this.graph.zoomOut();
         }
     },
     watch: {
@@ -363,13 +364,18 @@ var app = new Vue({
             this.submitForm(true);
         }
 
-        //create the chart that is used to visualize the timeline
-        this.timeline = new HoaxyTimeline(function(edges, starting_time, ending_time){
-            graph = Graph(edges, starting_time, ending_time);
-    		v.spinStart();
-    		drawGraph(graph);
-    		v.spinStop();
+        this.graph = new HoaxyGraph({
+            spinStart: v.spinStart,
+            spinStop: v.spinStop
+        });
 
+        //create the chart that is used to visualize the timeline
+        this.timeline = new HoaxyTimeline(function(starting_time, ending_time){
+    		v.spinStart();
+            v.graph.updateGraph(starting_time, ending_time);
+            v.show_zoom_buttons = true;
+            v.scrollToElement("graphs");
+    		v.spinStop();
         });
 
 
