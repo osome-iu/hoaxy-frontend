@@ -40,6 +40,15 @@ CREATE INDEX botscore_ix_botscoreuniversal
   ON public.botscore
   USING btree
   (bot_score_universal);
+  
+-- Index: public.botscore_ix_timestamp
+
+-- DROP INDEX public.botscore_ix_timestamp;
+
+CREATE INDEX botscore_ix_timestamp
+  ON public.botscore
+  USING brin
+  (time_stamp);
 
 -- Index: public.botscore_ix_requesterip
 
