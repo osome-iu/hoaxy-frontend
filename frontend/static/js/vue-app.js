@@ -38,6 +38,7 @@ var app = new Vue({
 
         checked_articles: [],
 
+        timeline: null,
 
         edge_modal_content: {
             edge: {},
@@ -78,8 +79,7 @@ var app = new Vue({
                 this.articles_to_show = max_articles;
             }
         },
-        getDateline: function(url_pub_date)
-        {
+        getDateline: function(url_pub_date){
             var pub_date = moment(url_pub_date);
             var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
@@ -103,8 +103,7 @@ var app = new Vue({
 
             return { left: x, top: y };
         },
-        scrollToElement: function(id)
-        {
+        scrollToElement: function(id){
             window.scroll(0,this.getOffset(id).top);
         },
         changeURLParams: function(){
@@ -270,7 +269,10 @@ var app = new Vue({
             });
             timeline_request.done(function (msg) {
                 v.show_graphs = true;
-                retrieveTimeSeriesData(msg.timeline);
+                Vue.nextTick(function(){
+                    v.timeline.update(msg.timeline);
+                });
+
                 window.scroll(0,v.getOffset("graphs").top);
             });
             timeline_request.fail(function (jqXHR, textStatus) {
@@ -312,12 +314,14 @@ var app = new Vue({
     watch: {
     },
     mounted: function(){
+        var v = this;
+
         this.mounted = true;
         this.spinStop(true);
         this.show_articles = false;
         this.show_graphs = false;
 
-        var v = this;
+        //create hourglass loading spinner
         var f = function(){
             var counter = 0;
             setInterval(function(){
@@ -334,6 +338,9 @@ var app = new Vue({
                 }
             }, 100);
         }();
+
+
+        //If there's a hash querystring, populate the form with that data by default
         var params = location.hash.replace("#", "").split("&");
         for( var i in params)
         {
@@ -350,10 +357,20 @@ var app = new Vue({
             }
         }
 
+        //if we prepopulated the form with query string data, submit the form right away
         if(this.query_text)
         {
             this.submitForm(true);
         }
+
+        //create the chart that is used to visualize the timeline
+        this.timeline = new HoaxyTimeline(function(edges, starting_time, ending_time){
+            graph = Graph(edges, starting_time, ending_time);
+    		v.spinStart();
+    		drawGraph(graph);
+    		v.spinStop();
+
+        });
 
 
         console.debug("Vue Mounted.");

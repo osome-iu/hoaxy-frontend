@@ -10,129 +10,11 @@ function enableInput() {
 	app.input_disabled = false;
 }
 
-
-//data structure for the modal display, either display user or tweet id
-// var modal_content = {
-// 	cooccurrence: {
-// 		title: "",
-// 		hashtags: []
-// 	},
-// 	tweet_edge: {
-// 		tweet_id: "",
-// 		username: "",
-// 		edgeType: "",
-// 		source: "",
-// 		target: "",
-// 		title: ""
-// 	},
-// 	user: {
-// 		username: "",
-// 		mentioned_by: [],
-// 		mentioned: [],
-// 		retweeted_by: [],
-// 		retweeted: []
-// 	}
-// };
-
-
-//Step 0 : Get value from Text Box
-var chartData = [];
-var chart ;
 var s =null; //sigma instance
 var hiddenColor = 'blue';
 
 var graph = null;
 var edges = null;
-
-original_bottom = 0;
-
-//formatting the date
-function dateFormatter(d) {
-  return d3.time.format('%x')(new Date(d))
-}
-
-function updateChart(){
-  if(!!chart.update){
-    chart.update();
-  }
-}
-
-/*
-* timelineObj:  {"time": time, "cnt_factcheck": cnt_factcheck, "cnt_fake": cnt_fake}
-*/
-function getBothSeries(timelineObj)
-{
-	var factChecking_values = timelineObj.factChecking_values;
-	var fake_values = timelineObj.fake_values;
-	var factChecking_series = {
-		key: 'Fact-checks',
-		values: factChecking_values,
-		c: colors.edge_colors.fact_checking
-	};
-	var fake_series = {
-		key: 'Claims',
-		values: fake_values,
-		c:colors.edge_colors.claims
-	};
-	return {'factChecking_series': factChecking_series, 'fake_series': fake_series};
-}
-
-// Handle focus chart date changes
-/*
-Uses Lodash's debounce: https://lodash.com/docs/#debounce
-Without debounce, this event will fire many times before you want
-it to. The alternative is to listen for the mouseUp event after
-getting the brush event, then fire the updateDateRange function.
-*/
-var updateDateRange = _.debounce(_updateDateRange, 400);
-function _updateDateRange(extent){
-  $('#extent-0').text(extent.extent[0]);
-  $('#extent-1').text(extent.extent[1]);
-
-  $('#extent-00').text(new Date(extent.extent[0]).toISOString());
-  $('#extent-11').text(new Date(extent.extent[1]).toISOString());
-
-  var starting_time = extent.extent[0],
-		ending_time = extent.extent[1];
-
-  //only proceed when s.graph is ready
-  // if (edges)
-  try
-  {
-	graph = Graph(edges, starting_time, ending_time);
-	spinStart();
-	drawGraph(graph);
-	spinStop();
-
-  }
-  catch(e)
-  {
-	  setTimeout(function(){
-		  updateDateRange(extent);
-	  }, 500);
-  }
-
-}
-
-//Plotting function
-function plotData(factChecking_series, fake_series){
-  $(".button-container").show();
-  chartData.push(fake_series);
-  chartData.push(factChecking_series);
-  // This adds an event handler to the focus chart
-  chart.dispatch.on("brush", updateDateRange);
-  d3.select('#chart svg')
-    .datum(chartData)
-    .call(chart);
-}
-
-function retrieveTimeSeriesData(edges)
-{
-	clearData();
-	var timelineObj = timeline(edges);
-	var values = getBothSeries(timelineObj);
-	plotData(values.factChecking_series, values.fake_series);
-}
 
 function getFilename(ext){
 	var keys = $.map(chartData, function(x){ return x.key }),
@@ -140,11 +22,6 @@ function getFilename(ext){
 	return filename;
 }
 
-//clear the data function
-function clearData() {
-  chartData.length = 0;
-  updateChart();
-}
 
 function resizeSigma(c)
 {
@@ -204,8 +81,6 @@ function GenerateUserModal(e)
 		is_retweeted_by_count:0
 	};
 
-	// var is_mentioned_by = {}, has_quoted = {}, has_retweeted = {};
-	// var is_mentioned_by_count = 0, has_quoted_count = 0, has_retweeted_count = 0;
 	for (var i in node.incoming)
 	{
 		var fromURL = 'https://twitter.com/intent/user?user_id='+i,
@@ -240,8 +115,6 @@ function GenerateUserModal(e)
 	}
 
 	//new outgoing edges, could be has_mentioned, is_quoted_by, is_retweeted_by
-	// var has_mentioned = {}, is_quoted_by = {}, is_retweeted_by = {};
-	// var has_mentioned_count = 0, is_quoted_by_count = 0, is_retweeted_by_count = 0;
 	for (var i in node.outgoing)
 	{
 		var fromURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id,
@@ -409,26 +282,6 @@ function drawGraph(graph) {
 }
 
 
-$(document).ready(function () {
-
-    chart = nv.models.lineWithFocusChart()
-		.showLegend(false)
-        .useInteractiveGuideline(true);
-
-	chart.margin({right: 50, bottom: 50});
-
-	chart.xAxis
-		.tickFormat(dateFormatter);
-	chart.x2Axis
-		.tickFormat(dateFormatter);
-	chart.forceY([0])
-	chart.yAxis.axisLabel("Tweets");
-
-	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking]); //color match with those of nodes
-
-});
-
-
 var spin_counter = 0;
 function spinStop(reset){
 	console.debug("Legacy spinStop called. Use app.spinStart() instead.");
@@ -437,10 +290,4 @@ function spinStop(reset){
 function spinStart(){
 	console.debug("Legacy spinStart called. Use app.spinStart() instead.")
 	app.spinStart();
-}
-
-
-function populateQuery(query)
-{
-	$("#query").val(query);
 }
