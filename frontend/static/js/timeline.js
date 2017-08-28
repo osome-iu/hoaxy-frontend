@@ -30,11 +30,16 @@ function HoaxyTimeline(updateDateRangeCallback){
 	*/
 	var updateDateRange = _.debounce(_updateDateRange, 400);
 	function _updateDateRange(extent){
-		$('#extent-0').text(extent.extent[0]);
-		$('#extent-1').text(extent.extent[1]);
 
-		$('#extent-00').text(new Date(extent.extent[0]).toISOString());
-		$('#extent-11').text(new Date(extent.extent[1]).toISOString());
+		if(document.getElementById("extent-0"))
+			document.getElementById("extent-0").innerHTML = extent.extent[0];
+		if(document.getElementById("extent-1"))
+			document.getElementById("extent-1").innerHTML = extent.extent[1];
+
+		if(document.getElementById("extent-00"))
+			document.getElementById("extent-00").innerHTML = new Date(extent.extent[0]).toISOString();
+		if(document.getElementById("extent-11"))
+			document.getElementById("extent-11").innerHTML = new Date(extent.extent[1]).toISOString();
 
 		var starting_time = extent.extent[0],
 		ending_time = extent.extent[1];
