@@ -188,8 +188,25 @@ function GenerateUserModal(e)
 	var node = e.data.node.data;
 
 	//new incoming edges, could be is_mentioned_by, has_quoted, has_retweeted
-	var is_mentioned_by = {}, has_quoted = {}, has_retweeted = {};
-	var is_mentioned_by_count = 0, has_quoted_count = 0, has_retweeted_count = 0;
+	var tweets = {
+		is_mentioned_by: {},
+		has_quoted: {},
+		has_retweeted: {},
+		has_mentioned: {},
+		is_quoted_by: {},
+		is_retweeted_by: {}
+	};
+	var counts = {
+		is_mentioned_by_count:0,
+		has_quoted_count:0,
+		has_retweeted_count:0,
+		has_mentioned_count:0,
+		is_quoted_by_count:0,
+		is_retweeted_by_count:0
+	};
+
+	// var is_mentioned_by = {}, has_quoted = {}, has_retweeted = {};
+	// var is_mentioned_by_count = 0, has_quoted_count = 0, has_retweeted_count = 0;
 	for (var i in node.incoming)
 	{
 		var fromURL = 'https://twitter.com/intent/user?user_id='+i,
@@ -200,48 +217,32 @@ function GenerateUserModal(e)
 			var tweetURL = TWEET_URL.replace("%0", i).replace("%1", node.incoming[i].ids[j]);
 			if (true != node.incoming[i].is_mentions[j] && false != node.incoming[i].is_mentions[j])
 				console.log("GenerateUserModal Parse incoming.is_mentions error!!");
-
+			var tweet_type = "";
 			//if is_mention == true, or "reply"==tweet type, then must be a mention,
 			if(true == node.incoming[i].is_mentions[j] || "reply" == node.incoming[i].tweet_types[j])
 			{
-				is_mentioned_by[i] = is_mentioned_by[i] || {user_url: fromURL, screenName: node.incoming[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
-				is_mentioned_by[i].article_titles.push(node.incoming[i].titles[j]);
-				is_mentioned_by[i].tweet_urls.push(tweetURL);
-				is_mentioned_by[i].article_urls.push(node.incoming[i].url_raws[j]);
-				is_mentioned_by_count ++;
-				continue;
+				tweet_type = "is_mentioned_by";
 			}
-
-			//else if is_mention = false, switch according to tweet_types
-			if ("quote" == node.incoming[i].tweet_types[j])
+			else if ("quote" == node.incoming[i].tweet_types[j])
 			{
-				has_quoted[i] = has_quoted[i] || {user_url: fromURL, screenName: node.incoming[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
-				has_quoted[i].article_titles.push(node.incoming[i].titles[j]);
-				has_quoted[i].tweet_urls.push(tweetURL);
-				has_quoted[i].article_urls.push(node.incoming[i].url_raws[j]);
-				has_quoted_count ++;
+				tweet_type = "has_quoted";
 			}
 			else if("retweet" == node.incoming[i].tweet_types[j])
 			{
-				has_retweeted[i] = has_retweeted[i] || {user_url: fromURL, screenName: node.incoming[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
-				has_retweeted[i].article_titles.push(node.incoming[i].titles[j]);
-				has_retweeted[i].tweet_urls.push(tweetURL);
-				has_retweeted[i].article_urls.push(node.incoming[i].url_raws[j]);
-				has_retweeted_count ++;
+				tweet_type = "has_retweeted";
 			}
+			tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: fromURL, screenName: node.incoming[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
+			tweets[tweet_type][i].article_titles.push(node.incoming[i].titles[j]);
+			tweets[tweet_type][i].tweet_urls.push(tweetURL);
+			tweets[tweet_type][i].article_urls.push(node.incoming[i].url_raws[j]);
+			counts[tweet_type + "_count"] ++;
 
 		}
 	}
-	app.node_modal_content.is_mentioned_by = is_mentioned_by;
-	app.node_modal_content.has_quoted = has_quoted;
-	app.node_modal_content.has_retweeted = has_retweeted;
-	app.node_modal_content.is_mentioned_by_count = is_mentioned_by_count;
-	app.node_modal_content.has_quoted_count = has_quoted_count;
-	app.node_modal_content.has_retweeted_count = has_retweeted_count;
 
 	//new outgoing edges, could be has_mentioned, is_quoted_by, is_retweeted_by
-	var has_mentioned = {}, is_quoted_by = {}, is_retweeted_by = {};
-	var has_mentioned_count = 0, is_quoted_by_count = 0, is_retweeted_by_count = 0;
+	// var has_mentioned = {}, is_quoted_by = {}, is_retweeted_by = {};
+	// var has_mentioned_count = 0, is_quoted_by_count = 0, is_retweeted_by_count = 0;
 	for (var i in node.outgoing)
 	{
 		var fromURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id,
@@ -252,43 +253,40 @@ function GenerateUserModal(e)
 			var tweetURL = TWEET_URL.replace("%0", i).replace("%1", node.outgoing[i].ids[j]);
 			if (true != node.outgoing[i].is_mentions[j] && false != node.outgoing[i].is_mentions[j])
 				console.log("GenerateUserModal Parse outgoing.is_mentions error!!");
-
+			var tweet_type = "";
 			//if is_mention == true, or "reply"==tweet type, then must be a mention
 			if(true == node.outgoing[i].is_mentions[j] || "reply" == node.outgoing[i].tweet_types[j])
 			{
-				has_mentioned[i] = has_mentioned[i] || {user_url: toURL, screenName: node.outgoing[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
-				has_mentioned[i].article_titles.push(node.outgoing[i].titles[j]);
-				has_mentioned[i].tweet_urls.push(tweetURL);
-				has_mentioned[i].article_urls.push(node.outgoing[i].url_raws[j]);
-				has_mentioned_count ++;
-				continue;
+				tweet_type = "has_mentioned";
 			}
-
-			//else if is_mention = false, switch according to tweet_types
-			if ("quote" == node.outgoing[i].tweet_types[j])
+			else if ("quote" == node.outgoing[i].tweet_types[j])
 			{
-				is_quoted_by[i] = is_quoted_by[i] || {user_url: toURL, screenName: node.outgoing[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
-				is_quoted_by[i].article_titles.push(node.outgoing[i].titles[j]);
-				is_quoted_by[i].tweet_urls.push(tweetURL);
-				is_quoted_by[i].article_urls.push(node.outgoing[i].url_raws[j]);
-				is_quoted_by_count ++;
+				tweet_type = "is_quoted_by";
 			}
 			else if("retweet" == node.outgoing[i].tweet_types[j])
 			{
-				is_retweeted_by[i] = is_retweeted_by[i] || {user_url: toURL, screenName: node.outgoing[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
-				is_retweeted_by[i].article_titles.push(node.outgoing[i].titles[j]);
-				is_retweeted_by[i].tweet_urls.push(tweetURL);
-				is_retweeted_by[i].article_urls.push(node.outgoing[i].url_raws[j]);
-				is_retweeted_by_count ++;
+				tweet_type = "is_retweeted_by";
 			}
+			tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: toURL, screenName: node.outgoing[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
+			tweets[tweet_type][i].article_titles.push(node.outgoing[i].titles[j]);
+			tweets[tweet_type][i].tweet_urls.push(tweetURL);
+			tweets[tweet_type][i].article_urls.push(node.outgoing[i].url_raws[j]);
+			counts[tweet_type + "_count"] ++;
 		}
 	}
-	app.node_modal_content.has_mentioned = has_mentioned;
-	app.node_modal_content.is_quoted_by = is_quoted_by;
-	app.node_modal_content.is_retweeted_by = is_retweeted_by;
-	app.node_modal_content.has_mentioned_count = has_mentioned_count;
-	app.node_modal_content.is_quoted_by_count = is_quoted_by_count;
-	app.node_modal_content.is_retweeted_by_count = is_retweeted_by_count;
+	app.node_modal_content.is_mentioned_by = tweets.is_mentioned_by;
+	app.node_modal_content.has_quoted = tweets.has_quoted;
+	app.node_modal_content.has_retweeted = tweets.has_retweeted;
+	app.node_modal_content.has_mentioned = tweets.has_mentioned;
+	app.node_modal_content.is_quoted_by = tweets.is_quoted_by;
+	app.node_modal_content.is_retweeted_by = tweets.is_retweeted_by;
+
+	app.node_modal_content.is_mentioned_by_count = counts.is_mentioned_by_count;
+	app.node_modal_content.has_quoted_count = counts.has_quoted_count;
+	app.node_modal_content.has_retweeted_count = counts.has_retweeted_count;
+	app.node_modal_content.has_mentioned_count = counts.has_mentioned_count;
+	app.node_modal_content.is_quoted_by_count = counts.is_quoted_by_count;
+	app.node_modal_content.is_retweeted_by_count = counts.is_retweeted_by_count;
 
 }
 
