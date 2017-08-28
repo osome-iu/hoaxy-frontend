@@ -12,27 +12,27 @@ function enableInput() {
 
 
 //data structure for the modal display, either display user or tweet id
-var modal_content = {
-	cooccurrence: {
-		title: "",
-		hashtags: []
-	},
-	tweet_edge: {
-		tweet_id: "",
-		username: "",
-		edgeType: "",
-		source: "",
-		target: "",
-		title: ""
-	},
-	user: {
-		username: "",
-		mentioned_by: [],
-		mentioned: [],
-		retweeted_by: [],
-		retweeted: []
-	}
-};
+// var modal_content = {
+// 	cooccurrence: {
+// 		title: "",
+// 		hashtags: []
+// 	},
+// 	tweet_edge: {
+// 		tweet_id: "",
+// 		username: "",
+// 		edgeType: "",
+// 		source: "",
+// 		target: "",
+// 		title: ""
+// 	},
+// 	user: {
+// 		username: "",
+// 		mentioned_by: [],
+// 		mentioned: [],
+// 		retweeted_by: [],
+// 		retweeted: []
+// 	}
+// };
 
 
 //Step 0 : Get value from Text Box
@@ -181,7 +181,6 @@ function resizeSigma(c)
 	});
 }
 
-var TWEET_URL = "https://twitter.com/%0/status/%1";
 
 function GenerateUserModal(e)
 {
@@ -427,106 +426,8 @@ $(document).ready(function () {
 
 	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking]); //color match with those of nodes
 
-	$("#load_more button").on("click", function(){
-		original_bottom = $("#visualize").offset().top;
-	});
-
-	$("#visualize, #visualize_top").on("click", function(event){
-		spinStart();
-		//Timeline
-		var url_ids = [];
-		// $("#graphs").hide();
-		app.show_graphs = false;
-
-		if(s)
-		{
-			s.kill();
-			s = null;
-			console.debug("Killed Existing Sigma");
-		}
-
-		var checked = $("#article_list input:checked");
-
-		if(checked.length > 20)
-		{
-			alert("You can visualize a maximum of 20 articles.");
-			event.preventDefault();
-			event.stopPropagation();
-			spinStop(true);
-			return false;
-		}
-		var counter = 0;
-		checked.each(function(){
-			var val = $(this).val();
-			url_ids.push(val * 1);
-			// console.log(val);
-			counter ++;
-
-		});
-
-		var timeline_paras = GetTimeLineParas(url_ids);
-
-		if(counter <= 0)
-		{
-			alert("Select at least one article to visualize.");
-			spinStop();
-			spinStop();
-			spinStop();
-			enableInput();
-			return false;
-		}
-
-		var timeline_request = $.ajax({
-			url: configuration.timeline_url,
-            headers: configuration.timeline_headers,
-            data: timeline_paras,
-            dataType: "json",
-		});
-		timeline_request.done(function (msg) {
-			//nvd3 charts
-			// $("#graphs").show();
-			app.show_graphs = true;
-            retrieveTimeSeriesData(msg.timeline);
-
-			window.scroll(0,$("#graphs").offset().top);
-        });
-		timeline_request.fail(function (jqXHR, textStatus) {
-            alert("Get TimeLine Request failed: " + textStatus);
-        });
-		timeline_request.complete(function(){
-			spinStop();
-		})
-
-		//Network
-		var paras = GetNetworkParas(url_ids); //p is json object
-        var graph_request = $.ajax({
-            //type: "GET",
-            url: configuration.network_url,
-            headers: configuration.network_headers,
-            data: paras,
-            dataType: "json",
-        });
-
-        graph_request.done(function (msg){
-			edges = msg.edges.map(function(x){
-				y = x;
-				y.site_domain = x.domain;
-				y.pub_date = x.publish_date;
-				y.url_raw = x.canonical_url;
-				return y;
-			});
-		});
-
-        graph_request.fail(function (jqXHR, textStatus) {
-            alert("Get Graph Request failed: " + textStatus);
-			spinStop();
-        });
-		graph_request.complete(function(){
-			enableInput();
-		})
-	});
-
 });
+
 
 var spin_counter = 0;
 function spinStop(reset){

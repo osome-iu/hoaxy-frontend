@@ -2,27 +2,27 @@ function set2Digit(num)
 {
 	return num > 9 ? ""+num : "0"+num;
 }
-function GetNetworkParas(url_ids)
-{
-	var new_url_ids = "[" + url_ids.toString() + "]";
+// function GetNetworkParas(url_ids)
+// {
+// 	var new_url_ids = "[" + url_ids.toString() + "]";
+//
+// 	var include_user_mentions = $("input[name=include_user_mentions]:checked").val();
+// 	var data = {
+//         "include_user_mentions" : "true",
+//         "ids" : new_url_ids,
+//     };
+//     return data;
+// }
 
-	var include_user_mentions = $("input[name=include_user_mentions]:checked").val();
-	var data = {
-        "include_user_mentions" : "true",
-        "ids" : new_url_ids,
-    };
-    return data;
-}
-
-function GetTimeLineParas(url_ids)
-{
-	var new_url_ids = "[" + url_ids.toString() + "]";
-	var data = {
-        "resolution": "D",
-        "ids" : new_url_ids, //USED TO BE q_top_hits,
-    };
-    return data;
-}
+// function GetTimeLineParas(url_ids)
+// {
+// 	var new_url_ids = "[" + url_ids.toString() + "]";
+// 	var data = {
+//         "resolution": "D",
+//         "ids" : new_url_ids, //USED TO BE q_top_hits,
+//     };
+//     return data;
+// }
 
 // function GetURLsParas()
 // {

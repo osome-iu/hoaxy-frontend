@@ -1,5 +1,7 @@
 var max_articles = 20;
 
+var TWEET_URL = "https://twitter.com/%0/status/%1";
+
 var colors = {
     node_colors : {
         "fact_checking" : 'darkblue',
@@ -34,6 +36,8 @@ var app = new Vue({
         query_sort: "relevant",
         query_include_mentions: true,
 
+        checked_articles: [],
+
 
         edge_modal_content: {
             edge: {},
@@ -60,9 +64,7 @@ var app = new Vue({
         colors: colors
     },
     methods: {
-        setModalContent: function(){
 
-        },
         getSubsetOfArticles: function(){
             return this.articles.slice(0, this.articles_to_show);
         },
@@ -145,6 +147,8 @@ var app = new Vue({
                 this.input_disabled = false;
         	}, 90000);
         },
+
+
         submitForm: function(dontScroll){
             // this.disableInput();
             this.input_disabled = true;
@@ -219,7 +223,93 @@ var app = new Vue({
                 v.input_disabled = false;
             });
 
+        },
+
+        visualizeSelectedArticles: function(){
+            this.spinStart();
+            this.show_graphs = false;
+
+            //kill sigma if it's currently a thing
+            if(s)
+            {
+                s.kill();
+                s = null;
+                console.debug("Killed Existing Sigma");
+            }
+
+            if(this.checked_articles.length > 20)
+            {
+                alert("You can visualize a maximum of 20 articles.");
+                event.preventDefault();
+                event.stopPropagation();
+                this.spinStop(true);
+                return false;
+            }
+
+            if(this.checked_articles.length <= 0)
+            {
+                alert("Select at least one article to visualize.");
+                this.spinStop();
+                this.spinStop();
+                this.spinStop();
+                this.input_disabled = false;
+                return false;
+            }
+
+            var v = this;
+
+            //Timeline
+            var timeline_request = $.ajax({
+                url: configuration.timeline_url,
+                headers: configuration.timeline_headers,
+                data: {
+                    "resolution": "D",
+                    "ids" : "[" + this.checked_articles.toString() + "]"
+                },
+                dataType: "json",
+            });
+            timeline_request.done(function (msg) {
+                v.show_graphs = true;
+                retrieveTimeSeriesData(msg.timeline);
+                window.scroll(0,v.getOffset("graphs").top);
+            });
+            timeline_request.fail(function (jqXHR, textStatus) {
+                alert("Get TimeLine Request failed: " + textStatus);
+            });
+            timeline_request.complete(function(){
+                v.spinStop();
+            })
+
+            //Network
+            var graph_request = $.ajax({
+                //type: "GET",
+                url: configuration.network_url,
+                headers: configuration.network_headers,
+                data: {
+                    "include_user_mentions" : "true",
+                    "ids" : "[" + this.checked_articles.toString() + "]",
+                },
+                dataType: "json",
+            });
+            graph_request.done(function (msg){
+                edges = msg.edges.map(function(x){
+                    y = x;
+                    y.site_domain = x.domain;
+                    y.pub_date = x.publish_date;
+                    y.url_raw = x.canonical_url;
+                    return y;
+                });
+            });
+            graph_request.fail(function (jqXHR, textStatus) {
+                alert("Get Graph Request failed: " + textStatus);
+                v.spinStop();
+            });
+            graph_request.complete(function(){
+                v.input_disabled = false;
+            })
         }
+    },
+    watch: {
     },
     mounted: function(){
         this.mounted = true;

@@ -58,15 +58,15 @@
 				</div>
 
 				<p class="text-xs-center">
-					<button class="btn btn-primary" id="visualize_top"> Visualize </button>
+					<button @click="visualizeSelectedArticles()" class="btn btn-primary" id="visualize_top"> Visualize </button>
 
 				</p>
-
+				{{ checked_articles }}
 				<ul class="list-unstyled" id="article_list">
 					<li v-for="article, index in getSubsetOfArticles()" :class="article.site_type" class="rounded">
 						<label>
 							{{index}}
-							<input type="checkbox" :id="article.url_id" :value="article.url_id" />
+							<input type="checkbox" :id="article.url_id" :value="article.url_id" v-model="checked_articles" />
 							<span class="article_title"><a :href="article.url_raw" target="_blank">{{article.title}}</a></span>
 							<span class=""><span class="article_domain">From <a :href="'http://' + article.site_domain" target="_blank">{{article.site_domain}}</a></span>
 							<span class="article_date">on {{getDateline(article.pub_date)}}</span></span>
@@ -78,7 +78,7 @@
 
 				<div class="clearfix"></div>
 				<div class="text-xs-center">
-					<button class="btn btn-primary btn-blue" id="visualize"> Visualize </button>
+					<button @click="visualizeSelectedArticles()" class="btn btn-primary btn-blue" id="visualize"> Visualize </button>
 
 					<span class="text-xs-center" id="load_more">
 						<button class="btn btn-warning" :disabled="articles_to_show >= articles.length" @click="loadMore()"> Load More </button>
