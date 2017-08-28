@@ -143,15 +143,27 @@
 		</div>
 
 
-		<div id="edgeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div id="edgeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="edgeModalLabel">
 			<div class="modal-dialog" role="document" style="overflow-y: scroll; max-height:75vh;  margin-top: 10vh; margin-bottom:15vh;">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title text-center" id="myModalLabel" style="font-size:20px; letter-spacing=2px; "></h4>
-					</div>
-					<div class="modal-body" id="myModalBody">
+						<h4 class="modal-title text-center" id="edgeModalLabel" style="font-size:20px; letter-spacing=2px; ">
+							<a target="_blank" :href="'https://twitter.com/intent/user?user_id='+ edge_modal_content.edge.source">@{{edge_modal_content.edge.source_screenName}}</a>
 
+							{{ edge_modal_content.label_string }}
+
+							<a target="_blank" :href="'https://twitter.com/intent/user?user_id='+ edge_modal_content.edge.target">@{{edge_modal_content.edge.target_screenName}}</a>
+
+						</h4>
+					</div>
+					<div class="modal-body" id="edgeModalBody">
+						<template v-for="(id, index) in edge_modal_content.edge.outgoing_ids">
+							{{edge_modal_content.edge.titles[index]}}
+
+							<div class="modal_links">See <a target="_blank" :href="edge_modal_content.tweet_urls[id]">tweet</a>  or  <a target="_blank" :href="edge_modal_content.edge.url_raws[index]">article</a></div>
+
+						</template>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -159,6 +171,8 @@
 				</div>
 			</div>
 		</div>
+
+
 
 
 		<div id="nodeModal" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="nodeModalLabel">

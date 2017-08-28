@@ -338,6 +338,7 @@ function drawGraph(graph) {
 		s.camera.goTo({x:0, y:0, ratio:1});
 		spinStop();
 	}, 2000 + jiggle_compensator);
+
     s.bind('clickNode', function (e) {
 		var node = e.data.node.data;
         //the following /**/ is for twitter user widget.
@@ -360,50 +361,46 @@ function drawGraph(graph) {
 
 	s.bind('clickEdge', function(e){
 		var edge = e.data.edge;
+		app.edge_modal_content.edge = edge;
+		var tweet_urls = {};
 
-		$('#myModalBody').html('');
 		var tweet_types_hashtable = {"mention": 0, "quote": 0, "retweet": 0};
 		for (var i =0; i < edge.outgoing_ids.length; ++i)
 		{
 			var type = edge.tweet_types[i];
 			(type == "reply") ? type = "mention" : type;
 			(type == "origin") ? type = "mention" : type;
-
-
 			++tweet_types_hashtable[type];
-			//title(plain text)
-			$("#myModalBody").append(edge.titles[i]);
-			//see tweet, see article
-			var tweetURL = TWEET_URL.replace("%0", edge.target).replace("%1", edge.outgoing_ids[i]);
-			$("#myModalBody").append('<div class="modal_links">See <a target="_blank" href="'+ tweetURL + '">tweet</a>' +
-			' or  <a target="_blank" href="'+ edge.url_raws[i]+ '">article</a></div>');
+			tweet_urls[edge.outgoing_ids[i]] = TWEET_URL.replace("%0", edge.target).replace("%1", edge.outgoing_ids[i]);
 		}
 
+		app.edge_modal_content.tweet_urls = tweet_urls;
+
 		//show modal header, like  User A mentions, quotes, and labels B
-		var modal_string = '<a target="_blank" href="https://twitter.com/intent/user?user_id='+ edge.source + '">@' + edge.source_screenName +'</a> ';
+		var label_string = "";
 		var elemNum = 0;
 		for (var key in tweet_types_hashtable)
+		{
 			if (tweet_types_hashtable.hasOwnProperty(key) && tweet_types_hashtable[key] > 0)
 			{
-				(0 == elemNum++) ? (modal_string += " ") : (modal_string += ", ");
+				(0 == elemNum++) ? (label_string += " ") : (label_string += ", ");
 				if("mention" == key)
-					modal_string += "mentioned";
+					label_string += "mentioned";
 				else if ("retweet" == key)
-					modal_string += "was retweeted by";
+					label_string += "was retweeted by";
 				else if ("quote" == key)
-					modal_string += "was quoted by";
+					label_string += "was quoted by";
 			}
+		}
 
-		modal_string += ' <a target="_blank" href="https://twitter.com/intent/user?user_id='+ edge.target + '">@' + edge.target_screenName +'</a> ';
+		app.edge_modal_content.label_string = label_string;
 
-		$('#myModalLabel').html(modal_string);
-
-		$("#myModal").off('shown.bs.modal show.bs.modal');
-		$("#myModal").on("shown.bs.modal show.bs.modal", function(){
+		$("#edgeModal").off('shown.bs.modal show.bs.modal');
+		$("#edgeModal").on("shown.bs.modal show.bs.modal", function(){
 			$(".modal-dialog").scrollTop(0);
 		});
 
-		$('#myModal').modal('toggle');
+		$('#edgeModal').modal('toggle');
 
 	});
 

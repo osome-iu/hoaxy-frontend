@@ -34,6 +34,12 @@ var app = new Vue({
         query_sort: "relevant",
         query_include_mentions: true,
 
+
+        edge_modal_content: {
+            edge: {},
+            tweet_urls: {},
+            label_string: ""
+        },
         node_modal_content: {
             user_id: "",
             screenname: "",
