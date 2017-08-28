@@ -189,6 +189,7 @@ function GenerateUserModal(e)
 
 	//new incoming edges, could be is_mentioned_by, has_quoted, has_retweeted
 	var is_mentioned_by = {}, has_quoted = {}, has_retweeted = {};
+	var is_mentioned_by_count = 0, has_quoted_count = 0, has_retweeted_count = 0;
 	for (var i in node.incoming)
 	{
 		var fromURL = 'https://twitter.com/intent/user?user_id='+i,
@@ -207,6 +208,7 @@ function GenerateUserModal(e)
 				is_mentioned_by[i].article_titles.push(node.incoming[i].titles[j]);
 				is_mentioned_by[i].tweet_urls.push(tweetURL);
 				is_mentioned_by[i].article_urls.push(node.incoming[i].url_raws[j]);
+				is_mentioned_by_count ++;
 				continue;
 			}
 
@@ -217,6 +219,7 @@ function GenerateUserModal(e)
 				has_quoted[i].article_titles.push(node.incoming[i].titles[j]);
 				has_quoted[i].tweet_urls.push(tweetURL);
 				has_quoted[i].article_urls.push(node.incoming[i].url_raws[j]);
+				has_quoted_count ++;
 			}
 			else if("retweet" == node.incoming[i].tweet_types[j])
 			{
@@ -224,78 +227,21 @@ function GenerateUserModal(e)
 				has_retweeted[i].article_titles.push(node.incoming[i].titles[j]);
 				has_retweeted[i].tweet_urls.push(tweetURL);
 				has_retweeted[i].article_urls.push(node.incoming[i].url_raws[j]);
+				has_retweeted_count ++;
 			}
 
 		}
 	}
+	app.node_modal_content.is_mentioned_by = is_mentioned_by;
+	app.node_modal_content.has_quoted = has_quoted;
+	app.node_modal_content.has_retweeted = has_retweeted;
+	app.node_modal_content.is_mentioned_by_count = is_mentioned_by_count;
+	app.node_modal_content.has_quoted_count = has_quoted_count;
+	app.node_modal_content.has_retweeted_count = has_retweeted_count;
 
-	//has_quoted
-	if (0 != Object.keys(has_quoted).length)
-	{
-		$('#myModalBody').append('<h2>has quoted:</h2>');
-		for (var user in has_quoted)
-		{
-			$('#myModalBody').append('<h3>User:  <a target="_blank" href="'+ has_quoted[user].user_url +'">'+ has_quoted[user].screenName + '</h3>');
-
-			for (var j in has_quoted[user].article_titles)//every mention of the user
-			{
-					//article title
-					$("#myModalBody").append("<div class='article_headline'>" + has_quoted[user].article_titles[j] + "</div>");
-					//see tweet, see article
-					$("#myModalBody").append('<div class="modal_links">See <a target="_blank" href="'+ has_quoted[user].tweet_urls[j] + '">tweet</a>' +
-					' or  <a target="_blank" href="'+ has_quoted[user].article_urls[j]+ '">article</a></div>');
-			}
-		}
-	}
-	else
-		$('#myModalBody').append('<h2>has quoted: nobody</h2>');
-
-	//is_mentioned_by
-	if (0 != Object.keys(is_mentioned_by).length)
-	{
-		$('#myModalBody').append('<h2>was mentioned by:</h2>');
-
-		for (var user in is_mentioned_by)
-		{
-			$('#myModalBody').append('<h3>User:  <a target="_blank" href="'+is_mentioned_by[user].user_url +'">'+ is_mentioned_by[user].screenName + '</h3>');
-
-			for (var j in is_mentioned_by[user].article_titles)//every mention of the user
-			{
-					//article title
-					$("#myModalBody").append("<div class='article_headline'>" + is_mentioned_by[user].article_titles[j] + "</div>");
-					//see tweet, see article
-					$("#myModalBody").append('<div class="modal_links">See <a target="_blank" href="'+ is_mentioned_by[user].tweet_urls[j] + '">tweet</a>' +
-					' or  <a target="_blank" href="'+ is_mentioned_by[user].article_urls[j]+ '">article</a></div>');
-			}
-		}
-	}
-	else
-		$('#myModalBody').append('<h2>was mentioned by: nobody</h2>');
-
-	//has_retweeted
-	if (0 != Object.keys(has_retweeted).length)
-	{
-		$('#myModalBody').append('<h2>has retweeted: </h2>');
-		for (var user in has_retweeted)
-		{
-			$('#myModalBody').append('<h3>User:  <a target="_blank" href="' + has_retweeted[user].user_url +'">'+ has_retweeted[user].screenName + '</h3>');
-
-			for (var j in has_retweeted[user].article_titles)//every mention of the user
-			{
-					//article title
-					$("#myModalBody").append("<div class='article_headline'>" + has_retweeted[user].article_titles[j] + "</div>");
-					//see tweet, see article
-					$("#myModalBody").append('<div class="modal_links">See <a target="_blank" href="'+ has_retweeted[user].tweet_urls[j] + '">tweet</a>' +
-					' or  <a target="_blank" href="'+ has_retweeted[user].article_urls[j]+ '">article</a></div>');
-			}
-		}
-	}
-	else
-	{
-		$('#myModalBody').append('<h2>has retweeted: nobody</h2>');
-	}
 	//new outgoing edges, could be has_mentioned, is_quoted_by, is_retweeted_by
 	var has_mentioned = {}, is_quoted_by = {}, is_retweeted_by = {};
+	var has_mentioned_count = 0, is_quoted_by_count = 0, is_retweeted_by_count = 0;
 	for (var i in node.outgoing)
 	{
 		var fromURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id,
@@ -314,6 +260,7 @@ function GenerateUserModal(e)
 				has_mentioned[i].article_titles.push(node.outgoing[i].titles[j]);
 				has_mentioned[i].tweet_urls.push(tweetURL);
 				has_mentioned[i].article_urls.push(node.outgoing[i].url_raws[j]);
+				has_mentioned_count ++;
 				continue;
 			}
 
@@ -324,6 +271,7 @@ function GenerateUserModal(e)
 				is_quoted_by[i].article_titles.push(node.outgoing[i].titles[j]);
 				is_quoted_by[i].tweet_urls.push(tweetURL);
 				is_quoted_by[i].article_urls.push(node.outgoing[i].url_raws[j]);
+				is_quoted_by_count ++;
 			}
 			else if("retweet" == node.outgoing[i].tweet_types[j])
 			{
@@ -331,76 +279,16 @@ function GenerateUserModal(e)
 				is_retweeted_by[i].article_titles.push(node.outgoing[i].titles[j]);
 				is_retweeted_by[i].tweet_urls.push(tweetURL);
 				is_retweeted_by[i].article_urls.push(node.outgoing[i].url_raws[j]);
+				is_retweeted_by_count ++;
 			}
 		}
 	}
-
-	//has_mentioned
-	if (0 != Object.keys(has_mentioned).length)
-	{
-		$('#myModalBody').append('<h2>has mentioned: </h2>');
-		for (var user in has_mentioned)
-		{
-			$('#myModalBody').append('<h3>User:  <a target="_blank" href="' + has_mentioned[user].user_url +'">'+ has_mentioned[user].screenName + '</h3>');
-
-			for (var j in has_mentioned[user].article_titles)//every mention of the user
-			{
-					//article title
-					$("#myModalBody").append("<div class='article_headline'>" + has_mentioned[user].article_titles[j] + "</div>");
-					//see tweet, see article
-					$("#myModalBody").append('<div class="modal_links">See <a target="_blank" href="'+ has_mentioned[user].tweet_urls[j] + '">tweet</a>' +
-					' or  <a target="_blank" href="'+ has_mentioned[user].article_urls[j]+ '">article</a></div>');
-			}
-		}
-	}
-	else
-		$('#myModalBody').append('<h2>has mentioned: nobody</h2>');
-	//is_quoted_by
-	if (0 != Object.keys(is_quoted_by).length)
-	{
-		$('#myModalBody').append('<h2>was quoted by: </h2>');
-		for (var user in is_quoted_by)
-		{
-			$('#myModalBody').append('<h3>User:  <a target="_blank" href="'+is_quoted_by[user].user_url +'">'+ is_quoted_by[user].screenName + '</h3>');
-
-			for (var j in is_quoted_by[user].article_titles)//every mention of the user
-			{
-					//article title
-					$("#myModalBody").append("<div class='article_headline'>" + is_quoted_by[user].article_titles[j] + "</div>");
-					//see tweet, see article
-					$("#myModalBody").append('<div class="modal_links">See <a target="_blank" href="'+ is_quoted_by[user].tweet_urls[j] + '">tweet</a>' +
-					' or  <a target="_blank" href="'+ is_quoted_by[user].article_urls[j]+ '">article</a></div>');
-			}
-		}
-	}
-	else
-	{
-		$('#myModalBody').append('<h2>was quoted by: nobody</h2>');
-	}
-
-	//is_retweeted_by
-	if (0 != Object.keys(is_retweeted_by).length)
-	{
-		$('#myModalBody').append('<h2>was retweeted by: </h2>');
-		for (var user in is_retweeted_by)
-		{
-			$('#myModalBody').append('<h3>User:  <a target="_blank" href="'+is_retweeted_by[user].user_url +'">'+ is_retweeted_by[user].screenName + '</h3>');
-
-			for (var j in is_retweeted_by[user].article_titles)//every mention of the user
-			{
-					//article title
-					$("#myModalBody").append("<div class='article_headline'>" + is_retweeted_by[user].article_titles[j] + "</div>");
-					//see tweet, see article
-					$("#myModalBody").append('<div class="modal_links">See <a target="_blank" href="'+ is_retweeted_by[user].tweet_urls[j] + '">tweet</a>' +
-					' or  <a target="_blank" href="'+ is_retweeted_by[user].article_urls[j]+ '">article</a></div>');
-			}
-		}
-	}
-	else
-	{
-		$('#myModalBody').append('<h2>was retweeted by: nobody</h2>');
-	}
-
+	app.node_modal_content.has_mentioned = has_mentioned;
+	app.node_modal_content.is_quoted_by = is_quoted_by;
+	app.node_modal_content.is_retweeted_by = is_retweeted_by;
+	app.node_modal_content.has_mentioned_count = has_mentioned_count;
+	app.node_modal_content.is_quoted_by_count = is_quoted_by_count;
+	app.node_modal_content.is_retweeted_by_count = is_retweeted_by_count;
 
 }
 
@@ -455,18 +343,20 @@ function drawGraph(graph) {
     s.bind('clickNode', function (e) {
 		var node = e.data.node.data;
         //the following /**/ is for twitter user widget.
-		$('#myModalLabel').html('User:  <a target="_blank" href="https://twitter.com/intent/user?user_id='+e.data.node.id+'">@'+ node.screenName +'</a>');
+		// $('#myModalLabel').html('User:  <a target="_blank" href="https://twitter.com/intent/user?user_id='+e.data.node.id+'">@'+ node.screenName +'</a>');
+		app.node_modal_content.user_id = e.data.node.id;
+		app.node_modal_content.screenName = node.screenName;
 
-		$("#myModalBody").html('');
-		$("#myModalBody").empty();
 		//insert tweets into modal body, grouped by individual to_user_id
 		GenerateUserModal(e);
-		$("#myModal").off('shown.bs.modal show.bs.modal');
-		$("#myModal").on("shown.bs.modal show.bs.modal", function(){
+
+
+		$("#nodeModal").off('shown.bs.modal show.bs.modal');
+		$("#nodeModal").on("shown.bs.modal show.bs.modal", function(){
 			$(".modal-dialog").scrollTop(0);
 		});
 		// console.debug($("#myModal"));
-		$('#myModal').modal('toggle');
+		$('#nodeModal').modal('toggle');
 
     });
 

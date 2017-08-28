@@ -141,6 +141,92 @@
 				</div>
 			</div>
 		</div>
+
+
+		<div id="edgeModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<div class="modal-dialog" role="document" style="overflow-y: scroll; max-height:75vh;  margin-top: 10vh; margin-bottom:15vh;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title text-center" id="myModalLabel" style="font-size:20px; letter-spacing=2px; "></h4>
+					</div>
+					<div class="modal-body" id="myModalBody">
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<div id="nodeModal" class="modal fade"  tabindex="-1" role="dialog" aria-labelledby="nodeModalLabel">
+			<div class="modal-dialog" role="document" style="overflow-y: scroll; max-height:75vh;  margin-top: 10vh; margin-bottom:15vh;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<h4 class="modal-title text-center" id="nodeModalLabel" style="font-size:20px; letter-spacing=2px; ">
+							User:  <a target="_blank" v-bind:href="'https://twitter.com/intent/user?user_id=' + node_modal_content.user_id">@{{node_modal_content.screenName}}</a>
+						</h4>
+					</div>
+					<div class="modal-body">
+						<h2>has quoted: <span v-if="node_modal_content.has_quoted_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.has_quoted">
+							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<template v-for="(title, index) in user.article_titles">
+									<div class='article_headline'>{{title}}</div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a> or <a target="_blank" :href="user.article_urls[index]">article</a></div>
+							</template>
+						</template>
+						<h2>was quoted by: <span v-if="node_modal_content.is_quoted_by_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.is_quoted_by">
+							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<template v-for="(title, index) in user.article_titles">
+									<div class='article_headline'>{{title}}</div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a> or <a target="_blank" :href="user.article_urls[index]">article</a></div>
+							</template>
+						</template>
+						<h2>has mentioned: <span v-if="node_modal_content.has_mentioned_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.has_mentioned">
+							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<template v-for="(title, index) in user.article_titles">
+									<div class='article_headline'>{{title}}</div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a> or <a target="_blank" :href="user.article_urls[index]">article</a></div>
+							</template>
+						</template>
+						<h2>was mentioned by: <span v-if="node_modal_content.is_mentioned_by_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.is_mentioned_by">
+							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<template v-for="(title, index) in user.article_titles">
+									<div class='article_headline'>{{title}}</div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a> or <a target="_blank" :href="user.article_urls[index]">article</a></div>
+							</template>
+						</template>
+						<h2>has retweeted: <span v-if="node_modal_content.has_retweeted_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.has_retweeted">
+							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<template v-for="(title, index) in user.article_titles">
+									<div class='article_headline'>{{title}}</div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a> or <a target="_blank" :href="user.article_urls[index]">article</a></div>
+							</template>
+						</template>
+						<h2>was retweeted by: <span v-if="node_modal_content.is_retweeted_by_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.is_retweeted_by">
+							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<template v-for="(title, index) in user.article_titles">
+									<div class='article_headline'>{{title}}</div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a> or <a target="_blank" :href="user.article_urls[index]">article</a></div>
+							</template>
+						</template>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 	<script src="/static/js/vue-app.js"></script>
 </body>

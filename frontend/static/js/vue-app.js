@@ -34,9 +34,29 @@ var app = new Vue({
         query_sort: "relevant",
         query_include_mentions: true,
 
+        node_modal_content: {
+            user_id: "",
+            screenname: "",
+            has_quoted: [],
+            has_mentioned: [],
+            has_retweeted: [],
+            is_quoted_by: [],
+            is_mentioned_by: [],
+            is_retweeted_by: [],
+            has_quoted_count: 0,
+            has_mentioned_count: 0,
+            has_retweeted_count: 0,
+            is_quoted_by_count: 0,
+            is_mentioned_by_count: 0,
+            is_retweeted_by_count: 0
+        },
+
         colors: colors
     },
     methods: {
+        setModalContent: function(){
+
+        },
         getSubsetOfArticles: function(){
             return this.articles.slice(0, this.articles_to_show);
         },
