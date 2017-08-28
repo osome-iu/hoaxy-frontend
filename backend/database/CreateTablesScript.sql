@@ -1,10 +1,9 @@
 -- Table: public.botscore
 
 -- DROP TABLE public.botscore;
-
 CREATE TABLE public.botscore
 (
-  id integer NOT NULL DEFAULT nextval('botscore_id_seq'::regclass),
+  id SERIAL PRIMARY KEY NOT NULL,
   user_id bigint NOT NULL,
   screen_name character varying(15),
   time_stamp timestamp with time zone DEFAULT now(),
@@ -17,15 +16,13 @@ CREATE TABLE public.botscore
   num_mentions integer,
   latest_tweet_timestamp timestamp with time zone,
   num_requests integer,
-  user_profile jsonb,
-  CONSTRAINT botscore_pkey PRIMARY KEY (id)
+  user_profile jsonb
 )
 WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.botscore
   OWNER TO postgres;
-
 -- Index: public.botscore_ix_botscoreenglish
 
 -- DROP INDEX public.botscore_ix_botscoreenglish;
