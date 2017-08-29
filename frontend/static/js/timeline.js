@@ -21,25 +21,24 @@ function HoaxyTimeline(updateDateRangeCallback){
 		return d3.time.format('%x')(new Date(d))
 	}
 
-	// Handle focus chart date changes
-	/*
-	Uses Lodash's debounce: https://lodash.com/docs/#debounce
-	Without debounce, this event will fire many times before you want
-	it to. The alternative is to listen for the mouseUp event after
-	getting the brush event, then fire the updateDateRange function.
-	*/
-	var updateDateRange = _.debounce(_updateDateRange, 400);
-	function _updateDateRange(extent){
+	var debounce_timer = 0;
+	var updateDateRange = function(extent){
+		clearTimeout(debounce_timer);
+		debounce_timer = setTimeout(function(){
+			_updateDateRange(extent);
+		}, 200);
+	};
 
+	function _updateDateRange(extent){
 		if(document.getElementById("extent-0"))
-			document.getElementById("extent-0").innerHTML = extent.extent[0];
+		document.getElementById("extent-0").innerHTML = extent.extent[0];
 		if(document.getElementById("extent-1"))
-			document.getElementById("extent-1").innerHTML = extent.extent[1];
+		document.getElementById("extent-1").innerHTML = extent.extent[1];
 
 		if(document.getElementById("extent-00"))
-			document.getElementById("extent-00").innerHTML = new Date(extent.extent[0]).toISOString();
+		document.getElementById("extent-00").innerHTML = new Date(extent.extent[0]).toISOString();
 		if(document.getElementById("extent-11"))
-			document.getElementById("extent-11").innerHTML = new Date(extent.extent[1]).toISOString();
+		document.getElementById("extent-11").innerHTML = new Date(extent.extent[1]).toISOString();
 
 		var starting_time = extent.extent[0],
 		ending_time = extent.extent[1];

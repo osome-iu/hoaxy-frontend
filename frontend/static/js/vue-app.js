@@ -287,16 +287,22 @@ var app = new Vue({
                 dataType: "json",
             });
             graph_request.done(function (msg){
-                v.graph.updateEdges(msg.edges.map(function(x){
-                        y = x;
-                        y.site_domain = x.domain;
-                        y.pub_date = x.publish_date;
-                        y.url_raw = x.canonical_url;
-                        return y;
-                    })
-                );
-                // v.graph.updateGraph(null, null);
-                v.timeline.updateDateRange();
+                if(msg.edges){
+                    var edge_list = msg.edges.map(function(x){
+                            y = x;
+                            y.site_domain = x.domain;
+                            y.pub_date = x.publish_date;
+                            y.url_raw = x.canonical_url;
+                            return y;
+                        });
+                    v.graph.updateEdges(edge_list);
+                    // v.graph.updateGraph(null, null);
+                    v.timeline.updateDateRange();
+                }
+                else
+                {
+                    throw "Did not fetch any edges for network graph.";
+                }
             });
             graph_request.fail(function (jqXHR, textStatus) {
                 alert("Get Graph Request failed: " + textStatus);
