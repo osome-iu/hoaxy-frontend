@@ -1,7 +1,7 @@
 function HoaxyTimeline(updateDateRangeCallback){
 
 	var returnObj = {};
-	chart = null;
+	var chart = null;
 	chart = nv.models.lineWithFocusChart()
 		.showLegend(false)
 		.useInteractiveGuideline(true);
@@ -16,6 +16,7 @@ function HoaxyTimeline(updateDateRangeCallback){
 	chart.yAxis.axisLabel("Tweets");
 
 	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking]); //color match with those of nodes
+	var chartData = [];
 
 	function dateFormatter(d) {
 		return d3.time.format('%x')(new Date(d))
@@ -75,7 +76,7 @@ function HoaxyTimeline(updateDateRangeCallback){
 			fake_values.push({x: new Date(time[i]), y: volume_fake[i]});
 		}
 
-		var chartData = [];
+
 
 		chartData.length = 0;
 		if(!!chart.update){
@@ -111,8 +112,14 @@ function HoaxyTimeline(updateDateRangeCallback){
 	}
 
 	function triggerUpdateRange(){
-		d3.select('#chart svg')
-		.call(chart);
+		try{
+			d3.select('#chart svg')
+			.datum(chartData)
+			.call(chart);
+		}
+		catch(e){
+			console.debug("Error in triggerUpdataRange.", e);
+		}
 	}
 
 	returnObj.update = Update;
