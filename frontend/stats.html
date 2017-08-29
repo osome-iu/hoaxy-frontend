@@ -41,7 +41,7 @@
 								</tr>
 								<tr v-for="article in articles">
 									<td>{{article.capture_date}}</td>
-									<td><a :href="article.canonical_url" target="_blank">{{article.title}}</a></td>
+									<td><a :href="article.canonical_url" rel="noreferrer noopener" target="_blank">{{article.title}}</a></td>
 									<td>{{article.number_of_tweets}}</td>
 								</tr>
 								<tr v-if="articles.length == 0">
@@ -68,9 +68,9 @@
 									<th>Botometer Score</th>
 								</tr>
 								<tr v-for="spreader in spreaders">
-									<td><a :href="'https://twitter.com/' + spreader.user_screen_name">{{spreader.user_screen_name}}</a></td>
+									<td><a rel="noreferrer noopener" target="_blank" :href="'https://twitter.com/' + spreader.user_screen_name">{{spreader.user_screen_name}}</a></td>
 									<td>{{spreader.number_of_tweets}}</td>
-									<td><a :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
+									<td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
 								</tr>
 								<tr v-if="spreaders.length == 0">
 									<td colspan="3">Could not find any users</td>
@@ -94,9 +94,9 @@
 									<th>Botometer Score</th>
 								</tr>
 								<tr v-for="spreader in spreaders">
-									<td><a :href="'https://twitter.com/' + spreader.user_screen_name">{{spreader.user_screen_name}}</a></td>
+									<td><a rel="noreferrer noopener" target="_blank" :href="'https://twitter.com/' + spreader.user_screen_name">{{spreader.user_screen_name}}</a></td>
 									<td>{{spreader.number_of_tweets}}</td>
-									<td><a :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
+									<td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
 								</tr>
 								<tr v-if="spreaders.length == 0">
 									<td colspan="3">Could not find any users</td>
