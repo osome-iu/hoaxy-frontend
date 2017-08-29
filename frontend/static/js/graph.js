@@ -2,8 +2,12 @@ function HoaxyGraph(options)
 {
 	var returnObj = {};
 
-	var spinStart = options.spinStart || function(){};
-	var spinStop = options.spinStop || function(){};
+	var spinStart = options.spinStart || function(){ console.log("HoaxyGraph.spinStart is undefined."); };
+	var spinStop = options.spinStop || function(){ console.log("HoaxyGraph.spinStop is undefined."); };
+	var toggle_edge_modal = options.toggle_edge_modal || function(){ console.log("HoaxyGraph.toggle_edge_modal is undefined."); };
+	var toggle_node_modal = options.toggle_node_modal || function(){ console.log("HoaxyGraph.toggle_node_modal is undefined."); };
+	var node_modal_content = options.node_modal_content || {};
+	var edge_modal_content = options.edge_modal_content || {};
 
 	var s = null; //sigma instance
 
@@ -271,19 +275,19 @@ function HoaxyGraph(options)
 				counts[tweet_type + "_count"] ++;
 			}
 		}
-		app.node_modal_content.is_mentioned_by = tweets.is_mentioned_by;
-		app.node_modal_content.has_quoted = tweets.has_quoted;
-		app.node_modal_content.has_retweeted = tweets.has_retweeted;
-		app.node_modal_content.has_mentioned = tweets.has_mentioned;
-		app.node_modal_content.is_quoted_by = tweets.is_quoted_by;
-		app.node_modal_content.is_retweeted_by = tweets.is_retweeted_by;
+		node_modal_content.is_mentioned_by = tweets.is_mentioned_by;
+		node_modal_content.has_quoted = tweets.has_quoted;
+		node_modal_content.has_retweeted = tweets.has_retweeted;
+		node_modal_content.has_mentioned = tweets.has_mentioned;
+		node_modal_content.is_quoted_by = tweets.is_quoted_by;
+		node_modal_content.is_retweeted_by = tweets.is_retweeted_by;
 
-		app.node_modal_content.is_mentioned_by_count = counts.is_mentioned_by_count;
-		app.node_modal_content.has_quoted_count = counts.has_quoted_count;
-		app.node_modal_content.has_retweeted_count = counts.has_retweeted_count;
-		app.node_modal_content.has_mentioned_count = counts.has_mentioned_count;
-		app.node_modal_content.is_quoted_by_count = counts.is_quoted_by_count;
-		app.node_modal_content.is_retweeted_by_count = counts.is_retweeted_by_count;
+		node_modal_content.is_mentioned_by_count = counts.is_mentioned_by_count;
+		node_modal_content.has_quoted_count = counts.has_quoted_count;
+		node_modal_content.has_retweeted_count = counts.has_retweeted_count;
+		node_modal_content.has_mentioned_count = counts.has_mentioned_count;
+		node_modal_content.is_quoted_by_count = counts.is_quoted_by_count;
+		node_modal_content.is_retweeted_by_count = counts.is_retweeted_by_count;
 
 	}
 
@@ -341,25 +345,26 @@ function HoaxyGraph(options)
 			var node = e.data.node.data;
 	        //the following /**/ is for twitter user widget.
 			// $('#myModalLabel').html('User:  <a target="_blank" href="https://twitter.com/intent/user?user_id='+e.data.node.id+'">@'+ node.screenName +'</a>');
-			app.node_modal_content.user_id = e.data.node.id;
-			app.node_modal_content.screenName = node.screenName;
+			node_modal_content.user_id = e.data.node.id;
+			node_modal_content.screenName = node.screenName;
 
 			//insert tweets into modal body, grouped by individual to_user_id
 			GenerateUserModal(e);
 
-
-			$("#nodeModal").off('shown.bs.modal show.bs.modal');
-			$("#nodeModal").on("shown.bs.modal show.bs.modal", function(){
-				$(".modal-dialog").scrollTop(0);
-			});
-			// console.debug($("#myModal"));
-			$('#nodeModal').modal('toggle');
+			//
+			// $("#nodeModal").off('shown.bs.modal show.bs.modal');
+			// $("#nodeModal").on("shown.bs.modal show.bs.modal", function(){
+			// 	$(".modal-dialog").scrollTop(0);
+			// });
+			// // console.debug($("#myModal"));
+			// $('#nodeModal').modal('toggle');
+			toggle_node_modal();
 
 	    });
 
 		s.bind('clickEdge', function(e){
 			var edge = e.data.edge;
-			app.edge_modal_content.edge = edge;
+			edge_modal_content.edge = edge;
 			var tweet_urls = {};
 
 			var tweet_types_hashtable = {"mention": 0, "quote": 0, "retweet": 0};
@@ -372,7 +377,7 @@ function HoaxyGraph(options)
 				tweet_urls[edge.outgoing_ids[i]] = TWEET_URL.replace("%0", edge.target).replace("%1", edge.outgoing_ids[i]);
 			}
 
-			app.edge_modal_content.tweet_urls = tweet_urls;
+			edge_modal_content.tweet_urls = tweet_urls;
 
 			//show modal header, like  User A mentions, quotes, and labels B
 			var label_string = "";
@@ -391,14 +396,15 @@ function HoaxyGraph(options)
 				}
 			}
 
-			app.edge_modal_content.label_string = label_string;
+			edge_modal_content.label_string = label_string;
 
-			$("#edgeModal").off('shown.bs.modal show.bs.modal');
-			$("#edgeModal").on("shown.bs.modal show.bs.modal", function(){
-				$(".modal-dialog").scrollTop(0);
-			});
-
-			$('#edgeModal').modal('toggle');
+			// $("#edgeModal").off('shown.bs.modal show.bs.modal');
+			// $("#edgeModal").on("shown.bs.modal show.bs.modal", function(){
+			// 	$(".modal-dialog").scrollTop(0);
+			// });
+			//
+			// $('#edgeModal').modal('toggle');
+			toggle_edge_modal();
 
 		});
 	}

@@ -41,6 +41,9 @@ var app = new Vue({
         timeline: null,
         graph: null,
 
+        show_edge_modal: false,
+        show_node_modal: false,
+        modal_opacity: false,
         edge_modal_content: {
             edge: {},
             tweet_urls: {},
@@ -147,7 +150,34 @@ var app = new Vue({
                 this.input_disabled = false;
         	}, 90000);
         },
-
+        toggleEdgeModal: function(force){
+            this.toggleModal("edge", force);
+        },
+        toggleNodeModal: function(force){
+            this.toggleModal("node", force);
+        },
+        toggleModal: function(modal, force)
+        {
+            //the timeouts here help with the animation and will need to be adjusted as required
+            var prop = "show_" + modal + "_modal";
+            var v = this;
+            if(!this[prop] || force === true) //show
+            {
+                this[prop] = true;
+                document.getElementsByTagName("body")[0].style.overflowY = "hidden";
+                setTimeout(function(){
+                    v.modal_opacity = true;
+                },1);
+            }
+            else //hide
+            {
+                this.modal_opacity = false;
+                document.getElementsByTagName("body")[0].style.overflowY = "";
+                setTimeout(function(){
+                    v[prop] = false;
+                },100);
+            }
+        },
 
         submitForm: function(dontScroll){
             // this.disableInput();
@@ -374,7 +404,11 @@ var app = new Vue({
 
         this.graph = new HoaxyGraph({
             spinStart: v.spinStart,
-            spinStop: v.spinStop
+            spinStop: v.spinStop,
+            toggle_edge_modal: v.toggleEdgeModal,
+            toggle_node_modal: v.toggleNodeModal,
+            node_modal_content: v.node_modal_content,
+            edge_modal_content: v.edge_modal_content
         });
 
         //create the chart that is used to visualize the timeline

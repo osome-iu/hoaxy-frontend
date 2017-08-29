@@ -1,3 +1,5 @@
+
+
 /*Header*/
 header
 {
@@ -98,7 +100,7 @@ li
 	/*background: green;*/
 	z-index: 20000;
 }
-#spinner.transparent
+#spinner.transparent, .modal
 {
     background: rgba(200,200,255,.7);
 }
@@ -155,9 +157,41 @@ li
 }
 
 
+.modal-show
+{
+    display: block;
+    z-index: 15000;
+}
+.modal{
+    opacity: 0;
+    transition: opacity .1s linear;
+}
+.modal-dialog
+{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+/*.modal-dialog.modal-dialog-fade
+{
+    opacity: .5;
+/*}*/
+.modal-body
+{
+    overflow: auto;
+}
 .modal-content
 {
     font-size: .875rem;
+    position: absolute;
+    top: 3rem;
+    bottom: 3rem;
+    left: 3rem;
+    right: 3rem;
+    overflow: auto;
 }
 .modal-content h2
 {
