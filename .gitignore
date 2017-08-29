@@ -9,4 +9,5 @@ frontend/gulpfile.js
 frontend/package.json
 frontend/config.js
 frontend/.htaccess
+frontend/sampledata
 frontend/package-lock.json

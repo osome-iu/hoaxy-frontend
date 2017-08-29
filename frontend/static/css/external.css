@@ -61,9 +61,9 @@ li.fact_checking, li.fact_checking a, .fact_checking_label
 }
 li label
 {
-    padding: 1rem;
+    /*padding: 1rem;
     display: inline-block;
-    width: 100%;
+    width: 100%;*/
 }
 li
 {
@@ -224,4 +224,33 @@ white-space: nowrap;
 #graphs.hidden
 {
     display: none;
+}
+
+#article_list a
+{
+    text-decoration: underline;
+}
+
+#article_list input[type="checkbox"]
+{
+    display: none;
+}
+#article_list .article_title
+{
+    display: block;
+}
+.check_icons{
+}
+input + .check_icons > .fa-check-square-o,
+input + .check_icons > .fa-square-o
+{
+    display: none;
+    font-size: 2rem;
+    vertical-align: middle;
+}
+
+input:checked + .check_icons > .fa-check-square-o,
+input:not(:checked) + .check_icons > .fa-square-o
+{
+    display: inline-block;
 }
