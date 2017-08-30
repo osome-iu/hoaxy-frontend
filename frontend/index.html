@@ -56,7 +56,7 @@
 				</div>
 
 				<p class="text-center">
-					<button @click="visualizeSelectedArticles()" class="btn btn-primary" id="visualize_top"> Visualize </button>
+					<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary" id="visualize_top"> Visualize </button>
 
 				</p>
 				<ul class="list-unstyled" id="article_list">
@@ -81,7 +81,7 @@
 
 				<div class="clearfix"></div>
 				<div class="text-center">
-					<button @click="visualizeSelectedArticles()" class="btn btn-primary btn-blue" id="visualize"> Visualize </button>
+					<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary btn-blue" id="visualize"> Visualize </button>
 
 					<span class="text-center" id="load_more">
 						<button class="btn btn-warning" :disabled="articles_to_show >= articles.length" @click="loadMore()"> Load More </button>

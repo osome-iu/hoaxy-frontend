@@ -27,10 +27,10 @@ var app = new Vue({
         articles: [],
         articles_to_show: max_articles,
         input_disabled: false,
-        spin_counter: 0,
+        spin_key_table: ["initialLoad"], //each set of spin start/stops should have the same key
         spinner_state: 1,
         spinner_rotate: 0,
-        spin_timer: null,
+        spin_timer: 0,
 
         query_text: "",
         query_sort: "relevant",
@@ -108,46 +108,41 @@ var app = new Vue({
             return { left: x, top: y };
         },
         scrollToElement: function(id){
-            window.scroll(0,this.getOffset(id).top);
+            if(document.getElementById(id))
+            {
+                window.scroll(0,this.getOffset(id).top);
+            }
         },
         changeURLParams: function(){
             var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort;
         	location.hash = query_string;
         	return query_string;
         },
-        spinStop: function(reset){
-        	this.spin_counter --;
-        	if(reset === true)
-        	{
-        		this.spin_counter = 0;
-        	}
-
-        	if(this.spin_counter <= 0)
-        	{
-        		// spinner = undefined;
-        		this.loading = false;
-        		clearTimeout(this.spin_timer);
-        		this.spin_timer = null;
-        	}
-
+        spinStop: function(key, reset){
+            var key_index = this.spin_key_table.indexOf(key);
+            if(key_index >= 0)
+            {
+                this.spin_key_table.splice(key_index, 1);
+            }
+            if(this.spin_key_table.length == 0)
+            {
+                this.loading = false;
+                this.input_disabled = false;
+                clearTimeout(this.spin_timer);
+            }
         },
-        spinStart: function(){
-        	this.spin_counter = 2;
+        spinStart: function(key){
+            this.spin_key_table.push(key);
         	this.loading = true;
-        	// var target = document.getElementById('spinner');
-        	// spinner = new Spinner(opts).spin(target);
+            this.input_disabled = true;
         	//timeout after 90 seconds so we're not stuck in an endless spinning loop.
-        	if(this.spin_timer)
-        	{
-        		clearTimeout(this.spin_timer);
-        		this.spin_timer = null;
-        	}
+            // console.debug(this.spin_counter);
             var v = this;
+            clearTimeout(this.spin_timer);
         	this.spin_timer = setTimeout(function(){
         		alert("The app is taking too long to respond.  Please try again later.");
-        		v.spinStop(true);
-        		// v.enableInput();
-                this.input_disabled = false;
+                v.spin_key_table.length = 0;
+        		v.spinStop();
         	}, 90000);
         },
         toggleEdgeModal: function(force){
@@ -178,27 +173,8 @@ var app = new Vue({
                 },100);
             }
         },
-
-        submitForm: function(dontScroll){
-            // this.disableInput();
-            this.input_disabled = true;
-            this.spinStart();
-
-            this.show_articles = false;
-            $("#select_all").prop("checked", false);
-            if(!this.query_text)
-            {
-                alert("You must input a claim.");
-                this.spinStop();
-                this.spinStop();
-                this.spinStop();
-                // this.enableInput();
-                this.input_disabled = false;
-                return false;
-            }
-
-            this.changeURLParams();
-
+        getArticles: function(dontScroll){
+            this.spinStart("getArticles");
             var urls_request = $.ajax({
                 url: configuration.articles_url,
                 headers: configuration.articles_headers,
@@ -231,93 +207,69 @@ var app = new Vue({
                 v.articles = urls_model.urls;
                 v.articles_to_show = max_articles;
                 v.show_articles = true;
-                var visualize_top = $("#visualize_top");
-                var visualize_bottom = $("#visualize");
 
                 if(!dontScroll)
                 {
                     v.scrollToElement("articles");
                 }
-                else
-                {
-                    dontScroll = false;
-                }
             });
             urls_request.fail(function (jqXHR, textStatus) {
                 alert("Get URLs Request failed: " + textStatus);
-                console.log('ERROR', textStatus);
+                console.log('Articles Request Error', textStatus);
             });
-            urls_request.complete(function(){
-                v.spinStop(true);
-                // v.enableInput();
-                v.input_disabled = false;
-            });
-
+            urls_request.complete(function(){ v.spinStop("getArticles"); });
+            return urls_request;
         },
-
-        visualizeSelectedArticles: function(){
-            this.spinStart();
-            this.show_graphs = false;
-
-            if(this.checked_articles.length > 20)
-            {
-                alert("You can visualize a maximum of 20 articles.");
-                event.preventDefault();
-                event.stopPropagation();
-                this.spinStop(true);
-                return false;
-            }
-
-            if(this.checked_articles.length <= 0)
-            {
-                alert("Select at least one article to visualize.");
-                this.spinStop();
-                this.spinStop();
-                this.spinStop();
-                this.input_disabled = false;
-                return false;
-            }
-
-            var v = this;
-
-            //Timeline
+        getTimeline: function(article_ids){
+            this.spinStart("getTimeline");
             var timeline_request = $.ajax({
                 url: configuration.timeline_url,
                 headers: configuration.timeline_headers,
                 data: {
                     "resolution": "D",
-                    "ids" : "[" + this.checked_articles.toString() + "]"
+                    "ids" : "[" + article_ids.toString() + "]"
                 },
                 dataType: "json",
             });
+            var v = this;
             timeline_request.done(function (msg) {
+                v.spinStart("updateTimeline");
                 v.show_graphs = true;
+
+                //update the timeline on the next tick because at this point
+                // the graphs are still hidden. Graphs will be visible on the
+                // next tick
                 Vue.nextTick(function(){
                     v.timeline.update(msg.timeline);
+                    v.spinStop("updateTimeline");
+                    v.scrollToElement("graphs");
                 });
 
-                window.scroll(0,v.getOffset("graphs").top);
             });
             timeline_request.fail(function (jqXHR, textStatus) {
                 alert("Get TimeLine Request failed: " + textStatus);
+                console.log('Timeline Request Error', textStatus);
             });
-            timeline_request.complete(function(){
-                v.spinStop();
-            })
-
-            //Network
+            timeline_request.complete(function(){ v.spinStop("getTimeline"); });
+            return timeline_request;
+        },
+        getNetwork: function(article_ids){
+            this.spinStart("getNetwork");
             var graph_request = $.ajax({
-                //type: "GET",
                 url: configuration.network_url,
                 headers: configuration.network_headers,
                 data: {
                     "include_user_mentions" : "true",
-                    "ids" : "[" + this.checked_articles.toString() + "]",
+                    "ids" : "[" + article_ids.toString() + "]",
                 },
                 dataType: "json",
             });
+            var v = this;
             graph_request.done(function (msg){
+                // v.spinStart("updateNetwork");
+                v.spinStart("generateNetwork");
                 if(msg.edges){
+                    //create an edge list
                     var edge_list = msg.edges.map(function(x){
                             y = x;
                             y.site_domain = x.domain;
@@ -325,9 +277,19 @@ var app = new Vue({
                             y.url_raw = x.canonical_url;
                             return y;
                         });
-                    v.graph.updateEdges(edge_list);
-                    // v.graph.updateGraph(null, null);
-                    v.timeline.updateDateRange();
+                    //after the edge list is gotten, we need to get
+                    // the bot scores for each of the nodes
+                    var botometer_request = v.getBotometerScores();
+                    botometer_request.done(function(response){
+                        //update the edge list with bot scores
+                    });
+                    botometer_request.complete(function(){
+                        //after the botometer request is complete,
+                        // update the graph even if the request fails
+                        // if it fails, it just won't have the bot scores
+                        v.graph.updateEdges(edge_list);
+                        v.timeline.updateDateRange();
+                    });
                 }
                 else
                 {
@@ -336,11 +298,66 @@ var app = new Vue({
             });
             graph_request.fail(function (jqXHR, textStatus) {
                 alert("Get Graph Request failed: " + textStatus);
-                v.spinStop();
+                console.log('Network Graph Request Error', textStatus);
             });
-            graph_request.complete(function(){
-                v.input_disabled = false;
-            })
+            graph_request.complete(function(){ v.spinStop("getNetwork"); });
+            return graph_request;
+        },
+        getBotometerScores: function(){
+            this.spinStart("getBotometerScores");
+            var botometer_request = $.ajax({
+                // url: configuration.network_url,
+                // headers: configuration.network_headers,
+                // data: {
+                //     "include_user_mentions" : "true",
+                //     "ids" : "[" + article_ids.toString() + "]",
+                // },
+                // dataType: "json",
+            });
+            var v = this;
+            botometer_request.fail(function (jqXHR, textStatus) {
+                alert("Get Botometer Scores Request failed: " + textStatus);
+                console.log('Botometer Scores Request Request Error', textStatus);
+            });
+            botometer_request.complete(function(){ v.spinStop("getBotometerScores"); });
+            return botometer_request;
+        },
+
+        submitForm: function(dontScroll){
+
+            this.show_articles = false;
+            $("#select_all").prop("checked", false);
+            if(!this.query_text)
+            {
+                alert("You must input a claim.");
+                this.spinStop(true);
+                return false;
+            }
+            this.changeURLParams();
+            this.getArticles(dontScroll);
+            this.spinStop();
+        },
+
+        visualizeSelectedArticles: function(){
+
+            this.show_graphs = false;
+
+            if(this.checked_articles.length > 20)
+            {
+                alert("You can visualize a maximum of 20 articles.");
+                this.spinStop(true);
+                return false;
+            }
+            if(this.checked_articles.length <= 0)
+            {
+                alert("Select at least one article to visualize.");
+                this.spinStop(true);
+                return false;
+            }
+
+            this.getTimeline(this.checked_articles);
+            this.getNetwork(this.checked_articles);
+            this.spinStop();
         },
 
         zoomInGraph: function(){
@@ -348,19 +365,25 @@ var app = new Vue({
         },
         zoomOutGraph: function(){
             this.graph.zoomOut();
+        },
+        updateGraph: function(starting_time, ending_time){
+
+            // console.debug("Timeline updated. Updating Graph.");
+            this.graph.updateGraph(starting_time, ending_time);
+            this.show_zoom_buttons = true;
+            this.scrollToElement("graphs");
         }
     },
     watch: {
     },
     mounted: function(){
-        var v = this;
 
         this.mounted = true;
-        this.spinStop(true);
         this.show_articles = false;
         this.show_graphs = false;
 
         //create hourglass loading spinner
+        var v = this;
         var f = function(){
             var counter = 0;
             setInterval(function(){
@@ -403,25 +426,20 @@ var app = new Vue({
         }
 
         this.graph = new HoaxyGraph({
-            spinStart: v.spinStart,
-            spinStop: v.spinStop,
-            toggle_edge_modal: v.toggleEdgeModal,
-            toggle_node_modal: v.toggleNodeModal,
-            node_modal_content: v.node_modal_content,
-            edge_modal_content: v.edge_modal_content
+            spinStart: this.spinStart,
+            spinStop: this.spinStop,
+            toggle_edge_modal: this.toggleEdgeModal,
+            toggle_node_modal: this.toggleNodeModal,
+            node_modal_content: this.node_modal_content,
+            edge_modal_content: this.edge_modal_content
         });
 
         //create the chart that is used to visualize the timeline
-        this.timeline = new HoaxyTimeline(function(starting_time, ending_time){
-    		v.spinStart();
-            console.debug("Timeline updated. Updating Graph.");
-            v.graph.updateGraph(starting_time, ending_time);
-            v.show_zoom_buttons = true;
-            v.scrollToElement("graphs");
-    		v.spinStop();
-        });
+        // the updateGraph function is a callback when the timeline interval is adjusted
+        this.timeline = new HoaxyTimeline(this.updateGraph);
 
 
+        this.spinStop("initialLoad");
         console.debug("Vue Mounted.");
     }
 });

@@ -23,6 +23,7 @@ function HoaxyGraph(options)
 
 	function UpdateGraph(start_time, end_time)
 	{
+		// spinStart("updateNetwork");
 		console.debug("Updating Graph");
 		if(!edges || !edges.length)
 		{
@@ -327,18 +328,19 @@ function HoaxyGraph(options)
 				rescaleIgnoreSize: true
 	        }
 	    });
-
 		var jiggle_compensator = Math.floor(Math.sqrt(graph.edges.length)) *600;
-
 		s.refresh({skipIndexation: true});
 		s.startForceAtlas2({
 	        slowDown: 100,
 	        gravity: 2
 	    });
+		spinStart("ForceAtlas");
 		setTimeout(function () {
 			s.stopForceAtlas2();
 			s.camera.goTo({x:0, y:0, ratio:1});
-			spinStop();
+			spinStop("ForceAtlas");
+			// spinStop("updateNetwork");
+			spinStop("generateNetwork");
 		}, 2000 + jiggle_compensator);
 
 	    s.bind('clickNode', function (e) {
