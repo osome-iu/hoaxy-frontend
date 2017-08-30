@@ -137,6 +137,7 @@ var app = new Vue({
                 this.input_disabled = false;
                 clearTimeout(this.spin_timer);
             }
+            console.debug(key, this.spin_key_table);
         },
         spinStart: function(key){
             this.spin_key_table.push(key);
@@ -161,129 +162,147 @@ var app = new Vue({
 
         getArticles: function(dontScroll){
             this.spinStart("getArticles");
-            var urls_request = $.ajax({
-                url: configuration.articles_url,
+            var urls_request = axios.get(configuration.articles_url, {
                 headers: configuration.articles_headers,
-                data: {
+                params: {
                     "query": this.query_text,
                     "sort_by" : this.query_sort
                 },
-                dataType: "json",
+                responseType: "json",
             });
             var v = this;
-            urls_request.done(function (msg) {
-                var urls_model = msg;
-                if(!msg.articles || !msg.articles.length)
-                {
-                    alert("Your query did not return any results.");
-                    return false;
+            urls_request.then(
+                function (response) {
+                    var msg = response.data
+                    var urls_model = msg;
+                    if(!msg.articles || !msg.articles.length)
+                    {
+                        alert("Your query did not return any results.");
+                        return false;
+                    }
+                    urls_model.urls = msg.articles.map(function(x){
+                        y = x;
+                        y.site_domain = x.domain;
+                        y.url_id = x.id;
+                        y.pub_date = x.publish_date;
+                        y.url_raw = x.canonical_url;
+                        return y;
+                    });
+                    v.articles = urls_model.urls;
+                    v.articles_to_show = max_articles;
+                    v.show_articles = true;
+                    if(!dontScroll)
+                    {
+                        v.scrollToElement("articles");
+                    }
+
+                    v.spinStop("getArticles");
+                },
+                function (error) {
+                    alert("Get URLs Request failed: " + error.response.statusText);
+                    console.log('Articles Request Error:', error.response.statusText);
+                    v.spinStop("getArticles");
                 }
-                urls_model.urls = msg.articles.map(function(x){
-                    y = x;
-                    y.site_domain = x.domain;
-                    y.url_id = x.id;
-                    y.pub_date = x.publish_date;
-                    y.url_raw = x.canonical_url;
-                    return y;
-                });
-                v.articles = urls_model.urls;
-                v.articles_to_show = max_articles;
-                v.show_articles = true;
-                if(!dontScroll)
-                {
-                    v.scrollToElement("articles");
-                }
-            });
-            urls_request.fail(function (jqXHR, textStatus) {
-                alert("Get URLs Request failed: " + textStatus);
-                console.log('Articles Request Error', textStatus);
-            });
-            urls_request.complete(function(){ v.spinStop("getArticles"); });
+            );
+            // urls_request.complete(function(){ v.spinStop("getArticles"); });
             return urls_request;
         },
+
+
+
         getTimeline: function(article_ids){
             this.spinStart("getTimeline");
-            var timeline_request = $.ajax({
-                url: configuration.timeline_url,
+            var timeline_request = axios.get( configuration.timeline_url, {
                 headers: configuration.timeline_headers,
-                data: {
+                params: {
                     "resolution": "D",
                     "ids" : "[" + article_ids.toString() + "]"
                 },
-                dataType: "json",
+                responseType: "json",
             });
             var v = this;
-            timeline_request.done(function (msg) {
-                v.spinStart("updateTimeline");
-                v.show_graphs = true;
-                //update the timeline on the next tick because at this point
-                // the graphs are still hidden. Graphs will be visible on the
-                // next tick
-                Vue.nextTick(function(){
-                    v.timeline.update(msg.timeline);
-                    v.spinStop("updateTimeline");
-                    v.scrollToElement("graphs");
-                });
-            });
-            timeline_request.fail(function (jqXHR, textStatus) {
-                alert("Get TimeLine Request failed: " + textStatus);
-                console.log('Timeline Request Error', textStatus);
-            });
-            timeline_request.complete(function(){ v.spinStop("getTimeline"); });
+            timeline_request.then(
+                function (response) {
+                    var msg = response.data;
+                    v.spinStart("updateTimeline");
+                    v.show_graphs = true;
+                    //update the timeline on the next tick because at this point
+                    // the graphs are still hidden. Graphs will be visible on the
+                    // next tick
+                    Vue.nextTick(function(){
+                        v.timeline.update(msg.timeline);
+                        v.spinStop("updateTimeline");
+                        v.scrollToElement("graphs");
+                    });
+                    v.spinStop("getTimeline");
+                },
+                function (error) {
+                    alert("Get TimeLine Request failed: " + error.response.statusText);
+                    console.log('Timeline Request Error', error.response.statusText);
+                    v.spinStop("getTimeline");
+                }
+            );
             return timeline_request;
         },
         getNetwork: function(article_ids){
             this.spinStart("getNetwork");
-            var graph_request = $.ajax({
-                url: configuration.network_url,
+            var graph_request = axios.get( configuration.network_url, {
                 headers: configuration.network_headers,
-                data: {
+                params: {
                     "include_user_mentions" : "true",
                     "ids" : "[" + article_ids.toString() + "]",
                 },
-                dataType: "json",
+                responseType: "json",
             });
             var v = this;
-            graph_request.done(function (msg){
-                v.spinStart("generateNetwork");
-                if(msg.edges){
-                    //create an edge list
-                    var edge_list = msg.edges.map(function(x){
+            graph_request.then(
+                function (response){
+                    var msg = response.data;
+                    v.spinStart("generateNetwork");
+                    if(msg.edges){
+                        //create an edge list
+                        var edge_list = msg.edges.map(function(x){
                             y = x;
                             y.site_domain = x.domain;
                             y.pub_date = x.publish_date;
                             y.url_raw = x.canonical_url;
                             return y;
                         });
-                    //after the edge list is gotten, we need to get
-                    // the bot scores for each of the nodes
-                    var botometer_request = v.getBotometerScores();
-                    botometer_request.done(function(response){
-                        //update the edge list with bot scores
-                    });
-                    botometer_request.complete(function(){
-                        //after the botometer request is complete,
-                        // update the graph even if the request fails
-                        // if it fails, it just won't have the bot scores
-                        v.graph.updateEdges(edge_list);
-                        v.timeline.updateDateRange();
-                    });
+
+                        //after the edge list is gotten, we need to get
+                        // the bot scores for each of the nodes
+                        var botometer_request = v.getBotometerScores();
+                        botometer_request.then(function(response){
+                            //update the edge list with bot scores
+                            v.renderGraph(edge_list);
+                        }, function(error){
+                            v.renderGraph(edge_list);
+                        });
+                    }
+                    else
+                    {
+                        throw "Did not fetch any edges for network graph.";
+                    }
+                    v.spinStop("getNetwork");
+                },
+                function (error) {
+                    alert("Get Graph Request failed: " + error.response.statusText);
+                    console.log('Network Graph Request Error', error.response.statusText);
+                    v.spinStop("getNetwork");
                 }
-                else
-                {
-                    throw "Did not fetch any edges for network graph.";
-                }
-            });
-            graph_request.fail(function (jqXHR, textStatus) {
-                alert("Get Graph Request failed: " + textStatus);
-                console.log('Network Graph Request Error', textStatus);
-            });
-            graph_request.complete(function(){ v.spinStop("getNetwork"); });
+            );
             return graph_request;
+        },
+        renderGraph: function(edge_list){
+            //after the botometer request is complete,
+            // update the graph even if the request fails
+            // if it fails, it just won't have the bot scores
+            this.graph.updateEdges(edge_list);
+            // v.timeline.updateDateRange();
         },
         getBotometerScores: function(){
             this.spinStart("getBotometerScores");
-            var botometer_request = $.ajax({
+            var botometer_request = axios.get("fakeaddress", {
                 // url: configuration.network_url,
                 // headers: configuration.network_headers,
                 // data: {
@@ -293,11 +312,18 @@ var app = new Vue({
                 // dataType: "json",
             });
             var v = this;
-            botometer_request.fail(function (jqXHR, textStatus) {
-                alert("Get Botometer Scores Request failed: " + textStatus);
-                console.log('Botometer Scores Request Request Error', textStatus);
-            });
-            botometer_request.complete(function(){ v.spinStop("getBotometerScores"); });
+            botometer_request.then(
+                function(response){
+                    v.spinStop("getBotometerScores");
+                    // console.debug("botometer success");
+                },
+                function (error) {
+                    // alert("Get Botometer Scores Request failed: " + error.response.statusText);
+                    console.log('Botometer Scores Request Error: ', error.response.statusText);
+                    v.spinStop("getBotometerScores");
+                    // console.debug("botometer success");
+                }
+            );
             return botometer_request;
         },
 
@@ -311,7 +337,7 @@ var app = new Vue({
 
         submitForm: function(dontScroll){
             this.show_articles = false;
-            $("#select_all").prop("checked", false);
+            // $("#select_all").prop("checked", false);
             if(!this.query_text)
             {
                 alert("You must input a claim.");

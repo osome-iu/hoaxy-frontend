@@ -9,7 +9,14 @@
 <script src="/static/js/moment@2.18.1.js"></script>
 
 <!-- JQUERY for ajax-->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> -->
+
+<!-- Javascript Promise Polyfill for IE -->
+<script src="/static/js/es6-promise.min.js"></script>
+<script>var Promise = Promise || ES6Promise.Promise;</script>
+
+<!-- Axios for ajax -->
+<script src="/static/js/axios.min.js"></script>
 
 <!-- FontAwesome -->
 <link rel="stylesheet" href="https://opensource.keycdn.com/fontawesome/4.7.0/font-awesome.min.css" integrity="sha384-dNpIIXE8U05kAbPhy3G1cz+yZmTzA6CY8Vg/u2L9xRnHjJiAK76m2BIEaSEV+/aU" crossorigin="anonymous">

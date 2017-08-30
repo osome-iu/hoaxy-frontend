@@ -25,6 +25,7 @@ function HoaxyGraph(options)
 	{
 		// spinStart("updateNetwork");
 		console.debug("Updating Graph");
+		console.debug(edges);
 		if(!edges || !edges.length)
 		{
 			throw "Tried to make graph, but there is no data.";
@@ -303,7 +304,8 @@ function HoaxyGraph(options)
 		}
 
 		// console.log("Drawing Sigma");
-		$('#graph-container').empty();
+		// $('#graph-container').empty();
+		document.getElementById("graph-container").innerHTML = "";
 
 		s = new sigma({
 			graph:graph,
@@ -443,6 +445,7 @@ function HoaxyGraph(options)
 	returnObj.updateGraph = UpdateGraph;
 	returnObj.zoomIn = zoomIn;
 	returnObj.zoomOut = zoomOut;
+	returnObj.getEdges = function(){ return edges; };
 	return returnObj;
 
 

@@ -53,6 +53,7 @@ function HoaxyTimeline(updateDateRangeCallback){
 		}
 		catch(e)
 		{
+			console.debug(e);
 			setTimeout(function(){
 				updateDateRange(extent);
 			}, 500);
