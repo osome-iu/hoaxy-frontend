@@ -15,20 +15,19 @@ class BotbaseModel(db.Model):
     """
     __tablename__ = "botscore"
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.BigInteger)
+    user_id = db.Column(db.BigInteger, index=True)
     screen_name = db.Column(db.String(15))
     time_stamp = db.Column(db.TIMESTAMP)
     all_bot_scores = db.Column(JSONB)
-    bot_score_english = db.Column(REAL)
-    bot_score_universal = db.Column(REAL)
-    requester_ip = db.Column(TEXT)
+    bot_score_english = db.Column(REAL, index=True)
+    bot_score_universal = db.Column(REAL, index=True)
+    requester_ip = db.Column(TEXT, index=True)
     tweets_per_day = db.Column(REAL)
     num_tweets = db.Column(db.Integer)
     num_mentions = db.Column(db.Integer)
-    latest_tweet_timestamp = db.Column(db.TIMESTAMP)
+    latest_tweet_timestamp = db.Column(db.TIMESTAMP, index=True)
     num_requests = db.Column(db.Integer)
     user_profile = db.Column(JSONB)
-
 
     def getJsonRepr(self):
         return {
