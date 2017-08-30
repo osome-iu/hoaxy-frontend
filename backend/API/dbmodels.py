@@ -8,7 +8,8 @@ api = Flask(__name__)
 api.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://localhost/botbase"
 db = SQLAlchemy(api)
 
-class Botbase(db.Model):
+
+class BotbaseModel(db.Model):
     """
     Objective Model for the botscore table in database
     """
