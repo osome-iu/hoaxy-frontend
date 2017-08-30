@@ -150,81 +150,81 @@
 			},
 			getArticles: function(){
 				this.spinStart();
-				var request = $.ajax({
-					url: configuration.top_articles_url,
+				var request = axios.get(configuration.top_articles_url, {
 					headers: configuration.top_articles_headers,
 					dataType: 'json'
 				});
 				var v = this;
-				request.done(function(response){
-					var articles = response.articles;
-					var local_popular_articles = {
-						claim: [],
-						fact_checking: [],
-					};
-					for(var i in articles)
-					{
-						var a = articles[i];
-						a.capture_date = a.date_captured.split('T')[0];
-						local_popular_articles[a.site_type].push(a);
+				request.then(
+					function(response){
+						response = response.data;
+						var articles = response.articles;
+						var local_popular_articles = {
+							claim: [],
+							fact_checking: [],
+						};
+						for(var i in articles)
+						{
+							var a = articles[i];
+							a.capture_date = a.date_captured.split('T')[0];
+							local_popular_articles[a.site_type].push(a);
+						}
+						v.popular_articles = local_popular_articles;
+						v.spinStop();
+					},
+					function (error) {
+						alert("Get Articles Request failed: " + error.response.statusText);
+						v.spinStop();
 					}
-					v.popular_articles = local_popular_articles;
-				});
-				request.fail(function (jqXHR, textStatus) {
-	                alert("Get Articles Request failed: " + textStatus);
-	            });
-				request.complete(function(){
-					// console.debug("request completed");
-	                v.spinStop();
-	            })
+				);
 			},
             getUsers: function(){
                 this.spinStart();
                 var v = this;
-                var request = $.ajax({
-                    url: configuration.top_users_url,
+                var request = axios.get( configuration.top_users_url, {
                     headers: configuration.top_users_headers,
                     dataType: 'json'
-                })
+                });
 
-                request.done(function(response){
-                    var spreaders = response.spreaders;
-					var local = {
-                        active: {
-    						claim: [],
-    						fact_checking: []
-    					},
-                        influential: {
-    						claim: [],
-    						fact_checking: []
-                        }
-					};
-					for(var i in spreaders)
-					{
-						var a = spreaders[i];
-                        var bot_percent = "";
-                        if(a.bot_score === null)
-                        {
-                            bot_percent = "n/a";
-                        }
-                        else
-                        {
-                            bot_percent = a.bot_score * 100;
-                            bot_percent = bot_percent.toFixed() + '%';
-                        }
-                        a.bot_percent = bot_percent;
-                        local[a.spreading_type][a.site_type].push(a);
+				request.then(
+					function(response){
+						response = response.data;
+						var spreaders = response.spreaders;
+						var local = {
+							active: {
+								claim: [],
+								fact_checking: []
+							},
+							influential: {
+								claim: [],
+								fact_checking: []
+							}
+						};
+						for(var i in spreaders)
+						{
+							var a = spreaders[i];
+							var bot_percent = "";
+							if(a.bot_score === null)
+							{
+								bot_percent = "n/a";
+							}
+							else
+							{
+								bot_percent = a.bot_score * 100;
+								bot_percent = bot_percent.toFixed() + '%';
+							}
+							a.bot_percent = bot_percent;
+							local[a.spreading_type][a.site_type].push(a);
+						}
+						v.active_users = local.active;
+						v.influential_users = local.influential;
+						v.spinStop();
+					},
+					function (error) {
+						alert("Get Spreaders Request failed: " + error.response.statusText);
+						v.spinStop();
 					}
-					v.active_users = local.active;
-                    v.influential_users = local.influential;
-				});
-				request.fail(function (jqXHR, textStatus) {
-					alert("Get Spreaders Request failed: " + textStatus);
-				});
-				request.complete(function(){
-					// console.debug("request completed");
-					v.spinStop();
-				})
+				);
 			},
 			activate_tab: function(tab_name){
 				this.active_tab = tab_name;
