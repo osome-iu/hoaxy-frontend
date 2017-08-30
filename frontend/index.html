@@ -4,10 +4,6 @@
 <head>
 	<title>Claim and Fact Checking Spreading Visualization</title>
 	<!--#include virtual="./includes/includes.html" -->
-
-
-
-
 </head>
 
 <body>
@@ -15,7 +11,21 @@
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
 			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
 		</div>
+
+		
 		<!--#include virtual="./includes/header.html" -->
+
+
+		<!--
+		#######
+		#        ####  #####  #    #
+		#       #    # #    # ##  ##
+		#####   #    # #    # # ## #
+		#       #    # #####  #    #
+		#       #    # #   #  #    #
+		#        ####  #    # #    #
+
+	-->
 		<section id="form" class="container">
 			<form @submit.stop.prevent="submitForm()">
 				<div class="container">
@@ -23,8 +33,6 @@
 						<input id="query" class="form-control" type="text " v-model="query_text"  :disabled="input_disabled" />
 
 					</div>
-
-
 
 					<div class="col-12 text-center form-group">
 						<span class="radio-container">
@@ -48,7 +56,15 @@
 
 			</div>
 		</section>
-
+<!--
+    #
+   # #   #####  ##### #  ####  #      ######  ####
+  #   #  #    #   #   # #    # #      #      #
+ #     # #    #   #   # #      #      #####   ####
+ ####### #####    #   # #      #      #           #
+ #     # #   #    #   # #    # #      #      #    #
+ #     # #    #   #   #  ####  ###### ######  ####
+  -->
 		<section id="articles" v-bind:class="{'hidden': !show_articles}" class="container-fluid">
 			<div class="container">
 				<div>
@@ -93,9 +109,15 @@
 				<div class="clearfix"></div>
 			</div>
 		</section>
-
-
-
+<!--
+  #####
+ #     # #####    ##   #####  #    #  ####
+ #       #    #  #  #  #    # #    # #
+ #  #### #    # #    # #    # ######  ####
+ #     # #####  ###### #####  #    #      #
+ #     # #   #  #    # #      #    # #    #
+  #####  #    # #    # #      #    #  ####
+ -->
 		<section id="graphs" v-bind:class="{'hidden': !show_graphs}" class="container-fluid row no-gutters">
 			<div class="col-md-12 text-center" id="legend">
 				<label><span class="rounded-circle claim_label">&nbsp;</span> Claims</label>
@@ -128,26 +150,16 @@
 
 		<!--#include virtual="./includes/footer.html" -->
 
-		<div class="modal " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-			<div class="modal-dialog" role="document" >
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-						<h4 class="modal-title text-center" id="myModalLabel" ></h4>
-					</div>
-					<div class="modal-body" id="myModalBody">
 
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- <button @click="toggleEdgeModal()">edge</button>
-		<button @click="toggleNodeModal">node</button> -->
-
+		<!--
+		#     #
+		##   ##  ####  #####    ##   #       ####
+		# # # # #    # #    #  #  #  #      #
+		#  #  # #    # #    # #    # #       ####
+		#     # #    # #    # ###### #           #
+		#     # #    # #    # #    # #      #    #
+		#     #  ####  #####  #    # ######  ####
+		-->
 		<div id="edgeModal" :class="{'modal-show': show_edge_modal}" @click.stop="toggleEdgeModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="edgeModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog" role="document">
 				<div @click.stop="" class="modal-content">
@@ -176,9 +188,6 @@
 				</div>
 			</div>
 		</div>
-
-
-
 
 		<div id="nodeModal"  :class="{'modal-show': show_node_modal}" @click.stop="toggleNodeModal()" class="modal "  tabindex="-1" role="dialog" :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog"  role="document">

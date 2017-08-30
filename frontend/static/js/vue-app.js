@@ -19,6 +19,14 @@ var app = new Vue({
     el: '#vue-app',
     data: {
 
+        //  ######
+        //  #     #   ##   #####   ##
+        //  #     #  #  #    #    #  #
+        //  #     # #    #   #   #    #
+        //  #     # ######   #   ######
+        //  #     # #    #   #   #    #
+        //  ######  #    #   #   #    #
+
         loading: true,
         mounted: false,
         show_articles: false,
@@ -68,20 +76,19 @@ var app = new Vue({
 
         colors: colors
     },
+
+    // #     #
+    // ##   ## ###### ##### #    #  ####  #####   ####
+    // # # # # #        #   #    # #    # #    # #
+    // #  #  # #####    #   ###### #    # #    #  ####
+    // #     # #        #   #    # #    # #    #      #
+    // #     # #        #   #    # #    # #    # #    #
+    // #     # ######   #   #    #  ####  #####   ####
+
     methods: {
 
         getSubsetOfArticles: function(){
             return this.articles.slice(0, this.articles_to_show);
-        },
-        loadMore: function(){
-            if(this.articles_to_show < this.articles.length)
-            {
-                this.articles_to_show += max_articles;
-            }
-            else
-            {
-                this.articles_to_show = max_articles;
-            }
         },
         getDateline: function(url_pub_date){
             var pub_date = moment(url_pub_date);
@@ -136,7 +143,6 @@ var app = new Vue({
         	this.loading = true;
             this.input_disabled = true;
         	//timeout after 90 seconds so we're not stuck in an endless spinning loop.
-            // console.debug(this.spin_counter);
             var v = this;
             clearTimeout(this.spin_timer);
         	this.spin_timer = setTimeout(function(){
@@ -145,34 +151,14 @@ var app = new Vue({
         		v.spinStop();
         	}, 90000);
         },
-        toggleEdgeModal: function(force){
-            this.toggleModal("edge", force);
-        },
-        toggleNodeModal: function(force){
-            this.toggleModal("node", force);
-        },
-        toggleModal: function(modal, force)
-        {
-            //the timeouts here help with the animation and will need to be adjusted as required
-            var prop = "show_" + modal + "_modal";
-            var v = this;
-            if(!this[prop] || force === true) //show
-            {
-                this[prop] = true;
-                document.getElementsByTagName("body")[0].style.overflowY = "hidden";
-                setTimeout(function(){
-                    v.modal_opacity = true;
-                },1);
-            }
-            else //hide
-            {
-                this.modal_opacity = false;
-                document.getElementsByTagName("body")[0].style.overflowY = "";
-                setTimeout(function(){
-                    v[prop] = false;
-                },100);
-            }
-        },
+
+        //   ##        #   ##   #    #    ###### #    # #    #  ####  ##### #  ####  #    #  ####
+        //  #  #       #  #  #   #  #     #      #    # ##   # #    #   #   # #    # ##   # #
+        // #    #      # #    #   ##      #####  #    # # #  # #        #   # #    # # #  #  ####
+        // ######      # ######   ##      #      #    # #  # # #        #   # #    # #  # #      #
+        // #    # #    # #    #  #  #     #      #    # #   ## #    #   #   # #    # #   ## #    #
+        // #    #  ####  #    # #    #    #       ####  #    #  ####    #   #  ####  #    #  ####
+
         getArticles: function(dontScroll){
             this.spinStart("getArticles");
             var urls_request = $.ajax({
@@ -184,17 +170,14 @@ var app = new Vue({
                 },
                 dataType: "json",
             });
-
             var v = this;
             urls_request.done(function (msg) {
                 var urls_model = msg;
-
                 if(!msg.articles || !msg.articles.length)
                 {
                     alert("Your query did not return any results.");
                     return false;
                 }
-
                 urls_model.urls = msg.articles.map(function(x){
                     y = x;
                     y.site_domain = x.domain;
@@ -203,11 +186,9 @@ var app = new Vue({
                     y.url_raw = x.canonical_url;
                     return y;
                 });
-
                 v.articles = urls_model.urls;
                 v.articles_to_show = max_articles;
                 v.show_articles = true;
-
                 if(!dontScroll)
                 {
                     v.scrollToElement("articles");
@@ -235,7 +216,6 @@ var app = new Vue({
             timeline_request.done(function (msg) {
                 v.spinStart("updateTimeline");
                 v.show_graphs = true;
-
                 //update the timeline on the next tick because at this point
                 // the graphs are still hidden. Graphs will be visible on the
                 // next tick
@@ -244,7 +224,6 @@ var app = new Vue({
                     v.spinStop("updateTimeline");
                     v.scrollToElement("graphs");
                 });
-
             });
             timeline_request.fail(function (jqXHR, textStatus) {
                 alert("Get TimeLine Request failed: " + textStatus);
@@ -266,7 +245,6 @@ var app = new Vue({
             });
             var v = this;
             graph_request.done(function (msg){
-                // v.spinStart("updateNetwork");
                 v.spinStart("generateNetwork");
                 if(msg.edges){
                     //create an edge list
@@ -323,8 +301,15 @@ var app = new Vue({
             return botometer_request;
         },
 
-        submitForm: function(dontScroll){
+        //    #                                              # ######                                       #####
+        //   # #    ####  ##### #  ####  #    #  ####       #  #     # #    # ##### #####  ####  #    #    #     # #      #  ####  #    #  ####
+        //  #   #  #    #   #   # #    # ##   # #          #   #     # #    #   #     #   #    # ##   #    #       #      # #    # #   #  #
+        // #     # #        #   # #    # # #  #  ####     #    ######  #    #   #     #   #    # # #  #    #       #      # #      ####    ####
+        // ####### #        #   # #    # #  # #      #   #     #     # #    #   #     #   #    # #  # #    #       #      # #      #  #        #
+        // #     # #    #   #   # #    # #   ## #    #  #      #     # #    #   #     #   #    # #   ##    #     # #      # #    # #   #  #    #
+        // #     #  ####    #   #  ####  #    #  ####  #       ######   ####    #     #    ####  #    #     #####  ###### #  ####  #    #  ####
 
+        submitForm: function(dontScroll){
             this.show_articles = false;
             $("#select_all").prop("checked", false);
             if(!this.query_text)
@@ -337,11 +322,8 @@ var app = new Vue({
             this.getArticles(dontScroll);
             this.spinStop();
         },
-
         visualizeSelectedArticles: function(){
-
             this.show_graphs = false;
-
             if(this.checked_articles.length > 20)
             {
                 alert("You can visualize a maximum of 20 articles.");
@@ -359,7 +341,44 @@ var app = new Vue({
             this.getNetwork(this.checked_articles);
             this.spinStop();
         },
-
+        toggleEdgeModal: function(force){
+            this.toggleModal("edge", force);
+        },
+        toggleNodeModal: function(force){
+            this.toggleModal("node", force);
+        },
+        toggleModal: function(modal, force)
+        {
+            //the timeouts here help with the animation and will need to be adjusted as required
+            var prop = "show_" + modal + "_modal";
+            var v = this;
+            if(!this[prop] || force === true) //show
+            {
+                this[prop] = true;
+                document.getElementsByTagName("body")[0].style.overflowY = "hidden";
+                setTimeout(function(){
+                    v.modal_opacity = true;
+                },1);
+            }
+            else //hide
+            {
+                this.modal_opacity = false;
+                document.getElementsByTagName("body")[0].style.overflowY = "";
+                setTimeout(function(){
+                    v[prop] = false;
+                },100);
+            }
+        },
+        loadMore: function(){
+            if(this.articles_to_show < this.articles.length)
+            {
+                this.articles_to_show += max_articles;
+            }
+            else
+            {
+                this.articles_to_show = max_articles;
+            }
+        },
         zoomInGraph: function(){
             this.graph.zoomIn();
         },
@@ -367,8 +386,6 @@ var app = new Vue({
             this.graph.zoomOut();
         },
         updateGraph: function(starting_time, ending_time){
-
-            // console.debug("Timeline updated. Updating Graph.");
             this.graph.updateGraph(starting_time, ending_time);
             this.show_zoom_buttons = true;
             this.scrollToElement("graphs");
@@ -376,8 +393,16 @@ var app = new Vue({
     },
     watch: {
     },
-    mounted: function(){
 
+    //  #     #
+    //  ##   ##  ####  #    # #    # ##### ###### #####
+    //  # # # # #    # #    # ##   #   #   #      #    #
+    //  #  #  # #    # #    # # #  #   #   #####  #    #
+    //  #     # #    # #    # #  # #   #   #      #    #
+    //  #     # #    # #    # #   ##   #   #      #    #
+    //  #     #  ####   ####  #    #   #   ###### #####
+
+    mounted: function(){
         this.mounted = true;
         this.show_articles = false;
         this.show_graphs = false;
@@ -387,9 +412,7 @@ var app = new Vue({
         var f = function(){
             var counter = 0;
             setInterval(function(){
-                // console.debug("out", counter);
                 if(v.loading){
-                    // console.debug("in", counter);
                     counter ++;
                     if(counter < 4)
                         v.spinner_rotate = (v.spinner_state = counter)*0;
@@ -425,6 +448,8 @@ var app = new Vue({
             this.submitForm(true);
         }
 
+        //callbacks allow for modal manipulation and loading spinner to be handled
+        //  by vue.
         this.graph = new HoaxyGraph({
             spinStart: this.spinStart,
             spinStop: this.spinStop,
