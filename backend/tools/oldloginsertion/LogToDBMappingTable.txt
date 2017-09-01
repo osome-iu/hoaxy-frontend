@@ -1,15 +1,15 @@
 LOGS TO TABLE MAPPING:										INSERTION FROM LOG FILES
-  id SERIAL PRIMARY KEY NOT NULL, 							---> AUTO-INCREMENT
-  user_id bigint NOT NULL, 									---> json:search/user_id
-  screen_name character varying(15), 						---> json:search/sn
+  id SERIAL PRIMARY KEY NOT NULL, 							        ---> AUTO-INCREMENT
+  user_id bigint NOT NULL, 									            ---> json:search/user_id
+  screen_name character varying(15), 						        ---> json:search/sn
   time_stamp timestamp with time zone DEFAULT now(), 		---> json:timestamp
-  all_bot_scores jsonb,										---> json:categories
-  bot_score_english real,									---> json:score/english, or json:score, or json:classification
-  bot_score_universal real,									---> json:score/universal, or json:categories/languageagnostic_classification, or NULL
-  requester_ip text,										---> json:remote_ip
-  tweets_per_day real,										---> NULL
-  num_tweets integer,										---> json:num_tweets
-  num_mentions integer,										---> NULL
+  all_bot_scores jsonb,										              ---> json:categories
+  bot_score_english real,									              ---> json:score/english, or json:score, or json:classification
+  bot_score_universal real,									            ---> json:score/universal, or json:categories/languageagnostic_classification, or NULL
+  requester_ip text,										                ---> json:remote_ip
+  tweets_per_day real,										              ---> NULL
+  num_tweets integer,										                ---> json:num_tweets
+  num_mentions integer,										              ---> NULL
   latest_tweet_timestamp timestamp with time zone,			---> NULL
-  num_requests integer,										---> previous+1 where previous = (by same user_id last timestamp)
-  user_profile jsonb										---> NULL
+  num_requests integer,										              ---> previous+1 where previous = (by same user_id last timestamp)
+  user_profile jsonb										                ---> NULL
