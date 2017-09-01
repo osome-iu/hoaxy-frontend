@@ -15,6 +15,7 @@ function HoaxyGraph(options)
 	var graph = {};
 	var edges = [];
 	var user_list = [];
+	var botscores = {};
 
 	function UpdateEdges(new_edges){
 		edges = new_edges;
@@ -66,10 +67,23 @@ function HoaxyGraph(options)
 		);
 		return botcache_request;
 	}
-
-	function getBotometerScore(user_id)
+	function updateUserBotScore(user)
 	{
-		//takes in a twitter user's timeline, sends that timeline to the botometer API to get the score
+		//if exists and fresh
+		if(user.score)
+		{
+			botscores[user.user_id] = user.score;
+			updateNodeColor(user.user_id, user.score);
+		}
+		//if score is stale or does not exist
+		if(!user.score || user.old)
+		{
+			getNewBotometerScore(user.user_id);
+		}
+	}
+
+	function getNewBotometerScore(user_id)
+	{
 		var twitter_timeline_request = axios.get(configuration.twitter_search_url, {
 			data: {
 				"user_id" : user_id
@@ -82,6 +96,7 @@ function HoaxyGraph(options)
 				}
 			});
 			botometer_request.then(function(response){
+				botscores[user_id] = response.data.score;
 				updateNodeColor(user_id, response.data.score);
 			}, function(error){
 
@@ -91,19 +106,6 @@ function HoaxyGraph(options)
 		});
 
 
-	}
-	function updateUserBotScore(user)
-	{
-		//if exists and fresh
-		if(user.score)
-		{
-			updateNodeColor(user.user_id, user.score);
-		}
-		//if score is stale or does not exist
-		if(!user.score || user.old)
-		{
-			getBotometerScore(user.user_id);
-		}
 	}
 	function updateNodeColor(user.user_id, user.score)
 	{
