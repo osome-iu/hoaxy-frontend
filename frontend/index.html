@@ -12,7 +12,7 @@
 			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
 		</div>
 
-		
+
 		<!--#include virtual="./includes/header.html" -->
 
 
@@ -74,6 +74,7 @@
 				<p class="text-center">
 					<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary" id="visualize_top"> Visualize </button>
 
+					<button @click.stop.prevent="authenticateWithTwitter()" class="btn btn-warning" id="authenticate_button">Sign into Twitter</button>
 				</p>
 				<ul class="list-unstyled" id="article_list">
 					<li v-for="article, index in getSubsetOfArticles()" :class="article.site_type" class="rounded">

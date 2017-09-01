@@ -49,6 +49,7 @@ var app = new Vue({
         twitter_account_info: {
             token: null
         },
+        twitter: null,
 
         timeline: null,
         graph: null,
@@ -303,6 +304,12 @@ var app = new Vue({
         authenticateWithTwitter: function(){
 
         },
+        logIn: function(){
+
+        },
+        logOut: function(){
+
+        },
 
         submitForm: function(dontScroll){
             this.show_articles = false;
@@ -457,6 +464,10 @@ var app = new Vue({
         //create the chart that is used to visualize the timeline
         // the updateGraph function is a callback when the timeline interval is adjusted
         this.timeline = new HoaxyTimeline(this.updateGraph);
+
+        this.twitter = new Twitter(configuration.twitter_key);
+        this.twitter.verifyMe();
+        console.debug(this.twitter.me());
 
 
         this.spinStop("initialLoad");

@@ -30,6 +30,8 @@ configuration = function(){
 	obj.botometer_url = "https://example.com";
 	obj.botcache_url = "https://example.com";
 
+    obj.twitter_key = "";
+
 
 	return obj;
 }();
