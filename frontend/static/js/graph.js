@@ -28,7 +28,8 @@ function HoaxyGraph(options)
 		return edges;
 	}
 
-	function getBotCacheScores(user_list){
+	function getBotCacheScores(user_list)
+    {
 		this.spinStart("getBotCacheScores");
 		//build list of users found in the edge list
 		for(var i in edges)
@@ -40,7 +41,7 @@ function HoaxyGraph(options)
 			if(user_list.indexOf(from_user_id) < 0)
 			{
 				user_list.push(from_user_id);
-			{
+			}
 			if(user_list.indexOf(to_user_id) < 0)
 			{
 				user_list.push(to_user_id);
@@ -107,7 +108,7 @@ function HoaxyGraph(options)
 
 
 	}
-	function updateNodeColor(user.user_id, user.score)
+	function updateNodeColor(user_id, score)
 	{
 		//change node color on graph based on botscore
 	}
