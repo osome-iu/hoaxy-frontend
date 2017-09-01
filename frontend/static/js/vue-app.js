@@ -46,6 +46,10 @@ var app = new Vue({
 
         checked_articles: [],
 
+        twitter_account_info: {
+            token: null
+        },
+
         timeline: null,
         graph: null,
 
@@ -257,33 +261,25 @@ var app = new Vue({
             var v = this;
             graph_request.then(
                 function (response){
+                    v.spinStop("getNetwork");
+
                     var msg = response.data;
                     v.spinStart("generateNetwork");
-                    if(msg.edges){
-                        //create an edge list
-                        var edge_list = msg.edges.map(function(x){
-                            y = x;
-                            y.site_domain = x.domain;
-                            y.pub_date = x.publish_date;
-                            y.url_raw = x.canonical_url;
-                            return y;
-                        });
+                    //create an edge list
+                    var edge_list = msg.edges.map(function(x){
+                        y = x;
+                        y.site_domain = x.domain;
+                        y.pub_date = x.publish_date;
+                        y.url_raw = x.canonical_url;
+                        return y;
+                    });
 
-                        //after the edge list is gotten, we need to get
-                        // the bot scores for each of the nodes
-                        var botometer_request = v.getBotometerScores();
-                        botometer_request.then(function(response){
-                            //update the edge list with bot scores
-                            v.renderGraph(edge_list);
-                        }, function(error){
-                            v.renderGraph(edge_list);
-                        });
-                    }
-                    else
-                    {
-                        throw "Did not fetch any edges for network graph.";
-                    }
-                    v.spinStop("getNetwork");
+                    //after the botcache request is complete,
+                    // update the graph even if the request fails
+                    // if it fails, it just won't have the bot scores
+                    v.graph.updateEdges(edge_list);
+                    // v.timeline.updateDateRange();
+
                 },
                 function (error) {
                     alert("Get Graph Request failed: " + error.response.statusText);
@@ -293,39 +289,8 @@ var app = new Vue({
             );
             return graph_request;
         },
-        renderGraph: function(edge_list){
-            //after the botometer request is complete,
-            // update the graph even if the request fails
-            // if it fails, it just won't have the bot scores
-            this.graph.updateEdges(edge_list);
-            // v.timeline.updateDateRange();
-        },
-        getBotometerScores: function(){
-            this.spinStart("getBotometerScores");
-            var botometer_request = axios.get("fakeaddress", {
-                // url: configuration.network_url,
-                // headers: configuration.network_headers,
-                // data: {
-                //     "include_user_mentions" : "true",
-                //     "ids" : "[" + article_ids.toString() + "]",
-                // },
-                // dataType: "json",
-            });
-            var v = this;
-            botometer_request.then(
-                function(response){
-                    v.spinStop("getBotometerScores");
-                    // console.debug("botometer success");
-                },
-                function (error) {
-                    // alert("Get Botometer Scores Request failed: " + error.response.statusText);
-                    console.log('Botometer Scores Request Error: ', error.response.statusText);
-                    v.spinStop("getBotometerScores");
-                    // console.debug("botometer success");
-                }
-            );
-            return botometer_request;
-        },
+
+
 
         //    #                                              # ######                                       #####
         //   # #    ####  ##### #  ####  #    #  ####       #  #     # #    # ##### #####  ####  #    #    #     # #      #  ####  #    #  ####
@@ -334,6 +299,10 @@ var app = new Vue({
         // ####### #        #   # #    # #  # #      #   #     #     # #    #   #     #   #    # #  # #    #       #      # #      #  #        #
         // #     # #    #   #   # #    # #   ## #    #  #      #     # #    #   #     #   #    # #   ##    #     # #      # #    # #   #  #    #
         // #     #  ####    #   #  ####  #    #  ####  #       ######   ####    #     #    ####  #    #     #####  ###### #  ####  #    #  ####
+
+        authenticateWithTwitter: function(){
+
+        },
 
         submitForm: function(dontScroll){
             this.show_articles = false;

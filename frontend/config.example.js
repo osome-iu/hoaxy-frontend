@@ -27,6 +27,9 @@ configuration = function(){
 	obj.top_users_url = 'https://api-hoaxy.p.mashape.com/top-users';
 	obj.top_users_headers = { 'X-Mashape-Key': mashape_key};
 
+	obj.botometer_url = "https://example.com";
+	obj.botcache_url = "https://example.com";
+
 
 	return obj;
 }();

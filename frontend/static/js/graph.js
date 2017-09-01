@@ -8,16 +8,106 @@ function HoaxyGraph(options)
 	var toggle_node_modal = options.toggle_node_modal || function(){ console.log("HoaxyGraph.toggle_node_modal is undefined."); };
 	var node_modal_content = options.node_modal_content || {};
 	var edge_modal_content = options.edge_modal_content || {};
+	var twitter_account_info = options.twitter_account_info || {};
 
 	var s = null; //sigma instance
 
 	var graph = {};
 	var edges = [];
+	var user_list = [];
 
 	function UpdateEdges(new_edges){
 		edges = new_edges;
 		console.debug("Edges updated.");
+
+		if(twitter_account_info.token)
+		{
+			getBotCacheScores();
+		}
 		return edges;
+	}
+
+	function getBotCacheScores(user_list){
+		this.spinStart("getBotCacheScores");
+		//build list of users found in the edge list
+		for(var i in edges)
+		{
+			var edge = edges[i],
+				from_user_id = edge.from_user_id,
+				to_user_id = edge.to_user_id;
+			user_list.length = 0;
+			if(user_list.indexOf(from_user_id) < 0)
+			{
+				user_list.push(from_user_id);
+			{
+			if(user_list.indexOf(to_user_id) < 0)
+			{
+				user_list.push(to_user_id);
+			}
+		}
+		var botcache_request = axios.get(configuration.botcache_url, {
+			data: {
+				"user_ids" : user_list
+			}
+		});
+		botcache_request.then(
+			function(response){
+				spinStop("getBotCacheScores");
+				for(var i in response.data.scores)
+				{
+					var user = response.data.scores[i];
+					updateUserBotScore(user);
+				}
+			},
+			function (error) {
+				console.log('Botometer Scores Request Error: ', error.response.statusText);
+				spinStop("getBotCacheScores");
+			}
+		);
+		return botcache_request;
+	}
+
+	function getBotometerScore(user_id)
+	{
+		//takes in a twitter user's timeline, sends that timeline to the botometer API to get the score
+		var twitter_timeline_request = axios.get(configuration.twitter_search_url, {
+			data: {
+				"user_id" : user_id
+			}
+		});
+		twitter_timeline_request.then(function(response){
+			var botometer_request = axios.get(configuration.botometer_url, {
+				data: {
+					timeline: response.data.timeline
+				}
+			});
+			botometer_request.then(function(response){
+				updateNodeColor(user_id, response.data.score);
+			}, function(error){
+
+			});
+		}, function(error){
+
+		});
+
+
+	}
+	function updateUserBotScore(user)
+	{
+		//if exists and fresh
+		if(user.score)
+		{
+			updateNodeColor(user.user_id, user.score);
+		}
+		//if score is stale or does not exist
+		if(!user.score || user.old)
+		{
+			getBotometerScore(user.user_id);
+		}
+	}
+	function updateNodeColor(user.user_id, user.score)
+	{
+		//change node color on graph based on botscore
 	}
 
 
