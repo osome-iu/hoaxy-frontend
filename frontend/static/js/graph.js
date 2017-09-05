@@ -166,6 +166,7 @@ function HoaxyGraph(options)
 	}
 	function getBotScore(user_object)
 	{
+		var sn = user_object.user.screen_name;
 		var botscore = axios({
 			method: 'post',
 			url: configuration.botometer_url,
@@ -174,20 +175,54 @@ function HoaxyGraph(options)
 			data: user_object
 		});
 		botscore.then(function(response){
-			botscores[user_object.user.screen_name] = {
+			botscores[sn] = {
 				score: response.data.scores.english,
 				old: false
 			}
+			updateNodeColor(sn, botscores[sn].score);
 		},
 		function(error){
-			console.debug("Could not get bot score for " + user_object.user.screen_name + ": ", error);
+			console.debug("Could not get bot score for " + sn + ": ", error);
 		});
 		return botscore;
 	}
 	function updateNodeColor(screen_name, score)
 	{
 		//change node color on graph based on botscore
-		console.debug(screen_name, score);
+		// console.debug(screen_name, score);
+		color = getNodeColor(score);
+		// console.debug(color, score);
+		s.graph.nodes(screen_name).color = color;
+		// s.iterNodes(function(node){
+		// })
+		s.refresh();
+	}
+	function getNodeColor(score){
+		if(!score)
+		{
+			return "black";
+		}
+
+		if(score < .20)
+		{
+			return "blue";
+		}
+		else if(score < .40)
+		{
+			return "green";
+		}
+		else if(score < .60)
+		{
+			return "yellow";
+		}
+		else if(score < .80)
+		{
+			return "orange";
+		}
+		else
+		{
+			return "red";
+		}
 	}
 
 
@@ -225,8 +260,8 @@ function HoaxyGraph(options)
 	        for (var i in edges)
 	        {
 	            var edge = edges[i],
-					from_user_id = edge.from_user_id,
-					to_user_id = edge.to_user_id,
+					from_user_id = edge.from_user_screen_name,
+					to_user_id = edge.to_user_screen_name,
 					tweet_id = edge.tweet_id,
 					tweet_type = edge.tweet_type,
 					is_mention = edge.is_mention,
@@ -304,14 +339,24 @@ function HoaxyGraph(options)
 			var cnt = 0;
 	        for (var i in nodes)// i is index
 	        {
+				var score = botscores[nodes[i].screenName];
+				if(score && score.score)
+				{
+					score = score.score;
+				}
+				else
+				{
+					score = false;
+				}
+				var color = getNodeColor(score);
 	            g.nodes.push({
 	                x: Math.random(),
 					y: Math.random(),
 	                size: nodes[i].size,
 	                label: nodes[i].screenName,
-	                id: i,
+	                id: nodes[i].screenName,
 					node_id: cnt,
-	                color: nodes[i].color,
+	                color: color,//nodes[i].color,
 	                data: nodes[i]
 	            });
 				nodes_id[i] = cnt;
