@@ -47,35 +47,6 @@ def getUserScore(user_id):
         return computeNewScore(user_id)
 
 
-def queryBotometer(user_id):
-    """
-    user_id    int: user id
-    return    json: scores results from Botometer
-    """
-    return None
-
-
-def insertUserEntry(user_entry):
-    """
-    user_entry  dict: a dict contains the user's information
-    return      True: if successfully insert the entry
-               False: if fail to insert the entry
-    """
-    # need to update the tweets_per_day
-    return False
-
-
-def computeNewScore(user_id):
-    """
-    user_id    int: user id
-    return    json: scores results from Botometer
-    """
-    result_from_botometer = queryBotometer(user_id)
-    if result_from_botometer:
-        insertUserEntry(result_from_botometer)
-    return result_from_botometer
-
-
 @api.route("/")
 def hello():
     return """Welcome to the Hoaxy-Botometer API.\nGet user scores with '/api/
@@ -88,8 +59,15 @@ def getScores():
     The scorese retrival endpoint.
     Parse the query string, get user scores according to user_ids then return as json.
     """
-
     # parse the query string
+    user_ids_string = request.args.get("userIDs")
+    if user_ids_string:
+        user_ids = map(int, user_ids.split(","))
+
+    user_names_string = request.args.get("usernames")
+    if user_names_string:
+        user_names = user_names_string.split(",")
+
     user_id_list = queryStringParser(request.args["query"])
 
     # initialize the dict to store the scores
