@@ -75,7 +75,8 @@ var app = new Vue({
             has_retweeted_count: 0,
             is_quoted_by_count: 0,
             is_mentioned_by_count: 0,
-            is_retweeted_by_count: 0
+            is_retweeted_by_count: 0,
+            botscore: 0
         },
 
         colors: colors

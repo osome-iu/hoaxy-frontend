@@ -105,7 +105,7 @@
 						<button class="btn btn-warning" :disabled="articles_to_show >= articles.length" @click="loadMore()"> Load More </button>
 						<div v-if="articles_to_show >= 100 && articles.length >= 100" class="text-muted">Your query has found too many matches for us to load. Please narrow down your query and try again to get more articles.</div>
 						<div v-if="articles_to_show >= articles.length && articles.length < 100" class="text-muted">We couldn't find any more articles for this query.</div>
-					</span>
+					</>
 				</div>
 
 				<div class="clearfix"></div>
@@ -201,14 +201,20 @@
 						</h4>
 					</div>
 					<div class="modal-body" >
+						<p>Botometer Score:
+							<span v-if="node_modal_content.botscore">{{node_modal_content.botscore}}%</span>
+							<span v-if="!node_modal_content.botscore">Unavailable</span>
+						</p>
 						<h2>has quoted: <span v-if="node_modal_content.has_quoted_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.has_quoted">
-							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a> </h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
 									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a> or <a target="_blank" :href="user.article_urls[index]">article</a></div>
 							</template>
 						</template>
+
+
 						<h2>was quoted by: <span v-if="node_modal_content.is_quoted_by_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.is_quoted_by">
 							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>

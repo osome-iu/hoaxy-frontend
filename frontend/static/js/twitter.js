@@ -104,7 +104,7 @@ var Twitter = function(initialize_key){
             method = method.toLowerCase();
 
             getToken().then(function(token){
-                console.log('GET ', url, params);
+                // console.log('GET ', url, params);
                 token[method](url, {data: params}).done(function(response){
                     resolve(response)
                 }).fail(function(error){

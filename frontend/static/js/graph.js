@@ -12,7 +12,7 @@ function HoaxyGraph(options)
 	var twitter = options.twitter || null;
 
 	var s = null; //sigma instance
-
+	// getNodeColor(.25);
 	var graph = {};
 	var edges = [];
 	var user_list = [];
@@ -86,11 +86,11 @@ function HoaxyGraph(options)
 
 	//space out the requests so that we don't hit the rate limit so quickly
 	function getBotScoreTimer(index){
-		// if(index > 20)
-		// {
-		// 	console.debug(botscores);
-		// 	return false;
-		// }
+		if(index > 20)
+		{
+			console.debug(botscores);
+			return false;
+		}
 		if(index >= user_list.length)
 		{
 			console.debug(botscores);
@@ -108,7 +108,7 @@ function HoaxyGraph(options)
 		updateUserBotScore(user);
 		index ++;
 		return setTimeout(function(){
-			console.debug("get Another one");
+			// console.debug("get Another one");
 			getBotScoreTimer(index);
 		}, 1000);
 	}
@@ -200,29 +200,42 @@ function HoaxyGraph(options)
 	function getNodeColor(score){
 		if(!score)
 		{
-			return "black";
+			return colors.node_colors["fact_checking"];
 		}
+		var color1 = { red: 0, green: 0, blue: 255};
+		var color2 = { red: 255, green: 0, blue: 0};
+		var r = Math.floor(color1.red + score * (color2.red - color1.red)).toString(16);
+		var g = Math.floor(color1.green + score * (color2.green - color1.green)).toString(16);
+		var b = Math.floor(color1.blue + score * (color2.blue - color1.blue)).toString(16);
 
-		if(score < .20)
-		{
-			return "blue";
-		}
-		else if(score < .40)
-		{
-			return "green";
-		}
-		else if(score < .60)
-		{
-			return "yellow";
-		}
-		else if(score < .80)
-		{
-			return "orange";
-		}
-		else
-		{
-			return "red";
-		}
+		if(r.length < 2) r = "0"+r;
+		if(g.length < 2) g = "0"+g;
+		if(b.length < 2) b = "0"+b;
+		var color = "#"+r+g+b;
+		// console.debug(color);
+		// document.getElementsByTagName("body")[0].style.backgroundColor = color;
+		return color;
+
+		// if(score < .20)
+		// {
+		// 	return "blue";
+		// }
+		// else if(score < .40)
+		// {
+		// 	return "green";
+		// }
+		// else if(score < .60)
+		// {
+		// 	return "yellow";
+		// }
+		// else if(score < .80)
+		// {
+		// 	return "orange";
+		// }
+		// else
+		// {
+		// 	return "red";
+		// }
 	}
 
 
@@ -570,6 +583,14 @@ function HoaxyGraph(options)
 			// $('#myModalLabel').html('User:  <a target="_blank" href="https://twitter.com/intent/user?user_id='+e.data.node.id+'">@'+ node.screenName +'</a>');
 			node_modal_content.user_id = e.data.node.id;
 			node_modal_content.screenName = node.screenName;
+
+			var score = false;
+			if(botscores[node.screenName])
+			{
+				botscores[node.screenName].score;
+				score = score * 100;
+			}
+			node_modal_content.botscore = score;
 
 			//insert tweets into modal body, grouped by individual to_user_id
 			GenerateUserModal(e);
