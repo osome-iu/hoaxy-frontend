@@ -46,10 +46,9 @@ var app = new Vue({
 
         checked_articles: [],
 
-        twitter_account_info: {
-            token: null
-        },
-        twitter: null,
+
+        twitter_account_info: {},
+        twitter: {},
 
         timeline: null,
         graph: null,
@@ -80,6 +79,8 @@ var app = new Vue({
         },
 
         colors: colors
+    },
+    computed: {
     },
 
     // #     #
@@ -127,8 +128,8 @@ var app = new Vue({
         },
         changeURLParams: function(){
             var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort;
-        	location.hash = query_string;
-        	return query_string;
+            location.hash = query_string;
+            return query_string;
         },
         spinStop: function(key, reset){
             var key_index = this.spin_key_table.indexOf(key);
@@ -142,20 +143,20 @@ var app = new Vue({
                 this.input_disabled = false;
                 clearTimeout(this.spin_timer);
             }
-            console.debug(key, this.spin_key_table);
+            // console.debug(key, this.spin_key_table);
         },
         spinStart: function(key){
             this.spin_key_table.push(key);
-        	this.loading = true;
+            this.loading = true;
             this.input_disabled = true;
-        	//timeout after 90 seconds so we're not stuck in an endless spinning loop.
+            //timeout after 90 seconds so we're not stuck in an endless spinning loop.
             var v = this;
             clearTimeout(this.spin_timer);
-        	this.spin_timer = setTimeout(function(){
-        		alert("The app is taking too long to respond.  Please try again later.");
+            this.spin_timer = setTimeout(function(){
+                alert("The app is taking too long to respond.  Please try again later.");
                 v.spin_key_table.length = 0;
-        		v.spinStop();
-        	}, 90000);
+                v.spinStop();
+            }, 90000);
         },
 
         //   ##        #   ##   #    #    ###### #    # #    #  ####  ##### #  ####  #    #  ####
@@ -301,14 +302,22 @@ var app = new Vue({
         // #     # #    #   #   # #    # #   ## #    #  #      #     # #    #   #     #   #    # #   ##    #     # #      # #    # #   #  #    #
         // #     #  ####    #   #  ####  #    #  ####  #       ######   ####    #     #    ####  #    #     #####  ###### #  ####  #    #  ####
 
-        authenticateWithTwitter: function(){
-
+        twitterLogIn: function(){
+            var me = this.twitter.verifyMe();
+            var v = this;
+            me.then(
+                function(response){
+                    v.twitter_account_info = response;
+                },
+                function(error){
+                    v.twitter_account_info = {};
+                    console.debug("error: ", error);
+                }
+            );
         },
-        logIn: function(){
-
-        },
-        logOut: function(){
-
+        twitterLogOut: function(){
+            var p = this.twitter.logOut();
+            this.twitter_account_info = {};
         },
 
         submitForm: function(dontScroll){
@@ -394,6 +403,12 @@ var app = new Vue({
         }
     },
     watch: {
+        // "twitter.me": function(){
+        //     console.info("twitter");
+        //     this.twitter_authorized = !!this.twitter.me();
+        //     console.debug(this.twitter.me());
+        //     console.debug(this.twitter_authorized);
+        // }
     },
 
     //  #     #
@@ -417,11 +432,11 @@ var app = new Vue({
                 if(v.loading){
                     counter ++;
                     if(counter < 4)
-                        v.spinner_rotate = (v.spinner_state = counter)*0;
+                    v.spinner_rotate = (v.spinner_state = counter)*0;
                     else if (counter <= 12)
-                        v.spinner_rotate = (counter - 4) * 22.5;
+                    v.spinner_rotate = (counter - 4) * 22.5;
                     else
-                        counter = 0;
+                    counter = 0;
                 }
             }, 100);
         }();
@@ -450,6 +465,11 @@ var app = new Vue({
             this.submitForm(true);
         }
 
+
+        this.twitter = new Twitter(configuration.twitter_key);
+        this.me = this.twitter.me();
+
+
         //callbacks allow for modal manipulation and loading spinner to be handled
         //  by vue.
         this.graph = new HoaxyGraph({
@@ -458,16 +478,15 @@ var app = new Vue({
             toggle_edge_modal: this.toggleEdgeModal,
             toggle_node_modal: this.toggleNodeModal,
             node_modal_content: this.node_modal_content,
-            edge_modal_content: this.edge_modal_content
+            edge_modal_content: this.edge_modal_content,
+            // twitter_account_info: this.twitter_account_info,
+            twitter: this.twitter
         });
 
         //create the chart that is used to visualize the timeline
         // the updateGraph function is a callback when the timeline interval is adjusted
         this.timeline = new HoaxyTimeline(this.updateGraph);
 
-        this.twitter = new Twitter(configuration.twitter_key);
-        this.twitter.verifyMe();
-        console.debug(this.twitter.me());
 
 
         this.spinStop("initialLoad");

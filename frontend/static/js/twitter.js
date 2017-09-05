@@ -14,8 +14,8 @@ var Twitter = function(initialize_key){
 
     function getCachedToken(){
         if(!_token){
-            var keys = localStorage.getItem(tokenCacheKey),
-            provider = localStorage.getItem(providerCacheKey);
+            var keys = JSON.parse(localStorage.getItem(tokenCacheKey)),
+            provider = JSON.parse(localStorage.getItem(providerCacheKey));
             if(keys && provider){
                 console.log('Creating token from localStorage:', keys);
                 console.log('OAuth provider from localStorage:', provider);
@@ -32,11 +32,15 @@ var Twitter = function(initialize_key){
     }
 
     function cacheToken(token){
+        // console.debug(token);
         _token = token;
         axios.get(OAUTH_API + '/providers/twitter?extend=true')
         .then(function(provider){
-            localStorage.setItem(tokenCacheKey, token);
-            localStorage.setItem(providerCacheKey, provider);
+            // console.debug(provider, token);
+            localStorage.setItem(tokenCacheKey, JSON.stringify(token));
+            localStorage.setItem(providerCacheKey, JSON.stringify(provider));
+        }, function(error){
+            console.debug(error);
         });
     }
 
@@ -71,19 +75,19 @@ var Twitter = function(initialize_key){
 
             if(token){
                 verifyMe(token).then(function(myUserData){
-                    console.log('Verified credentials:', myUserData);
+                    // console.log('Verified credentials:', myUserData);
                     resolve(token);
                 }, function(){
                     return getToken(true);
                 });
             } else {
                 OAuth.popup('twitter').done(function(result){
-                    console.log('OAuth result:', result);
+                    // console.log('OAuth result:', result);
                     cacheToken(result);
                     resolve(result);
                     verifyMe(result);
                 }).fail(function(error){
-                    console.warn("OAuth ERROR:", error);
+                    // console.warn("OAuth ERROR:", error);
                     reject(error);
                 });
 

@@ -9,6 +9,7 @@ function HoaxyGraph(options)
 	var node_modal_content = options.node_modal_content || {};
 	var edge_modal_content = options.edge_modal_content || {};
 	var twitter_account_info = options.twitter_account_info || {};
+	var twitter = options.twitter || null;
 
 	var s = null; //sigma instance
 
@@ -20,105 +21,185 @@ function HoaxyGraph(options)
 	function UpdateEdges(new_edges){
 		edges = new_edges;
 		console.debug("Edges updated.");
-
-		if(twitter_account_info.token)
-		{
-			getBotCacheScores();
+		var g = this;
+		try{
+			twitter.me().then(function(response){
+				twitter_account_info = response;
+				if(twitter_account_info.id)
+				{
+					getBotCacheScores();
+				}
+			});
+		} catch(e){
+			console.debug("Not signed into twitter.");
 		}
 		return edges;
 	}
 
-	function getBotCacheScores(user_list)
+	function getBotCacheScores()
     {
-		this.spinStart("getBotCacheScores");
+		spinStart("getBotCacheScores");
+		user_list.length = 0;
 		//build list of users found in the edge list
 		for(var i in edges)
 		{
 			var edge = edges[i],
-				from_user_id = edge.from_user_id,
-				to_user_id = edge.to_user_id;
-			user_list.length = 0;
-			if(user_list.indexOf(from_user_id) < 0)
+				from_user_screen_name = edge.from_user_screen_name,
+				to_user_screen_name = edge.to_user_screen_name;
+			if(user_list.indexOf(from_user_screen_name) < 0)
 			{
-				user_list.push(from_user_id);
+				user_list.push(from_user_screen_name);
 			}
-			if(user_list.indexOf(to_user_id) < 0)
+			if(user_list.indexOf(to_user_screen_name) < 0)
 			{
-				user_list.push(to_user_id);
+				user_list.push(to_user_screen_name);
 			}
 		}
-		var botcache_request = axios.get(configuration.botcache_url, {
-			data: {
-				"user_ids" : user_list
-			}
-		});
-		botcache_request.then(
-			function(response){
-				spinStop("getBotCacheScores");
-				for(var i in response.data.scores)
-				{
-					var user = response.data.scores[i];
-					updateUserBotScore(user);
-				}
-			},
-			function (error) {
-				console.log('Botometer Scores Request Error: ', error.response.statusText);
-				spinStop("getBotCacheScores");
-			}
-		);
-		return botcache_request;
+		// var botcache_request = axios.get(configuration.botcache_url, {
+		// 	data: {
+		// 		"user_ids" : user_list
+		// 	}
+		// });
+		// botcache_request.then(
+		// 	function(response){
+		// 		spinStop("getBotCacheScores");
+		// 		for(var i in response.data.scores)
+		// 		{
+		// 			var user = response.data.scores[i];
+		//			botscore[sn] = {score: xx, old: false/true};
+		// 		}
+		// 	},
+		// 	function (error) {
+		// 		console.log('Botometer Scores Request Error: ', error.response.statusText);
+		// 		spinStop("getBotCacheScores");
+		// 	}
+		// );
+
+
+		//when we get the cache, go through cache and update botscores:
+		//botscore[sn] = {score: xx, old: false/true};
+
+		var index = 0;
+		getBotScoreTimer(index);
+		spinStop("getBotCacheScores");
 	}
+
+	//space out the requests so that we don't hit the rate limit so quickly
+	function getBotScoreTimer(index){
+		// if(index > 20)
+		// {
+		// 	console.debug(botscores);
+		// 	return false;
+		// }
+		if(index >= user_list.length)
+		{
+			console.debug(botscores);
+			return false;
+		}
+
+		var sn = user_list[index];
+		var user = {screen_name: sn};
+		if(botscores[sn])
+		{
+			user.score = botscores[sn].score;
+			user.old = botscores[sn].old;
+		}
+
+		updateUserBotScore(user);
+		index ++;
+		return setTimeout(function(){
+			console.debug("get Another one");
+			getBotScoreTimer(index);
+		}, 1000);
+	}
+
 	function updateUserBotScore(user)
 	{
+		// var prom = new Promise(function(){}, function(){});
 		//if exists and fresh
 		if(user.score)
 		{
-			botscores[user.user_id] = user.score;
-			updateNodeColor(user.user_id, user.score);
+			// botscores[user.screen_name] = {score: user.score;
+			updateNodeColor(user.screen_name, user.score);
+			// prom.resolve();
 		}
 		//if score is stale or does not exist
 		if(!user.score || user.old)
 		{
-			getNewBotometerScore(user.user_id);
+			prom = getNewBotometerScore(user.screen_name);
 		}
-	}
 
-	function getNewBotometerScore(user_id)
+		return prom;
+	}
+	function twitterResponseFail(error){
+		console.warn(error);
+	}
+	function getNewBotometerScore(screen_name)
 	{
-		var twitter_timeline_request = axios.get(configuration.twitter_search_url, {
-			data: {
-				"user_id" : user_id
-			}
-		});
-		twitter_timeline_request.then(function(response){
-			var botometer_request = axios.get(configuration.botometer_url, {
-				data: {
-					timeline: response.data.timeline
-				}
-			});
-			botometer_request.then(function(response){
-				botscores[user_id] = response.data.score;
-				updateNodeColor(user_id, response.data.score);
-			}, function(error){
+		var user = {};
 
-			});
+		var user_data = twitter.getUserData(screen_name);
+		user_data.then(function(response){
+			user.user = response;
+		}, twitterResponseFail)
+		.catch(twitterResponseFail);
+		var user_timeline = twitter.getUserTimeline(screen_name);
+		user_timeline.then(function(response){
+			user.timeline = response;
+		}, twitterResponseFail)
+		.catch(twitterResponseFail);
+		var user_mentions = twitter.getUserMentions(screen_name);
+		user_mentions.then(function(response){
+			user.mentions = response;
+		}, twitterResponseFail)
+		.catch(twitterResponseFail);
+		var botScore = new Promise(function(){}, function(){});
+
+		var got_from_twitter = Promise.all([user_data, user_timeline, user_mentions]);
+		got_from_twitter.then(function(values){
+			botScore = getBotScore(user);
 		}, function(error){
-
+			console.debug("Could not get bot score for " + screen_name + ": ", error);
 		});
 
-
+		return botScore;
 	}
-	function updateNodeColor(user_id, score)
+	function getBotScore(user_object)
+	{
+		var botscore = axios({
+			method: 'post',
+			url: configuration.botometer_url,
+			headers: configuration.botometer_headers,
+			responseType: "json",
+			data: user_object
+		});
+		botscore.then(function(response){
+			botscores[user_object.user.screen_name] = {
+				score: response.data.scores.english,
+				old: false
+			}
+		},
+		function(error){
+			console.debug("Could not get bot score for " + user_object.user.screen_name + ": ", error);
+		});
+		return botscore;
+	}
+	function updateNodeColor(screen_name, score)
 	{
 		//change node color on graph based on botscore
+		console.debug(screen_name, score);
 	}
+
+
+
+
 
 
 	function UpdateGraph(start_time, end_time)
 	{
 		// spinStart("updateNetwork");
 		console.debug("Updating Graph");
-		console.debug(edges);
+		// console.debug(edges);
 		if(!edges || !edges.length)
 		{
 			throw "Tried to make graph, but there is no data.";
