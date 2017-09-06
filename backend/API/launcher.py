@@ -63,15 +63,22 @@ def hello():
                 ."""
 
 
-@api.route("/api/scores", methods=["GET"])
+@api.route("/api/scores", methods=["GET", "POST"])
 def getScores():
     """
     The scorese retrival endpoint.
     Parse the query string, get user scores according to user_ids then return as json.
     """
-    # parse the query string
-    user_ids_string = request.args.get("userIDs")
-    user_names_string = request.args.get("usernames")
+    if request.method == "GET":
+        user_ids_string = request.args.get("userIDs")
+        user_names_string = request.args.get("usernames")
+    if request.method == "POST":
+        query_file = request.get_json()
+        user_ids_string = query_file.get("userIDs")
+        user_name_string = query_file.get("usernames")
+    else:
+        return jsonify(None)
+
     if user_ids_string:
         user_ids = map(int, user_ids_string.split(","))
         user_identifiers = (dbQueryUserID, user_ids)
