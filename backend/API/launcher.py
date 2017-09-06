@@ -1,50 +1,8 @@
 # -*- coding: utf8 -*-
 from dbmodels import api, BotbaseModel
 from flask import jsonify, request
-#import ConfigParser
-#from datetime import datetime
-
-
-def queryStringParser(query_string):
-    """
-    query_string   str: the query string with the format "userid1,userid2,userid3"
-    return        list: a list of user ids
-    """
-    return map(int, query_string.split(","))
-
-
-#def getUserScore(user_id):
-    #"""
-    #user_id    int: user id
-    #return    json: the user's scores
-              #None: if fail to get the user's scores
-    #"""
-    ## load the configurations
-    #Config = ConfigParser.ConfigParser()
-    #Config.read("./config.cfg")
-    #age_min = int(Config.get("FlowChart", "age_min"))
-    #age_max = int(Config.get("FlowChart", "age_max"))
-    #reqs_max = int(Config.get("FlowChart", "reqs_max"))
-    ## BotbaseModel does not support indexing?
-    #user_entries = BotbaseModel.query.filter(BotbaseModel.user_id == user_id).order_by(BotbaseModel.time_stamp).all()
-    #if user_entries:
-        ## see how the results are ordered to decide 0 or -1
-        #user_latest_entry = user_entries[0]
-        #timedelta_age = datetime.now() - datetime(user_latest_entry.time_stamp)
-        #age = timedelta_age.total_seconds()
-
-        #if age < age_min:
-            #return  user_latest_entry.all_bot_scores
-        #elif age > age_max:
-            #return computeNewScore(user_id)
-        #else:
-            #expected_tweets = age * user_latest_entry.tweets_per_day / 86400.
-            #if(expected_tweets > 100 or user_latest_entry.num_requests > reqs_max):
-                #return computeNewScore(user_id)
-            #else:
-                #return user_latest_entry.all_bot_scores
-    #else:
-        #return computeNewScore(user_id)
+import ConfigParser
+from datetime import datetime
 
 
 def dbQueryUserID(user_id):
@@ -53,6 +11,25 @@ def dbQueryUserID(user_id):
 
 def dbQueryUserScreenName(user_name):
     return BotbaseModel.query.filter(BotbaseModel.screen_name == user_name).order_by(BotbaseModel.time_stamp).all()
+
+
+def getUserRecordStatus(user_entry, config_file):
+    timedelta_age = datetime.now() - user_entry.time_stamp.replace(tzinfo=None)
+    age_of_user = timedelta_age.total_seconds()
+
+    if age_of_user < int(config_file.get("FlowChart", "age_min")):
+        return True
+    elif age_of_user > int(config_file.get("FlowChart", "age_max")):
+        return False
+    else:
+        if user_entry.tweets_per_day:
+            expected_tweets = age * user_entry.tweets_per_day / 86400.
+            if expected_tweets > int(config.get("FlowChart", "expected_tweets_max")) or user_entry.num_requests > int(Config.get("FlowChart", "reqs_max")):
+                return False
+            else:
+                return True
+        else:
+            return False
 
 
 @api.route("/")
@@ -73,12 +50,13 @@ def getScores():
     if request.method == "GET":
         user_ids_string = request.args.get("userIDs")
         user_names_string = request.args.get("usernames")
-    if request.method == "POST":
+    elif request.method == "POST":
         query_file = request.get_json()
         user_ids_string = query_file.get("userIDs")
         user_name_string = query_file.get("usernames")
     else:
         return jsonify(None)
+
 
     # parse the query string according to the type
     if user_ids_string:
@@ -90,6 +68,10 @@ def getScores():
     else:
         return jsonify(None)
 
+    # load the config file
+    config = ConfigParser.ConfigParser()
+    config.read("./config.cfg")
+
     # process the queries
     user_scores = dict()
     for user_identifier in user_identifiers[1]:
@@ -97,7 +79,11 @@ def getScores():
         if user_entries:
             # see how the results are ordered to decide 0 or -1
             user_latest_entry = user_entries[0]
-            user_scores[user_identifier] = user_latest_entry.all_bot_scores
+            user_entry_status = getUserRecordStatus(user_latest_entry, config)
+            user_scores[user_identifier] = {
+                "scores": user_latest_entry.all_bot_scores,
+                "fresh": user_entry_status
+            }
         else:
             user_scores[user_identifier] = None
 
