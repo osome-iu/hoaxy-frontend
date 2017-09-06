@@ -69,6 +69,7 @@ def getScores():
     The scorese retrival endpoint.
     Parse the query string, get user scores according to user_ids then return as json.
     """
+    # get the query string according to different HTTP methods
     if request.method == "GET":
         user_ids_string = request.args.get("userIDs")
         user_names_string = request.args.get("usernames")
@@ -79,6 +80,7 @@ def getScores():
     else:
         return jsonify(None)
 
+    # parse the query string according to the type
     if user_ids_string:
         user_ids = map(int, user_ids_string.split(","))
         user_identifiers = (dbQueryUserID, user_ids)
@@ -88,6 +90,7 @@ def getScores():
     else:
         return jsonify(None)
 
+    # process the queries
     user_scores = dict()
     for user_identifier in user_identifiers[1]:
         user_entries = user_identifiers[0](user_identifier)
