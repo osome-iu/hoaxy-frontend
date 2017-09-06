@@ -47,30 +47,20 @@ def queryStringParser(query_string):
         #return computeNewScore(user_id)
 
 
-def getUserScoresFromId(user_id):
-    user_entries = BotbaseModel.query.filter(BotbaseModel.user_id == user_id).order_by(BotbaseModel.time_stamp).all()
-    if user_entries:
-        # see how the results are ordered to decide 0 or -1
-        user_latest_entry = user_entries[0]
-        return user_latest_entry.all_bot_scores
-    else:
-        return None
+def dbQueryUserID(user_id):
+    return BotbaseModel.query.filter(BotbaseModel.user_id == user_id).order_by(BotbaseModel.time_stamp).all()
 
 
-def getUserScoresFromScreenName(user_name):
-    user_entries = BotbaseModel.query.filter(BotbaseModel.screen_name == user_name).order_by(BotbaseModel.time_stamp).all()
-    if user_entries:
-        # see how the results are ordered to decide 0 or -1
-        user_latest_entry = user_entries[0]
-        return user_latest_entry.all_bot_scores
-    else:
-        return None
+def dbQueryUserScreenName(user_name):
+    return BotbaseModel.query.filter(BotbaseModel.screen_name == user_name).order_by(BotbaseModel.time_stamp).all()
 
 
 @api.route("/")
 def hello():
-    return """Welcome to the Hoaxy-Botometer API.\nGet user scores with '/api/
-                scores?query=userid1,userid2,userid3'."""
+    return """Welcome to the Hoaxy-Botometer API.\n
+                Get user scores with '/api/scores?userIDs=id1,id2,id3' or
+                '/api/scores?usernames=name1,name2,name3'
+                ."""
 
 
 @api.route("/api/scores", methods=["GET"])
@@ -81,32 +71,27 @@ def getScores():
     """
     # parse the query string
     user_ids_string = request.args.get("userIDs")
+    user_names_string = request.args.get("usernames")
     if user_ids_string:
         user_ids = map(int, user_ids_string.split(","))
-        user_scores = dict()
-        for user_id in user_ids:
-            user_score = getUserScoresFromId(user_id)
-            user_scores[user_id] = user_score
-        return jsonify(user_scores)
-
-    user_names_string = request.args.get("usernames")
-    if user_names_string:
+        user_identifiers = (dbQueryUserID, user_ids)
+    elif user_names_string:
         user_names = user_names_string.split(",")
-        user_scores = dict()
-        for user_name in user_names:
-            user_score = getUserScoresFromScreenName(user_name)
-            user_scores[user_name] = user_score
-        return jsonify(user_scores)
+        user_identifiers = (dbQueryUserScreenName, user_names)
+    else:
+        return jsonify(None)
 
-    ## initialize the dict to store the scores
-    #user_scores = dict()
+    user_scores = dict()
+    for user_identifier in user_identifiers[1]:
+        user_entries = user_identifiers[0](user_identifier)
+        if user_entries:
+            # see how the results are ordered to decide 0 or -1
+            user_latest_entry = user_entries[0]
+            user_scores[user_identifier] = user_latest_entry.all_bot_scores
+        else:
+            user_scores[user_identifier] = None
 
-    ## try to get all the scores
-    #for user_id in user_id_list:
-        #user_score = getUserScore(user_id)
-        #if user_score:
-            #user_scores[user_id] = user_score
-    #return jsonify(user_scores)
+    return jsonify(user_scores)
 
 
 if __name__ == "__main__":
