@@ -83,9 +83,10 @@ def getScores():
                 "scores": user_latest_entry.all_bot_scores,
                 "fresh": user_entry_status
             }
+            user_latest_entry.num_requests += 1
         else:
             user_scores[user_identifier] = None
-
+    db.session.commit()
     return jsonify(user_scores)
 
 
