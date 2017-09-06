@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from dbmodels import api, BotbaseModel
+from dbmodels import api, BotbaseModel, db
 from flask import jsonify, request
 import ConfigParser
 from datetime import datetime
@@ -23,8 +23,8 @@ def getUserRecordStatus(user_entry, config_file):
         return False
     else:
         if user_entry.tweets_per_day:
-            expected_tweets = age * user_entry.tweets_per_day / 86400.
-            if expected_tweets > int(config.get("FlowChart", "expected_tweets_max")) or user_entry.num_requests > int(Config.get("FlowChart", "reqs_max")):
+            expected_tweets = age_of_user * user_entry.tweets_per_day / 86400.
+            if expected_tweets > int(config_file.get("FlowChart", "expected_tweets_max")) or user_entry.num_requests > int(config_file.get("FlowChart", "reqs_max")):
                 return False
             else:
                 return True
@@ -53,10 +53,9 @@ def getScores():
     elif request.method == "POST":
         query_file = request.get_json()
         user_ids_string = query_file.get("userIDs")
-        user_name_string = query_file.get("usernames")
+        user_names_string = query_file.get("usernames")
     else:
         return jsonify(None)
-
 
     # parse the query string according to the type
     if user_ids_string:
@@ -69,8 +68,8 @@ def getScores():
         return jsonify(None)
 
     # load the config file
-    config = ConfigParser.ConfigParser()
-    config.read("./config.cfg")
+    config_file = ConfigParser.ConfigParser()
+    config_file.read("./config.cfg")
 
     # process the queries
     user_scores = dict()
@@ -79,7 +78,7 @@ def getScores():
         if user_entries:
             # see how the results are ordered to decide 0 or -1
             user_latest_entry = user_entries[0]
-            user_entry_status = getUserRecordStatus(user_latest_entry, config)
+            user_entry_status = getUserRecordStatus(user_latest_entry, config_file)
             user_scores[user_identifier] = {
                 "scores": user_latest_entry.all_bot_scores,
                 "fresh": user_entry_status
