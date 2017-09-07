@@ -67,9 +67,9 @@ if __name__ == '__main__':
     timer_start = time.time()
     
     #log name and location information
-    #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
-    log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
-    log_file_list = ['botornot.log.2017-08-20', 'botornot.log.2017-08-27']
+    log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
+    #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
+    log_file_list = ['botornot.log201506']
                     #'botornot.log201506',
                      #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
                      #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
@@ -80,6 +80,7 @@ if __name__ == '__main__':
                     #botornot.log.2017-08-20  botornot.log.2017-08-27
     #log to store any errors due to the logs not containing the proper data (i.e. other logging information such as errors or other requests)
     error_log_file = open("botscoreloginsertion.err", "w")
+
     
     #iterating through all log files
     for log in log_file_list:
@@ -95,6 +96,9 @@ if __name__ == '__main__':
                 user_id = line_json["search"]["user_id"]
                 screen_name = line_json["search"]["sn"]
                 time_stamp = line_json["timestamp"]
+                #some timestamps are stored in milliseconds so for those we divide by 1000
+                if len(str(time_stamp)) >= 12:
+                    time_stamp = time_stamp/1000
                 all_bot_scores = line_json["categories"]
                 #english bot score which is either found in line_json["score"], line_json["classification"], line_json["score"]["english"]
                 keys = [["score","english"],["score"],["classification"]]
@@ -102,7 +106,12 @@ if __name__ == '__main__':
                 #universal bot score which is either found in line_json["score"]["universal"] or line_json["categories"]["languageagnostic_classification"] otherwise null
                 keys = [["score","universal"],["categories","languageagnostic_classification"]]
                 bot_score_universal = score_decider(keys, line_json)
+                #storing a comma delimited string of ips
                 requester_ip = line_json["remote_ip"]
+                #some ips are stored in lists and some not, must distinguish and treat them separately here
+                #in order to yield <ip1>,<ip2>,etc...
+                if type(requester_ip) == list:
+                    requester_ip = ','.join(line_json["remote_ip"])                
                 tweets_per_day = None
                 num_tweets = line_json["num_tweets"]
                 num_mentions = None
