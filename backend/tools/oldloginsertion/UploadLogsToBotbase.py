@@ -11,6 +11,8 @@ import psycopg2
 import sys
 #for timing purposes
 import time
+#for parsing content and seeing if it is valid
+import re
 
 #ALL FUNCTIONS
 #function for deciding on a score value to use for bot_score_english and bot_score_universal depending on what's available in the log
@@ -67,9 +69,9 @@ if __name__ == '__main__':
     timer_start = time.time()
     
     #log name and location information
-    log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
-    #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
-    log_file_list = ['botornot.log201506']
+    #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
+    log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
+    log_file_list = ['botornot.log.2017-08-27']
                     #'botornot.log201506',
                      #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
                      #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
@@ -80,8 +82,7 @@ if __name__ == '__main__':
                     #botornot.log.2017-08-20  botornot.log.2017-08-27
     #log to store any errors due to the logs not containing the proper data (i.e. other logging information such as errors or other requests)
     error_log_file = open("botscoreloginsertion.err", "w")
-
-    
+  
     #iterating through all log files
     for log in log_file_list:
         print("Starting to import log: ", log)
@@ -99,7 +100,30 @@ if __name__ == '__main__':
                 #some timestamps are stored in milliseconds so for those we divide by 1000
                 if len(str(time_stamp)) >= 12:
                     time_stamp = time_stamp/1000
-                all_bot_scores = line_json["categories"]
+                botscore_representation = line_json["categories"]
+                
+                #parsing the bot scores to match the schema from here https://market.mashape.com/OSoMe/botometer
+                try:
+                    friend_score = round(botscore_representation['friend_classification'], 2)
+                    sentiment_score = round(botscore_representation['sentiment_classification'], 2)
+                    temporal_score = round(botscore_representation['temporal_classification'], 2)
+                    user_score = round(botscore_representation['user_classification'], 2)
+                    network_score = round(botscore_representation['network_classification'], 2)
+                    content_score = round(botscore_representation['content_classification'], 2)
+                    all_bot_scores = {"friend": friend_score, "sentiment": sentiment_score, "temporal": temporal_score, "user": user_score, "network": network_score, "content": content_score}
+                except:
+                    #parsing another representation which is exactly as the mashape botscore api
+                    try:
+                        friend_score = round(botscore_representation['friend'], 2)
+                        sentiment_score = round(botscore_representation['sentiment'], 2)
+                        temporal_score = round(botscore_representation['temporal'], 2)
+                        user_score = round(botscore_representation['user'], 2)
+                        network_score = round(botscore_representation['network'], 2)
+                        content_score = round(botscore_representation['content'], 2)
+                        all_bot_scores = {"friend": friend_score, "sentiment": sentiment_score, "temporal": temporal_score, "user": user_score, "network": network_score, "content": content_score}
+                    except:
+                        #score schema does not include the needed scores so will insert as null
+                        all_bot_scores = None
                 #english bot score which is either found in line_json["score"], line_json["classification"], line_json["score"]["english"]
                 keys = [["score","english"],["score"],["classification"]]
                 bot_score_english = score_decider(keys, line_json)
