@@ -58,6 +58,8 @@ def log_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_s
     pgsqlconn.commit()
 
 #GLOBAL VARIABLES
+total_number_of_lines_parsed = 0
+records_committed = 0
 errors_and_informational_count = 0
 unmatched_botscore_category_schema_count = 0
 json_not_proper_log_count = 0
@@ -100,6 +102,8 @@ if __name__ == '__main__':
         log_file = open(file_location,"r")
 
         for line_num, line in enumerate(log_file, start = 1):
+            total_number_of_lines_parsed = total_number_of_lines_parsed + 1
+            
             #checking if the current line is json, if not then this line should not be parsed because we are only looking for json log lines
             try: 
                 line_json = json.loads(line)
@@ -187,6 +191,7 @@ if __name__ == '__main__':
                 #inserting data to the database
                 log_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, bot_score_universal, \
                             str(requester_ip), tweets_per_day, num_tweets, num_mentions, latest_tweet_timestamp, num_requests, user_profile)
+                records_committed = records_committed + 1
             except:
                 error_log_file.write("DB INSERTION ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                 failed_to_commit_to_db_count = failed_to_commit_to_db_count + 1          
@@ -207,6 +212,9 @@ if __name__ == '__main__':
     print("Log Import Process Completed!")
     
     #printing log statistics
+    print("LOG IMPORT PROCESS INFORMATION:")
+    print("total-lines-parsed: ", total_number_of_lines_parsed)
+    print("records-committed: ", records_committed)
     print("non-json-lines: ",errors_and_informational_count)
     print("non-log-json-type: ", json_not_proper_log_count)
     print("json-with-no-type: ", json_with_no_type_count)
