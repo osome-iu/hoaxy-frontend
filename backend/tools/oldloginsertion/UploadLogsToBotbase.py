@@ -11,8 +11,6 @@ import psycopg2
 import sys
 #for timing purposes
 import time
-#for parsing content and seeing if it is valid
-import re
 
 #ALL FUNCTIONS
 #function for deciding on a score value to use for bot_score_english and bot_score_universal depending on what's available in the log
@@ -59,6 +57,16 @@ def log_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_s
     #commiting changes
     pgsqlconn.commit()
 
+#GLOBAL VARIABLES
+errors_and_informational_count = 0
+unmatched_botscore_category_schema_count = 0
+json_not_proper_log_count = 0
+json_with_no_type_count = 0
+failed_to_retrieve_proper_fields_count = 0
+failed_to_commit_to_db_count = 0
+
+non_existing_user = 0
+    
 #MAIN CODE
 if __name__ == '__main__':
     #connecting to the database
@@ -71,7 +79,7 @@ if __name__ == '__main__':
     #log name and location information
     #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
     log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
-    log_file_list = ['botornot.log.2017-08-27']
+    log_file_list = ['botornot.log.2017-08-20','botornot.log.2017-08-27']
                     #'botornot.log201506',
                      #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
                      #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
@@ -91,11 +99,30 @@ if __name__ == '__main__':
         #parsing logs and uploading the entries to the botometer database
         log_file = open(file_location,"r")
 
-        for line_num, line in enumerate(log_file):
+        for line_num, line in enumerate(log_file, start = 1):
+            #checking if the current line is json, if not then this line should not be parsed because we are only looking for json log lines
             try: 
                 line_json = json.loads(line)
+            except:
+                errors_and_informational_count = errors_and_informational_count + 1
+                continue
+            
+            try:
+                if not line_json["type"] == "log":
+                    json_not_proper_log_count = json_not_proper_log_count + 1
+                    continue
+            except:
+                json_with_no_type_count = json_with_no_type_count + 1
+                error_log_file.write("NO-TYPE-JSON INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                continue
+            
+            #parsing json line and retrieving the proper fields regarding the user i.e. user id, screen name, tweets, etc...
+            try:
                 user_id = line_json["search"]["user_id"]
-                screen_name = line_json["search"]["sn"]
+                screen_name = str(line_json["search"]["sn"])
+                if str(user_id) == screen_name:
+                    #user does not have a screen-name so the id was used instead, we don't want to add this as it is redundant and may cause more problems
+                    screen_name = None
                 time_stamp = line_json["timestamp"]
                 #some timestamps are stored in milliseconds so for those we divide by 1000
                 if len(str(time_stamp)) >= 12:
@@ -123,6 +150,8 @@ if __name__ == '__main__':
                         all_bot_scores = {"friend": friend_score, "sentiment": sentiment_score, "temporal": temporal_score, "user": user_score, "network": network_score, "content": content_score}
                     except:
                         #score schema does not include the needed scores so will insert as null
+                        unmatched_botscore_category_schema_count = unmatched_botscore_category_schema_count + 1
+                        error_log_file.write("NON-MATCHED-CATEGORY-SCHEMA INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                         all_bot_scores = None
                 #english bot score which is either found in line_json["score"], line_json["classification"], line_json["score"]["english"]
                 keys = [["score","english"],["score"],["classification"]]
@@ -144,16 +173,23 @@ if __name__ == '__main__':
                 user_profile = None
                 try:
                     #retrieving previous number of requests for user, so that we can increment it by one
-                    num_requests_new = num_requests_lookup(int(user_id))[0]
-                    num_requests_new = num_requests_new + 1
-                except TypeError:
+                    num_requests = num_requests_lookup(int(user_id))[0]
+                    num_requests = num_requests + 1
+                except:
                     #user does not exist yet in the database
-                    num_requests_new = 1
+                    non_existing_user = non_existing_user + 1
+            except:
+                error_log_file.write("NON-PROPER-FIELDS ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                failed_to_retrieve_proper_fields_count = failed_to_retrieve_proper_fields_count + 1
+                continue
+                
+            try:
                 #inserting data to the database
                 log_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, bot_score_universal, \
-                            str(requester_ip), tweets_per_day, num_tweets, num_mentions, latest_tweet_timestamp, num_requests_new, user_profile)
+                            str(requester_ip), tweets_per_day, num_tweets, num_mentions, latest_tweet_timestamp, num_requests, user_profile)
             except:
-                error_log_file.write("File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                error_log_file.write("DB INSERTION ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                failed_to_commit_to_db_count = failed_to_commit_to_db_count + 1          
                 continue
 
         print("Finished importing log: ", log)
@@ -169,3 +205,11 @@ if __name__ == '__main__':
     #ending and evaluating time elapsed
     print("%s seconds elapsed" % (time.time()-timer_start))
     print("Log Import Process Completed!")
+    
+    #printing log statistics
+    print("non-json-lines: ",errors_and_informational_count)
+    print("non-log-json-type: ", json_not_proper_log_count)
+    print("json-with-no-type: ", json_with_no_type_count)
+    print("non-matched-proper-score-category-schema: ", unmatched_botscore_category_schema_count)
+    print("non-proper-fields-upon-retrieval: ", failed_to_retrieve_proper_fields_count)
+    print("db-commit-failures: ", failed_to_commit_to_db_count)
