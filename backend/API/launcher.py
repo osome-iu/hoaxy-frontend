@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 from dbmodels import api, BotbaseModel, db
 from flask import jsonify, request
-import ConfigParser
+import configparser
 from datetime import datetime
 
 
@@ -68,7 +68,7 @@ def getScores():
         return jsonify(None)
 
     # load the config file
-    config_file = ConfigParser.ConfigParser()
+    config_file = configparser.ConfigParser()
     config_file.read("./config.cfg")
 
     # process the queries
