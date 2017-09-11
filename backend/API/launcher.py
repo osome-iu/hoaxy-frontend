@@ -76,17 +76,16 @@ def getScores():
     for user_identifier in user_identifiers[1]:
         user_entries = user_identifiers[0](user_identifier)
         if user_entries:
-            # see how the results are ordered to decide 0 or -1
-            user_latest_entry = user_entries[0]
+            user_latest_entry = user_entries[-1]
             user_entry_status = getUserRecordStatus(user_latest_entry, config_file)
             user_scores[user_identifier] = {
                 "categories": {
-                    "friend": user_latest_entry.all_bot_scores["friend_classification"],
-                    "sentiment": user_latest_entry.all_bot_scores["sentiment_classification"],
-                    "temporal": user_latest_entry.all_bot_scores["temporal_classification"],
-                    "user": user_latest_entry.all_bot_scores["user_classification"],
-                    "network": user_latest_entry.all_bot_scores["network_classification"],
-                    "content": user_latest_entry.all_bot_scores["content_classification"]
+                    "friend": user_latest_entry.all_bot_scores["friend"],
+                    "sentiment": user_latest_entry.all_bot_scores["sentiment"],
+                    "temporal": user_latest_entry.all_bot_scores["temporal"],
+                    "user": user_latest_entry.all_bot_scores["user"],
+                    "network": user_latest_entry.all_bot_scores["network"],
+                    "content": user_latest_entry.all_bot_scores["content"]
                 },
                 "scores": {
                     "english": user_latest_entry.bot_score_english,
