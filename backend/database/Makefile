@@ -1,6 +1,6 @@
 .PHONY: test createDB createTB insertData dropDB
 
-test: createDB createTB insertData
+test: createDB createTB
 
 createDB:
 	psql -U postgres -f CreateDatabaseScript.sql
