@@ -80,8 +80,20 @@ def getScores():
             user_latest_entry = user_entries[0]
             user_entry_status = getUserRecordStatus(user_latest_entry, config_file)
             user_scores[user_identifier] = {
-                "scores": user_latest_entry.all_bot_scores,
-                "fresh": user_entry_status
+                "categories": {
+                    "friend": user_latest_entry.all_bot_scores["friend_classification"],
+                    "sentiment": user_latest_entry.all_bot_scores["sentiment_classification"],
+                    "temporal": user_latest_entry.all_bot_scores["temporal_classification"],
+                    "user": user_latest_entry.all_bot_scores["user_classification"],
+                    "network": user_latest_entry.all_bot_scores["network_classification"],
+                    "content": user_latest_entry.all_bot_scores["content_classification"]
+                },
+                "scores": {
+                    "english": user_latest_entry.bot_score_english,
+                    "universal": user_latest_entry.bot_score_universal
+                },
+                "fresh": user_entry_status,
+                "timestamp": user_latest_entry.time_stamp
             }
             user_latest_entry.num_requests += 1
         else:
