@@ -35,8 +35,8 @@ def getUserRecordStatus(user_entry, config_file):
 @api.route("/")
 def hello():
     return """Welcome to the Hoaxy-Botometer API.\n
-                Get user scores with '/api/scores?userIDs=id1,id2,id3' or
-                '/api/scores?usernames=name1,name2,name3'
+                Get user scores with '/api/scores?user_id=id1,id2,id3' or
+                '/api/scores?screen_name=name1,name2,name3'
                 ."""
 
 
@@ -48,12 +48,12 @@ def getScores():
     """
     # get the query string according to different HTTP methods
     if request.method == "GET":
-        user_ids_string = request.args.get("userIDs")
-        user_names_string = request.args.get("usernames")
+        user_ids_string = request.args.get("user_id")
+        user_names_string = request.args.get("screen_name")
     elif request.method == "POST":
         query_file = request.get_json()
-        user_ids_string = query_file.get("userIDs")
-        user_names_string = query_file.get("usernames")
+        user_ids_string = query_file.get("user_id")
+        user_names_string = query_file.get("screen_name")
     else:
         return jsonify(None)
 

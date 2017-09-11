@@ -7,9 +7,9 @@ Query with screen names `/api/socres?usernames=username1,username2,username3`
 
 Tests:
 
-`http://127.0.0.1:5000/api/scores?userIDs=12345,24456,917736974,428845131,2234`
+`http://127.0.0.1:5000/api/scores?user_id=12345,24456,917736974,428845131,2234`
 
-`http://127.0.0.1:5000/api/scores?usernames=jondoe,rainman,awesomely_hk,nonexist`
+`http://127.0.0.1:5000/api/scores?screen_name=jondoe,rainman,awesomely_hk,nonexist`
 
 ## "POST" query
 
