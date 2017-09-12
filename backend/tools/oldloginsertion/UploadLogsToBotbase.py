@@ -79,9 +79,9 @@ if __name__ == '__main__':
     timer_start = time.time()
     
     #log name and location information
-    #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
-    log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
-    log_file_list = ['botornot.log.2017-08-20','botornot.log.2017-08-27']
+    log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
+    #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
+    log_file_list = ['botornot.log201510']
                     #'botornot.log201506',
                      #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
                      #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
@@ -124,8 +124,8 @@ if __name__ == '__main__':
             try:
                 user_id = line_json["search"]["user_id"]
                 screen_name = str(line_json["search"]["sn"])
-                if str(user_id) == screen_name:
-                    #user does not have a screen-name so the id was used instead, we don't want to add this as it is redundant and may cause more problems
+                if len(screen_name) > 15:
+                    #user may have a screen-name logged as longer than 15 characters which is not proper in Twitter and could be instead the userid or some other error so we make it none
                     screen_name = None
                 time_stamp = line_json["timestamp"]
                 #some timestamps are stored in milliseconds so for those we divide by 1000
