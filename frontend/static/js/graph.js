@@ -55,33 +55,45 @@ function HoaxyGraph(options)
 				user_list.push(to_user_screen_name);
 			}
 		}
-		// var botcache_request = axios.get(configuration.botcache_url, {
-		// 	data: {
-		// 		"user_ids" : user_list
-		// 	}
-		// });
-		// botcache_request.then(
-		// 	function(response){
-		// 		spinStop("getBotCacheScores");
-		// 		for(var i in response.data.scores)
-		// 		{
-		// 			var user = response.data.scores[i];
-		//			botscore[sn] = {score: xx, old: false/true};
-		// 		}
-		// 	},
-		// 	function (error) {
-		// 		console.log('Botometer Scores Request Error: ', error.response.statusText);
-		// 		spinStop("getBotCacheScores");
-		// 	}
-		// );
+
+		var botcache_request = axios({
+			method: 'post',
+			url: configuration.botcache_url,
+			responseType: "json",
+			data: {
+				"screen_name": user_list.join(",")
+			}
+		});
+		botcache_request.then(
+			function(response){
+				spinStop("getBotCacheScores");
+				console.debug("Got botcache: ", response.data);
+				for(var i in response.data)
+				{
+					var user = response.data[i];
+					if(user)
+					{
+						var sn = i;
+						var score = user.scores.english;
+						botscore[sn] = {score: score, old: !user.fresh};
+						updateNodeColor(sn, user.score);
+					}
+				}
+
+				//when we get the cache, go through cache and update botscores:
+				//botscore[sn] = {score: xx, old: false/true};
+
+				var index = 0;
+				getBotScoreTimer(index);
+				// spinStop("getBotCacheScores");
+			},
+			function (error) {
+				console.log('Botometer Scores Request Error: ', error);
+				spinStop("getBotCacheScores");
+			}
+		);
 
 
-		//when we get the cache, go through cache and update botscores:
-		//botscore[sn] = {score: xx, old: false/true};
-
-		var index = 0;
-		getBotScoreTimer(index);
-		spinStop("getBotCacheScores");
 	}
 
 	//space out the requests so that we don't hit the rate limit so quickly
