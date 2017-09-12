@@ -81,7 +81,7 @@ if __name__ == '__main__':
     #log name and location information
     log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
     #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
-    log_file_list = ['botornot.log201510']
+    log_file_list = ['test','botornot.log201702', 'botornot.log201705']
                     #'botornot.log201506',
                      #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
                      #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
@@ -117,7 +117,7 @@ if __name__ == '__main__':
                     continue
             except:
                 json_with_no_type_count = json_with_no_type_count + 1
-                error_log_file.write("NO-TYPE-JSON INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                error_log_file.write("NO-LOG-TYPE-JSON INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                 continue
             
             #parsing json line and retrieving the proper fields regarding the user i.e. user id, screen name, tweets, etc...
@@ -153,10 +153,20 @@ if __name__ == '__main__':
                         content_score = round(botscore_representation['content'], 2)
                         all_bot_scores = {"friend": friend_score, "sentiment": sentiment_score, "temporal": temporal_score, "user": user_score, "network": network_score, "content": content_score}
                     except:
-                        #score schema does not include the needed scores so will insert as null
-                        unmatched_botscore_category_schema_count = unmatched_botscore_category_schema_count + 1
-                        error_log_file.write("NON-MATCHED-CATEGORY-SCHEMA INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
-                        all_bot_scores = None
+                        #parsing a list schema instead of json schema i.e. [["network",0.5], ["sentiment",0.2], ...]
+                        try:
+                            friend_score = round(botscore_representation[5][1], 2)
+                            sentiment_score = round(botscore_representation[1][1], 2)
+                            temporal_score = round(botscore_representation[2][1], 2)
+                            user_score = round(botscore_representation[4][1], 2)
+                            network_score = round(botscore_representation[0][1], 2)
+                            content_score = round(botscore_representation[3][1], 2)
+                            all_bot_scores = {"friend": friend_score, "sentiment": sentiment_score, "temporal": temporal_score, "user": user_score, "network": network_score, "content": content_score}                            
+                        except:
+                             #score schema does not include the needed scores so will insert as null
+                            unmatched_botscore_category_schema_count = unmatched_botscore_category_schema_count + 1
+                            error_log_file.write("NON-MATCHED-CATEGORY-SCHEMA INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                            all_bot_scores = None
                 #english bot score which is either found in line_json["score"], line_json["classification"], line_json["score"]["english"]
                 keys = [["score","english"],["score"],["classification"]]
                 bot_score_english = score_decider(keys, line_json)
