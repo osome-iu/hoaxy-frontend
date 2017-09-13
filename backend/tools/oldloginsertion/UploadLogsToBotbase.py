@@ -81,7 +81,10 @@ if __name__ == '__main__':
     #log name and location information
     log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
     #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
-    log_file_list = ['botornot.log.2017-05-14']
+    log_file_list = ['botornot.log.2017-05-21', \
+                     'botornot.log.2017-05-28', 'botornot.log.2017-06-04', 'botornot.log.2017-06-11', 'botornot.log.2017-06-18', \
+                     'botornot.log.2017-06-25', 'botornot.log.2017-07-02', 'botornot.log.2017-07-09', 'botornot.log.2017-07-16', \
+                     'botornot.log.2017-07-23', 'botornot.log.2017-07-30', 'botornot.log.2017-08-06', 'botornot.log.2017-08-13']
                     #'botornot.log201506',
                      #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
                      #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
@@ -91,7 +94,7 @@ if __name__ == '__main__':
                     #recent
                     #botornot.log.2017-08-20  botornot.log.2017-08-27
     #log to store any errors due to the logs not containing the proper data (i.e. other logging information such as errors or other requests)
-    error_log_file = open("botscoreloginsertion.err", "w")
+    error_log_file = open("botscoreloginsertion.err", "a")
   
     #iterating through all log files
     for log in log_file_list:
