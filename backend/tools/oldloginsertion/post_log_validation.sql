@@ -1,6 +1,9 @@
 select * from botscore order by id limit 5;
 --to be able to view the schema/entries of a few records
 
+select * from botscore where all_bot_scores=NULL;
+--if there are any null records here, must check why they are null, though there should not be too many null entries
+
 select count(*) from botscore;
 --save this number for the TIMESTAMP BETWEEN QUERY below, should be the same number
 
