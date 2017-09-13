@@ -81,7 +81,7 @@ if __name__ == '__main__':
     #log name and location information
     log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
     #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
-    log_file_list = ['test','botornot.log201702', 'botornot.log201705']
+    log_file_list = ['botornot.log.2017-05-14']
                     #'botornot.log201506',
                      #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
                      #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
@@ -96,6 +96,7 @@ if __name__ == '__main__':
     #iterating through all log files
     for log in log_file_list:
         print("Starting to import log: ", log)
+        sys.stdout.flush()
         file_location = log_path + log
 
         #parsing logs and uploading the entries to the botometer database
@@ -208,6 +209,7 @@ if __name__ == '__main__':
                 continue
 
         print("Finished importing log: ", log)
+        sys.stdout.flush()
 
     #closing access to database
     botbase_cursor.close()
