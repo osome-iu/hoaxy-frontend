@@ -4,6 +4,7 @@ select * from botscore order by id limit 5;
 select * from botscore where all_bot_scores=NULL;
 --if there are any null records here, must check why they are null, though there should not be too many null entries
 
+--NUM RECORDS QUERY
 select count(*) from botscore;
 --save this number for the TIMESTAMP BETWEEN QUERY below, should be the same number
 
@@ -35,11 +36,16 @@ select max(time_stamp) from botscore;
 select count(*) from botscore where time_stamp between '2015-06-30 21:10:05+00' and '2017-03-16 00:17:17+00';
 --should reflect the count(*) from first query
 
-select date_trunc('day', time_stamp) as "day", count(*) id from botscore group by 1 order by 1;
---The counts in the id column should be increasing (not necessarily monotonically) but increasing nonetheless 
-
 select requester_ip from botscore where requester_ip like '[%]';
 --ensure no bracketed list ips were inserted, instead they should all be comma delimited with no list wrapper (should returne empty)
 
 select user_id from botscore where user_id < 0;
 --ensure no negative user_ids are present (should not return any records)
+
+select count(*) from botscore where num_requests=0;
+--should return the same as NUM RECORDS query above
+
+select count(*) from botscore botscore where (all_bot_scores#>>'{}') ~* '\{\"user\"\s*:\s*.*,\s*\"friend\"\s*:\s*.*,\s*\"content\"\s*:\s*.*,\s*\"network\"\s*:\s*.*,\s*\"temporal\"\s*:\s*.*,\s*\"sentiment\"\s*:\s*.*}';
+--should return the same as NUM RECORDS query above and if not, run the following query and see why
+
+select (all_bot_scores#>>'{}') as botscorestext from botscore where (all_bot_scores#>>'{}') !~* '\{\"user\"\s*:\s*.*,\s*\"friend\"\s*:\s*.*,\s*\"content\"\s*:\s*.*,\s*\"network\"\s*:\s*.*,\s*\"temporal\"\s*:\s*.*,\s*\"sentiment\"\s*:\s*.*}';
