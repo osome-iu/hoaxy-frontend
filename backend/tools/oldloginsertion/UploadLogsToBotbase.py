@@ -34,11 +34,6 @@ def score_decider(potential_score_keys, line_json):
     
     return None
 
-#lookps up previous num_requests value
-def num_requests_lookup(user_id):
-    botbase_cursor.execute("""SELECT num_requests FROM public.botscore WHERE user_id=%s ORDER BY time_stamp DESC LIMIT 1;""", (user_id,))
-    return botbase_cursor.fetchone()
-
 #inserts log to database
 def log_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, \
                 bot_score_universal, requester_ip, tweets_per_day, num_tweets, \
@@ -66,8 +61,6 @@ json_not_proper_log_count = 0
 json_with_no_type_count = 0
 failed_to_retrieve_proper_fields_count = 0
 failed_to_commit_to_db_count = 0
-
-non_existing_user = 0
     
 #MAIN CODE
 if __name__ == '__main__':
@@ -79,9 +72,9 @@ if __name__ == '__main__':
     timer_start = time.time()
     
     #log name and location information
-    log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
-    #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
-    log_file_list = ['test','botornot.log201702', 'botornot.log201705']
+    #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
+    log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
+    log_file_list = ['botornot.log.2017-08-20','botornot.log.2017-08-27']
                     #'botornot.log201506',
                      #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
                      #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
@@ -91,11 +84,12 @@ if __name__ == '__main__':
                     #recent
                     #botornot.log.2017-08-20  botornot.log.2017-08-27
     #log to store any errors due to the logs not containing the proper data (i.e. other logging information such as errors or other requests)
-    error_log_file = open("botscoreloginsertion.err", "w")
+    error_log_file = open("botscoreloginsertion.err", "a")
   
     #iterating through all log files
     for log in log_file_list:
         print("Starting to import log: ", log)
+        sys.stdout.flush()
         file_location = log_path + log
 
         #parsing logs and uploading the entries to the botometer database
@@ -183,15 +177,8 @@ if __name__ == '__main__':
                 num_tweets = line_json["num_tweets"]
                 num_mentions = None
                 latest_tweet_timestamp = None
-                num_requests = 1
+                num_requests = 0
                 user_profile = None
-                try:
-                    #retrieving previous number of requests for user, so that we can increment it by one
-                    num_requests = num_requests_lookup(int(user_id))[0]
-                    num_requests = num_requests + 1
-                except:
-                    #user does not exist yet in the database
-                    non_existing_user = non_existing_user + 1
             except:
                 error_log_file.write("NON-PROPER-FIELDS ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                 failed_to_retrieve_proper_fields_count = failed_to_retrieve_proper_fields_count + 1
@@ -208,6 +195,7 @@ if __name__ == '__main__':
                 continue
 
         print("Finished importing log: ", log)
+        sys.stdout.flush()
 
     #closing access to database
     botbase_cursor.close()
