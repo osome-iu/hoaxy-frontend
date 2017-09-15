@@ -7,130 +7,297 @@
 </head>
 
 <body>
-	<!--#include virtual="./includes/header.html" -->
-	<nav class="container_fluid tab_container">
-		<ul class="nav nav-tabs container" role=tablist >
-			<li class="nav-item">
-				<a class="nav-link active" href="#popular_articles" role="tab" data-toggle="tab">Popular Articles</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="#influential_users" role="tab" data-toggle="tab">Influential Users</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="#active_users" role="tab" data-toggle="tab">Active Users</a>
-			</li>
-		</ul>
-	</nav>
-	<div class="tab-content">
+	<div id="vue-app">
+		<!--#include virtual="./includes/header.html" -->
+		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
+			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
+		</div>
 
-		<section class="tab-pane active container-fluid" role="tabpanel" id="popular_articles">
-			<div class="row">
-				<div class="col-md-6">
-					<p>Most popular <span class="">claims</span> articles in the last month</p>
-					<div class="table-responsive" id="popular_articles_claim"></div>
+		<nav class="container_fluid tab_container">
+			<ul class="nav nav-tabs container" role=tablist >
+				<li class="nav-item">
+					<a class="nav-link" :class="{'active':active_tab == 'popular_articles'}" href="#popular_articles" role="tab" @click="active_tab = 'popular_articles'">Popular Articles</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" :class="{'active':active_tab == 'influential_users'}" href="#influential_users" role="tab" @click="active_tab = 'influential_users'">Influential Users</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" :class="{'active':active_tab == 'active_users'}" href="#active_users" role="tab" @click="active_tab = 'active_users'">Active Users</a>
+				</li>
+			</ul>
+		</nav>
+		<div class="tab-content">
+
+			<section class="tab-pane active container-fluid" v-if="active_tab=='popular_articles'" role="tabpanel" id="">
+				<div class="row">
+					<div class="col-md-6" v-for="(articles, type) in popular_articles">
+						<p>Most popular <span class="">{{formatArticleType(type)}}</span> in the last month</p>
+						<div class="table-responsive" :id="'popular_articles_'+type">
+							<table class="table table-striped">
+								<tr>
+									<th>Capture date</th>
+									<th>Title</th>
+									<th>Tweets</th>
+								</tr>
+								<tr v-for="article in articles">
+									<td>{{article.capture_date}}</td>
+									<td><a :href="article.canonical_url" rel="noreferrer noopener" target="_blank">{{article.title}}</a></td>
+									<td>{{article.number_of_tweets}}</td>
+								</tr>
+								<tr v-if="articles.length == 0">
+									<td colspan="3">Could not find any articles</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+
+					</div>
 				</div>
-				<div class="col-md-6">
-					<p>Most popular <span class="">fact checking</span> articles in the last month</p>
-					<div class="table-responsive" id="popular_articles_fact_checking"></div>
-				</div>
-			</div>
-		</section>
+			</section>
 
 
-		<section class="tab-pane container-fluid" role="tabpanel" id="influential_users">
-			<div class="row">
-				<div class="col-md-6">
-					<p>Most influential users sharing <span class="">claims</span> in the last month</p>
-					<div class="table-responsive" id="influential_users_claim"></div>
+			<section class="tab-pane container-fluid" role="tabpanel" id="" v-if="active_tab=='influential_users'">
+				<div class="row">
+					<div class="col-md-6" v-for="(spreaders, type) in influential_users">
+						<p>Most influential users sharing <span class="">{{formatArticleType(type)}}</span> in the last month</p>
+						<div class="table-responsive" :id="'influential_users_' + type">
+							<table class="table table-striped">
+								<tr>
+									<th>Screen Name</th>
+									<th>Number of Tweets</th>
+									<th>Botometer Score</th>
+								</tr>
+								<tr v-for="spreader in spreaders">
+									<td><a rel="noreferrer noopener" target="_blank" :href="'https://twitter.com/' + spreader.user_screen_name">{{spreader.user_screen_name}}</a></td>
+									<td>{{spreader.number_of_tweets}}</td>
+									<td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
+								</tr>
+								<tr v-if="spreaders.length == 0">
+									<td colspan="3">Could not find any users</td>
+								</tr>
+							</table>
+						</div>
+					</div>
 				</div>
-				<div class="col-md-6">
-					<p>Most influential users sharing <span class="">fact checking</span> in the last month</p>
-					<div class="table-responsive" id="influential_users_fact_checking"></div>
-				</div>
-			</div>
-		</section>
+			</section>
 
 
-		<section class="tab-pane container-fluid" role="tabpanel" id="active_users">
-			<div class="row">
-				<div class="col-md-6">
-					<p>Most active users sharing <span class="">claims</span> in the last month</p>
-					<div class="table-responsive" id="active_users_claim"></div>
+			<section class="tab-pane container-fluid" role="tabpanel" id="" v-if="active_tab=='active_users'" >
+				<div class="row">
+                    <div class="col-md-6" v-for="(spreaders, type) in active_users">
+						<p>Most active users sharing <span class="">{{formatArticleType(type)}}</span> articles in the last month</p>
+						<div class="table-responsive" :id="'influential_users_' + type">
+							<table class="table table-striped">
+								<tr>
+									<th>Screen Name</th>
+									<th>Number of Tweets</th>
+									<th>Botometer Score</th>
+								</tr>
+								<tr v-for="spreader in spreaders">
+									<td><a rel="noreferrer noopener" target="_blank" :href="'https://twitter.com/' + spreader.user_screen_name">{{spreader.user_screen_name}}</a></td>
+									<td>{{spreader.number_of_tweets}}</td>
+									<td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
+								</tr>
+								<tr v-if="spreaders.length == 0">
+									<td colspan="3">Could not find any users</td>
+								</tr>
+							</table>
+						</div>
+					</div>
 				</div>
-				<div class="col-md-6">
-					<p>Most active users sharing <span class="">fact checking</span> in the last month</p>
-					<div class="table-responsive" id="active_users_fact_checking"></div>
-				</div>
-			</div>
-		</section>
+			</section>
+		</div>
 	</div>
 
+
+
 	<script>
-	(function() {
-		$.ajax({
-			url: configuration.top_articles_url,
-			headers: configuration.top_articles_headers,
-			dataType: 'json' ,
-			success: function(data) {
-				$("#popular_articles_claim").append('<tr><th>Capture date</th><th>Title</th><th>Tweets</th></tr>');
-				$("#popular_articles_fact_checking").append('<tr><th>Capture date</th><th>Title</th><th>Tweets</th></tr>');
-				$.each(data['articles'], function(i, h) {
-					var capture_date = h['capture_date'].split('T')[0];
-					var row = '<tr><td>' + capture_date + '</td>'
-					+ '<td><a href="' + h['canonical_url'] +
-					'" target="_blank">' + h['title'] + '</a></td><td>' +
-					h['number_of_tweets'] + '</td></tr>'
-					$("#popular_articles_" + h['site_type']).append(row);
-				});
-				$("#popular_articles_claim").wrapInner('<table class="table table-striped"></table>');
-				$("#popular_articles_fact_checking").wrapInner('<table class="table table-striped"></table>');
-			}
-		});
-		$.ajax({
-			url: configuration.top_users_url,
-			headers: configuration.top_users_headers,
-			dataType: 'json' ,
-			success: function(data) {
-				$("#active_users_claim").append('<tr><th>screen name</th><th>tweets</th><th>Botometer score</th></tr>');
-				$("#active_users_fact_checking").append('<tr><th>screen name</th><th>tweets</th><th>Botometer score</th></tr>');
-				$("#influential_users_claim").append('<tr><th>screen name</th><th>retweets</th><th>Botometer score</th></tr>');
-				$("#influential_users_fact_checking").append('<tr><th>screen name</th><th>retweets</th><th>Botometer score</th></tr>');
-				var empty_or_na;
-				// test whether any bot_score exists
-				if (data['spreaders'].every(function(x){return x['bot_score'] === null})){
-					empty_or_na = 'Click';
-				}
-				else{
-					empty_or_na = 'n/a';
-				}
 
-				$.each(data['spreaders'], function(i, h) {
-					var bot_perc;
-					if (h['bot_score'] === null) {
-						bot_perc = empty_or_na;
-					} else {
-						bot_perc = h['bot_score'] * 100;
-						bot_perc = bot_perc.toFixed() + '%';
+	var app = new Vue({
+
+		el: '#vue-app',
+		data:{
+			active_tab: "popular_articles",
+			mounted: false,
+
+			popular_articles: {
+				claim: [],
+				fact_checking: [],
+			},
+			active_users: {
+				claim: [],
+				fact_checking: [],
+			},
+			influential_users: {
+				claim: [],
+				fact_checking: [],
+			},
+
+			//for loading screen
+			spin_counter: 0,
+			loading: true,
+			spin_timer: null,
+			spinner_state: 0,
+			spinner_rotate: 0,
+		},
+		methods: {
+			formatArticleType: function(type){
+				if(type == "claim")
+					return "claims";
+				if(type == "fact_checking")
+					return "fact checking articles"
+				return "";
+			},
+			getArticles: function(){
+				this.spinStart();
+				var request = axios.get(configuration.top_articles_url, {
+					headers: configuration.top_articles_headers,
+					dataType: 'json'
+				});
+				var v = this;
+				request.then(
+					function(response){
+						response = response.data;
+						var articles = response.articles;
+						var local_popular_articles = {
+							claim: [],
+							fact_checking: [],
+						};
+						for(var i in articles)
+						{
+							var a = articles[i];
+							a.capture_date = a.date_captured.split('T')[0];
+							local_popular_articles[a.site_type].push(a);
+						}
+						v.popular_articles = local_popular_articles;
+						v.spinStop();
+					},
+					function (error) {
+						alert("Get Articles Request failed: " + error.response.statusText);
+						v.spinStop();
 					}
-					var link = '<tr><td><a href="https://twitter.com/' + h['user_screen_name']
-							+ '" target="_blank">' + h['user_screen_name'] + '</a></td><td>'
-							+ h['number_of_tweets']
-							+ '</td><td><a target="_blank" href="https://botometer.iuni.iu.edu/#!/?sn='
-							+ h['user_screen_name'] + '">' + bot_perc + '</a></td></tr>';
+				);
+			},
+            getUsers: function(){
+                this.spinStart();
+                var v = this;
+                var request = axios.get( configuration.top_users_url, {
+                    headers: configuration.top_users_headers,
+                    dataType: 'json'
+                });
 
-					if(h['spreading_type'] == 'active')
-					$("#active_users_" + h['site_type']).append(link);
-					else if(h['spreading_type'] == 'influential')
-					$("#influential_users_" + h['site_type']).append(link);
-				});
-				$("#active_users_claim").wrapInner('<table class="table table-striped"></table>');
-				$("#active_users_fact_checking").wrapInner('<table class="table table-striped"></table>');
-				$("#influential_users_claim").wrapInner('<table class="table table-striped"></table>');
-				$("#influential_users_fact_checking").wrapInner('<table class="table table-striped"></table>');
+				request.then(
+					function(response){
+						response = response.data;
+						var spreaders = response.spreaders;
+						var local = {
+							active: {
+								claim: [],
+								fact_checking: []
+							},
+							influential: {
+								claim: [],
+								fact_checking: []
+							}
+						};
+						for(var i in spreaders)
+						{
+							var a = spreaders[i];
+							var bot_percent = "";
+							if(a.bot_score === null)
+							{
+								bot_percent = "n/a";
+							}
+							else
+							{
+								bot_percent = a.bot_score * 100;
+								bot_percent = bot_percent.toFixed() + '%';
+							}
+							a.bot_percent = bot_percent;
+							local[a.spreading_type][a.site_type].push(a);
+						}
+						v.active_users = local.active;
+						v.influential_users = local.influential;
+						v.spinStop();
+					},
+					function (error) {
+						alert("Get Spreaders Request failed: " + error.response.statusText);
+						v.spinStop();
+					}
+				);
+			},
+			activate_tab: function(tab_name){
+				this.active_tab = tab_name;
+			},
+	        spinStop: function(reset){
+	        	this.spin_counter --;
+	        	if(reset === true)
+	        	{
+	        		this.spin_counter = 0;
+	        	}
+
+	        	if(this.spin_counter <= 0)
+	        	{
+	        		this.loading = false;
+	        		clearTimeout(this.spin_timer);
+	        		this.spin_timer = null;
+	        	}
+
+	        },
+	        spinStart: function(){
+	        	this.spin_counter ++;
+	        	this.loading = true;
+	        	//timeout after 90 seconds so we're not stuck in an endless spinning loop.
+	        	if(this.spin_timer)
+	        	{
+	        		clearTimeout(this.spin_timer);
+	        		this.spin_timer = null;
+	        	}
+	            var v = this;
+	        	this.spin_timer = setTimeout(function(){
+	        		alert("The app is taking too long to respond.  Please try again later.");
+	        		v.spinStop(true);
+	        	}, 90000);
+	        },
+		},
+		mounted: function(){
+			var v = this;
+
+	        this.mounted = true;
+	        this.spinStop(true);
+	        this.show_articles = false;
+	        this.show_graphs = false;
+
+	        //create hourglass loading spinner
+	        var f = function(){
+	            var counter = 0;
+	            setInterval(function(){
+	                // console.debug("out", counter);
+	                if(v.loading){
+	                    // console.debug("in", counter);
+	                    counter ++;
+	                    if(counter < 4)
+	                        v.spinner_rotate = (v.spinner_state = counter)*0;
+	                    else if (counter <= 12)
+	                        v.spinner_rotate = (counter - 4) * 22.5;
+	                    else
+	                        counter = 0;
+	                }
+	            }, 100);
+	        }();
+
+			var active_tab = location.hash.replace("#", "");
+			if(active_tab)
+			{
+				this.active_tab = active_tab;
 			}
-		});
 
-	})();
+			this.getArticles();
+			this.getUsers();
+
+		}
+	});
+
 	</script>
 	<!--#include virtual="./includes/footer.html" -->
 </body>
