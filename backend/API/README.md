@@ -38,7 +38,7 @@ Or
 
 ```json
     {
-        "user_id": "user_id": ["269880075" , "269880076"]
+        "user_id":  ["269880075" , "269880076"]
     }
 ```
 
@@ -54,7 +54,7 @@ Or
 
 ```json
     {
-        "screen_name": "username1", "username2", "username3"
+        "screen_name": ["username1", "username2", "username3"]
     }
 ```
 
@@ -62,38 +62,16 @@ Or
 
 ```json
     {
-        "user_id": ["269880075" , "269880076"]
+        "user_id": ["269880075" , "269880076"],
         "screen_name": "username1,username2,username3"
     }
 ```
 
 # API Response
 
-## For queries with user_id
+For queries no matches are found in the database, an "empty" record will be returned where all the fields are `NULL` except `user_id` or `screen_name`.
 
-```json
-{
-    "100000000": {
-        "categories": {
-            "content": 0.64,
-            "friend": 0.57,
-            "network": 0.8,
-            "sentiment": 0.51,
-            "temporal": 0.37,
-            "user": 0.53
-        },
-        "fresh": true,
-        "scores": {
-            "english": 0.65,
-            "universal": 0.52
-        },
-        "timestamp": "Sun, 10 Sep 2017 04:40:04 GMT"
-    },
-    "100000000": null
-}
-```
-
-## For queries with screen_name
+Duplicated records are possible.
 
 ```json
 [
