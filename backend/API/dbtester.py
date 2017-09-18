@@ -1,20 +1,32 @@
 # -*- coding: utf8 -*-
-from dbmodels import db, BotbaseModel
-from collections import Counter
+#from dbmodels import db, BotbaseModel
+#from collections import Counter
+import sqlalchemy
+
 
 if __name__ == "__main__":
-    user_id = 884486040156766209
-    #user_enties = db.session.query(BotbaseModel.user_id).all()
-    ##print(type(user_enties[0][0]))
-    #user_ids = list(map(lambda x:x[0], user_enties))
-    ##print(len(user_ids))
-    ##print(len(set(user_ids)))
-    #id_counter = Counter(user_ids)
-    #for key, value in id_counter.items():
-        #if value > 2:
-            #print("%d: %d" % (key, value))
-    entries = BotbaseModel.query.filter(BotbaseModel.user_id == user_id).\
-        order_by(BotbaseModel.time_stamp).all()
-    for entry in entries:
-        print(entry.time_stamp)
-    #print(entries[-1].time_stamp)
+    botscore_engine = sqlalchemy.create_engine("postgresql://localhost/botbase")
+    botscore_connection = botscore_engine.connect()
+    #user_id = 884486040156766209
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+        """
+        SELECT uid AS user_id, sname AS screen_name, all_bot_scores FROM
+        (SELECT NULL AS uid, names.screen_name AS sname FROM UNNEST(:screen_names) AS names(screen_name)
+        UNION
+        SELECT ids.user_id AS uid, NULL AS sname FROM UNNEST(:user_ids) AS ids(user_id)) AS temptable
+        LEFT JOIN botscore ON temptable.uid = botscore.user_id OR temptable.sname = botscore.screen_name
+        """),
+        {
+            "screen_names": ['severequeerfear','tylerthompson17','ChaoCacaoTour','johndoe'],
+            "user_ids": [18949751,335321861,18953498,12347]
+        }
+    )
+    for row in result:
+        print(row)
+
+
+SELECT user_id, names.screen_name, all_bot_scores
+FROM botscore
+RIGHT JOIN UNNEST(ARRAY['severequeerfear','tylerthompson17','ChaoCacaoTour','johndoe']) AS names(screen_name)
+ON botscore.screen_name = names.screen_name
