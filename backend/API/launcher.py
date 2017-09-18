@@ -1,16 +1,47 @@
 # -*- coding: utf8 -*-
-from dbmodels import api, BotbaseModel, db
-from flask import jsonify, request
+#from dbmodels import api, BotbaseModel, db
+import sqlalchemy
+from flask import Flask, jsonify, request
 import configparser
 from datetime import datetime
 
+api = Flask(__name__)
+botscore_engine = sqlalchemy.create_engine("postgresql://localhost/botbase")
+botscore_connection = botscore_engine.connect()
 
-def dbQueryUserID(user_id):
-    return BotbaseModel.query.filter(BotbaseModel.user_id == user_id).order_by(BotbaseModel.time_stamp).all()
+
+def dbQueryUserID(user_ids):
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            SELECT id, ids.user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+            FROM botscore
+            RIGHT JOIN UNNEST(:user_ids) AS ids(user_id)
+            ON botscore.user_id = ids.user_id
+            """
+        ),
+        {
+            "user_ids" : user_ids
+        }
+    )
+    return result
 
 
-def dbQueryUserScreenName(user_name):
-    return BotbaseModel.query.filter(BotbaseModel.screen_name == user_name).order_by(BotbaseModel.time_stamp).all()
+def dbQueryUserScreenName(user_names):
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            SELECT id, user_id, names.screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+            FROM botscore
+            RIGHT JOIN UNNEST(:screen_names) AS names(screen_name)
+            ON botscore.screen_name = names.screen_name
+            """
+        ),
+        {
+            "screen_names" : user_names
+        }
+    )
+    return result
 
 
 def getUserRecordStatus(user_entry, config_file):
@@ -61,130 +92,52 @@ def getScores():
     config_file = configparser.ConfigParser()
     config_file.read("./config.cfg")
 
-    user_scores = []
     # parse the query according to the type
-    user_ids = None
+    db_results = []
     if user_ids_query:
         if isinstance(user_ids_query, list):
-            user_ids = map(int, user_ids_query)
+            user_ids = list(map(int, user_ids_query))
         elif isinstance(user_ids_query, str):
-            user_ids = map(int, user_ids_query.split(","))
+            user_ids = list(map(int, user_ids_query.split(",")))
+        db_results += dbQueryUserID(user_ids)
 
-    if user_ids:
-        # query all the results
-        for user_id in user_ids:
-            user_entries = dbQueryUserID(user_id)
-            if user_entries:
-                user_latest_entry = user_entries[-1]
-                user_entry_status = getUserRecordStatus(user_latest_entry, config_file)
-                user_scores.append(
-                    {
-                        "categories": {
-                            "friend": user_latest_entry.all_bot_scores["friend"],
-                            "sentiment": user_latest_entry.all_bot_scores["sentiment"],
-                            "temporal": user_latest_entry.all_bot_scores["temporal"],
-                            "user": user_latest_entry.all_bot_scores["user"],
-                            "network": user_latest_entry.all_bot_scores["network"],
-                            "content": user_latest_entry.all_bot_scores["content"]
-                        },
-                        "user": {
-                            "screen_name": user_latest_entry.screen_name,
-                            "id": user_latest_entry.user_id
-                        },
-                        "scores": {
-                            "english": user_latest_entry.bot_score_english,
-                            "universal": user_latest_entry.bot_score_universal
-                        },
-                        "fresh": user_entry_status,
-                        "timestamp": user_latest_entry.time_stamp
-                    }
-                )
-                user_latest_entry.num_requests += 1
-            else:
-                user_scores.append(
-                    {
-                        "categories": {
-                            "friend": None,
-                            "sentiment": None,
-                            "temporal": None,
-                            "user": None,
-                            "network": None,
-                            "content": None,
-                        },
-                        "user": {
-                            "screen_name": None,
-                            "id": user_id
-                        },
-                        "scores": {
-                            "english": None,
-                            "universal": None
-                        },
-                        "fresh": None,
-                        "timestamp": None
-                    }
-                )
 
-    user_names = None
     if user_names_query:
         if isinstance(user_names_query, list):
             user_names = user_names_query
         elif isinstance(user_names_query, str):
             user_names = user_names_query.split(",")
+        db_results += dbQueryUserScreenName(user_names)
 
-    if user_names:
-        for user_name in user_names:
-            user_entries = dbQueryUserScreenName(user_name)
-            if user_entries:
-                user_latest_entry = user_entries[-1]
-                user_entry_status = getUserRecordStatus(user_latest_entry, config_file)
-                user_scores.append(
-                    {
-                        "categories": {
-                            "friend": user_latest_entry.all_bot_scores["friend"],
-                            "sentiment": user_latest_entry.all_bot_scores["sentiment"],
-                            "temporal": user_latest_entry.all_bot_scores["temporal"],
-                            "user": user_latest_entry.all_bot_scores["user"],
-                            "network": user_latest_entry.all_bot_scores["network"],
-                            "content": user_latest_entry.all_bot_scores["content"]
-                        },
-                        "user": {
-                            "screen_name": user_latest_entry.screen_name,
-                            "id": user_latest_entry.user_id
-                        },
-                        "scores": {
-                            "english": user_latest_entry.bot_score_english,
-                            "universal": user_latest_entry.bot_score_universal
-                        },
-                        "fresh": user_entry_status,
-                        "timestamp": user_latest_entry.time_stamp
-                    }
-                )
-                user_latest_entry.num_requests += 1
-            else:
-                user_scores.append(
-                    {
-                        "categories": {
-                            "friend": None,
-                            "sentiment": None,
-                            "temporal": None,
-                            "user": None,
-                            "network": None,
-                            "content": None,
-                        },
-                        "user": {
-                            "screen_name": user_name,
-                            "id": None
-                        },
-                        "scores": {
-                            "english": None,
-                            "universal": None
-                        },
-                        "fresh": None,
-                        "timestamp": None
-                    }
-                )
+    user_scores = []
 
-    db.session.commit()
+    for row in db_results:
+        if row[3]:
+            all_bot_scores = row[3]
+        else:
+            all_bot_scores = {}
+        user_record = {
+            "categories": {
+                "friend": all_bot_scores.get("friend"),
+                "sentiment": all_bot_scores.get("sentiment"),
+                "temporal": all_bot_scores.get("temporal"),
+                "user": all_bot_scores.get("user"),
+                "network": all_bot_scores.get("network"),
+                "content": all_bot_scores.get("content")
+            },
+            "user": {
+                "screen_name": row[2],
+                "id": row[1]
+            },
+            "scores": {
+                "english": row[4],
+                "universal": row[5]
+            },
+            "timestamp": row[6]
+        }
+        user_scores.append(user_record)
+
+    #db.session.commit()
     return jsonify(user_scores)
 
 
