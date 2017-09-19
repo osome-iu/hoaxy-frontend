@@ -55,23 +55,26 @@ def dbQueryUserScreenName(user_names):
     return result
 
 
-def getUserRecordStatus(user_entry, config_file):
-    timedelta_age = datetime.now() - user_entry.time_stamp.replace(tzinfo=None)
-    age_of_user = timedelta_age.total_seconds()
+def getUserRecordStatus(user_entry, tweets_per_day, config_file):
+    if user_entry["timestamp"]:
+        timedelta_age = datetime.now() - user_entry["timestamp"].replace(tzinfo=None)
+        age_of_user = timedelta_age.total_seconds()
 
-    if age_of_user < int(config_file.get("FlowChart", "age_min")):
-        return True
-    elif age_of_user > int(config_file.get("FlowChart", "age_max")):
-        return False
-    else:
-        if user_entry.tweets_per_day:
-            expected_tweets = age_of_user * user_entry.tweets_per_day / 86400.
-            if expected_tweets > int(config_file.get("FlowChart", "expected_tweets_max")) or user_entry.num_requests > int(config_file.get("FlowChart", "reqs_max")):
-                return False
-            else:
-                return True
-        else:
+        if age_of_user < int(config_file.get("FlowChart", "age_min")):
+            return True
+        elif age_of_user > int(config_file.get("FlowChart", "age_max")):
             return False
+        else:
+            if tweets_per_day:
+                expected_tweets = age_of_user * tweets_per_day / 86400.
+                if expected_tweets > int(config_file.get("FlowChart", "expected_tweets_max")) or user_entry.num_requests > int(config_file.get("FlowChart", "reqs_max")):
+                    return False
+                else:
+                    return True
+            else:
+                return False
+    else:
+        return None
 
 
 @api.route("/")
@@ -146,6 +149,9 @@ def getScores():
             },
             "timestamp": row[6]
         }
+
+        user_tweet_per_day = row[7]
+        user_record["fresh"] = getUserRecordStatus(user_record, user_tweet_per_day, config_file)
         user_scores.append(user_record)
 
     #db.session.commit()
