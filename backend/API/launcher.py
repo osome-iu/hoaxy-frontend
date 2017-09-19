@@ -27,7 +27,7 @@ def dbQueryUserID(user_ids):
             """
         ),
         {
-            "user_ids" : user_ids
+            "user_ids": user_ids
         }
     )
     return result
@@ -50,7 +50,7 @@ def dbQueryUserScreenName(user_names):
             """
         ),
         {
-            "screen_names" : user_names
+            "screen_names": user_names
         }
     )
     return result
@@ -129,7 +129,6 @@ def getScores():
         elif isinstance(user_ids_query, str):
             user_ids = list(map(int, user_ids_query.split(",")))
         db_results += dbQueryUserID(user_ids)
-
 
     if user_names_query:
         if isinstance(user_names_query, list):
