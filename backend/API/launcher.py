@@ -15,9 +15,14 @@ def dbQueryUserID(user_ids):
         sqlalchemy.text(
             """
             SELECT id, ids.user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
-            FROM botscore
-            RIGHT JOIN UNNEST(:user_ids) AS ids(user_id)
-            ON botscore.user_id = ids.user_id
+            FROM
+                (SELECT * FROM botscore
+                JOIN
+                    (SELECT botscore.user_id AS latest_user_id, max(time_stamp) AS latesttimestamp
+                    FROM botscore
+                    GROUP BY botscore.user_id) AS latesttable
+                ON botscore.user_id = latesttable.latest_user_id AND botscore.time_stamp = latesttable.latesttimestamp) AS latestbotscore
+            RIGHT JOIN UNNEST(:user_ids) AS ids(user_id) ON latestbotscore.user_id = ids.user_id
             """
         ),
         {
@@ -32,9 +37,15 @@ def dbQueryUserScreenName(user_names):
         sqlalchemy.text(
             """
             SELECT id, user_id, names.screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
-            FROM botscore
+            FROM
+                (SELECT * FROM botscore
+                JOIN
+                    (SELECT botscore.user_id AS latest_user_id, max(time_stamp) AS latesttimestamp
+                    FROM botscore
+                    GROUP BY botscore.user_id) AS latesttable
+                ON botscore.user_id = latesttable.latest_user_id AND botscore.time_stamp = latesttable.latesttimestamp) AS latestbotscore
             RIGHT JOIN UNNEST(:screen_names) AS names(screen_name)
-            ON botscore.screen_name = names.screen_name
+            ON latestbotscore.screen_name = names.screen_name
             """
         ),
         {
