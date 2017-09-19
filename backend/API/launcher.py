@@ -68,7 +68,7 @@ def increaseNumRequests(id):
     )
 
 
-def getUserRecordStatus(user_entry, tweets_per_day, config_file):
+def getUserRecordStatus(user_entry, tweets_per_day, num_requests, config_file):
     if user_entry["timestamp"]:
         timedelta_age = datetime.now() - user_entry["timestamp"].replace(tzinfo=None)
         age_of_user = timedelta_age.total_seconds()
@@ -80,7 +80,8 @@ def getUserRecordStatus(user_entry, tweets_per_day, config_file):
         else:
             if tweets_per_day:
                 expected_tweets = age_of_user * tweets_per_day / 86400.
-                if expected_tweets > int(config_file.get("FlowChart", "expected_tweets_max")) or user_entry.num_requests > int(config_file.get("FlowChart", "reqs_max")):
+                if expected_tweets > int(config_file.get("FlowChart", "expected_tweets_max"))\
+                        or num_requests > int(config_file.get("FlowChart", "reqs_max")):
                     return False
                 else:
                     return True
@@ -164,7 +165,10 @@ def getScores():
         }
 
         user_tweet_per_day = row[7]
-        user_record["fresh"] = getUserRecordStatus(user_record, user_tweet_per_day, config_file)
+        num_requests = row[9]
+        user_record["fresh"] = getUserRecordStatus(
+            user_record, user_tweet_per_day, num_requests, config_file
+        )
         user_scores.append(user_record)
         increaseNumRequests(row[0])
     return jsonify(user_scores)
