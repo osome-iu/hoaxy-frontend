@@ -10,6 +10,7 @@ function HoaxyGraph(options)
 	var edge_modal_content = options.edge_modal_content || {};
 	var twitter_account_info = options.twitter_account_info || {};
 	var twitter = options.twitter || null;
+	var getting_bot_scores = options.getting_bot_scores || false;
 
 	var s = null; //sigma instance
 	// getNodeColor(.25);
@@ -23,13 +24,13 @@ function HoaxyGraph(options)
 		console.debug("Edges updated.");
 		var g = this;
 		try{
-			twitter.me().then(function(response){
-				twitter_account_info = response;
-				if(twitter_account_info.id)
-				{
+			// twitter.me().then(function(response){
+			// 	twitter_account_info = response;
+			// 	if(twitter_account_info.id)
+			// 	{
 					getBotCacheScores();
-				}
-			});
+			// 	}
+			// });
 		} catch(e){
 			console.debug("Not signed into twitter.");
 		}
@@ -83,8 +84,6 @@ function HoaxyGraph(options)
 				//when we get the cache, go through cache and update botscores:
 				//botscore[sn] = {score: xx, old: false/true};
 
-				var index = 0;
-				getBotScoreTimer(index);
 				// spinStop("getBotCacheScores");
 			},
 			function (error) {
@@ -96,16 +95,39 @@ function HoaxyGraph(options)
 
 	}
 
+	var counter = 0;
+	var current_index = 0;
+    function getNewScores(){
+		getting_bot_scores.running = true;
+		counter = 20;
+		console.debug(current_index);
+		getBotScoreTimer(current_index);
+    }
+
 	//space out the requests so that we don't hit the rate limit so quickly
 	function getBotScoreTimer(index){
-		if(index > 20)
+		// if(index > 20)
+		// {
+		// 	console.debug(botscores);
+		// 	return false;
+		// }
+		if(counter <= 0)
 		{
-			console.debug(botscores);
+			current_index = index;
+			console.debug("got some botscores:", botscores);
+			getting_bot_scores.running = false;
 			return false;
 		}
+		else
+		{
+			counter -= 1;
+		}
+
 		if(index >= user_list.length)
 		{
 			console.debug(botscores);
+			console.debug("end of list");
+			getting_bot_scores.running = false;
 			return false;
 		}
 
@@ -118,6 +140,7 @@ function HoaxyGraph(options)
 		}
 
 		updateUserBotScore(user);
+		// console.debug(user);
 		index ++;
 		return setTimeout(function(){
 			// console.debug("get Another one");
@@ -127,20 +150,25 @@ function HoaxyGraph(options)
 
 	function updateUserBotScore(user)
 	{
-		// var prom = new Promise(function(){}, function(){});
-		//if exists and fresh
-		if(user.score)
-		{
-			// botscores[user.screen_name] = {score: user.score;
-			updateNodeColor(user.screen_name, user.score);
-			// prom.resolve();
-		}
-		//if score is stale or does not exist
-		if(!user.score || user.old)
-		{
-			prom = getNewBotometerScore(user.screen_name);
-		}
-
+		var prom = new Promise(function(resolve, reject){
+			// var prom = null;
+			//if exists and fresh
+			if(user.score)
+			{
+				// botscores[user.screen_name] = {score: user.score;
+				updateNodeColor(user.screen_name, user.score);
+				resolve();
+			}
+			//if score is stale or does not exist
+			if(!user.score || user.old)
+			{
+				var botProm = getNewBotometerScore(user.screen_name);
+				botProm.then(function(response){
+					resolve(response);
+				});
+			}
+			// console.debug(prom);
+		}, function(){});
 		return prom;
 	}
 	function twitterResponseFail(error){
@@ -149,32 +177,34 @@ function HoaxyGraph(options)
 	function getNewBotometerScore(screen_name)
 	{
 		var user = {};
+		botScoreA = new Promise(function(resolve, reject){
+			var user_data = twitter.getUserData(screen_name);
+			user_data.then(function(response){
+				user.user = response;
+			}, twitterResponseFail)
+			.catch(twitterResponseFail);
+			var user_timeline = twitter.getUserTimeline(screen_name);
+			user_timeline.then(function(response){
+				user.timeline = response;
+			}, twitterResponseFail)
+			.catch(twitterResponseFail);
+			var user_mentions = twitter.getUserMentions(screen_name);
+			user_mentions.then(function(response){
+				user.mentions = response;
+			}, twitterResponseFail)
+			.catch(twitterResponseFail);
 
-		var user_data = twitter.getUserData(screen_name);
-		user_data.then(function(response){
-			user.user = response;
-		}, twitterResponseFail)
-		.catch(twitterResponseFail);
-		var user_timeline = twitter.getUserTimeline(screen_name);
-		user_timeline.then(function(response){
-			user.timeline = response;
-		}, twitterResponseFail)
-		.catch(twitterResponseFail);
-		var user_mentions = twitter.getUserMentions(screen_name);
-		user_mentions.then(function(response){
-			user.mentions = response;
-		}, twitterResponseFail)
-		.catch(twitterResponseFail);
-		var botScore = new Promise(function(){}, function(){});
-
-		var got_from_twitter = Promise.all([user_data, user_timeline, user_mentions]);
-		got_from_twitter.then(function(values){
-			botScore = getBotScore(user);
-		}, function(error){
-			console.debug("Could not get bot score for " + screen_name + ": ", error);
-		});
-
-		return botScore;
+			var got_from_twitter = Promise.all([user_data, user_timeline, user_mentions]);
+			got_from_twitter.then(function(values){
+				var botScore = getBotScore(user);
+				botScore.then(function(response){
+					resolve(response);
+				});
+			}, function(error){
+				console.debug("Could not get bot score for " + screen_name + ": ", error);
+			});
+		})
+		return botScoreA;
 	}
 	function getBotScore(user_object)
 	{
@@ -535,6 +565,7 @@ function HoaxyGraph(options)
 		node_modal_content.is_quoted_by_count = counts.is_quoted_by_count;
 		node_modal_content.is_retweeted_by_count = counts.is_retweeted_by_count;
 
+
 	}
 
 
@@ -597,9 +628,10 @@ function HoaxyGraph(options)
 			node_modal_content.screenName = node.screenName;
 
 			var score = false;
+			// console.debug(node.screenName, botscores[node.screenName], botscores);
 			if(botscores[node.screenName])
 			{
-				botscores[node.screenName].score;
+				score = botscores[node.screenName].score;
 				score = score * 100;
 			}
 			node_modal_content.botscore = score;
@@ -695,9 +727,12 @@ function HoaxyGraph(options)
 
 	returnObj.updateEdges = UpdateEdges;
 	returnObj.updateGraph = UpdateGraph;
+	returnObj.getNewScores = getNewScores;
+	returnObj.updateUserBotScore = updateUserBotScore;
 	returnObj.zoomIn = zoomIn;
 	returnObj.zoomOut = zoomOut;
 	returnObj.getEdges = function(){ return edges; };
+	returnObj.botscores = function(){ return botscores; };
 	return returnObj;
 
 

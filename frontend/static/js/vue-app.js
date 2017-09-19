@@ -52,6 +52,7 @@ var app = new Vue({
 
         timeline: null,
         graph: null,
+        getting_bot_scores: {running: false},
 
         show_edge_modal: false,
         show_node_modal: false,
@@ -133,6 +134,7 @@ var app = new Vue({
             return query_string;
         },
         spinStop: function(key, reset){
+            console.debug(key);
             var key_index = this.spin_key_table.indexOf(key);
             if(key_index >= 0)
             {
@@ -147,6 +149,7 @@ var app = new Vue({
             // console.debug(key, this.spin_key_table);
         },
         spinStart: function(key){
+            console.debug(key);
             this.spin_key_table.push(key);
             this.loading = true;
             this.input_disabled = true;
@@ -313,8 +316,55 @@ var app = new Vue({
                 function(error){
                     v.twitter_account_info = {};
                     console.debug("error: ", error);
+                    // this.getting_bot_scores.running = false;
                 }
             );
+            return me;
+        },
+        getMoreBotScores: function(){
+            // this.getting_bot_scores = true;
+            if(!this.twitter_account_info.id)
+            {
+                var prom = this.twitterLogIn();
+                prom.then( this.graph.getNewScores );
+
+            }
+            else
+            {
+                this.graph.getNewScores();
+            }
+        },
+        getSingleBotScore: function(screen_name){
+            var v = this;
+            this.getting_bot_scores.running = true;
+            var success = new Promise(function(resolve, reject){
+                if(!v.twitter_account_info.id)
+                {
+                    v.twitterLogIn()
+                    .then(function(){
+                        v.graph.updateUserBotScore({screen_name: screen_name})
+                        .then(function(response){
+                            resolve(response);
+                        });
+
+                    })
+                }
+                else
+                {
+                    v.graph.updateUserBotScore({screen_name: screen_name})
+                    .then(function(response){
+                        resolve(response);
+                    })
+                }
+            });
+            success.then(function(response){
+                // console.debug(response.data.scores.english);
+                v.node_modal_content.botscore = response.data.scores.english * 100;
+                v.getting_bot_scores.running = false;
+            }, function(){
+                v.getting_bot_scores.running = false;
+            })
+
         },
         twitterLogOut: function(){
             var p = this.twitter.logOut();
@@ -480,6 +530,7 @@ var app = new Vue({
             toggle_node_modal: this.toggleNodeModal,
             node_modal_content: this.node_modal_content,
             edge_modal_content: this.edge_modal_content,
+            getting_bot_scores: this.getting_bot_scores,
             // twitter_account_info: this.twitter_account_info,
             twitter: this.twitter
         });

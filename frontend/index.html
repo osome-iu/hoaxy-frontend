@@ -74,8 +74,6 @@
 				<p class="text-center">
 					<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary" id="visualize_top"> Visualize </button>
 
-					<button v-if="!twitter_account_info.id" @click.stop.prevent="twitterLogIn()" class="btn btn-warning" id="authenticate_button">Enable Botometer</button>
-					<button v-if="twitter_account_info.id" @click.stop.prevent="twitterLogOut()" class="btn btn-warning" id="un_authenticate_button">Disable Twitter</button>
 				</p>
 				<ul class="list-unstyled" id="article_list">
 					<li v-for="article, index in getSubsetOfArticles()" :class="article.site_type" class="rounded">
@@ -141,6 +139,10 @@
 					Click on network nodes and edges for details.
 				</div>
 				<div id="zoom_buttons">
+                    <button v-if="!getting_bot_scores.running" @click.stop.prevent="getMoreBotScores" class="btn btn-primary" id="">Get More Bot Scores</button>
+                    <button v-if="getting_bot_scores.running" disabled class="disabled btn btn-primary" id="">Getting More Bot Scores...</button>
+                    <!-- <button v-if="twitter_account_info.id" @click.stop.prevent="twitterLogOut()" class="btn btn-primary" id="un_authenticate_button">Disable Twitter</button> -->
+
 					<button class="btn btn-primary" type="button" value ="-" id="zoom-out" v-if="show_zoom_buttons" @click="zoomOutGraph"><i class="fa fa-minus" aria-hidden="true"></i></button>
 					<button class="btn btn-primary" type="button" value ="+" id="zoom-in" v-if="show_zoom_buttons" @click="zoomInGraph"><i class="fa fa-plus" aria-hidden="true"></i></button>
 				</div>
@@ -202,8 +204,13 @@
 					</div>
 					<div class="modal-body" >
 						<p>Botometer Score:
-							<span v-if="node_modal_content.botscore">{{node_modal_content.botscore}}%</span>
+							<span v-if="node_modal_content.botscore"><b>{{node_modal_content.botscore}}%</b></span>
 							<span v-if="!node_modal_content.botscore">Unavailable</span>
+
+						</p>
+						<p v-if="!node_modal_content.botscore">
+							<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.screenName)" class="btn btn-primary" id="">Get Bot Score</button>
+							<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
 						</p>
 						<h2>has quoted: <span v-if="node_modal_content.has_quoted_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.has_quoted">
