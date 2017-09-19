@@ -55,6 +55,19 @@ def dbQueryUserScreenName(user_names):
     return result
 
 
+def increaseNumRequests(id):
+    botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            UPDATE botscore
+            SET num_requests = num_requests + 1
+            WHERE id = :id
+            """
+        ),
+        {"id": id}
+    )
+
+
 def getUserRecordStatus(user_entry, tweets_per_day, config_file):
     if user_entry["timestamp"]:
         timedelta_age = datetime.now() - user_entry["timestamp"].replace(tzinfo=None)
@@ -153,8 +166,7 @@ def getScores():
         user_tweet_per_day = row[7]
         user_record["fresh"] = getUserRecordStatus(user_record, user_tweet_per_day, config_file)
         user_scores.append(user_record)
-
-    #db.session.commit()
+        increaseNumRequests(row[0])
     return jsonify(user_scores)
 
 
