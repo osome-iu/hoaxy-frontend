@@ -155,7 +155,7 @@ def getScores():
             },
             "user": {
                 "screen_name": row[2],
-                "id": row[1]
+                "id": str(row[1])
             },
             "scores": {
                 "english": row[4],
