@@ -1,11 +1,12 @@
 # -*- coding: utf8 -*-
-#from dbmodels import api, BotbaseModel, db
 import sqlalchemy
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import configparser
 from datetime import datetime
 
 api = Flask(__name__)
+CORS(api)
 botscore_engine = sqlalchemy.create_engine("postgresql://localhost/botbase")
 botscore_connection = botscore_engine.connect()
 
