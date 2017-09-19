@@ -24,7 +24,7 @@ Examples:
 
 ## "POST" method
 
-Use `POST` method when meet the URL length limit.
+Use `POST` method when the URL length limit is met.
 
 Include a json file in the request body with the following format:
 
@@ -51,6 +51,8 @@ Or
         "screen_name": "username1,username2,username3"
     }
 ```
+
+Or
 
 ```json
     {
@@ -91,7 +93,7 @@ Duplicated records are possible.
         },
         "timestamp": "Sun, 10 Sep 2017 04:40:04 GMT",
         "user": {
-            "id": 269880075,
+            "id": "269880075",
             "screen_name": "blond_leo"
         }
     },
@@ -111,7 +113,7 @@ Duplicated records are possible.
         },
         "timestamp": null,
         "user": {
-            "id": 269880076,
+            "id": "269880076",
             "screen_name": null
         }
     },
@@ -131,7 +133,7 @@ Duplicated records are possible.
         },
         "timestamp": "Sun, 10 Sep 2017 04:40:07 GMT",
         "user": {
-            "id": 156433910,
+            "id": "156433910",
             "screen_name": "yadizdf"
         }
     },
