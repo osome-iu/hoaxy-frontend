@@ -15,6 +15,19 @@ var colors = {
     }
 };
 
+// var colors = {
+//     node_colors : {
+//         "fact_checking" : '#1f2041',
+//         "claim" : '#1f2041'
+//     },
+//     edge_colors : {
+//         "fact_checking" : '#F46036',
+//         "fact_checking_dark" : '#cc4f2d',
+//         "claim" : '#4B3F72',
+//         "claim_dark" : '#2a2340'
+//     }
+// };
+
 var app = new Vue({
     el: '#vue-app',
     data: {
@@ -77,7 +90,8 @@ var app = new Vue({
             is_quoted_by_count: 0,
             is_mentioned_by_count: 0,
             is_retweeted_by_count: 0,
-            botscore: 0
+            botscore: 0,
+            botcolor: 0
         },
 
         colors: colors
@@ -343,23 +357,21 @@ var app = new Vue({
                     v.twitterLogIn()
                     .then(function(){
                         v.graph.updateUserBotScore({screen_name: screen_name})
-                        .then(function(response){
-                            resolve(response);
-                        });
+                        .then(resolve, reject);
 
                     })
                 }
                 else
                 {
                     v.graph.updateUserBotScore({screen_name: screen_name})
-                    .then(function(response){
-                        resolve(response);
-                    })
+                    .then(resolve, reject)
                 }
             });
             success.then(function(response){
                 // console.debug(response.data.scores.english);
-                v.node_modal_content.botscore = response.data.scores.english * 100;
+                var score = response.data.scores.english;
+                v.node_modal_content.botscore = Math.floor(score * 100);
+                v.node_modal_content.botcolor = v.graph.getNodeColor(score);
                 v.getting_bot_scores.running = false;
             }, function(){
                 v.getting_bot_scores.running = false;

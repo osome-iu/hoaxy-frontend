@@ -163,12 +163,10 @@ function HoaxyGraph(options)
 			if(!user.score || user.old)
 			{
 				var botProm = getNewBotometerScore(user.screen_name);
-				botProm.then(function(response){
-					resolve(response);
-				});
+				botProm.then(resolve, reject);
 			}
 			// console.debug(prom);
-		}, function(){});
+		});
 		return prom;
 	}
 	function twitterResponseFail(error){
@@ -197,11 +195,10 @@ function HoaxyGraph(options)
 			var got_from_twitter = Promise.all([user_data, user_timeline, user_mentions]);
 			got_from_twitter.then(function(values){
 				var botScore = getBotScore(user);
-				botScore.then(function(response){
-					resolve(response);
-				});
+				botScore.then(resolve, reject);
 			}, function(error){
 				console.debug("Could not get bot score for " + screen_name + ": ", error);
+				reject(error);
 			});
 		})
 		return botScoreA;
@@ -231,53 +228,90 @@ function HoaxyGraph(options)
 	function updateNodeColor(screen_name, score)
 	{
 		//change node color on graph based on botscore
-		// console.debug(screen_name, score);
-		color = getNodeColor(score);
-		// console.debug(color, score);
-		s.graph.nodes(screen_name).color = color;
-		// s.iterNodes(function(node){
-		// })
+		s.graph.nodes(screen_name).color = getNodeColor(score);
+		s.graph.nodes(screen_name).borderColor = getBorderColor(score);
 		s.refresh();
 	}
-	function getNodeColor(score){
-		if(!score)
+	function getBaseColor(score){
+		if(score ===  undefined || score === null)
 		{
 			return colors.node_colors["fact_checking"];
 		}
+		if(score === false)
+		{
+			return {r: 175, g: 175, b: 175};
+		}
+		score = score * 100;
 		var color1 = { red: 0, green: 0, blue: 255};
 		var color2 = { red: 255, green: 0, blue: 0};
-		var r = Math.floor(color1.red + score * (color2.red - color1.red)).toString(16);
-		var g = Math.floor(color1.green + score * (color2.green - color1.green)).toString(16);
-		var b = Math.floor(color1.blue + score * (color2.blue - color1.blue)).toString(16);
+		var node_colors = [
+			{red: 215, green: 25, blue: 28} , //"#d7191c",
+			{red: 253, green: 174, blue: 97} , //"#fdae61",
+			{red: 255, green: 255, blue: 191} , //"#ffffbf",
+			{red: 171, green: 221, blue: 164} , //"#abdda4",
+			{red: 43, green: 131, blue: 186} //"#2b83ba",
+		];
+		var score2 = 0
+		if(score < 30)
+		{
+			color1 = node_colors[4];
+			color2 = node_colors[3];
 
-		if(r.length < 2) r = "0"+r;
-		if(g.length < 2) g = "0"+g;
-		if(b.length < 2) b = "0"+b;
-		var color = "#"+r+g+b;
-		// console.debug(color);
-		// document.getElementsByTagName("body")[0].style.backgroundColor = color;
+			score2 = score / (30 - 0);
+		}
+		else if(score < 50)
+		{
+			color1 = node_colors[3];
+			color2 = node_colors[2];
+			score2 = score / (50 - 30)
+		}
+		else if(score < .70)
+		{
+			color1 = node_colors[2];
+			color2 = node_colors[1];
+			score2 = score / (70 - 50);
+		}
+		else
+		{
+			color1 = node_colors[1];
+			color2 = node_colors[0];
+			score2 = score / (1 - 70);
+		}
+		score2 = score2/100;
+		var r = Math.floor(color1.red + score2 * (color2.red - color1.red))//.toString(16);
+		var g = Math.floor(color1.green + score2 * (color2.green - color1.green))//.toString(16);
+		var b = Math.floor(color1.blue + score2 * (color2.blue - color1.blue))//.toString(16);
+		// if(r.length < 2) r = "0"+r;
+		// if(g.length < 2) g = "0"+g;
+		// if(b.length < 2) b = "0"+b;
+		// var color = "#"+r+g+b;
+		var color = {r: r, g: g, b: b};
 		return color;
 
-		// if(score < .20)
-		// {
-		// 	return "blue";
-		// }
-		// else if(score < .40)
-		// {
-		// 	return "green";
-		// }
-		// else if(score < .60)
-		// {
-		// 	return "yellow";
-		// }
-		// else if(score < .80)
-		// {
-		// 	return "orange";
-		// }
-		// else
-		// {
-		// 	return "red";
-		// }
+
+	}
+
+	function getNodeColor(score)
+	{
+		var base = getBaseColor(score);
+		var color = "rgb("+base.r+", "+base.g+", "+base.b+")"
+		return color;
+	}
+
+	function getBorderColor(score)
+	{
+		var darken = 50;
+		var base = getBaseColor(score);
+		base.r = base.r - darken;
+		if(base.r < 0) base.r = 0;
+		base.g = base.g - darken;
+		if(base.g < 0) base.g = 0;
+		base.b = base.b - darken;
+		if(base.b < 0) base.b = 0;
+
+		var color = "rgb("+base.r+", "+base.g+", "+base.b+")"
+		return color;
+
 	}
 
 
@@ -407,7 +441,7 @@ function HoaxyGraph(options)
 	            g.nodes.push({
 	                x: Math.random(),
 					y: Math.random(),
-	                size: nodes[i].size,
+	                size: Math.sqrt(nodes[i].size*3),
 	                label: nodes[i].screenName,
 	                id: nodes[i].screenName,
 					node_id: cnt,
@@ -596,13 +630,14 @@ function HoaxyGraph(options)
 				autoRescale: true,
 				scalingMode: "inside",
 	            edgeHoverExtremities: true,
-	            borderSize: 2,
+	            borderSize: 1,
 	            minArrowSize: 6,
 	            labelThreshold: 8,
 	            enableEdgeHovering: true,
 	            edgeHoverSizeRatio: 2,
 	            singleHover: true,
-				rescaleIgnoreSize: true
+				rescaleIgnoreSize: true,
+				defaultNodeType: 'border'
 	        }
 	    });
 		var jiggle_compensator = Math.floor(Math.sqrt(graph.edges.length)) *600;
@@ -632,9 +667,15 @@ function HoaxyGraph(options)
 			if(botscores[node.screenName])
 			{
 				score = botscores[node.screenName].score;
-				score = score * 100;
+				score = Math.floor(score * 100);
+				node_modal_content.botcolor = score > 0 ? getNodeColor(score/100) : "";
+				node_modal_content.botscore = score;
 			}
-			node_modal_content.botscore = score;
+			else
+			{
+				node_modal_content.botscore = false;
+				node_modal_content.botcolor = "";
+			}
 
 			//insert tweets into modal body, grouped by individual to_user_id
 			GenerateUserModal(e);
@@ -723,11 +764,51 @@ function HoaxyGraph(options)
 	}
 
 
+	;(function(undefined) {
+
+		/**
+		* Sigma Node Border Custom Renderer
+		* ==================================
+		*
+		* The aim of this simple node renderer is to enable the user to display
+		* colored node borders.
+		*
+		* Author: Guillaume Plique (Yomguithereal)
+		* Version: 0.0.1
+		*/
+
+		sigma.canvas.nodes.border = function(node, context, settings) {
+			var prefix = settings('prefix') || '';
+
+			context.fillStyle = node.color || settings('defaultNodeColor');
+			context.beginPath();
+			context.arc(
+				node[prefix + 'x'],
+				node[prefix + 'y'],
+				node[prefix + 'size'],
+				0,
+				Math.PI * 2,
+				true
+			);
+
+			context.closePath();
+			context.fill();
+
+			context.lineWidth = node.borderWidth || 1;
+			context.strokeStyle = node.borderColor || getBorderColor(false)
+			context.stroke();
+		};
+	}).call(this);
+
+
+
+
 	console.debug("Graph initialized");
 
 	returnObj.updateEdges = UpdateEdges;
 	returnObj.updateGraph = UpdateGraph;
 	returnObj.getNewScores = getNewScores;
+	returnObj.getNodeColor = getNodeColor;
 	returnObj.updateUserBotScore = updateUserBotScore;
 	returnObj.zoomIn = zoomIn;
 	returnObj.zoomOut = zoomOut;

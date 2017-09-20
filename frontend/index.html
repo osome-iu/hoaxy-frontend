@@ -203,15 +203,17 @@
 						</h4>
 					</div>
 					<div class="modal-body" >
-						<p>Botometer Score:
-							<span v-if="node_modal_content.botscore"><b>{{node_modal_content.botscore}}%</b></span>
-							<span v-if="!node_modal_content.botscore">Unavailable</span>
+						<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor }">
+							<p>Botometer Score:
+								<span v-if="node_modal_content.botscore"><b>{{node_modal_content.botscore}}%</b></span>
+								<span v-if="!node_modal_content.botscore">Unavailable</span>
 
-						</p>
-						<p v-if="!node_modal_content.botscore">
-							<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.screenName)" class="btn btn-primary" id="">Get Bot Score</button>
-							<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
-						</p>
+							</p>
+							<p v-if="!node_modal_content.botscore">
+								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.screenName)" class="btn btn-primary" id="">Get Bot Score</button>
+								<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
+							</p>
+						</div>
 						<h2>has quoted: <span v-if="node_modal_content.has_quoted_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.has_quoted">
 							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a> </h3>
