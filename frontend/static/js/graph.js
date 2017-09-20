@@ -257,27 +257,29 @@ function HoaxyGraph(options)
 			color1 = node_colors[4];
 			color2 = node_colors[3];
 
-			score2 = score / (30 - 0);
+			score2 = (score - 0) / (30 - 0);
 		}
 		else if(score < 50)
 		{
 			color1 = node_colors[3];
 			color2 = node_colors[2];
-			score2 = score / (50 - 30)
+			score2 = (score - 30) / (50 - 30)
 		}
-		else if(score < .70)
+		else if(score < 70)
 		{
 			color1 = node_colors[2];
 			color2 = node_colors[1];
-			score2 = score / (70 - 50);
+			score2 = (score - 50) / (70 - 50);
 		}
 		else
 		{
 			color1 = node_colors[1];
 			color2 = node_colors[0];
-			score2 = score / (1 - 70);
+			score2 = (score - 70) / (100 - 70);
 		}
-		score2 = score2/100;
+		// console.debug(score, score2);
+
+		score2 = score2;
 		var r = Math.floor(color1.red + score2 * (color2.red - color1.red))//.toString(16);
 		var g = Math.floor(color1.green + score2 * (color2.green - color1.green))//.toString(16);
 		var b = Math.floor(color1.blue + score2 * (color2.blue - color1.blue))//.toString(16);
@@ -286,6 +288,7 @@ function HoaxyGraph(options)
 		// if(b.length < 2) b = "0"+b;
 		// var color = "#"+r+g+b;
 		var color = {r: r, g: g, b: b};
+		// console.debug(color);
 		return color;
 
 
