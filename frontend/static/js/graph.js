@@ -155,7 +155,6 @@ function HoaxyGraph(options)
 			//if exists and fresh
 			if(user.score)
 			{
-				// botscores[user.screen_name] = {score: user.score;
 				updateNodeColor(user.screen_name, user.score);
 				resolve();
 			}
@@ -165,8 +164,8 @@ function HoaxyGraph(options)
 				var botProm = getNewBotometerScore(user.screen_name);
 				botProm.then(resolve, reject);
 			}
-			// console.debug(prom);
-		});
+		})
+		.then(function(response){ return response; }, function(error){ return error; });
 		return prom;
 	}
 	function twitterResponseFail(error){
@@ -179,17 +178,17 @@ function HoaxyGraph(options)
 			var user_data = twitter.getUserData(screen_name);
 			user_data.then(function(response){
 				user.user = response;
-			}, twitterResponseFail)
+			}, function(){})
 			.catch(twitterResponseFail);
 			var user_timeline = twitter.getUserTimeline(screen_name);
 			user_timeline.then(function(response){
 				user.timeline = response;
-			}, twitterResponseFail)
+			}, function(){})
 			.catch(twitterResponseFail);
 			var user_mentions = twitter.getUserMentions(screen_name);
 			user_mentions.then(function(response){
 				user.mentions = response;
-			}, twitterResponseFail)
+			}, function(){})
 			.catch(twitterResponseFail);
 
 			var got_from_twitter = Promise.all([user_data, user_timeline, user_mentions]);
@@ -197,10 +196,10 @@ function HoaxyGraph(options)
 				var botScore = getBotScore(user);
 				botScore.then(resolve, reject);
 			}, function(error){
-				console.debug("Could not get bot score for " + screen_name + ": ", error);
+				console.warn("Could not get bot score for " + screen_name + ": ", error);
 				reject(error);
 			});
-		})
+		}, twitterResponseFail)
 		return botScoreA;
 	}
 	function getBotScore(user_object)

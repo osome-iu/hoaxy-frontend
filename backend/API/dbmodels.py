@@ -1,13 +1,14 @@
 # -*- coding: utf8 -*-
 from flask import Flask
+from flask_cors import CORS, cross_origin
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import REAL, TEXT
 
 api = Flask(__name__)
-api.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://localhost/botbase"
+CORS(api)
+api.config["SQLALCHEMY_DATABASE_URI"] = "postgresql://testuser:testpass@localhost/botbase"
 db = SQLAlchemy(api)
-
 
 class BotbaseModel(db.Model):
     """

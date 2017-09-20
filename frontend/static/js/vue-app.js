@@ -148,7 +148,7 @@ var app = new Vue({
             return query_string;
         },
         spinStop: function(key, reset){
-            console.debug(key);
+            // console.debug(key);
             var key_index = this.spin_key_table.indexOf(key);
             if(key_index >= 0)
             {
@@ -163,7 +163,7 @@ var app = new Vue({
             // console.debug(key, this.spin_key_table);
         },
         spinStart: function(key){
-            console.debug(key);
+            // console.debug(key);
             this.spin_key_table.push(key);
             this.loading = true;
             this.input_disabled = true;

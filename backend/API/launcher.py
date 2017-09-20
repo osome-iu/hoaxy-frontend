@@ -102,4 +102,4 @@ def getScores():
 
 
 if __name__ == "__main__":
-    api.run(debug=True)
+    api.run(debug=True, host="192.168.33.10", port=5000)
