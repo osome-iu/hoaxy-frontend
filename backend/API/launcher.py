@@ -23,7 +23,7 @@ def dbQueryUserID(user_ids):
                     FROM botscore
                     GROUP BY botscore.user_id) AS latesttable
                 ON botscore.user_id = latesttable.latest_user_id AND botscore.time_stamp = latesttable.latesttimestamp) AS latestbotscore
-            RIGHT JOIN UNNEST(:user_ids) AS ids(user_id) ON latestbotscore.user_id = ids.user_id
+            JOIN UNNEST(:user_ids) AS ids(user_id) ON latestbotscore.user_id = ids.user_id
             """
         ),
         {
@@ -45,7 +45,7 @@ def dbQueryUserScreenName(user_names):
                     FROM botscore
                     GROUP BY botscore.user_id) AS latesttable
                 ON botscore.user_id = latesttable.latest_user_id AND botscore.time_stamp = latesttable.latesttimestamp) AS latestbotscore
-            RIGHT JOIN UNNEST(:screen_names) AS names(screen_name)
+            JOIN UNNEST(:screen_names) AS names(screen_name)
             ON latestbotscore.screen_name = names.screen_name
             """
         ),
@@ -123,11 +123,13 @@ def getScores():
 
     # parse the query according to the type
     db_results = []
+    total_request_number = 0
     if user_ids_query:
         if isinstance(user_ids_query, list):
             user_ids = list(map(int, user_ids_query))
         elif isinstance(user_ids_query, str):
             user_ids = list(map(int, user_ids_query.split(",")))
+        total_request_number += len(user_ids)
         db_results += dbQueryUserID(user_ids)
 
     if user_names_query:
@@ -136,14 +138,12 @@ def getScores():
         elif isinstance(user_names_query, str):
             user_names = user_names_query.split(",")
         db_results += dbQueryUserScreenName(user_names)
+        total_request_number += len(user_names)
 
     user_scores = []
 
     for row in db_results:
-        if row[3]:
-            all_bot_scores = row[3]
-        else:
-            all_bot_scores = {}
+        all_bot_scores = row[3] if row[3] else dict()
         user_record = {
             "categories": {
                 "friend": all_bot_scores.get("friend"),
@@ -171,7 +171,16 @@ def getScores():
         )
         user_scores.append(user_record)
         increaseNumRequests(row[0])
-    return jsonify(user_scores)
+
+        hits = len(db_results)
+        response = {
+            "statuses": {
+                "hit": hits,
+                "miss": total_request_number - hits
+            },
+            "result": user_scores
+        }
+    return jsonify(response)
 
 
 if __name__ == "__main__":
