@@ -7,7 +7,8 @@ from datetime import datetime
 
 api = Flask(__name__)
 CORS(api)
-botscore_engine = sqlalchemy.create_engine("postgresql://localhost/botbase")
+connection_string = open('.db.connection').read()
+botscore_engine = sqlalchemy.create_engine(connection_string)
 botscore_connection = botscore_engine.connect()
 
 
@@ -184,4 +185,4 @@ def getScores():
 
 
 if __name__ == "__main__":
-    api.run(debug=True)
+    api.run(debug=True, port=6060)
