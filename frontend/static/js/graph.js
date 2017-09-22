@@ -29,6 +29,16 @@ function HoaxyGraph(options)
 			// 	if(twitter_account_info.id)
 			// 	{
 					getBotCacheScores();
+
+					// var prom = this.graph.getBotCacheScores();
+					// var v = this;
+					// var func = function(){
+					// 	v.graph.updateGraph(starting_time, ending_time);
+					// 	v.show_zoom_buttons = true;
+					// 	v.scrollToElement("graphs");
+					// };
+					// prom.then();
+
 			// 	}
 			// });
 		} catch(e){
@@ -69,15 +79,16 @@ function HoaxyGraph(options)
 			function(response){
 				spinStop("getBotCacheScores");
 				console.debug("Got botcache: ", response.data);
-				for(var i in response.data)
+                var results = response.data.result;
+				for(var i in results)
 				{
-					var user = response.data[i];
+					var user = results[i];
 					if(user)
 					{
-						var sn = i;
+						var sn = user.user.screen_name;
 						var score = user.scores.english;
-						botscore[sn] = {score: score, old: !user.fresh};
-						updateNodeColor(sn, user.score);
+						botscores[sn] = {score: score, old: !user.fresh};
+						updateNodeColor(sn, score);
 					}
 				}
 
@@ -91,6 +102,8 @@ function HoaxyGraph(options)
 				spinStop("getBotCacheScores");
 			}
 		);
+
+		return botcache_request;
 
 
 	}
@@ -226,10 +239,19 @@ function HoaxyGraph(options)
 	}
 	function updateNodeColor(screen_name, score)
 	{
+        color = getNodeColor(score);
 		//change node color on graph based on botscore
-		s.graph.nodes(screen_name).color = getNodeColor(score);
-		s.graph.nodes(screen_name).borderColor = getBorderColor(score);
-		s.refresh();
+        if(s && s.graph)
+        {
+			var node = s.graph.nodes(screen_name);
+			// console.debug(screen_name, score,color, node);
+			if(node)
+			{
+	    		s.graph.nodes(screen_name).color = color;
+	    		s.graph.nodes(screen_name).borderColor = getBorderColor(score);
+	    		s.refresh();
+			}
+        }
 	}
 	function getBaseColor(score){
 		if(score ===  undefined || score === null)
@@ -238,19 +260,41 @@ function HoaxyGraph(options)
 		}
 		if(score === false)
 		{
-			return {r: 175, g: 175, b: 175};
+			return {r: 255, g: 255, b: 255};
 		}
+		var score2 = score;
 		score = score * 100;
-		var color1 = { red: 0, green: 0, blue: 255};
-		var color2 = { red: 255, green: 0, blue: 0};
+		var color1 = { red: 0, green: 255, blue: 0};
+		var color2 = { red: 102, green: 0, blue: 0};
+		// var node_colors = [
+		// 	{red: 215, green: 25, blue: 28} , //"#d7191c",
+		// 	{red: 253, green: 174, blue: 97} , //"#fdae61",
+		// 	{red: 255, green: 255, blue: 191} , //"#ffffbf",
+		// 	{red: 171, green: 221, blue: 164} , //"#abdda4",
+		// 	{red: 43, green: 131, blue: 186} //"#2b83ba",
+		// ];
 		var node_colors = [
-			{red: 215, green: 25, blue: 28} , //"#d7191c",
-			{red: 253, green: 174, blue: 97} , //"#fdae61",
-			{red: 255, green: 255, blue: 191} , //"#ffffbf",
-			{red: 171, green: 221, blue: 164} , //"#abdda4",
-			{red: 43, green: 131, blue: 186} //"#2b83ba",
+			{red: 109, green: 7, blue: 7} ,
+			{red: 168, green: 116, blue: 53} ,
+			{red: 178, green: 178, blue: 48} ,
+			{red: 166, green: 229, blue: 153} ,
+			{red: 216, green: 241, blue: 255},
 		];
-		var score2 = 0
+		// var node_colors = [
+		// 	{red: 85, green: 0, blue: 0} ,
+		// 	{red: 170, green: 221, blue: 0} ,
+		// 	{red: 136, green: 136, blue: 255}
+		// ];
+
+		// var node_colors = [
+		// 	{red: 127, green: 0, blue: 0} ,
+		// 	{red: 164, green: 173, blue: 0} ,
+		// 	{red: 157, green: 162, blue: 224} ,
+		// 	{red: 175, green: 255, blue: 187}
+		// ];
+
+
+		score2 = 0
 		if(score < 30)
 		{
 			color1 = node_colors[4];
@@ -276,6 +320,41 @@ function HoaxyGraph(options)
 			color2 = node_colors[0];
 			score2 = (score - 70) / (100 - 70);
 		}
+
+		// if(score < 50)
+		// {
+		// 	color1 = node_colors[2];
+		// 	color2 = node_colors[1];
+		//
+		// 	score2 = (score - 0) / (50 - 0);
+		// }
+		// else
+		// {
+		// 	color1 = node_colors[1];
+		// 	color2 = node_colors[0];
+		// 	score2 = (score - 50) / (100 - 50)
+		// }
+
+		// if(score < 33)
+		// {
+		// 	color1 = node_colors[3];
+		// 	color2 = node_colors[2];
+		//
+		// 	score2 = (score - 0) / (33 - 0);
+		// }
+		// else if(score < 66)
+		// {
+		// 	color1 = node_colors[2];
+		// 	color2 = node_colors[1];
+		//
+		// 	score2 = (score - 33) / (66 - 33);
+		// }
+		// else
+		// {
+		// 	color1 = node_colors[1];
+		// 	color2 = node_colors[0];
+		// 	score2 = (score - 66) / (100 - 66)
+		// }
 		// console.debug(score, score2);
 
 		score2 = score2;
@@ -648,6 +727,13 @@ function HoaxyGraph(options)
 	        slowDown: 100,
 	        gravity: 2
 	    });
+		console.debug(botscores);
+		for(var i in botscores)
+		{
+			updateNodeColor(i, botscores[i].score);
+		}
+
+
 		spinStart("ForceAtlas");
 		setTimeout(function () {
 			s.stopForceAtlas2();
@@ -810,6 +896,7 @@ function HoaxyGraph(options)
 	returnObj.updateEdges = UpdateEdges;
 	returnObj.updateGraph = UpdateGraph;
 	returnObj.getNewScores = getNewScores;
+	// returnObj.getBotCacheScores = getBotCacheScores;
 	returnObj.getNodeColor = getNodeColor;
 	returnObj.updateUserBotScore = updateUserBotScore;
 	returnObj.zoomIn = zoomIn;
