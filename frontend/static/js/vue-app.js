@@ -369,10 +369,16 @@ var app = new Vue({
             });
             success.then(function(response){
                 // console.debug(response.data.scores.english);
-                var score = response.data.scores.english;
-                v.node_modal_content.botscore = Math.floor(score * 100);
-                v.node_modal_content.botcolor = v.graph.getNodeColor(score);
                 v.getting_bot_scores.running = false;
+                try {
+                    var score = response.data.scores.english;
+                    v.node_modal_content.botscore = Math.floor(score * 100);
+                    v.node_modal_content.botcolor = v.graph.getNodeColor(score);
+                }
+                catch (e)
+                {
+                    console.error(e);
+                }
             }, function(){
                 v.getting_bot_scores.running = false;
             })
