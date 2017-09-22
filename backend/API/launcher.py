@@ -180,14 +180,14 @@ def getScores():
         user_scores.append(user_record)
         increaseNumRequests(row[0])
 
-        hits = len(db_results)
-        response = {
-            "statuses": {
-                "hit": hits,
-                "miss": total_request_number - hits
-            },
-            "result": user_scores
-        }
+    hits = len(db_results)
+    response = {
+        "statuses": {
+            "hit": hits,
+            "miss": total_request_number - hits
+        },
+        "result": user_scores
+    }
     return jsonify(response)
 
 
