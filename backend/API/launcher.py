@@ -16,9 +16,19 @@ def dbQueryUserID(user_ids):
     result = botscore_connection.execute(
         sqlalchemy.text(
             """
-            SELECT id, ids.user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
-            FROM botscore
-            JOIN UNNEST(:user_ids) AS ids(user_id) ON botscore.user_id = ids.user_id
+            WITH temptable AS (
+                SELECT id, ids.user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+                FROM botscore
+                JOIN UNNEST(:user_ids) AS ids(user_id) ON botscore.user_id = ids.user_id
+            )
+            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+            FROM temptable
+            JOIN (
+                SELECT temptable.user_id AS latest_user_id, max(time_stamp) AS latesttimestamp
+                FROM temptable
+                GROUP BY temptable.user_id
+            ) AS latesttable
+            ON temptable.user_id = latesttable.latest_user_id AND temptable.time_stamp = latesttable.latesttimestamp
             """
         ),
         {
@@ -32,16 +42,19 @@ def dbQueryUserScreenName(user_names):
     result = botscore_connection.execute(
         sqlalchemy.text(
             """
-            SELECT id, user_id, names.screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
-            FROM
-                (SELECT * FROM botscore
-                JOIN
-                    (SELECT botscore.user_id AS latest_user_id, max(time_stamp) AS latesttimestamp
-                    FROM botscore
-                    GROUP BY botscore.user_id) AS latesttable
-                ON botscore.user_id = latesttable.latest_user_id AND botscore.time_stamp = latesttable.latesttimestamp) AS latestbotscore
-            JOIN UNNEST(:screen_names) AS names(screen_name)
-            ON latestbotscore.screen_name = names.screen_name
+            WITH temptable AS (
+                SELECT id, user_id, names.screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+                FROM botscore
+                JOIN UNNEST(:screen_names) AS names(screen_name) ON botscore.screen_name = names.screen_name
+            )
+            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+            from temptable
+            JOIN (
+                SELECT temptable.screen_name AS latest_user_screen_name, max(time_stamp) AS latesttimestamp
+                FROM temptable
+                GROUP BY temptable.screen_name
+            ) AS latesttable
+            ON temptable.screen_name = latesttable.latest_user_screen_name AND temptable.time_stamp = latesttable.latesttimestamp
             """
         ),
         {
