@@ -71,91 +71,64 @@ Or
 
 # API Response
 
-For queries no matches are found in the database, an "empty" record will be returned where all the fields are `NULL` except `user_id` or `screen_name`.
-
-Duplicated records are possible.
+The following request contains 2 records that are in the database and 2 records that are not.
 
 ```json
-[
-    {
-        "categories": {
-            "content": 0.64,
-            "friend": 0.57,
-            "network": 0.8,
-            "sentiment": 0.51,
-            "temporal": 0.37,
-            "user": 0.53
-        },
-        "fresh": false,
-        "scores": {
-            "english": 0.65,
-            "universal": 0.52
-        },
-        "timestamp": "Sun, 10 Sep 2017 04:40:04 GMT",
-        "user": {
-            "id": "269880075",
-            "screen_name": "blond_leo"
-        }
+{
+	"screen_name": "yadizdf,jondoe",
+	"user_id": ["269880075" , "269880076"]
+}
+```
+
+The response json will contain the statuses of the queried user records.
+
+```json
+{
+    "statuses": {
+        "hit": 2,
+        "miss": 2
     },
-    {
-        "categories": {
-            "content": null,
-            "friend": null,
-            "network": null,
-            "sentiment": null,
-            "temporal": null,
-            "user": null
+    "result": [
+        {
+            "categories": {
+                "content": 0.62,
+                "friend": 0.79,
+                "network": 0.84,
+                "sentiment": 0.25,
+                "temporal": 0.74,
+                "user": 0.55
+            },
+            "fresh": false,
+            "scores": {
+                "english": 0.67,
+                "universal": 0.55
+            },
+            "timestamp": "Sun, 16 Apr 2017 22:58:32 GMT",
+            "user": {
+                "id": "269880075",
+                "screen_name": "blond_leo"
+            }
         },
-        "fresh": null,
-        "scores": {
-            "english": null,
-            "universal": null
-        },
-        "timestamp": null,
-        "user": {
-            "id": "269880076",
-            "screen_name": null
+        {
+            "categories": {
+                "content": 0.25,
+                "friend": 0.41,
+                "network": 0.63,
+                "sentiment": 0.41,
+                "temporal": 0.36,
+                "user": 0.01
+            },
+            "fresh": false,
+            "scores": {
+                "english": 0.17,
+                "universal": null
+            },
+            "timestamp": "Sun, 01 Jan 2017 14:58:48 GMT",
+            "user": {
+                "id": "156433910",
+                "screen_name": "yadizdf"
+            }
         }
-    },
-    {
-        "categories": {
-            "content": 0.35,
-            "friend": 0.19,
-            "network": 0.6,
-            "sentiment": 0.23,
-            "temporal": 0.22,
-            "user": 0
-        },
-        "fresh": false,
-        "scores": {
-            "english": 0.21,
-            "universal": 0.21
-        },
-        "timestamp": "Sun, 10 Sep 2017 04:40:07 GMT",
-        "user": {
-            "id": "156433910",
-            "screen_name": "yadizdf"
-        }
-    },
-    {
-        "categories": {
-            "content": null,
-            "friend": null,
-            "network": null,
-            "sentiment": null,
-            "temporal": null,
-            "user": null
-        },
-        "fresh": null,
-        "scores": {
-            "english": null,
-            "universal": null
-        },
-        "timestamp": null,
-        "user": {
-            "id": null,
-            "screen_name": "jondoe"
-        }
-    }
-]
+    ]
+}
 ```
