@@ -5,7 +5,14 @@ var TWEET_URL = "https://twitter.com/%0/status/%1";
 var colors = {
     node_colors : {
         "fact_checking" : 'darkblue',
-        "claim" : 'darkblue'
+        "claim" : 'darkblue',
+        "botscores": [
+			{red: 215, green: 25, blue: 28} ,
+			{red: 253, green: 174, blue: 97} ,
+			{red: 255, green: 255, blue: 182} ,
+			{red: 171, green: 217, blue: 233} ,
+			{red: 44, green: 123, blue: 182},
+		]
     },
     edge_colors : {
         "fact_checking" : 'green',

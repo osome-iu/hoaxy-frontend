@@ -1,5 +1,8 @@
 function HoaxyGraph(options)
 {
+
+    //background: linear-gradient(to bottom, rgb(44,123,182) 0%,rgb(171,217,233) 30%,rgb(255,255,191) 50%,rgb(253,174,97) 70%,rgb(215,25,28) 100%);
+
 	var returnObj = {};
 
 	var spinStart = options.spinStart || function(){ console.log("HoaxyGraph.spinStart is undefined."); };
@@ -273,13 +276,14 @@ function HoaxyGraph(options)
 		// 	{red: 171, green: 221, blue: 164} , //"#abdda4",
 		// 	{red: 43, green: 131, blue: 186} //"#2b83ba",
 		// ];
-		var node_colors = [
-			{red: 109, green: 7, blue: 7} ,
-			{red: 168, green: 116, blue: 53} ,
-			{red: 178, green: 178, blue: 48} ,
-			{red: 166, green: 229, blue: 153} ,
-			{red: 216, green: 241, blue: 255},
-		];
+		// var node_colors = [
+		// 	{red: 109, green: 7, blue: 7} ,
+		// 	{red: 168, green: 116, blue: 53} ,
+		// 	{red: 178, green: 178, blue: 48} ,
+		// 	{red: 166, green: 229, blue: 153} ,
+		// 	{red: 216, green: 241, blue: 255},
+		// ];
+		var node_colors = colors.node_colors.botscores;
 		// var node_colors = [
 		// 	{red: 85, green: 0, blue: 0} ,
 		// 	{red: 170, green: 221, blue: 0} ,

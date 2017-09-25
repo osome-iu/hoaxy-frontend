@@ -254,3 +254,37 @@ input:not(:checked) + .check_icons > .fa-square-o
 {
     display: inline-block;
 }
+
+
+#bot_legend
+{
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 2em;
+    text-align: center;
+}
+#bot_legend div
+{
+    width: 2em;
+    display: block;
+}
+#bot_legend_gradient
+{
+    height: 50%;
+    background: linear-gradient(to bottom,
+        rgb(44,123,182) 0%,
+        rgb(171,217,233) 30%,
+        rgb(255,255,191) 50%,
+        rgb(253,174,97) 70%,
+        rgb(215,25,28) 100%);
+    border: solid black 1px;
+}
+#bot_legend_gradient span
+{
+    display: block;
+    white-space: nowrap;
+    width: 2rem;
+    transform: rotate(90deg) translate(550%);
+}
