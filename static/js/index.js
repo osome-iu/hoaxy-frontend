@@ -812,6 +812,19 @@ $(document).ready(function () {
         });
 
         graph_request.done(function (msg){
+
+			$("#graph_error").remove();
+            if(msg.error)
+            {
+				edges = null;
+				$("#zoom-in").hide();
+				$("#zoom-out").hide();
+                console.debug("Not enough data.  Could not create graph.");
+				$("#graph-container").prepend("<div id='graph_error'>There was not enough data to generate a network graph.  Try selecting more popular articles to visualize.</div>");
+                spinStop();
+				return false;
+            }
+
 			edges = msg.edges.map(function(x){
 				y = x;
 				y.site_domain = x.domain;
