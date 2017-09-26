@@ -100,6 +100,7 @@ var app = new Vue({
             botscore: 0,
             botcolor: 0
         },
+        failed_to_get_network: false,
 
         colors: colors
     },
@@ -277,6 +278,7 @@ var app = new Vue({
         },
         getNetwork: function(article_ids){
             this.spinStart("getNetwork");
+            this.failed_to_get_network = false;
             var graph_request = axios.get( configuration.network_url, {
                 headers: configuration.network_headers,
                 params: {
@@ -291,15 +293,25 @@ var app = new Vue({
                     v.spinStop("getNetwork");
 
                     var msg = response.data;
-                    v.spinStart("generateNetwork");
-                    //create an edge list
-                    var edge_list = msg.edges.map(function(x){
-                        y = x;
-                        y.site_domain = x.domain;
-                        y.pub_date = x.publish_date;
-                        y.url_raw = x.canonical_url;
-                        return y;
-                    });
+                    var edge_list;
+                    if(msg.error)
+                    {
+                        v.show_zoom_buttons = false;
+                        v.failed_to_get_network = true;
+                        edge_list = []
+                    }
+                    else
+                    {
+                        v.spinStart("generateNetwork");
+                        //create an edge list
+                        edge_list = msg.edges.map(function(x){
+                            y = x;
+                            y.site_domain = x.domain;
+                            y.pub_date = x.publish_date;
+                            y.url_raw = x.canonical_url;
+                            return y;
+                        });
+                    }
 
                     //after the botcache request is complete,
                     // update the graph even if the request fails
@@ -473,6 +485,9 @@ var app = new Vue({
             this.graph.zoomOut();
         },
         updateGraph: function(starting_time, ending_time){
+            if(this.failed_to_get_network)
+                return false;
+
             this.graph.updateGraph(starting_time, ending_time);
             this.show_zoom_buttons = true;
             this.scrollToElement("graphs");

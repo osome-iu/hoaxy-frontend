@@ -95,7 +95,7 @@ function HoaxyTimeline(updateDateRangeCallback){
 			c:colors.edge_colors.claim
 		};
 
-		app.show_zoom_buttons = true;
+		// app.show_zoom_buttons = true;
 
 		chartData.push(fake_series);
 		chartData.push(factChecking_series);

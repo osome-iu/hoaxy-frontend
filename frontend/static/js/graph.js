@@ -26,6 +26,11 @@ function HoaxyGraph(options)
 		edges = new_edges;
 		console.debug("Edges updated.");
 		var g = this;
+		if(edges.length === 0)
+		{
+			KillGraph();
+			return edges;
+		}
 		try{
 			// twitter.me().then(function(response){
 			// 	twitter_account_info = response;
@@ -401,13 +406,25 @@ function HoaxyGraph(options)
 
 
 
+	function KillGraph()
+	{
+		if(s)
+		{
+			s.kill();
+			s = null;
+			// console.debug("Killed Existing Sigma");
+		}
 
+		document.getElementById("graph-container").innerHTML = "";
+	}
 
 
 	function UpdateGraph(start_time, end_time)
 	{
 		// spinStart("updateNetwork");
 		console.debug("Updating Graph");
+		KillGraph();
+
 		// console.debug(edges);
 		if(!edges || !edges.length)
 		{
@@ -690,16 +707,10 @@ function HoaxyGraph(options)
 
 	function drawGraph() {
 
-		if(s)
-		{
-			s.kill();
-			s = null;
-			// console.debug("Killed Existing Sigma");
-		}
+
 
 		// console.log("Drawing Sigma");
 		// $('#graph-container').empty();
-		document.getElementById("graph-container").innerHTML = "";
 
 		s = new sigma({
 			graph:graph,

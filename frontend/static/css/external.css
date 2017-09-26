@@ -288,3 +288,12 @@ input:not(:checked) + .check_icons > .fa-square-o
     width: 2rem;
     transform: rotate(90deg) translate(550%);
 }
+
+#graph_error
+{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right; 0;
+}
