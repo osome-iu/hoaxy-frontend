@@ -70,13 +70,32 @@ ELSE
 END IF;	
 
 
---num_tweets checks
-IF (SELECT COUNT(*) FROM botscore WHERE num_tweets=NULL OR num_tweets<0) = 0
+--tweets_per_day checks
+IF (SELECT COUNT(*) FROM botscore WHERE tweets_per_day IS NOT NULL) = 0
 THEN
-	RAISE NOTICE 'SUCCESS: Num_tweets is positive and non-null';
+	RAISE NOTICE 'SUCCESS: all tweets_per_day are null';
 ELSE
-	RAISE NOTICE 'FAIL: There are some null or negative number of tweets';
+	RAISE NOTICE 'FAIL: There are some non-null tweets_per_day';
 END IF;	
+
+
+--num_submitted_timeline_tweets checks
+IF (SELECT COUNT(*) FROM botscore WHERE num_submitted_timeline_tweets IS NOT NULL) = 0
+THEN
+	RAISE NOTICE 'SUCCESS: all num_submitted_timeline_tweets are null';
+ELSE
+	RAISE NOTICE 'FAIL: There are some non-null num_submitted_timeline_tweets';
+END IF;	
+
+
+--num_submitted_mention_tweets checks
+IF (SELECT COUNT(*) FROM botscore WHERE num_submitted_mention_tweets IS NOT NULL) = 0
+THEN
+	RAISE NOTICE 'SUCCESS: all num_submitted_mention_tweets are null';
+ELSE
+	RAISE NOTICE 'FAIL: There are some non-null num_submitted_mention_tweets';
+END IF;	
+
 
 --num_requests checks
 IF (SELECT COUNT(*) FROM botscore WHERE num_requests=0) = (SELECT COUNT(*) FROM botscore)

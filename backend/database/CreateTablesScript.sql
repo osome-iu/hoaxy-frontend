@@ -12,11 +12,9 @@ CREATE TABLE public.botscore
   bot_score_universal real,
   requester_ip text,
   tweets_per_day real,
-  num_tweets integer,
-  num_mentions integer,
-  latest_tweet_timestamp timestamp with time zone,
+  num_submitted_timeline_tweets integer,
+  num_submitted_mention_tweets integer,
   num_requests integer,
-  user_profile jsonb
 )
 WITH (
   OIDS=FALSE
