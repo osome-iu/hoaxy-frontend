@@ -542,7 +542,7 @@ var app = new Vue({
             var value = param[1];
             if(key == "query")
             {
-                this.query_text = value;
+                this.query_text = decodeURIComponent(value);
             }
             if(key == "sort")
             {

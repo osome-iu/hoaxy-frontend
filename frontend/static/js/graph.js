@@ -402,7 +402,13 @@ function HoaxyGraph(options)
 
 	function getBorderColor(score)
 	{
-		var darken = 50;
+
+
+		var darken = 120;
+		if(score === false)
+		{
+			darken = 50;
+		}
 		var base = getBaseColor(score);
 		base.r = base.r - darken;
 		if(base.r < 0) base.r = 0;
