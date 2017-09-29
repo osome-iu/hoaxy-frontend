@@ -216,8 +216,9 @@
 					<div class="modal-body" >
 						<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor }">
 							<p>Botometer Score:
-								<span v-if="node_modal_content.botscore"><b>{{node_modal_content.botscore}}%</b></span>
+								<span v-if="node_modal_content.botscore > 0"><b>{{node_modal_content.botscore}}%</b></span>
 								<span v-if="!node_modal_content.botscore">Unavailable</span>
+								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.</span>
 
 							</p>
 							<p v-if="!node_modal_content.botscore">

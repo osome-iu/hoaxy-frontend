@@ -183,7 +183,14 @@ function HoaxyGraph(options)
 			if(!user.score || user.old)
 			{
 				var botProm = getNewBotometerScore(user.screen_name);
-				botProm.then(resolve, reject);
+				botProm.then(resolve, function(){
+					botscores[user.screen_name] = {
+						score: -1,
+						old: true
+					}
+					updateNodeColor(user.screen_name, botscores[user.screen_name].score);
+					reject();
+				});
 			}
 		})
 		.then(function(response){ return response; }, function(error){ return error; });
@@ -218,6 +225,12 @@ function HoaxyGraph(options)
 				botScore.then(resolve, reject);
 			}, function(error){
 				console.warn("Could not get bot score for " + screen_name + ": ", error);
+				// botscores[screen_name] = {
+				// 	score: -1,
+				// 	old: true
+				// }
+				// console.debug(botscores[screen_name]);
+				// updateNodeColor(screen_name, botscores[screen_name].score);
 				reject(error);
 			});
 		}, twitterResponseFail)
@@ -242,6 +255,7 @@ function HoaxyGraph(options)
 		},
 		function(error){
 			console.debug("Could not get bot score for " + sn + ": ", error);
+
 		});
 		return botscore;
 	}
@@ -270,7 +284,7 @@ function HoaxyGraph(options)
         clearTimeout(refreshGraph_debounce_timer);
 		refreshGraph_debounce_timer = setTimeout(function(){
 			s.refresh({skipIndexation: true});
-		}, 200);
+		}, 100);
     }
 
 	function getBaseColor(score){
@@ -281,6 +295,11 @@ function HoaxyGraph(options)
 		if(score === false)
 		{
 			return {r: 255, g: 255, b: 255};
+		}
+
+		if(score < 0)
+		{
+			return {r: 220, g: 220, b: 220};
 		}
 		var score2 = score;
 		score = score * 100;
@@ -791,7 +810,7 @@ function HoaxyGraph(options)
 			{
 				score = botscores[node.screenName].score;
 				score = Math.floor(score * 100);
-				node_modal_content.botcolor = score > 0 ? getNodeColor(score/100) : "";
+				node_modal_content.botcolor = score > 0 ? getNodeColor(score/100) : -1;
 				node_modal_content.botscore = score;
 			}
 			else
