@@ -57,7 +57,7 @@ function HoaxyGraph(options)
 
 	function getBotCacheScores()
     {
-		spinStart("getBotCacheScores");
+		// spinStart("getBotCacheScores");
 		user_list.length = 0;
 		//build list of users found in the edge list
 		for(var i in edges)
@@ -96,7 +96,7 @@ function HoaxyGraph(options)
 						var sn = user.user.screen_name;
 						var score = user.scores.english;
 						botscores[sn] = {score: score, old: !user.fresh};
-						updateNodeColor(sn, score);
+                        updateNodeColor(sn, score);
 					}
 				}
 
@@ -247,20 +247,32 @@ function HoaxyGraph(options)
 	}
 	function updateNodeColor(screen_name, score)
 	{
-        color = getNodeColor(score);
-		//change node color on graph based on botscore
-        if(s && s.graph)
-        {
-			var node = s.graph.nodes(screen_name);
-			// console.debug(screen_name, score,color, node);
-			if(node)
-			{
-	    		s.graph.nodes(screen_name).color = color;
-	    		s.graph.nodes(screen_name).borderColor = getBorderColor(score);
-	    		s.refresh();
-			}
-        }
+        // setTimeout(function(){
+            color = getNodeColor(score);
+    		//change node color on graph based on botscore
+            if(s && s.graph)
+            {
+    			var node = s.graph.nodes(screen_name);
+    			// console.debug(screen_name, score,color, node);
+    			if(node)
+    			{
+    	    		s.graph.nodes(screen_name).color = color;
+    	    		s.graph.nodes(screen_name).borderColor = getBorderColor(score);
+					refreshGraph();
+    			}
+            }
+        // },500);
 	}
+
+
+	var refreshGraph_debounce_timer = 0;
+    function refreshGraph(){
+        clearTimeout(refreshGraph_debounce_timer);
+		refreshGraph_debounce_timer = setTimeout(function(){
+			s.refresh({skipIndexation: true});
+		}, 200);
+    }
+
 	function getBaseColor(score){
 		if(score ===  undefined || score === null)
 		{
@@ -751,6 +763,8 @@ function HoaxyGraph(options)
 
 		spinStart("ForceAtlas");
 		setTimeout(function () {
+            // getBotCacheScores();
+
 			s.stopForceAtlas2();
 			s.camera.goTo({x:0, y:0, ratio:1});
 			spinStop("ForceAtlas");
