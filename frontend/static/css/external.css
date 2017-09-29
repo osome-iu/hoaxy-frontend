@@ -275,8 +275,8 @@ input:not(:checked) + .check_icons > .fa-square-o
     height: 50%;
     background: linear-gradient(to bottom,
         rgb(44,123,182) 0%,
-        rgb(171,217,233) 30%,
-        rgb(255,255,191) 50%,
+        rgb(138,206,229) 30%,
+        rgb(255,255,151) 50%,
         rgb(253,174,97) 70%,
         rgb(215,25,28) 100%);
     border: solid black 1px;

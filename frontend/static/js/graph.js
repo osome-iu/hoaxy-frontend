@@ -299,7 +299,7 @@ function HoaxyGraph(options)
 
 		if(score < 0)
 		{
-			return {r: 220, g: 220, b: 220};
+			return {r: 230, g: 230, b: 230};
 		}
 		var score2 = score;
 		score = score * 100;
@@ -810,7 +810,7 @@ function HoaxyGraph(options)
 			{
 				score = botscores[node.screenName].score;
 				score = Math.floor(score * 100);
-				node_modal_content.botcolor = score > 0 ? getNodeColor(score/100) : -1;
+				node_modal_content.botcolor = score != 0 ? getNodeColor(score/100) : "";
 				node_modal_content.botscore = score;
 			}
 			else
