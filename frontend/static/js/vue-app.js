@@ -194,6 +194,7 @@ var app = new Vue({
 
         getArticles: function(dontScroll){
             this.spinStart("getArticles");
+
             var urls_request = axios.get(configuration.articles_url, {
                 headers: configuration.articles_headers,
                 params: {
@@ -231,8 +232,8 @@ var app = new Vue({
                     v.spinStop("getArticles");
                 },
                 function (error) {
-                    alert("Get URLs Request failed: " + error.response.statusText);
-                    console.log('Articles Request Error:', error.response.statusText);
+                    alert("Get URLs Request failed: " + error);
+                    console.log('Articles Request Error:', error);
                     v.spinStop("getArticles");
                 }
             );
@@ -269,8 +270,8 @@ var app = new Vue({
                     v.spinStop("getTimeline");
                 },
                 function (error) {
-                    alert("Get TimeLine Request failed: " + error.response.statusText);
-                    console.log('Timeline Request Error', error.response.statusText);
+                    alert("Get TimeLine Request failed: " + error);
+                    console.log('Timeline Request Error', error);
                     v.spinStop("getTimeline");
                 }
             );
@@ -410,6 +411,8 @@ var app = new Vue({
 
         submitForm: function(dontScroll){
             this.show_articles = false;
+            this.show_graphs = false;
+            this.checked_articles = [];
             // $("#select_all").prop("checked", false);
             if(!this.query_text)
             {
@@ -435,7 +438,7 @@ var app = new Vue({
                 this.spinStop(true);
                 return false;
             }
-
+            this.graph.updateEdges([]);
             this.getTimeline(this.checked_articles);
             this.getNetwork(this.checked_articles);
             this.spinStop();
