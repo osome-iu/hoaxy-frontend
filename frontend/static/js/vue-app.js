@@ -272,6 +272,8 @@ var app = new Vue({
                 function (error) {
                     alert("Get TimeLine Request failed: " + error);
                     console.log('Timeline Request Error', error);
+                    
+                    v.updateGraph();
                     v.spinStop("getTimeline");
                 }
             );
