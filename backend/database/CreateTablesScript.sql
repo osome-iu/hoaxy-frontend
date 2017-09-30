@@ -38,6 +38,15 @@ CREATE INDEX botscore_ix_botscoreuniversal
   ON public.botscore
   USING btree
   (bot_score_universal);
+
+-- Index: public.botscore_ix_screenname
+
+-- DROP INDEX public.botscore_ix_screenname;
+
+CREATE INDEX botscore_ix_screenname
+  ON public.botscore
+  USING btree
+  (screen_name);
   
 -- Index: public.botscore_ix_timestamp
 
