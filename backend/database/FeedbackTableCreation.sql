@@ -6,7 +6,7 @@ CREATE TABLE public.feedback
   id SERIAL PRIMARY KEY NOT NULL,
   user_id bigint NOT NULL,
   screen_name character varying(15),
-  tlsime_stamp timestamp with time zone DEFAULT now(),
+  time_stamp timestamp with time zone DEFAULT now(),
   feedback_label character varying(50),
   feedback_text text,
   profile jsonb,
