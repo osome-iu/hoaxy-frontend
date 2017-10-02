@@ -149,12 +149,20 @@
 					<div class="">100%</div>
 				</div>
 				<div id="zoom_buttons" v-if="show_zoom_buttons">
-                    <button v-if="!getting_bot_scores.running" @click.stop.prevent="getMoreBotScores" class="btn btn-primary" id="">Get More Bot Scores</button>
-                    <button v-if="getting_bot_scores.running" disabled class="disabled btn btn-primary" id="">Getting More Bot Scores...</button>
-                    <!-- <button v-if="twitter_account_info.id" @click.stop.prevent="twitterLogOut()" class="btn btn-primary" id="un_authenticate_button">Disable Twitter</button> -->
+					<div class="float-left">
+						<button v-if="!getting_bot_scores.running" @click.stop.prevent="getMoreBotScores" class="mr-2 float-left btn btn-primary" id="">More Scores</button>
+	                    <button v-if="getting_bot_scores.running" disabled class="mr-2 float-left disabled btn btn-primary" id="">More Scores</button>
+	                    <!-- <button v-if="twitter_account_info.id" @click.stop.prevent="twitterLogOut()" class="btn btn-primary" id="un_authenticate_button">Disable Twitter</button> -->
+						<small>{{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.</small>
+                        <small v-if="graph.score_stats.old > 0">{{graph.score_stats.old}} {{graph.score_stats.old == 1?'is':'are'}} old.</small>
+                        <div><small v-if="graph.score_stats.unavailable > 0">{{graph.score_stats.unavailable}} could not be updated.</small></div>
+						<div><small v-if="getting_bot_scores.running">Getting more scores...</small></div>
+					</div>
+					<div class="float-right">
 
-					<button class="btn btn-primary" type="button" value ="-" id="zoom-out" v-if="show_zoom_buttons" @click="zoomOutGraph"><i class="fa fa-minus" aria-hidden="true"></i></button>
-					<button class="btn btn-primary" type="button" value ="+" id="zoom-in" v-if="show_zoom_buttons" @click="zoomInGraph"><i class="fa fa-plus" aria-hidden="true"></i></button>
+						<button class="btn btn-primary" type="button" value ="-" id="zoom-out" v-if="show_zoom_buttons" @click="zoomOutGraph"><i class="fa fa-minus" aria-hidden="true"></i></button>
+						<button class="btn btn-primary" type="button" value ="+" id="zoom-in" v-if="show_zoom_buttons" @click="zoomInGraph"><i class="fa fa-plus" aria-hidden="true"></i></button>
+					</div>
 
 				</div>
 			</div>
@@ -221,8 +229,8 @@
 								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.</span>
 
 							</p>
-							<p v-if="!node_modal_content.botscore">
-								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.screenName)" class="btn btn-primary" id="">Get Bot Score</button>
+							<p v-if="">
+								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.screenName)" class="btn btn-primary" id="">Update Bot Score</button>
 								<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
 							</p>
 						</div>

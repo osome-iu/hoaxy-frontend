@@ -272,7 +272,7 @@ var app = new Vue({
                 function (error) {
                     alert("Get TimeLine Request failed: " + error);
                     console.log('Timeline Request Error', error);
-                    
+
                     v.updateGraph();
                     v.spinStop("getTimeline");
                 }
@@ -390,8 +390,9 @@ var app = new Vue({
                 }
             });
             success.then(function(response){
-                // console.debug(response.data.scores.english);
+                // console.debug(response);
                 v.getting_bot_scores.running = false;
+
                 try {
                     var score = response.data.scores.english;
                     v.node_modal_content.botscore = Math.floor(score * 100);
@@ -400,9 +401,13 @@ var app = new Vue({
                 catch (e)
                 {
                     console.error(e);
+                    v.node_modal_content.botscore = -1;
+                    v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
                 }
             }, function(){
                 v.getting_bot_scores.running = false;
+                v.node_modal_content.botscore = -1;
+                v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
             })
 
         },

@@ -15,6 +15,39 @@ function HoaxyGraph(options)
 	var twitter = options.twitter || null;
 	var getting_bot_scores = options.getting_bot_scores || false;
 
+	var score_stats = {
+		total: 0,
+		found: 0,
+		old: 0,
+		unavailable: 0,
+
+		reset: function(){
+			this.total = this.found = this.old = this.unavailable = 0;
+		},
+		recompute: function(){
+			this.found = this.old = this.unavailable = 0;
+			for(var i in botscores)
+			{
+				var score = botscores[i];
+				if(score.score === -1)
+				{
+					this.unavailable += 1;
+				}
+				else if(score.old === true)
+				{
+					this.old += 1;
+					this.found += 1;
+				}
+				else
+				{
+					this.found += 1;
+				}
+			}
+			this.total = this.total;
+		}
+	};
+
+
 	var s = null; //sigma instance
 	// getNodeColor(.25);
 	var graph = {};
@@ -97,8 +130,10 @@ function HoaxyGraph(options)
 						var score = user.scores.english;
 						botscores[sn] = {score: score, old: !user.fresh};
                         updateNodeColor(sn, score);
+
 					}
 				}
+				score_stats.recompute();
 
 				//when we get the cache, go through cache and update botscores:
 				//botscore[sn] = {score: xx, old: false/true};
@@ -183,12 +218,16 @@ function HoaxyGraph(options)
 			if(!user.score || user.old)
 			{
 				var botProm = getNewBotometerScore(user.screen_name);
-				botProm.then(resolve, function(){
+				botProm.then(function(response){
+					score_stats.recompute();
+					resolve(response);
+				}, function(){
 					botscores[user.screen_name] = {
 						score: -1,
 						old: true
 					}
 					updateNodeColor(user.screen_name, botscores[user.screen_name].score);
+					score_stats.recompute();
 					reject();
 				});
 			}
@@ -225,6 +264,7 @@ function HoaxyGraph(options)
 				botScore.then(resolve, reject);
 			}, function(error){
 				console.warn("Could not get bot score for " + screen_name + ": ", error);
+				// score_stats.recompute();
 				// botscores[screen_name] = {
 				// 	score: -1,
 				// 	old: true
@@ -247,6 +287,8 @@ function HoaxyGraph(options)
 			data: user_object
 		});
 		botscore.then(function(response){
+			// score_stats.recompute();
+
 			botscores[sn] = {
 				score: response.data.scores.english,
 				old: false
@@ -255,6 +297,7 @@ function HoaxyGraph(options)
 		},
 		function(error){
 			console.debug("Could not get bot score for " + sn + ": ", error);
+
 
 		});
 		return botscore;
@@ -592,6 +635,8 @@ function HoaxyGraph(options)
 	        }
 			node_count = g.nodes.length;
 
+			score_stats.total = node_count;
+
 			//put edges into sigma
 			var edgeIndex = 0;
 			for (var i in nodes)
@@ -906,7 +951,7 @@ function HoaxyGraph(options)
 	}
 
 
-	;(function(undefined) {
+	(function(undefined) {
 
 		/**
 		* Sigma Node Border Custom Renderer
@@ -957,7 +1002,11 @@ function HoaxyGraph(options)
 	returnObj.zoomOut = zoomOut;
 	returnObj.getEdges = function(){ return edges; };
 	returnObj.botscores = function(){ return botscores; };
+
+	returnObj.score_stats = score_stats;
+
 	return returnObj;
+
 
 
 

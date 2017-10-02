@@ -149,6 +149,12 @@ li
     position: absolute;
     top: 2em;
     right: 2em;
+    left:  0;
+}
+#zoom_buttons > div
+{
+    white-space: nowrap;
+    line-height: 1;
 }
 
 #focus_label
