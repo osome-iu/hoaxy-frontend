@@ -69,6 +69,8 @@ function HoaxyGraph(options)
 			// 	twitter_account_info = response;
 			// 	if(twitter_account_info.id)
 			// 	{
+					score_stats.reset();
+					botscores = {};
 					getBotCacheScores();
 
 					// var prom = this.graph.getBotCacheScores();
