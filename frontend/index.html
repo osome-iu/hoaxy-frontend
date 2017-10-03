@@ -120,8 +120,8 @@
  -->
 		<section id="graphs" v-bind:class="{'hidden': !show_graphs}" class="container-fluid row no-gutters">
 			<div class="col-md-12 text-center" id="legend">
-				<label><span class="rounded-circle claim_label">&nbsp;</span> Claims</label>
-				<label><span class="rounded-circle fact_checking_label">&nbsp;</span> Fact-Checks</label>
+				<label><span class="line claim_label">&nbsp;</span> Claims</label>
+				<label><span class="line fact_checking_label">&nbsp;</span> Fact-Checks</label>
 			</div>
 			<div class="col-md-6 col-12">
 				<div id="chart" style="width: 100%; height: 80vh; margin: 0 auto">
@@ -141,12 +141,12 @@
 				<div  v-if="show_zoom_buttons" id="graph_help_text">
 					Click on network nodes and edges for details.
 				</div>
-				<div  v-if="show_zoom_buttons"id="bot_legend" class="d-flex align-items-center justify-content-center flex-column">
-					<div class="">0%</div>
+				<div  v-if="show_zoom_buttons" id="bot_legend" class="d-flex align-items-center justify-content-center flex-column">
+					<div class="likely_bot">Likely Bot</div>
 					<div class="" id="bot_legend_gradient">
-						<span>Bot Score</span>
+
 					</div>
-					<div class="">100%</div>
+					<div class="likely_human">Likely Human</div>
 				</div>
 				<div id="zoom_buttons" v-if="show_zoom_buttons">
 					<div class="float-left">
