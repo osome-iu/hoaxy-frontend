@@ -17,4 +17,4 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.botscore
-  OWNER TO postgres;
+  OWNER TO botometer;

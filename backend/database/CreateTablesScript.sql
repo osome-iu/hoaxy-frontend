@@ -20,7 +20,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.botscore
-  OWNER TO postgres;
+  OWNER TO botometer;
 -- Index: public.botscore_ix_botscoreenglish
 
 -- DROP INDEX public.botscore_ix_botscoreenglish;

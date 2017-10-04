@@ -3,7 +3,7 @@
 -- DROP DATABASE botbase;
 
 CREATE DATABASE botbase
-  WITH OWNER = postgres
+  WITH OWNER = botometer
        ENCODING = 'UTF8'
        TABLESPACE = pg_default
        LC_COLLATE = 'en_US.UTF-8'
