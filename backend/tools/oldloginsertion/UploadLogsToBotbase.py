@@ -2,6 +2,8 @@
 
 #Author: Mihai Avram, e-mail: mihai.v.avram@gmail.com
 
+#TODO BEFORE RUNNING SCRIPT - CHANGE LOG PATHS, LOG NAMES, AND DB CONNECTION STRING
+
 #ALL IMPORTS
 #for parsing the data in the logs
 import json
