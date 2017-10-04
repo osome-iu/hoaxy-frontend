@@ -2,7 +2,7 @@
 
 -- DROP DATABASE botbase;
 
-CREATE DATABASE botbase
+CREATE DATABASE botometer
   WITH OWNER = botometer
        ENCODING = 'UTF8'
        TABLESPACE = pg_default
@@ -10,6 +10,6 @@ CREATE DATABASE botbase
        LC_CTYPE = 'en_US.UTF-8'
        CONNECTION LIMIT = -1;
 
-ALTER DATABASE botbase
+ALTER DATABASE botometer
   SET TimeZone = 'UTC';
 
