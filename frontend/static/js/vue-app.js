@@ -352,7 +352,7 @@ var app = new Vue({
                 v.timeline.redraw();
                 v.graph.redraw();
             });
-            console.debug(this.graph_column_size);
+            // console.debug(this.graph_column_size);
         },
         shrinkGraph: function(){
             this.graph_column_size += 3;
@@ -480,6 +480,7 @@ var app = new Vue({
         },
         toggleModal: function(modal, force)
         {
+            this.graph.redraw();
             //the timeouts here help with the animation and will need to be adjusted as required
             var prop = "show_" + modal + "_modal";
             var v = this;
