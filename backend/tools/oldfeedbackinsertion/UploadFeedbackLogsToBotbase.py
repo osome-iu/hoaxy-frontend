@@ -12,18 +12,23 @@ import sys, traceback
 #for timing purposes
 import time
 
+#can be used for debugging if exceptions start to occur
+def print_exception():
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    traceback.print_exception(exc_type, exc_value, exc_traceback, limit=3, file=sys.stdout)
+
 #ALL FUNCTIONS
 
 #inserts feedback log to database
-def feedback_insertion_script(user_id, screen_name, time_stamp, feedback_label, feedback_text, \
-                              profile, timeline_tweets, mention_tweets):
+def feedback_insertion_script(source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label, \
+                              feedback_text, target_profile, target_timeline_tweets, target_mention_tweets):
     
-    botbase_cursor.execute("""INSERT INTO public.feedback(user_id, screen_name, time_stamp, feedback_label, feedback_text, \
-                              profile, timeline_tweets, mention_tweets) 
+    botbase_cursor.execute("""INSERT INTO public.feedback(source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label,
+                        feedback_text, target_profile, target_timeline_tweets, target_mention_tweets) 
                               VALUES 
-                (%s, %s, to_timestamp(%s), %s, %s, %s, %s, %s);""", \
-                (user_id, screen_name, time_stamp, feedback_label, feedback_text, \
-                              profile, timeline_tweets, mention_tweets))
+                (%s, %s, %s, to_timestamp(%s), %s, %s, %s, %s, %s);""", \
+                (source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label, \
+                feedback_text, target_profile, target_timeline_tweets, target_mention_tweets))
 
     #commiting changes
     pgsqlconn.commit()
@@ -93,24 +98,24 @@ if __name__ == '__main__':
                 
             #parsing json line and retrieving the proper fields regarding the user i.e. user id, screen name, tweets, etc...
             try:
-                user_id = line_json["user"]["id"]
-
-                screen_name = str(line_json["user"]["screen_name"])
+                source_user_id = None
+                target_user_id = line_json["user"]["id"]
+                target_screen_name = str(line_json["user"]["screen_name"])
                 #changing @screenname to screenname to add to the database if found
-                if screen_name[0:1] == "@":
-                    screen_name = screen_name[1:]
-                if len(screen_name) > 15:
+                if target_screen_name[0:1] == "@":
+                    target_screen_name = target_screen_name[1:]
+                if len(target_screen_name) > 15:
                     #user may have a screen-name logged as longer than 15 characters which is not proper in Twitter and could be instead the userid or some other error so we make it none
-                    screen_name = None
+                    target_screen_name = None
                 time_stamp = line_json["timestamp"]
                 #some timestamps are stored in milliseconds so for those we divide by 1000
                 if len(str(time_stamp)) >= 12:
                     time_stamp = time_stamp/1000
                 feedback_label = None
                 feedback_text = line_json['text']
-                profile = None
-                timeline_tweets = None
-                mention_tweets = None
+                target_profile = None
+                target_timeline_tweets = None
+                target_mention_tweets = None
             except:
                 error_log_file.write("NON-PROPER-FIELDS ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                 failed_to_retrieve_proper_fields_count = failed_to_retrieve_proper_fields_count + 1
@@ -118,12 +123,12 @@ if __name__ == '__main__':
                 
             try:
                 #inserting data to the database
-                feedback_insertion_script(user_id, screen_name, time_stamp, feedback_label, feedback_text, \
-                              profile, timeline_tweets, mention_tweets)
+                feedback_insertion_script(source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label, \
+                    feedback_text, target_profile, target_timeline_tweets, target_mention_tweets)
                 records_committed = records_committed + 1
             except:
                 error_log_file.write("DB INSERTION ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
-                failed_to_commit_to_db_count = failed_to_commit_to_db_count + 1   
+                failed_to_commit_to_db_count = failed_to_commit_to_db_count + 1  
                 continue
 
         print("Finished importing log: ", log)
