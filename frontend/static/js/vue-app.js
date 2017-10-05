@@ -52,7 +52,7 @@ var app = new Vue({
         show_articles: false,
         show_graphs: false,
         show_zoom_buttons: false,
-        show_timeline: false,
+        graph_column_size: 3,
 
 
         articles: [],
@@ -346,12 +346,22 @@ var app = new Vue({
         // #     #  ####    #   #  ####  #    #  ####  #       ######   ####    #     #    ####  #    #     #####  ###### #  ####  #    #  ####
 
 
-        toggleTimeline: function(){
-            this.show_timeline = !this.show_timeline;
+        resizeGraphs: function(){
             var v = this;
             Vue.nextTick(function(){
                 v.timeline.redraw();
+                v.graph.redraw();
             });
+            console.debug(this.graph_column_size);
+        },
+        shrinkGraph: function(){
+            this.graph_column_size += 3;
+            this.resizeGraphs();
+        },
+        shrinkTimeline: function(){
+            this.graph_column_size -= 3;
+            this.resizeGraphs();
+
         },
 
         twitterLogIn: function(){

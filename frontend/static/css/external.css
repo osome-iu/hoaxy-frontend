@@ -331,7 +331,7 @@ input:not(:checked) + .check_icons > .fa-square-o
 }
 #timeline
 {
-    position: absolute;
+    /*position: absolute;
     height: 50%;
 
     bottom: 2rem;
@@ -339,15 +339,28 @@ input:not(:checked) + .check_icons > .fa-square-o
     display: none;
 
     background: lightgray;
-    border: solid gray 1px;
+    border: solid gray 1px;*/
+}
+#shrink_right_button, #shrink_left_button
+{
+    position: absolute;
+    top: 50%;
+}
+#shrink_left_button
+{
+    right: 0;
+}
+#shrink_right_button
+{
+    left: 0;
 }
 #chart
 {
     height: 100%;
     width: 100%;
-    padding: 1rem;
+    /*padding: 1rem;*/
 }
-#toggle_timeline_button
+/*#toggle_timeline_button
 {
     position: absolute;
     bottom: 2rem;
@@ -358,4 +371,4 @@ input:not(:checked) + .check_icons > .fa-square-o
     position: absolute;
     top: 1rem;
     right: 1rem;
-}
+}*/

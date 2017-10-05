@@ -951,6 +951,16 @@ function HoaxyGraph(options)
 			ratio: c.ratio * c.settings('zoomingRatio')
 		});
 	}
+	function redraw(){
+		var c = s.camera;
+		// Zoom out - animation :
+		sigma.misc.animation.camera(c, {
+			ratio: c.ratio
+		}, {});
+		c.goTo({
+			ratio: c.ratio
+		});
+	}
 
 
 	(function(undefined) {
@@ -1002,6 +1012,7 @@ function HoaxyGraph(options)
 	returnObj.updateUserBotScore = updateUserBotScore;
 	returnObj.zoomIn = zoomIn;
 	returnObj.zoomOut = zoomOut;
+	returnObj.redraw = redraw;
 	returnObj.getEdges = function(){ return edges; };
 	returnObj.botscores = function(){ return botscores; };
 

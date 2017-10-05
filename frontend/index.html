@@ -125,8 +125,20 @@
 			</div>
 
 
+			<div id="timeline"  :style="graph_column_size <= 0 ? 'display: none' : ''" class="col-12"  :class="'col-md-' + (graph_column_size)">
+				<div id="chart" style="width: 100%; height: 80vh; margin: 0 auto;" >
+					<svg></svg>
+				</div>
+				<div id="focus_label" class="text-center">Click and drag below to select time interval</div>
 
-			<div class="col-md-12 col-12" id="sigmagraph">
+				<button id="shrink_left_button" class="btn btn-primary" :disabled="graph_column_size <= 0" v-if="show_zoom_buttons" @click="shrinkTimeline">&lt;</button>
+
+			</div>
+
+
+			<div class="col-12" id="sigmagraph" :style="graph_column_size >= 12 ? 'display: none' : ''" :class="'col-md-' + (12-graph_column_size)">
+
+
 				<div id="graph_error" class="d-flex flex-column justify-content-center" v-if="failed_to_get_network">
 					There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
 				</div>
@@ -160,16 +172,9 @@
 					</div>
 
 				</div>
+				<button id="shrink_right_button"  :disabled="graph_column_size >= 12"  class="btn btn-primary" @click="shrinkGraph">&gt;</button>
 			</div>
 
-			<button id="toggle_timeline_button" class="btn btn-primary" v-if="show_zoom_buttons" @click="toggleTimeline"><i class="fa fa-line-chart" aria-hidden="true"></i></button>
-            <div id="timeline" class="rounded col-md-6 col-10" :style="show_timeline?'display: block':'display: none'">
-				<button class="toggle_button btn btn-primary" v-if="show_zoom_buttons" @click="toggleTimeline"><i class="fa fa-line-chart" aria-hidden="true"></i></button>
-				<div id="chart" >
-					<svg></svg>
-				</div>
-				<div id="focus_label" class="text-center">Click and drag below to select time interval</div>
-			</div>
 
 		</section>
 
