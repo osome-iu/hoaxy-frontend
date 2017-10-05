@@ -18,6 +18,13 @@ function HoaxyTimeline(updateDateRangeCallback){
 	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking]); //color match with those of nodes
 	var chartData = [];
 
+	function redraw(){
+		chart.dispatch.on("brush", null);
+		d3.select('#chart svg')
+		.call(chart);
+		chart.dispatch.on("brush", updateDateRange);
+	}
+
 	function dateFormatter(d) {
 		return d3.time.format('%x')(new Date(d))
 	}
@@ -125,6 +132,7 @@ function HoaxyTimeline(updateDateRangeCallback){
 
 	returnObj.update = Update;
 	returnObj.chart = chart;
+	returnObj.redraw = redraw;
 	returnObj.updateDateRange = triggerUpdateRange;
 	return returnObj;
 }

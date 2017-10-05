@@ -52,6 +52,9 @@ var app = new Vue({
         show_articles: false,
         show_graphs: false,
         show_zoom_buttons: false,
+        show_timeline: false,
+
+
         articles: [],
         articles_to_show: max_articles,
         input_disabled: false,
@@ -341,6 +344,15 @@ var app = new Vue({
         // ####### #        #   # #    # #  # #      #   #     #     # #    #   #     #   #    # #  # #    #       #      # #      #  #        #
         // #     # #    #   #   # #    # #   ## #    #  #      #     # #    #   #     #   #    # #   ##    #     # #      # #    # #   #  #    #
         // #     #  ####    #   #  ####  #    #  ####  #       ######   ####    #     #    ####  #    #     #####  ###### #  ####  #    #  ####
+
+
+        toggleTimeline: function(){
+            this.show_timeline = !this.show_timeline;
+            var v = this;
+            Vue.nextTick(function(){
+                v.timeline.redraw();
+            });
+        },
 
         twitterLogIn: function(){
             var me = this.twitter.verifyMe();

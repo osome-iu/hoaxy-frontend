@@ -123,15 +123,10 @@
 				<label><span class="line claim_label">&nbsp;</span> Claims</label>
 				<label><span class="line fact_checking_label">&nbsp;</span> Fact-Checks</label>
 			</div>
-			<div class="col-md-6 col-12">
-				<div id="chart" style="width: 100%; height: 80vh; margin: 0 auto">
-					<svg></svg>
-				</div>
-				<div id="focus_label" class="text-center">Click and drag below to select time interval</div>
-			</div>
 
 
-			<div class="col-md-6 col-12" id="sigmagraph">
+
+			<div class="col-md-12 col-12" id="sigmagraph">
 				<div id="graph_error" class="d-flex flex-column justify-content-center" v-if="failed_to_get_network">
 					There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
 				</div>
@@ -165,6 +160,15 @@
 					</div>
 
 				</div>
+			</div>
+
+			<button id="toggle_timeline_button" class="btn btn-primary" v-if="show_zoom_buttons" @click="toggleTimeline"><i class="fa fa-line-chart" aria-hidden="true"></i></button>
+            <div id="timeline" class="rounded col-md-6 col-10" :style="show_timeline?'display: block':'display: none'">
+				<button class="toggle_button btn btn-primary" v-if="show_zoom_buttons" @click="toggleTimeline"><i class="fa fa-line-chart" aria-hidden="true"></i></button>
+				<div id="chart" >
+					<svg></svg>
+				</div>
+				<div id="focus_label" class="text-center">Click and drag below to select time interval</div>
 			</div>
 
 		</section>

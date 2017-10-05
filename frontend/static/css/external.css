@@ -323,3 +323,39 @@ input:not(:checked) + .check_icons > .fa-square-o
     left: 0;
     right; 0;
 }
+
+
+#graphs
+{
+    position: relative;
+}
+#timeline
+{
+    position: absolute;
+    height: 50%;
+
+    bottom: 2rem;
+    left: 2rem;
+    display: none;
+
+    background: lightgray;
+    border: solid gray 1px;
+}
+#chart
+{
+    height: 100%;
+    width: 100%;
+    padding: 1rem;
+}
+#toggle_timeline_button
+{
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+}
+#timeline .toggle_button
+{
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
