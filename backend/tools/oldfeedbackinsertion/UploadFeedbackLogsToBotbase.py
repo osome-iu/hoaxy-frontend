@@ -2,6 +2,8 @@
 
 #Author: Mihai Avram, e-mail: mihai.v.avram@gmail.com
 
+#TODO BEFORE RUNNING: Change database configuration settings in pgsqlconn and also log_path
+
 #ALL IMPORTS
 #for parsing the data in the logs
 import json
@@ -42,11 +44,12 @@ json_not_proper_log_count = 0
 json_with_no_type_count = 0
 failed_to_retrieve_proper_fields_count = 0
 failed_to_commit_to_db_count = 0
+text_not_present_logs = 0
     
 #MAIN CODE
 if __name__ == '__main__':
     #connecting to the database
-    pgsqlconn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='botometer')
+    pgsqlconn = psycopg2.connect(host='', user='', password='', dbname='', port='')
     #cursor needed to execute db operations
     botbase_cursor = pgsqlconn.cursor()
     #starting timer
@@ -54,17 +57,11 @@ if __name__ == '__main__':
     
     #log name and location information
     #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
-    log_path = '/media/marvram/OS/Research/HoaxyBotometer/ImportBackuplogsTask/logs/'
-    log_file_list = ['botornot.log201506', 'botornot.log201510', 'botornot.log201605', 'botornot.log201701' ,'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', 'botornot.log.2017-05-28', 'botornot.log.2017-06-04', 'botornot.log.2017-06-11', 'botornot.log.2017-06-18', 'botornot.log.2017-06-25', 'botornot.log.2017-07-02', 'botornot.log.2017-07-09', 'botornot.log.2017-07-16','botornot.log.2017-07-23', 'botornot.log.2017-07-30', 'botornot.log.2017-08-06', 'botornot.log.2017-08-13', 'botornot.log.2017-09-03', 'botornot.log.2017-09-10']
-    #['botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', 'botornot.log.2017-05-28', 'botornot.log.2017-06-04', 'botornot.log.2017-06-11', 'botornot.log.2017-06-18', 'botornot.log.2017-06-25', 'botornot.log.2017-07-02', 'botornot.log.2017-07-09', 'botornot.log.2017-07-16','botornot.log.2017-07-23', 'botornot.log.2017-07-30', 'botornot.log.2017-08-06', 'botornot.log.2017-08-13', 'botornot.log.2017-09-03', 'botornot.log.2017-09-10']
-                    #'botornot.log201506',
-                     #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
-                     #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
-                     #'botornot.log.2017-05-28', 'botornot.log.2017-06-04', 'botornot.log.2017-06-11', 'botornot.log.2017-06-18', \
-                     #'botornot.log.2017-06-25', 'botornot.log.2017-07-02', 'botornot.log.2017-07-09', 'botornot.log.2017-07-16', \
-                     #'botornot.log.2017-07-23', 'botornot.log.2017-07-30', 'botornot.log.2017-08-06', 'botornot.log.2017-08-13']
-                    #recent
-                    #botornot.log.2017-08-20  botornot.log.2017-08-27
+
+    log_path = ''
+    
+    log_file_list = ['botornot.log201506', 'botornot.log201510', 'botornot.log201605', 'botornot.log201701' ,'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', 'botornot.log.2017-05-28', 'botornot.log.2017-06-04', 'botornot.log.2017-06-11', 'botornot.log.2017-06-18', 'botornot.log.2017-06-25', 'botornot.log.2017-07-02', 'botornot.log.2017-07-09', 'botornot.log.2017-07-16','botornot.log.2017-07-23', 'botornot.log.2017-07-30', 'botornot.log.2017-08-06', 'botornot.log.2017-08-13']
+  
     #log to store any errors due to the logs not containing the proper data (i.e. other logging information such as errors or other requests)
     error_log_file = open("feedbackinsertionlog.err", "a")
   
@@ -113,6 +110,10 @@ if __name__ == '__main__':
                     time_stamp = time_stamp/1000
                 feedback_label = None
                 feedback_text = line_json['text']
+                #if there is no feedback text we continue to the next line
+                if len(feedback_text) == 0:
+                    text_not_present_logs = text_not_present_logs + 1
+                    continue
                 target_profile = None
                 target_timeline_tweets = None
                 target_mention_tweets = None
@@ -152,6 +153,7 @@ if __name__ == '__main__':
     print("records-committed: ", records_committed)
     print("non-json-lines: ",errors_and_informational_count)
     print("non-flag-json-type: ", json_not_proper_log_count)
+    print("logs-with-text-blank: ", text_not_present_logs) 
     print("json-with-no-type: ", json_with_no_type_count)
     print("non-proper-fields-upon-retrieval: ", failed_to_retrieve_proper_fields_count)
     print("db-commit-failures: ", failed_to_commit_to_db_count)
