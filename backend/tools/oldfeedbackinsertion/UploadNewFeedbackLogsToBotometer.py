@@ -2,7 +2,7 @@
 
 #Author: Mihai Avram, e-mail: mihai.v.avram@gmail.com
 
-#TODO BEFORE RUNNING: Change database configuration settings in pgsqlconn and also log_path
+#TODO BEFORE RUNNING: Change database configuration settings in pgsqlconn and also log_path, as well as the log_file_list with the files one wants to upload
 
 #ALL IMPORTS
 #for parsing the data in the logs
@@ -30,7 +30,7 @@ def feedback_insertion_script(source_user_id, target_user_id, target_screen_name
                               VALUES 
                 (%s, %s, %s, to_timestamp(%s), %s, %s, %s, %s, %s);""", \
                 (source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label, \
-                feedback_text, target_profile, target_timeline_tweets, target_mention_tweets))
+                feedback_text, json.dumps(target_profile), target_timeline_tweets, target_mention_tweets))
 
     #commiting changes
     pgsqlconn.commit()
@@ -44,7 +44,6 @@ json_not_proper_log_count = 0
 json_with_no_type_count = 0
 failed_to_retrieve_proper_fields_count = 0
 failed_to_commit_to_db_count = 0
-text_not_present_logs = 0
     
 #MAIN CODE
 if __name__ == '__main__':
@@ -56,12 +55,10 @@ if __name__ == '__main__':
     timer_start = time.time()
     
     #log name and location information
-    #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
-
     log_path = ''
     
-    log_file_list = ['botornot.log201506', 'botornot.log201510', 'botornot.log201605', 'botornot.log201701' ,'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', 'botornot.log.2017-05-28', 'botornot.log.2017-06-04', 'botornot.log.2017-06-11', 'botornot.log.2017-06-18', 'botornot.log.2017-06-25', 'botornot.log.2017-07-02', 'botornot.log.2017-07-09', 'botornot.log.2017-07-16','botornot.log.2017-07-23', 'botornot.log.2017-07-30', 'botornot.log.2017-08-06', 'botornot.log.2017-08-13']
-  
+    log_file_list = ['botornot.log201506', 'botornot.log201510', 'botornot.log201605', 'botornot.log201701' ,'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', 'botornot.log.2017-05-28', 'botornot.log.2017-06-04', 'botornot.log.2017-06-11', 'botornot.log.2017-06-18', 'botornot.log.2017-06-25', 'botornot.log.2017-07-02', 'botornot.log.2017-07-09', 'botornot.log.2017-07-16','botornot.log.2017-07-23', 'botornot.log.2017-07-30', 'botornot.log.2017-08-06', 'botornot.log.2017-08-13', 'botornot.log.2017-09-03', 'botornot.log.2017-09-10']
+    
     #log to store any errors due to the logs not containing the proper data (i.e. other logging information such as errors or other requests)
     error_log_file = open("feedbackinsertionlog.err", "a")
   
@@ -93,28 +90,41 @@ if __name__ == '__main__':
                 error_log_file.write("NO-LOG-TYPE-JSON INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                 continue
                 
+            #checking if the feedback logs adhere to the new style i.e. log_id, timestamp, flag_type, source, remote_ip, type, target, etc..
+            try:
+                assert line_json["flag_type"]
+            except:
+                json_not_proper_log_count = json_not_proper_log_count + 1
+                continue
+
             #parsing json line and retrieving the proper fields regarding the user i.e. user id, screen name, tweets, etc...
             try:
-                source_user_id = None
-                target_user_id = line_json["user"]["id"]
-                target_screen_name = str(line_json["user"]["screen_name"])
-                #changing @screenname to screenname to add to the database if found
+                if line_json["flag_type"] == "form":
+                    feedback_label = line_json["feedback"]["classification"]
+                    feedback_text = line_json["feedback"]["classification_text"]
+                elif line_json["flag_type"] == "block":
+                    feedback_label = "block"
+                    feedback_text = None
+                elif line_json["flag_type"] == "unfollow":
+                    feedback_label = "unfollow"
+                    feedback_text = None
+
+                source_user_id = line_json["source"]["id"]
+                target_user_id = line_json["target"]["id"]
+                target_screen_name = str(line_json["target"]["screen_name"])
+
+                #if needed, changing @screenname to screenname to add to the database if found
                 if target_screen_name[0:1] == "@":
                     target_screen_name = target_screen_name[1:]
                 if len(target_screen_name) > 15:
                     #user may have a screen-name logged as longer than 15 characters which is not proper in Twitter and could be instead the userid or some other error so we make it none
                     target_screen_name = None
+
                 time_stamp = line_json["timestamp"]
                 #some timestamps are stored in milliseconds so for those we divide by 1000
                 if len(str(time_stamp)) >= 12:
                     time_stamp = time_stamp/1000
-                feedback_label = None
-                feedback_text = line_json['text']
-                #if there is no feedback text we continue to the next line
-                if len(feedback_text) == 0:
-                    text_not_present_logs = text_not_present_logs + 1
-                    continue
-                target_profile = None
+                target_profile = line_json["target"]
                 target_timeline_tweets = None
                 target_mention_tweets = None
             except:
@@ -153,7 +163,6 @@ if __name__ == '__main__':
     print("records-committed: ", records_committed)
     print("non-json-lines: ",errors_and_informational_count)
     print("non-flag-json-type: ", json_not_proper_log_count)
-    print("logs-with-text-blank: ", text_not_present_logs) 
     print("json-with-no-type: ", json_with_no_type_count)
     print("non-proper-fields-upon-retrieval: ", failed_to_retrieve_proper_fields_count)
     print("db-commit-failures: ", failed_to_commit_to_db_count)

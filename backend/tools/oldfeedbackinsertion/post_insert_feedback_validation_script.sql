@@ -32,13 +32,5 @@ ELSE
 	RAISE NOTICE 'SUCCESS: All feedback_labels are filled in with some text';
 END IF;
 
---feedback_text checks
-IF (SELECT COUNT(*) FROM feedback WHERE feedback_text IS NULL OR feedback_text='') > 0
-THEN
-	RAISE NOTICE 'FAIL: Some feedback_texts are null or blank, which need to be filled in';
-ELSE
-	RAISE NOTICE 'SUCCESS: All feedback_texts are filled in with some text';
-END IF;
-
 END
 $$
