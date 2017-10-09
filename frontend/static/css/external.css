@@ -360,6 +360,13 @@ input:not(:checked) + .check_icons > .fa-square-o
     width: 100%;
     /*padding: 1rem;*/
 }
+
+#errorModalBody i
+{
+    vertical-align: middle;
+}
+
+
 /*#toggle_timeline_button
 {
     position: absolute;

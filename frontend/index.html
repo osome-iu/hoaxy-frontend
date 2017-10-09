@@ -131,7 +131,7 @@
 				</div>
 				<div id="focus_label" class="text-center">Click and drag below to select time interval</div>
 
-				<button id="shrink_left_button" class="btn btn-primary" :disabled="graph_column_size <= 0" v-if="show_zoom_buttons" @click="shrinkTimeline">&lt;</button>
+				<button id="shrink_left_button" class="btn btn-primary" :disabled="graph_column_size <= 0" @click="shrinkTimeline">&lt;</button>
 
 			</div>
 
@@ -139,7 +139,7 @@
 			<div class="col-12" id="sigmagraph" :style="graph_column_size >= 12 ? 'display: none' : ''" :class="'col-md-' + (12-graph_column_size)">
 
 
-				<div id="graph_error" class="d-flex flex-column justify-content-center" v-if="failed_to_get_network">
+				<div id="graph_error" class="p-5 d-flex flex-column justify-content-center" v-if="failed_to_get_network">
 					There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
 				</div>
 				<div id="graph-container" style="width: 100%; height: 80vh; margin: 0 auto;">
@@ -192,6 +192,30 @@
 		#     # #    # #    # #    # #      #    #
 		#     #  ####  #####  #    # ######  ####
 		-->
+
+        <div id="errorModal" :class="{'modal-show': show_error_modal}" @click.stop="toggleErrorModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
+            <div class="modal-dialog" role="document">
+                <div @click.stop="" class="alert m-5 alert-danger">
+                    <div class="modal-header">
+                        <h4 class="modal-title text-center" id="errorModalLabel" >
+							An Error Occurred
+                        </h4>
+						<button type="button" class="close float-right"  @click="toggleErrorModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body" id="errorModalBody" >
+						<div class="d-flex align-items-center">
+							<i class="float-left m-2 fa fa-3x fa-exclamation-triangle" aria-hidden="true"></i>
+							<span>{{error_message}}</span>
+						</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="toggleErrorModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
 		<div id="edgeModal" :class="{'modal-show': show_edge_modal}" @click.stop="toggleEdgeModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="edgeModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog" role="document">
 				<div @click.stop="" class="modal-content">

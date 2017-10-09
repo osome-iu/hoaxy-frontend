@@ -77,6 +77,8 @@ var app = new Vue({
         graph: null,
         getting_bot_scores: {running: false},
 
+        show_error_modal: false,
+        error_message: "",
         show_edge_modal: false,
         show_node_modal: false,
         modal_opacity: false,
@@ -182,7 +184,7 @@ var app = new Vue({
             var v = this;
             clearTimeout(this.spin_timer);
             this.spin_timer = setTimeout(function(){
-                alert("The app is taking too long to respond.  Please try again later.");
+                v.displayError("The app is taking too long to respond.  Please try again later.");
                 v.spin_key_table.length = 0;
                 v.spinStop();
             }, 90000);
@@ -213,7 +215,7 @@ var app = new Vue({
                     var urls_model = msg;
                     if(!msg.articles || !msg.articles.length)
                     {
-                        alert("Your query did not return any results.");
+                        v.displayError("Your query did not return any results.");
                         return false;
                     }
                     urls_model.urls = msg.articles.map(function(x){
@@ -235,7 +237,7 @@ var app = new Vue({
                     v.spinStop("getArticles");
                 },
                 function (error) {
-                    alert("Get URLs Request failed: " + error);
+                    v.displayError("Get URLs Request failed: " + error);
                     console.log('Articles Request Error:', error);
                     v.spinStop("getArticles");
                 }
@@ -273,7 +275,7 @@ var app = new Vue({
                     v.spinStop("getTimeline");
                 },
                 function (error) {
-                    alert("Get TimeLine Request failed: " + error);
+                    v.displayError("Get TimeLine Request failed: " + error);
                     console.log('Timeline Request Error', error);
 
                     v.updateGraph();
@@ -327,7 +329,7 @@ var app = new Vue({
 
                 },
                 function (error) {
-                    alert("Get Graph Request failed: " + error.response.statusText);
+                    v.displayError("Get Graph Request failed: " + error.response.statusText);
                     console.log('Network Graph Request Error', error.response.statusText);
                     v.spinStop("getNetwork");
                 }
@@ -445,7 +447,7 @@ var app = new Vue({
             // $("#select_all").prop("checked", false);
             if(!this.query_text)
             {
-                alert("You must input a claim.");
+                this.displayError("You must input a claim.");
                 this.spinStop(true);
                 return false;
             }
@@ -457,13 +459,13 @@ var app = new Vue({
             this.show_graphs = false;
             if(this.checked_articles.length > 20)
             {
-                alert("You can visualize a maximum of 20 articles.");
+                this.displayError("You can visualize a maximum of 20 articles.");
                 this.spinStop(true);
                 return false;
             }
             if(this.checked_articles.length <= 0)
             {
-                alert("Select at least one article to visualize.");
+                this.displayError("Select at least one article to visualize.");
                 this.spinStop(true);
                 return false;
             }
@@ -477,6 +479,13 @@ var app = new Vue({
         },
         toggleNodeModal: function(force){
             this.toggleModal("node", force);
+        },
+        displayError: function(message){
+            this.error_message = message;
+            this.toggleModal('error', true);
+        },
+        toggleErrorModal: function(force){
+            this.toggleModal('error', force);
         },
         toggleModal: function(modal, force)
         {
@@ -612,7 +621,7 @@ var app = new Vue({
         // the updateGraph function is a callback when the timeline interval is adjusted
         this.timeline = new HoaxyTimeline(this.updateGraph);
 
-
+        // this.displayError("Test Error");
 
         this.spinStop("initialLoad");
         console.debug("Vue Mounted.");

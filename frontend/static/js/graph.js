@@ -952,14 +952,17 @@ function HoaxyGraph(options)
 		});
 	}
 	function redraw(){
-		var c = s.camera;
-		// Zoom out - animation :
-		sigma.misc.animation.camera(c, {
-			ratio: c.ratio
-		}, {});
-		c.goTo({
-			ratio: c.ratio
-		});
+        if(s && s.camera)
+        {
+    		var c = s.camera;
+    		// Zoom out - animation :
+    		sigma.misc.animation.camera(c, {
+    			ratio: c.ratio
+    		}, {});
+    		c.goTo({
+    			ratio: c.ratio
+    		});
+        }
 	}
 
 
