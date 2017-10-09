@@ -278,7 +278,7 @@ var app = new Vue({
                     v.displayError("Get TimeLine Request failed: " + error);
                     console.log('Timeline Request Error', error);
 
-                    v.updateGraph();
+                    // v.updateGraph();
                     v.spinStop("getTimeline");
                 }
             );
@@ -286,6 +286,8 @@ var app = new Vue({
         },
         getNetwork: function(article_ids){
             this.spinStart("getNetwork");
+
+            this.timeline.removeUpdateDateRangeCallback();
             this.failed_to_get_network = false;
             var graph_request = axios.get( configuration.network_url, {
                 headers: configuration.network_headers,
@@ -321,10 +323,19 @@ var app = new Vue({
                         });
                     }
 
+                    v.show_graphs = true;
+                    Vue.nextTick(function(){
+                        v.graph.updateEdges(edge_list);
+                        v.updateGraph();
+                        v.timeline.redraw();
+
+                        v.scrollToElement("graphs");
+                    });
+
+
                     //after the botcache request is complete,
                     // update the graph even if the request fails
                     // if it fails, it just won't have the bot scores
-                    v.graph.updateEdges(edge_list);
                     // v.timeline.updateDateRange();
 
                 },

@@ -94,6 +94,8 @@ function HoaxyGraph(options)
     {
 		// spinStart("getBotCacheScores");
 		user_list.length = 0;
+
+		// user_list = [];
 		//build list of users found in the edge list
 		for(var i in edges)
 		{
@@ -144,6 +146,11 @@ function HoaxyGraph(options)
 			},
 			function (error) {
 				console.log('Botometer Scores Request Error: ', error);
+				console.debug(error.response.status);
+				if(error.response.status === 502)
+				{
+					getBotCacheScores();
+				}
 				spinStop("getBotCacheScores");
 			}
 		);
@@ -606,7 +613,7 @@ function HoaxyGraph(options)
 
 				count = edgeCount[from_user_id + " " + to_user_id];
 	        }
-
+			// console.debug(nodes);
 			//put nodes into sigma
 			var nodes_id = {};
 			var cnt = 0;
@@ -627,7 +634,7 @@ function HoaxyGraph(options)
 					y: Math.random(),
 	                size: Math.sqrt(nodes[i].size*3),
 	                label: nodes[i].screenName,
-	                id: nodes[i].screenName,
+	                id: i, //nodes[i].screenName,
 					node_id: cnt,
 	                color: color,//nodes[i].color,
 	                data: nodes[i]
@@ -826,7 +833,7 @@ function HoaxyGraph(options)
 	        slowDown: 100,
 	        gravity: 2
 	    });
-		console.debug(botscores);
+		// console.debug(botscores);
 		for(var i in botscores)
 		{
 			updateNodeColor(i, botscores[i].score);

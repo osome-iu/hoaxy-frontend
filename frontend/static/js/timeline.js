@@ -24,6 +24,9 @@ function HoaxyTimeline(updateDateRangeCallback){
 		.call(chart);
 		chart.dispatch.on("brush", updateDateRange);
 	}
+	function removeUpdateDateRangeCallback(){
+		chart.dispatch.on("brush", null);
+	}
 
 	function dateFormatter(d) {
 		return d3.time.format('%x')(new Date(d))
@@ -60,7 +63,15 @@ function HoaxyTimeline(updateDateRangeCallback){
 		}
 		catch(e)
 		{
-			console.debug(e);
+			if(e === "Tried to make graph, but there is no data.")
+			{
+				console.info(e, "This is not an error.");
+			}
+			else
+			{
+				console.warn(e);
+			}
+
 			setTimeout(function(){
 				updateDateRange(extent);
 			}, 500);
@@ -109,7 +120,7 @@ function HoaxyTimeline(updateDateRangeCallback){
 
 		// This adds an event handler to the focus chart
 		try {
-			chart.dispatch.on("brush", updateDateRange);
+			// chart.dispatch.on("brush", updateDateRange);
 			d3.select('#chart svg')
 			.datum(chartData)
 			.call(chart);
@@ -130,6 +141,7 @@ function HoaxyTimeline(updateDateRangeCallback){
 		}
 	}
 
+	returnObj.removeUpdateDateRangeCallback = removeUpdateDateRangeCallback;
 	returnObj.update = Update;
 	returnObj.chart = chart;
 	returnObj.redraw = redraw;
