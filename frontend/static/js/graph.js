@@ -89,7 +89,7 @@ function HoaxyGraph(options)
 		}
 		return edges;
 	}
-
+	var retry_count = 0;
 	function getBotCacheScores()
     {
 		// spinStart("getBotCacheScores");
@@ -120,7 +120,8 @@ function HoaxyGraph(options)
 				"screen_name": user_list.join(",")
 			}
 		});
-		botcache_request.then(
+		botcache_request
+		.then(
 			function(response){
 				spinStop("getBotCacheScores");
 				console.debug("Got botcache: ", response.data);
@@ -143,12 +144,17 @@ function HoaxyGraph(options)
 				//botscore[sn] = {score: xx, old: false/true};
 
 				// spinStop("getBotCacheScores");
-			},
+		})
+		.catch(
 			function (error) {
-				console.log('Botometer Scores Request Error: ', error);
-				console.debug(error.response.status);
-				if(error.response.status === 502)
+				console.warn('Botometer Scores Request Error: ', error);
+
+				// if it's a network error, retry a maximum of 5 times
+				// if it was the expected 502, the second try will probably succeed.
+				if(error.message === "Network Error" && retry_count < 5)
 				{
+					retry_count += 1;
+					console.info("Retry bot score cache request #", retry_count);
 					getBotCacheScores();
 				}
 				spinStop("getBotCacheScores");
