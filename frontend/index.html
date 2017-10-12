@@ -161,7 +161,7 @@
 	                    <button v-if="getting_bot_scores.running" disabled class="mr-2 float-left disabled btn btn-primary" id="">More Scores</button>
 	                    <!-- <button v-if="twitter_account_info.id" @click.stop.prevent="twitterLogOut()" class="btn btn-primary" id="un_authenticate_button">Disable Twitter</button> -->
 						<small>{{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.</small>
-                        <small v-if="graph.score_stats.old > 0">{{graph.score_stats.old}} {{graph.score_stats.old == 1?'is':'are'}} old.</small>
+                        <small>{{graph.score_stats.found - graph.score_stats.old}} {{graph.score_stats.found - graph.score_stats.old == 1?'is':'are'}} fresh.</small>
                         <div><small v-if="graph.score_stats.unavailable > 0">{{graph.score_stats.unavailable}} could not be updated.</small></div>
 						<div><small v-if="getting_bot_scores.running">Getting more scores...</small></div>
 					</div>
