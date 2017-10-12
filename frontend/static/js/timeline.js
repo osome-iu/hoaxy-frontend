@@ -19,10 +19,13 @@ function HoaxyTimeline(updateDateRangeCallback){
 	var chartData = [];
 
 	function redraw(){
-		chart.dispatch.on("brush", null);
-		d3.select('#chart svg')
-		.call(chart);
-		chart.dispatch.on("brush", updateDateRange);
+		if(chart)
+		{
+			chart.dispatch.on("brush", null);
+			d3.select('#chart svg')
+			.call(chart);
+			chart.dispatch.on("brush", updateDateRange);
+		}
 	}
 	function removeUpdateDateRangeCallback(){
 		chart.dispatch.on("brush", null);

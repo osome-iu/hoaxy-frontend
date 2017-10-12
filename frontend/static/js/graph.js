@@ -392,80 +392,113 @@ function HoaxyGraph(options)
 		// ];
 
 
-		score2 = 0
-		if(score < 30)
-		{
-			color1 = node_colors[4];
-			color2 = node_colors[3];
 
-			score2 = (score - 0) / (30 - 0);
-		}
-		else if(score < 50)
+		// score2 = 0;
+		var color = {};
+
+		if(score < 20)
 		{
-			color1 = node_colors[3];
-			color2 = node_colors[2];
-			score2 = (score - 30) / (50 - 30)
+			color = node_colors[4];
 		}
-		else if(score < 70)
+		else if(score < 40)
 		{
-			color1 = node_colors[2];
-			color2 = node_colors[1];
-			score2 = (score - 50) / (70 - 50);
+			color = node_colors[3];
+		}
+		else if(score < 60)
+		{
+			color = node_colors[2];
+		}
+		else if(score < 80)
+		{
+			color = node_colors[1];
 		}
 		else
 		{
-			color1 = node_colors[1];
-			color2 = node_colors[0];
-			score2 = (score - 70) / (100 - 70);
+			color = node_colors[0];
 		}
 
-		// if(score < 50)
-		// {
-		// 	color1 = node_colors[2];
-		// 	color2 = node_colors[1];
-		//
-		// 	score2 = (score - 0) / (50 - 0);
-		// }
-		// else
-		// {
-		// 	color1 = node_colors[1];
-		// 	color2 = node_colors[0];
-		// 	score2 = (score - 50) / (100 - 50)
-		// }
+		color.r = color.red;
+		color.g = color.green;
+		color.b = color.blue;
 
-		// if(score < 33)
+		return color;
+
+
+
+		// score2 = 0
+		// if(score < 30)
+		// {
+		// 	color1 = node_colors[4];
+		// 	color2 = node_colors[3];
+		//
+		// 	score2 = (score - 0) / (30 - 0);
+		// }
+		// else if(score < 50)
 		// {
 		// 	color1 = node_colors[3];
 		// 	color2 = node_colors[2];
-		//
-		// 	score2 = (score - 0) / (33 - 0);
+		// 	score2 = (score - 30) / (50 - 30)
 		// }
-		// else if(score < 66)
+		// else if(score < 70)
 		// {
 		// 	color1 = node_colors[2];
 		// 	color2 = node_colors[1];
-		//
-		// 	score2 = (score - 33) / (66 - 33);
+		// 	score2 = (score - 50) / (70 - 50);
 		// }
 		// else
 		// {
 		// 	color1 = node_colors[1];
 		// 	color2 = node_colors[0];
-		// 	score2 = (score - 66) / (100 - 66)
+		// 	score2 = (score - 70) / (100 - 70);
 		// }
-		// console.debug(score, score2);
-
-		score2 = score2;
-		var r = Math.floor(color1.red + score2 * (color2.red - color1.red))//.toString(16);
-		var g = Math.floor(color1.green + score2 * (color2.green - color1.green))//.toString(16);
-		var b = Math.floor(color1.blue + score2 * (color2.blue - color1.blue))//.toString(16);
-		// if(r.length < 2) r = "0"+r;
-		// if(g.length < 2) g = "0"+g;
-		// if(b.length < 2) b = "0"+b;
-		// var color = "#"+r+g+b;
-		var color = {r: r, g: g, b: b};
-		// console.debug(color);
-		return color;
+		//
+		// // if(score < 50)
+		// // {
+		// // 	color1 = node_colors[2];
+		// // 	color2 = node_colors[1];
+		// //
+		// // 	score2 = (score - 0) / (50 - 0);
+		// // }
+		// // else
+		// // {
+		// // 	color1 = node_colors[1];
+		// // 	color2 = node_colors[0];
+		// // 	score2 = (score - 50) / (100 - 50)
+		// // }
+		//
+		// // if(score < 33)
+		// // {
+		// // 	color1 = node_colors[3];
+		// // 	color2 = node_colors[2];
+		// //
+		// // 	score2 = (score - 0) / (33 - 0);
+		// // }
+		// // else if(score < 66)
+		// // {
+		// // 	color1 = node_colors[2];
+		// // 	color2 = node_colors[1];
+		// //
+		// // 	score2 = (score - 33) / (66 - 33);
+		// // }
+		// // else
+		// // {
+		// // 	color1 = node_colors[1];
+		// // 	color2 = node_colors[0];
+		// // 	score2 = (score - 66) / (100 - 66)
+		// // }
+		// // console.debug(score, score2);
+		//
+		// score2 = score2;
+		// var r = Math.floor(color1.red + score2 * (color2.red - color1.red))//.toString(16);
+		// var g = Math.floor(color1.green + score2 * (color2.green - color1.green))//.toString(16);
+		// var b = Math.floor(color1.blue + score2 * (color2.blue - color1.blue))//.toString(16);
+		// // if(r.length < 2) r = "0"+r;
+		// // if(g.length < 2) g = "0"+g;
+		// // if(b.length < 2) b = "0"+b;
+		// // var color = "#"+r+g+b;
+		// var color = {r: r, g: g, b: b};
+		// // console.debug(color);
+		// return color;
 
 
 	}
@@ -638,7 +671,7 @@ function HoaxyGraph(options)
 	            g.nodes.push({
 	                x: Math.random(),
 					y: Math.random(),
-	                size: Math.sqrt(nodes[i].size*3),
+	                size: Math.sqrt(Math.sqrt(nodes[i].size*10)),
 	                label: nodes[i].screenName,
 	                id: i, //nodes[i].screenName,
 					node_id: cnt,
@@ -668,7 +701,7 @@ function HoaxyGraph(options)
 
 							from_node_id: nodes_id[i],
 							to_node_id: nodes_id[j],
-							size: Number(nodes[i].outgoing[j].count),
+							size: (Number(nodes[i].outgoing[j].count)),
 							type: "arrow",
 							color: edge_colors[nodes[i].outgoing[j].type],//Giovanni said use a third color
 							count: edgeIndex,
@@ -1009,7 +1042,7 @@ function HoaxyGraph(options)
 			context.closePath();
 			context.fill();
 
-			context.lineWidth = node.borderWidth || 1;
+			context.lineWidth = node.borderWidth || .5;
 			context.strokeStyle = node.borderColor || getBorderColor(false)
 			context.stroke();
 		};

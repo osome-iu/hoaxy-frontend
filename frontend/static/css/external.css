@@ -52,12 +52,12 @@ section
 li.claim, li.claim a, .claim_label
 {
     color: black;
-    background-color: orange;
+    background-color: darkgray;
 }
 li.fact_checking, li.fact_checking a, .fact_checking_label
 {
     color: black;
-    background-color: green;
+    background-color: rgb(238,210,2);
 }
 li label
 {
@@ -281,11 +281,44 @@ input:not(:checked) + .check_icons > .fa-square-o
 #bot_legend_gradient
 {
     height: 50%;
+    /*background: linear-gradient(to top,
+        rgb(138,206,229) 0%,
+        rgb(138,206,229) 20%,
+        rgb(44,123,182) 20%,
+        rgb(44,123,182) 40%,
+        rgb(199,21,133) 40%,
+        rgb(199,21,133) 60%,
+        rgb(227,11,92) 60%,
+        rgb(227,11,92) 80%,
+        rgb(215,25,28) 80%);
+        rgb(215,25,28) 100%);*/
+        /*rgb(238,210,2) 40%,
+        rgb(238,210,2) 60%,*/
+        /*rgb(120, 81, 169) 40%,
+        rgb(120, 81, 169) 60%,*/
+        /*rgb(255,127,0) 60%,
+        rgb(255,127,0) 80%,*/
+    /*background: linear-gradient(to top,
+        rgb(138,206,229) 0%,
+        rgb(138,206,229) 20%,
+        rgb(44,123,182) 20%,
+        rgb(44,123,182) 40%,
+        rgb(147,112,219) 40%,
+        rgb(147,112,219) 60%,
+        rgb(223,111,161) 60%,
+        rgb(223,111,161) 80%,
+        rgb(215,25,28) 80%,
+        rgb(215,25,28) 100%);*/
     background: linear-gradient(to top,
-        rgb(44,123,182) 0%,
-        rgb(138,206,229) 30%,
-        rgb(255,255,151) 50%,
-        rgb(253,174,97) 70%,
+        rgb(138,206,229) 0%,
+        rgb(138,206,229) 20%,
+        rgb(91, 148, 219) 20%,
+        rgb(91, 148, 219) 40%,
+        rgb(57, 106, 211) 40%,
+        rgb(57, 106, 211) 60%,
+        rgb(181, 56, 80) 60%,
+        rgb(181, 56, 80) 80%,
+        rgb(215,25,28) 80%,
         rgb(215,25,28) 100%);
     border: solid black 1px;
 }

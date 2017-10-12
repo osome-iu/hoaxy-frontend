@@ -259,7 +259,7 @@
 							<p>Botometer Score:
 								<span v-if="node_modal_content.botscore > 0"><b>{{node_modal_content.botscore}}%</b></span>
 								<span v-if="!node_modal_content.botscore">Unavailable</span>
-								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.</span>
+								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this user's timeline is set to private or has been deleted entirely.</span>
 
 							</p>
 							<p v-if="">

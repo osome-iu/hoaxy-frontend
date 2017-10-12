@@ -7,18 +7,38 @@ var colors = {
         "fact_checking" : 'darkblue',
         "claim" : 'darkblue',
         "botscores": [
-			{red: 215, green: 25, blue: 28} ,
-			{red: 253, green: 174, blue: 97} ,
-			{red: 255, green: 255, blue: 151} ,
-			{red: 138, green: 206, blue: 229} ,
-			{red: 44, green: 123, blue: 182},
+            {red: 215, green: 25, blue: 28},
+
+            {red: 181, green: 56, blue: 80},
+            // {red: 164, green: 38, blue: 85},
+            // {red: 60, green: 65, blue:196},
+            {red: 57, green: 106, blue:211},
+            {red: 91, green: 148, blue:219},
+
+            {red: 138, green: 206, blue: 229} ,
+
+
+            // {red: 215, green: 25, blue: 28} ,
+            // {red: 223, green: 111, blue: 161},
+            // {red: 147, green: 112, blue:219},
+            // {red: 44, green: 123, blue:182},
+            // {red: 138, green: 206, blue: 229} ,
+
+
+			// {red: 253, green: 174, blue: 97} ,
+			// {red: 255, green: 127, blue: 0} ,
+            // {red: 181, green: 126, blue:220},
+			// {red: 255, green: 210, blue: 2} ,
+            // {red: 138, green: 206, blue:229},
+            // {red: 227, green: 11, blue:92},
+            // {red: 215, green: 25, blue:28},
 		]
     },
     edge_colors : {
-        "fact_checking" : 'green',
-        "fact_checking_dark" : 'green',
-        "claim" : 'orange',
-        "claim_dark" : 'orange'
+        "fact_checking" : 'rgb(238,210,2)',
+        "fact_checking_dark" : 'rgb(169, 171, 2)',
+        "claim" : 'darkgray',
+        "claim_dark" : 'gray'
     }
 };
 
@@ -327,7 +347,7 @@ var app = new Vue({
                     Vue.nextTick(function(){
                         v.graph.updateEdges(edge_list);
                         v.updateGraph();
-                        v.timeline.redraw();
+                        // v.timeline.redraw();
 
                         v.scrollToElement("graphs");
                     });
