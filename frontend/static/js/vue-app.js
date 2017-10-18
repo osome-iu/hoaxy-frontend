@@ -236,6 +236,7 @@ var app = new Vue({
                     if(!msg.articles || !msg.articles.length)
                     {
                         v.displayError("Your query did not return any results.");
+                        v.spinStop("getArticles");
                         return false;
                     }
                     urls_model.urls = msg.articles.map(function(x){
