@@ -657,8 +657,10 @@ function HoaxyGraph(options)
 
             var max_size = 0;
             var min_size = 0;
+			var node_count = 0;
             for(var i in nodes)
             {
+				node_count ++;
                 if(nodes[i].size > max_size)
                 {
                     max_size = nodes[i].size;
@@ -692,11 +694,17 @@ function HoaxyGraph(options)
 					score = false;
 				}
 				var color = getNodeColor(score);
+
+				node_count = node_count / 2;
+				var new_x, new_y;
+				new_x = Math.cos(360*(cnt/node_count));
+				new_y = Math.sin(360*(cnt/node_count));
+
 	            g.nodes.push({
-	                x: Math.random() * 10,
-					y: Math.random() * 10,
-					// x: 1,
-					// y: 1,
+	                // x: Math.random() * 10,
+					// y: Math.random() * 10,
+					x: new_x,
+					y: new_y,
 	                size: new_size, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
 	                label: nodes[i].screenName + " " + new_size,
 	                id: i, //nodes[i].screenName,
@@ -1068,7 +1076,7 @@ function HoaxyGraph(options)
 			context.closePath();
 			context.fill();
 
-			context.lineWidth = node.borderWidth || .5;
+			context.lineWidth = 0.5; //node.borderWidth || .5;
 			context.strokeStyle = node.borderColor || getBorderColor(false)
 			context.stroke();
 		};
