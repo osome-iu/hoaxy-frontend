@@ -18,6 +18,19 @@ function HoaxyTimeline(updateDateRangeCallback){
 	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking]); //color match with those of nodes
 	var chartData = [];
 
+	function redraw(){
+		if(chart)
+		{
+			chart.dispatch.on("brush", null);
+			d3.select('#chart svg')
+			.call(chart);
+			chart.dispatch.on("brush", updateDateRange);
+		}
+	}
+	function removeUpdateDateRangeCallback(){
+		chart.dispatch.on("brush", null);
+	}
+
 	function dateFormatter(d) {
 		return d3.time.format('%x')(new Date(d))
 	}
@@ -53,7 +66,15 @@ function HoaxyTimeline(updateDateRangeCallback){
 		}
 		catch(e)
 		{
-			console.debug(e);
+			if(e === "Tried to make graph, but there is no data.")
+			{
+				console.info(e, "This is not an error.");
+			}
+			else
+			{
+				console.warn(e);
+			}
+
 			setTimeout(function(){
 				updateDateRange(extent);
 			}, 500);
@@ -95,14 +116,14 @@ function HoaxyTimeline(updateDateRangeCallback){
 			c:colors.edge_colors.claim
 		};
 
-		app.show_zoom_buttons = true;
+		// app.show_zoom_buttons = true;
 
 		chartData.push(fake_series);
 		chartData.push(factChecking_series);
 
 		// This adds an event handler to the focus chart
 		try {
-			chart.dispatch.on("brush", updateDateRange);
+			// chart.dispatch.on("brush", updateDateRange);
 			d3.select('#chart svg')
 			.datum(chartData)
 			.call(chart);
@@ -123,8 +144,10 @@ function HoaxyTimeline(updateDateRangeCallback){
 		}
 	}
 
+	returnObj.removeUpdateDateRangeCallback = removeUpdateDateRangeCallback;
 	returnObj.update = Update;
 	returnObj.chart = chart;
+	returnObj.redraw = redraw;
 	returnObj.updateDateRange = triggerUpdateRange;
 	return returnObj;
 }

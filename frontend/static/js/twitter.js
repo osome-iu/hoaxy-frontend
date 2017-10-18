@@ -17,8 +17,8 @@ var Twitter = function(initialize_key){
             var keys = JSON.parse(localStorage.getItem(tokenCacheKey)),
             provider = JSON.parse(localStorage.getItem(providerCacheKey));
             if(keys && provider){
-                console.log('Creating token from localStorage:', keys);
-                console.log('OAuth provider from localStorage:', provider);
+                // console.log('Creating token from localStorage:', keys);
+                // console.log('OAuth provider from localStorage:', provider);
                 /* Should probably test that the key is good first, e.g. with me() */
                 try {
                     _token = OAuth.create('twitter', keys, provider);

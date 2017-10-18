@@ -52,12 +52,12 @@ section
 li.claim, li.claim a, .claim_label
 {
     color: black;
-    background-color: orange;
+    background-color: darkgray;
 }
 li.fact_checking, li.fact_checking a, .fact_checking_label
 {
     color: black;
-    background-color: green;
+    background-color: rgb(238,210,2);
 }
 li label
 {
@@ -73,8 +73,9 @@ li
 .claim_label, .fact_checking_label
 {
     width: 1rem;
-    height: 1rem;
+    height: .25rem;
     display: inline-block;
+    vertical-align: middle;
 }
 .tab-content .claim_label, .tab-content .fact_checking_label
 {
@@ -84,7 +85,7 @@ li
 
 
 
-#visualize_top, #authenticate_button, #un_authenticate_button
+#visualize_top
 {
     margin-top: .75rem;
 }
@@ -149,12 +150,19 @@ li
     position: absolute;
     top: 2em;
     right: 2em;
+    left:  0;
+}
+#zoom_buttons > div
+{
+    white-space: nowrap;
+    line-height: 1;
 }
 
 #focus_label
 {
     margin-top: -80px;
 }
+
 
 
 .modal-show
@@ -254,3 +262,153 @@ input:not(:checked) + .check_icons > .fa-square-o
 {
     display: inline-block;
 }
+
+
+#bot_legend
+{
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 2em;
+    text-align: center;
+}
+#bot_legend div
+{
+    width: 2em;
+    display: block;
+}
+#bot_legend_gradient
+{
+    height: 50%;
+    /*background: linear-gradient(to top,
+        rgb(138,206,229) 0%,
+        rgb(138,206,229) 20%,
+        rgb(44,123,182) 20%,
+        rgb(44,123,182) 40%,
+        rgb(199,21,133) 40%,
+        rgb(199,21,133) 60%,
+        rgb(227,11,92) 60%,
+        rgb(227,11,92) 80%,
+        rgb(215,25,28) 80%);
+        rgb(215,25,28) 100%);*/
+        /*rgb(238,210,2) 40%,
+        rgb(238,210,2) 60%,*/
+        /*rgb(120, 81, 169) 40%,
+        rgb(120, 81, 169) 60%,*/
+        /*rgb(255,127,0) 60%,
+        rgb(255,127,0) 80%,*/
+    /*background: linear-gradient(to top,
+        rgb(138,206,229) 0%,
+        rgb(138,206,229) 20%,
+        rgb(44,123,182) 20%,
+        rgb(44,123,182) 40%,
+        rgb(147,112,219) 40%,
+        rgb(147,112,219) 60%,
+        rgb(223,111,161) 60%,
+        rgb(223,111,161) 80%,
+        rgb(215,25,28) 80%,
+        rgb(215,25,28) 100%);*/
+    background: linear-gradient(to top,
+        rgb(138,206,229) 0%,
+        rgb(138,206,229) 20%,
+        rgb(91, 148, 219) 20%,
+        rgb(91, 148, 219) 40%,
+        rgb(57, 106, 211) 40%,
+        rgb(57, 106, 211) 60%,
+        rgb(181, 56, 80) 60%,
+        rgb(181, 56, 80) 80%,
+        rgb(215,25,28) 80%,
+        rgb(215,25,28) 100%);
+    border: solid black 1px;
+}
+#bot_legend_gradient span
+{
+    display: block;
+    white-space: nowrap;
+    width: 2rem;
+    transform: rotate(90deg) translate(550%);
+
+}
+.likely_bot, .likely_human
+{
+    transform: rotate(90deg);
+    white-space: nowrap;
+    /*margin-right: 3rem;*/
+    color: white;
+    font-size: .875rem;
+}
+.likely_human
+{
+    transform: rotate(90deg) translateX(-310%);
+}
+.likely_bot
+{
+    transform: rotate(90deg) translateX(110%);
+}
+
+
+#graph_error
+{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right; 0;
+}
+
+
+#graphs
+{
+    position: relative;
+}
+#timeline
+{
+    /*position: absolute;
+    height: 50%;
+
+    bottom: 2rem;
+    left: 2rem;
+    display: none;
+
+    background: lightgray;
+    border: solid gray 1px;*/
+}
+#shrink_right_button, #shrink_left_button
+{
+    position: absolute;
+    top: 50%;
+}
+#shrink_left_button
+{
+    right: 0;
+}
+#shrink_right_button
+{
+    left: 0;
+}
+#chart
+{
+    height: 100%;
+    width: 100%;
+    /*padding: 1rem;*/
+}
+
+#errorModalBody i
+{
+    vertical-align: middle;
+}
+
+
+/*#toggle_timeline_button
+{
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+}
+#timeline .toggle_button
+{
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}*/

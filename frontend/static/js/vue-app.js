@@ -5,15 +5,55 @@ var TWEET_URL = "https://twitter.com/%0/status/%1";
 var colors = {
     node_colors : {
         "fact_checking" : 'darkblue',
-        "claim" : 'darkblue'
+        "claim" : 'darkblue',
+        "botscores": [
+            {red: 215, green: 25, blue: 28},
+
+            {red: 181, green: 56, blue: 80},
+            // {red: 164, green: 38, blue: 85},
+            // {red: 60, green: 65, blue:196},
+            {red: 57, green: 106, blue:211},
+            {red: 91, green: 148, blue:219},
+
+            {red: 138, green: 206, blue: 229} ,
+
+
+            // {red: 215, green: 25, blue: 28} ,
+            // {red: 223, green: 111, blue: 161},
+            // {red: 147, green: 112, blue:219},
+            // {red: 44, green: 123, blue:182},
+            // {red: 138, green: 206, blue: 229} ,
+
+
+			// {red: 253, green: 174, blue: 97} ,
+			// {red: 255, green: 127, blue: 0} ,
+            // {red: 181, green: 126, blue:220},
+			// {red: 255, green: 210, blue: 2} ,
+            // {red: 138, green: 206, blue:229},
+            // {red: 227, green: 11, blue:92},
+            // {red: 215, green: 25, blue:28},
+		]
     },
     edge_colors : {
-        "fact_checking" : 'green',
-        "fact_checking_dark" : 'green',
-        "claim" : 'orange',
-        "claim_dark" : 'orange'
+        "fact_checking" : 'rgb(238,210,2)',
+        "fact_checking_dark" : 'rgb(169, 171, 2)',
+        "claim" : 'darkgray',
+        "claim_dark" : 'gray'
     }
 };
+
+// var colors = {
+//     node_colors : {
+//         "fact_checking" : '#1f2041',
+//         "claim" : '#1f2041'
+//     },
+//     edge_colors : {
+//         "fact_checking" : '#F46036',
+//         "fact_checking_dark" : '#cc4f2d',
+//         "claim" : '#4B3F72',
+//         "claim_dark" : '#2a2340'
+//     }
+// };
 
 var app = new Vue({
     el: '#vue-app',
@@ -32,6 +72,9 @@ var app = new Vue({
         show_articles: false,
         show_graphs: false,
         show_zoom_buttons: false,
+        graph_column_size: 3,
+
+
         articles: [],
         articles_to_show: max_articles,
         input_disabled: false,
@@ -52,7 +95,10 @@ var app = new Vue({
 
         timeline: null,
         graph: null,
+        getting_bot_scores: {running: false},
 
+        show_error_modal: false,
+        error_message: "",
         show_edge_modal: false,
         show_node_modal: false,
         modal_opacity: false,
@@ -76,8 +122,10 @@ var app = new Vue({
             is_quoted_by_count: 0,
             is_mentioned_by_count: 0,
             is_retweeted_by_count: 0,
-            botscore: 0
+            botscore: 0,
+            botcolor: 0
         },
+        failed_to_get_network: false,
 
         colors: colors
     },
@@ -133,6 +181,7 @@ var app = new Vue({
             return query_string;
         },
         spinStop: function(key, reset){
+            // console.debug(key);
             var key_index = this.spin_key_table.indexOf(key);
             if(key_index >= 0)
             {
@@ -147,6 +196,7 @@ var app = new Vue({
             // console.debug(key, this.spin_key_table);
         },
         spinStart: function(key){
+            // console.debug(key);
             this.spin_key_table.push(key);
             this.loading = true;
             this.input_disabled = true;
@@ -154,7 +204,7 @@ var app = new Vue({
             var v = this;
             clearTimeout(this.spin_timer);
             this.spin_timer = setTimeout(function(){
-                alert("The app is taking too long to respond.  Please try again later.");
+                v.displayError("The app is taking too long to respond.  Please try again later.");
                 v.spin_key_table.length = 0;
                 v.spinStop();
             }, 90000);
@@ -169,6 +219,7 @@ var app = new Vue({
 
         getArticles: function(dontScroll){
             this.spinStart("getArticles");
+
             var urls_request = axios.get(configuration.articles_url, {
                 headers: configuration.articles_headers,
                 params: {
@@ -184,7 +235,7 @@ var app = new Vue({
                     var urls_model = msg;
                     if(!msg.articles || !msg.articles.length)
                     {
-                        alert("Your query did not return any results.");
+                        v.displayError("Your query did not return any results.");
                         return false;
                     }
                     urls_model.urls = msg.articles.map(function(x){
@@ -206,8 +257,8 @@ var app = new Vue({
                     v.spinStop("getArticles");
                 },
                 function (error) {
-                    alert("Get URLs Request failed: " + error.response.statusText);
-                    console.log('Articles Request Error:', error.response.statusText);
+                    v.displayError("Get URLs Request failed: " + error);
+                    console.log('Articles Request Error:', error);
                     v.spinStop("getArticles");
                 }
             );
@@ -244,8 +295,10 @@ var app = new Vue({
                     v.spinStop("getTimeline");
                 },
                 function (error) {
-                    alert("Get TimeLine Request failed: " + error.response.statusText);
-                    console.log('Timeline Request Error', error.response.statusText);
+                    v.displayError("Get TimeLine Request failed: " + error);
+                    console.log('Timeline Request Error', error);
+
+                    // v.updateGraph();
                     v.spinStop("getTimeline");
                 }
             );
@@ -253,6 +306,9 @@ var app = new Vue({
         },
         getNetwork: function(article_ids){
             this.spinStart("getNetwork");
+
+            this.timeline.removeUpdateDateRangeCallback();
+            this.failed_to_get_network = false;
             var graph_request = axios.get( configuration.network_url, {
                 headers: configuration.network_headers,
                 params: {
@@ -267,25 +323,44 @@ var app = new Vue({
                     v.spinStop("getNetwork");
 
                     var msg = response.data;
-                    v.spinStart("generateNetwork");
-                    //create an edge list
-                    var edge_list = msg.edges.map(function(x){
-                        y = x;
-                        y.site_domain = x.domain;
-                        y.pub_date = x.publish_date;
-                        y.url_raw = x.canonical_url;
-                        return y;
+                    var edge_list;
+                    if(msg.error)
+                    {
+                        v.show_zoom_buttons = false;
+                        v.failed_to_get_network = true;
+                        edge_list = []
+                    }
+                    else
+                    {
+                        v.spinStart("generateNetwork");
+                        //create an edge list
+                        edge_list = msg.edges.map(function(x){
+                            y = x;
+                            y.site_domain = x.domain;
+                            y.pub_date = x.publish_date;
+                            y.url_raw = x.canonical_url;
+                            return y;
+                        });
+                    }
+
+                    v.show_graphs = true;
+                    Vue.nextTick(function(){
+                        v.graph.updateEdges(edge_list);
+                        v.updateGraph();
+                        // v.timeline.redraw();
+
+                        v.scrollToElement("graphs");
                     });
+
 
                     //after the botcache request is complete,
                     // update the graph even if the request fails
                     // if it fails, it just won't have the bot scores
-                    v.graph.updateEdges(edge_list);
                     // v.timeline.updateDateRange();
 
                 },
                 function (error) {
-                    alert("Get Graph Request failed: " + error.response.statusText);
+                    v.displayError("Get Graph Request failed: " + error.response.statusText);
                     console.log('Network Graph Request Error', error.response.statusText);
                     v.spinStop("getNetwork");
                 }
@@ -303,6 +378,25 @@ var app = new Vue({
         // #     # #    #   #   # #    # #   ## #    #  #      #     # #    #   #     #   #    # #   ##    #     # #      # #    # #   #  #    #
         // #     #  ####    #   #  ####  #    #  ####  #       ######   ####    #     #    ####  #    #     #####  ###### #  ####  #    #  ####
 
+
+        resizeGraphs: function(){
+            var v = this;
+            Vue.nextTick(function(){
+                v.timeline.redraw();
+                v.graph.redraw();
+            });
+            // console.debug(this.graph_column_size);
+        },
+        shrinkGraph: function(){
+            this.graph_column_size += 3;
+            this.resizeGraphs();
+        },
+        shrinkTimeline: function(){
+            this.graph_column_size -= 3;
+            this.resizeGraphs();
+
+        },
+
         twitterLogIn: function(){
             var me = this.twitter.verifyMe();
             var v = this;
@@ -313,8 +407,64 @@ var app = new Vue({
                 function(error){
                     v.twitter_account_info = {};
                     console.debug("error: ", error);
+                    // this.getting_bot_scores.running = false;
                 }
             );
+            return me;
+        },
+        getMoreBotScores: function(){
+            // this.getting_bot_scores = true;
+            if(!this.twitter_account_info.id)
+            {
+                var prom = this.twitterLogIn();
+                prom.then( this.graph.getNewScores );
+
+            }
+            else
+            {
+                this.graph.getNewScores();
+            }
+        },
+        getSingleBotScore: function(screen_name){
+            var v = this;
+            this.getting_bot_scores.running = true;
+            var success = new Promise(function(resolve, reject){
+                if(!v.twitter_account_info.id)
+                {
+                    v.twitterLogIn()
+                    .then(function(){
+                        v.graph.updateUserBotScore({screen_name: screen_name})
+                        .then(resolve, reject);
+
+                    })
+                }
+                else
+                {
+                    v.graph.updateUserBotScore({screen_name: screen_name})
+                    .then(resolve, reject)
+                }
+            });
+            success.then(function(response){
+                // console.debug(response);
+                v.getting_bot_scores.running = false;
+
+                try {
+                    var score = response.data.scores.english;
+                    v.node_modal_content.botscore = Math.floor(score * 100);
+                    v.node_modal_content.botcolor = v.graph.getNodeColor(score);
+                }
+                catch (e)
+                {
+                    console.error(e);
+                    v.node_modal_content.botscore = -1;
+                    v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
+                }
+            }, function(){
+                v.getting_bot_scores.running = false;
+                v.node_modal_content.botscore = -1;
+                v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
+            })
+
         },
         twitterLogOut: function(){
             var p = this.twitter.logOut();
@@ -323,10 +473,12 @@ var app = new Vue({
 
         submitForm: function(dontScroll){
             this.show_articles = false;
+            this.show_graphs = false;
+            this.checked_articles = [];
             // $("#select_all").prop("checked", false);
             if(!this.query_text)
             {
-                alert("You must input a claim.");
+                this.displayError("You must input a claim.");
                 this.spinStop(true);
                 return false;
             }
@@ -338,17 +490,17 @@ var app = new Vue({
             this.show_graphs = false;
             if(this.checked_articles.length > 20)
             {
-                alert("You can visualize a maximum of 20 articles.");
+                this.displayError("You can visualize a maximum of 20 articles.");
                 this.spinStop(true);
                 return false;
             }
             if(this.checked_articles.length <= 0)
             {
-                alert("Select at least one article to visualize.");
+                this.displayError("Select at least one article to visualize.");
                 this.spinStop(true);
                 return false;
             }
-
+            this.graph.updateEdges([]);
             this.getTimeline(this.checked_articles);
             this.getNetwork(this.checked_articles);
             this.spinStop();
@@ -359,8 +511,16 @@ var app = new Vue({
         toggleNodeModal: function(force){
             this.toggleModal("node", force);
         },
+        displayError: function(message){
+            this.error_message = message;
+            this.toggleModal('error', true);
+        },
+        toggleErrorModal: function(force){
+            this.toggleModal('error', force);
+        },
         toggleModal: function(modal, force)
         {
+            this.graph.redraw();
             //the timeouts here help with the animation and will need to be adjusted as required
             var prop = "show_" + modal + "_modal";
             var v = this;
@@ -398,6 +558,9 @@ var app = new Vue({
             this.graph.zoomOut();
         },
         updateGraph: function(starting_time, ending_time){
+            if(this.failed_to_get_network)
+                return false;
+
             this.graph.updateGraph(starting_time, ending_time);
             this.show_zoom_buttons = true;
             this.scrollToElement("graphs");
@@ -452,7 +615,7 @@ var app = new Vue({
             var value = param[1];
             if(key == "query")
             {
-                this.query_text = value;
+                this.query_text = decodeURIComponent(value);
             }
             if(key == "sort")
             {
@@ -480,6 +643,7 @@ var app = new Vue({
             toggle_node_modal: this.toggleNodeModal,
             node_modal_content: this.node_modal_content,
             edge_modal_content: this.edge_modal_content,
+            getting_bot_scores: this.getting_bot_scores,
             // twitter_account_info: this.twitter_account_info,
             twitter: this.twitter
         });
@@ -488,7 +652,7 @@ var app = new Vue({
         // the updateGraph function is a callback when the timeline interval is adjusted
         this.timeline = new HoaxyTimeline(this.updateGraph);
 
-
+        // this.displayError("Test Error");
 
         this.spinStop("initialLoad");
         console.debug("Vue Mounted.");

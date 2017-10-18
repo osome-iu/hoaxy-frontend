@@ -28,6 +28,11 @@ configuration = function(){
 	obj.top_users_headers = { 'X-Mashape-Key': mashape_key};
 
 	obj.botometer_url = "https://example.com";
+	obj.botometer_headers = {
+		"X-Mashape-Key": "--KEY--",
+		"Accept": "application/json"
+	};
+
 	obj.botcache_url = "https://example.com";
 
     obj.twitter_key = "";
