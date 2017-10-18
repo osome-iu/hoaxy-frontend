@@ -654,10 +654,34 @@ function HoaxyGraph(options)
 	        }
 			// console.debug(nodes);
 			//put nodes into sigma
+
+            var max_size = 0;
+            var min_size = 0;
+            for(var i in nodes)
+            {
+                if(nodes[i].size > max_size)
+                {
+                    max_size = nodes[i].size;
+                }
+                if(nodes[i].size < min_size)
+                {
+                    min_size = nodes[i].size;
+                }
+            }
+
+
+
+
 			var nodes_id = {};
 			var cnt = 0;
 	        for (var i in nodes)// i is index
 	        {
+                var percent = Math.sqrt(nodes[i].size) / Math.sqrt(max_size);
+                var new_size = (percent * 1000) + 1;
+				if(new_size < 300)
+				{
+					new_size = 300;
+				}
 				var score = botscores[nodes[i].screenName];
 				if(score && score.score)
 				{
@@ -669,10 +693,12 @@ function HoaxyGraph(options)
 				}
 				var color = getNodeColor(score);
 	            g.nodes.push({
-	                x: Math.random(),
-					y: Math.random(),
-	                size: Math.sqrt(Math.sqrt(nodes[i].size*10)),
-	                label: nodes[i].screenName,
+	                x: Math.random() * 10,
+					y: Math.random() * 10,
+					// x: 1,
+					// y: 1,
+	                size: new_size, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
+	                label: nodes[i].screenName + " " + new_size,
 	                id: i, //nodes[i].screenName,
 					node_id: cnt,
 	                color: color,//nodes[i].color,
