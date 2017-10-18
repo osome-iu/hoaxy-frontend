@@ -12,17 +12,15 @@ CREATE TABLE public.botscore
   bot_score_universal real,
   requester_ip text,
   tweets_per_day real,
-  num_tweets integer,
-  num_mentions integer,
-  latest_tweet_timestamp timestamp with time zone,
+  num_submitted_timeline_tweets integer,
+  num_submitted_mention_tweets integer,
   num_requests integer,
-  user_profile jsonb
 )
 WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.botscore
-  OWNER TO postgres;
+  OWNER TO botometer;
 -- Index: public.botscore_ix_botscoreenglish
 
 -- DROP INDEX public.botscore_ix_botscoreenglish;
@@ -40,6 +38,15 @@ CREATE INDEX botscore_ix_botscoreuniversal
   ON public.botscore
   USING btree
   (bot_score_universal);
+
+-- Index: public.botscore_ix_screenname
+
+-- DROP INDEX public.botscore_ix_screenname;
+
+CREATE INDEX botscore_ix_screenname
+  ON public.botscore
+  USING btree
+  (screen_name);
   
 -- Index: public.botscore_ix_timestamp
 

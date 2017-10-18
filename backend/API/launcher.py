@@ -17,11 +17,11 @@ def dbQueryUserID(user_ids):
         sqlalchemy.text(
             """
             WITH temptable AS (
-                SELECT id, ids.user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+                SELECT id, ids.user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
                 FROM botscore
                 JOIN UNNEST(:user_ids) AS ids(user_id) ON botscore.user_id = ids.user_id
             )
-            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
             FROM temptable
             JOIN (
                 SELECT temptable.user_id AS latest_user_id, max(time_stamp) AS latesttimestamp
@@ -43,11 +43,11 @@ def dbQueryUserScreenName(user_names):
         sqlalchemy.text(
             """
             WITH temptable AS (
-                SELECT id, user_id, names.screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+                SELECT id, user_id, names.screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
                 FROM botscore
                 JOIN UNNEST(:screen_names) AS names(screen_name) ON botscore.screen_name = names.screen_name
             )
-            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_tweets, num_requests
+            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
             from temptable
             JOIN (
                 SELECT temptable.screen_name AS latest_user_screen_name, max(time_stamp) AS latesttimestamp
@@ -180,14 +180,14 @@ def getScores():
         user_scores.append(user_record)
         increaseNumRequests(row[0])
 
-        hits = len(db_results)
-        response = {
-            "statuses": {
-                "hit": hits,
-                "miss": total_request_number - hits
-            },
-            "result": user_scores
-        }
+    hits = len(db_results)
+    response = {
+        "statuses": {
+            "hit": hits,
+            "miss": total_request_number - hits
+        },
+        "result": user_scores
+    }
     return jsonify(response)
 
 

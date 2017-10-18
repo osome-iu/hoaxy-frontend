@@ -2,13 +2,15 @@
 
 #Author: Mihai Avram, e-mail: mihai.v.avram@gmail.com
 
+#TODO BEFORE RUNNING SCRIPT - CHANGE LOG PATHS, LOG NAMES, AND DB CONNECTION STRING
+
 #ALL IMPORTS
 #for parsing the data in the logs
 import json
 #for connecting to the database
 import psycopg2
 #for error logging
-import sys
+import sys, traceback
 #for timing purposes
 import time
 
@@ -36,18 +38,18 @@ def score_decider(potential_score_keys, line_json):
 
 #inserts log to database
 def log_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, \
-                bot_score_universal, requester_ip, tweets_per_day, num_tweets, \
-                num_mentions, latest_tweet_timestamp, num_requests, user_profile):
+                bot_score_universal, requester_ip, tweets_per_day, num_submitted_timeline_tweets, \
+                num_submitted_mention_tweets, num_requests):
     
     botbase_cursor.execute("""INSERT INTO public.botscore(
                 user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, 
-                bot_score_universal, requester_ip, tweets_per_day, num_tweets, 
-                num_mentions, latest_tweet_timestamp, num_requests, user_profile) 
+                bot_score_universal, requester_ip, tweets_per_day, num_submitted_timeline_tweets, 
+                num_submitted_mention_tweets, num_requests) 
                               VALUES 
-                (%s, %s, to_timestamp(%s), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""", \
+                (%s, %s, to_timestamp(%s), %s, %s, %s, %s, %s, %s, %s, %s);""", \
                 (user_id, screen_name, time_stamp, json.dumps(all_bot_scores), bot_score_english, \
-                bot_score_universal, requester_ip, tweets_per_day, num_tweets, \
-                num_mentions, latest_tweet_timestamp, num_requests, user_profile))
+                bot_score_universal, requester_ip, tweets_per_day, num_submitted_timeline_tweets, \
+                num_submitted_mention_tweets, num_requests))
 
     #commiting changes
     pgsqlconn.commit()
@@ -73,8 +75,8 @@ if __name__ == '__main__':
     
     #log name and location information
     #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
-    log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/recent/'
-    log_file_list = ['botornot.log.2017-08-20','botornot.log.2017-08-27']
+    log_path = '/media/marvram/OS/Research/HoaxyBotometer/ImportBackuplogsTask/logs/'
+    log_file_list = ['botornot.log.2017-09-03','botornot.log.2017-09-10']
                     #'botornot.log201506',
                      #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
                      #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
@@ -174,11 +176,9 @@ if __name__ == '__main__':
                 if type(requester_ip) == list:
                     requester_ip = ','.join(line_json["remote_ip"])                
                 tweets_per_day = None
-                num_tweets = line_json["num_tweets"]
-                num_mentions = None
-                latest_tweet_timestamp = None
+                num_submitted_timeline_tweets = None
+                num_submitted_mention_tweets = None
                 num_requests = 0
-                user_profile = None
             except:
                 error_log_file.write("NON-PROPER-FIELDS ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                 failed_to_retrieve_proper_fields_count = failed_to_retrieve_proper_fields_count + 1
@@ -187,7 +187,7 @@ if __name__ == '__main__':
             try:
                 #inserting data to the database
                 log_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, bot_score_universal, \
-                            str(requester_ip), tweets_per_day, num_tweets, num_mentions, latest_tweet_timestamp, num_requests, user_profile)
+                            str(requester_ip), tweets_per_day, num_submitted_timeline_tweets, num_submitted_mention_tweets, num_requests)
                 records_committed = records_committed + 1
             except:
                 error_log_file.write("DB INSERTION ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")

@@ -4,6 +4,8 @@ Author: Mihai Avram
 E-mail: mihai.v.avram@gmail.com
 */
 
+--TODO BEFORE EXECUTING SCRIPT: REPLACE ALL <BEGINNING TIMESTAMP OF LOGS INSERTED> TEXT WITH THE ACTUAL TIMESTAMP IN SECONDS (4 LOCATIONS)
+
 --user_id checks
 DO $$
 BEGIN
@@ -30,7 +32,7 @@ ELSE
 	RAISE NOTICE 'FAIL: There were some null all_bot_score json';
 END IF;	
 
-IF (SELECT COUNT(*) FROM botscore botscore WHERE (all_bot_scores#>>'{}') ~* '\{\"user\"\s*:\s*.*,\s*\"friend\"\s*:\s*.*,\s*\"content\"\s*:\s*.*,\s*\"network\"\s*:\s*.*,\s*\"temporal\"\s*:\s*.*,\s*\"sentiment\"\s*:\s*.*}') = (SELECT COUNT(*) FROM botscore)
+IF (SELECT COUNT(*) FROM botscore botscore WHERE (all_bot_scores#>>'{}') ~* '\{\"user\"\s*:\s*.*,\s*\"friend\"\s*:\s*.*,\s*\"content\"\s*:\s*.*,\s*\"network\"\s*:\s*.*,\s*\"temporal\"\s*:\s*.*,\s*\"sentiment\"\s*:\s*.*}' AND time_stamp>=TO_TIMESTAMP(<BEGINNING TIMESTAMP OF LOGS INSERTED>)) = (SELECT COUNT(*) FROM botscore WHERE time_stamp>=TO_TIMESTAMP(<BEGINNING TIMESTAMP OF LOGS INSERTED>))
 THEN
 	RAISE NOTICE 'SUCCESS: All all_bot_score json format and input is the same';
 ELSE
@@ -62,7 +64,8 @@ ELSE
 	RAISE NOTICE 'FAIL: There are some null requester_ips or improper ones';
 END IF;	
 
-IF (SELECT COUNT(*) FROM botscore WHERE requester_ip ~* '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(,\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})*') = (SELECT COUNT(*) FROM botscore)
+
+IF (SELECT COUNT(*) FROM botscore WHERE requester_ip ~* '(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})(,\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})*' AND time_stamp>=TO_TIMESTAMP(<BEGINNING TIMESTAMP OF LOGS INSERTED>)) = (SELECT COUNT(*) FROM botscore WHERE time_stamp>=TO_TIMESTAMP(<BEGINNING TIMESTAMP OF LOGS INSERTED>))
 THEN
 	RAISE NOTICE 'SUCCESS: Requester_ip has the correct matching characteristics i.e. ipnum,ipnum etc..';
 ELSE
@@ -70,16 +73,35 @@ ELSE
 END IF;	
 
 
---num_tweets checks
-IF (SELECT COUNT(*) FROM botscore WHERE num_tweets=NULL OR num_tweets<0) = 0
+--tweets_per_day checks
+IF (SELECT COUNT(*) FROM botscore WHERE tweets_per_day IS NOT NULL) = 0
 THEN
-	RAISE NOTICE 'SUCCESS: Num_tweets is positive and non-null';
+	RAISE NOTICE 'SUCCESS: all tweets_per_day are null';
 ELSE
-	RAISE NOTICE 'FAIL: There are some null or negative number of tweets';
+	RAISE NOTICE 'FAIL: There are some non-null tweets_per_day';
 END IF;	
 
+
+--num_submitted_timeline_tweets checks
+IF (SELECT COUNT(*) FROM botscore WHERE num_submitted_timeline_tweets IS NOT NULL) = 0
+THEN
+	RAISE NOTICE 'SUCCESS: all num_submitted_timeline_tweets are null';
+ELSE
+	RAISE NOTICE 'FAIL: There are some non-null num_submitted_timeline_tweets';
+END IF;	
+
+
+--num_submitted_mention_tweets checks
+IF (SELECT COUNT(*) FROM botscore WHERE num_submitted_mention_tweets IS NOT NULL) = 0
+THEN
+	RAISE NOTICE 'SUCCESS: all num_submitted_mention_tweets are null';
+ELSE
+	RAISE NOTICE 'FAIL: There are some non-null num_submitted_mention_tweets';
+END IF;	
+
+
 --num_requests checks
-IF (SELECT COUNT(*) FROM botscore WHERE num_requests=0) = (SELECT COUNT(*) FROM botscore)
+IF (SELECT COUNT(*) FROM botscore WHERE num_requests=0 AND time_stamp>=TO_TIMESTAMP(<BEGINNING TIMESTAMP OF LOGS INSERTED>)) = (SELECT COUNT(*) FROM botscore WHERE time_stamp>=TO_TIMESTAMP(<BEGINNING TIMESTAMP OF LOGS INSERTED>))
 THEN
 	RAISE NOTICE 'SUCCESS: All inserted num_requests are 0';
 ELSE
