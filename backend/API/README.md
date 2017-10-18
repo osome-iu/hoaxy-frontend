@@ -2,8 +2,17 @@
 
 ## URL query
 
-Query with user IDs `/api/socres?userIDs=userid1,userid2,userid3`
-Query with screen names `/api/socres?usernames=username1,username2,username3`
+Query with user IDs
+
+`/api/socres?user_id=userid1,userid2,userid3`
+
+Query with screen names
+
+`/api/socres?screen_name=username1,username2,username3`
+
+Or query with user IDs and screen names at the same time:
+
+`/api/socres?user_id=userid1,userid2,userid3&screen_name=username1,username2,username3`
 
 Examples:
 
@@ -11,17 +20,31 @@ Examples:
 
 `http://127.0.0.1:5000/api/scores?screen_name=yadizdf,jondoe`
 
-## "POST" query
+`http://127.0.0.1:5000/api/scores?user_id=269880075,269880076&screen_name=yadizdf,jondoe`
 
-A json file with the format:
+## "POST" method
+
+Use `POST` method when the URL length limit is met.
+
+Include a json file in the request body with the following format:
 
 ```json
     {
-        "user_id": "userid1,userid2,userid3"
+        "user_id": "269880075,269880076"
     }
 ```
 
-or
+Or
+
+```json
+    {
+        "user_id":  ["269880075" , "269880076"]
+    }
+```
+
+
+
+Or
 
 ```json
     {
@@ -29,52 +52,83 @@ or
     }
 ```
 
-# Return format
+Or
 
-## For queries with user_id
+```json
+    {
+        "screen_name": ["username1", "username2", "username3"]
+    }
+```
+
+Or
+
+```json
+    {
+        "user_id": ["269880075" , "269880076"],
+        "screen_name": "username1,username2,username3"
+    }
+```
+
+# API Response
+
+The following request contains 2 records that are in the database and 2 records that are not.
 
 ```json
 {
-    "100000000": {
-        "categories": {
-            "content": 0.64,
-            "friend": 0.57,
-            "network": 0.8,
-            "sentiment": 0.51,
-            "temporal": 0.37,
-            "user": 0.53
-        },
-        "fresh": true,
-        "scores": {
-            "english": 0.65,
-            "universal": 0.52
-        },
-        "timestamp": "Sun, 10 Sep 2017 04:40:04 GMT"
-    },
-    "100000000": null
+	"screen_name": "yadizdf,jondoe",
+	"user_id": ["269880075" , "269880076"]
 }
 ```
 
-## For queries with screen_name
+The response json will contain the statuses of the queried user records.
 
 ```json
 {
-    "no_exsiting_user": null,
-    "abcde": {
-        "categories": {
-            "content": 0.35,
-            "friend": 0.19,
-            "network": 0.6,
-            "sentiment": 0.23,
-            "temporal": 0.22,
-            "user": 0
+    "statuses": {
+        "hit": 2,
+        "miss": 2
+    },
+    "result": [
+        {
+            "categories": {
+                "content": 0.62,
+                "friend": 0.79,
+                "network": 0.84,
+                "sentiment": 0.25,
+                "temporal": 0.74,
+                "user": 0.55
+            },
+            "fresh": false,
+            "scores": {
+                "english": 0.67,
+                "universal": 0.55
+            },
+            "timestamp": "Sun, 16 Apr 2017 22:58:32 GMT",
+            "user": {
+                "id": "269880075",
+                "screen_name": "blond_leo"
+            }
         },
-        "fresh": true,
-        "scores": {
-            "english": 0.21,
-            "universal": 0.21
-        },
-        "timestamp": "Sun, 10 Sep 2017 04:40:07 GMT"
-    }
+        {
+            "categories": {
+                "content": 0.25,
+                "friend": 0.41,
+                "network": 0.63,
+                "sentiment": 0.41,
+                "temporal": 0.36,
+                "user": 0.01
+            },
+            "fresh": false,
+            "scores": {
+                "english": 0.17,
+                "universal": null
+            },
+            "timestamp": "Sun, 01 Jan 2017 14:58:48 GMT",
+            "user": {
+                "id": "156433910",
+                "screen_name": "yadizdf"
+            }
+        }
+    ]
 }
 ```

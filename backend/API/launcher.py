@@ -1,35 +1,103 @@
 # -*- coding: utf8 -*-
-from dbmodels import api, BotbaseModel, db
-from flask import jsonify, request
+import sqlalchemy
+from flask import Flask, jsonify, request
+from flask_cors import CORS
 import configparser
 from datetime import datetime
 
-
-def dbQueryUserID(user_id):
-    return BotbaseModel.query.filter(BotbaseModel.user_id == user_id).order_by(BotbaseModel.time_stamp).all()
-
-
-def dbQueryUserScreenName(user_name):
-    return BotbaseModel.query.filter(BotbaseModel.screen_name == user_name).order_by(BotbaseModel.time_stamp).all()
+api = Flask(__name__)
+CORS(api)
+connection_string = open('.db.connection').read()
+botscore_engine = sqlalchemy.create_engine(connection_string)
+botscore_connection = botscore_engine.connect()
 
 
-def getUserRecordStatus(user_entry, config_file):
-    timedelta_age = datetime.now() - user_entry.time_stamp.replace(tzinfo=None)
-    age_of_user = timedelta_age.total_seconds()
+def dbQueryUserID(user_ids):
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            WITH temptable AS (
+                SELECT id, ids.user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
+                FROM botscore
+                JOIN UNNEST(:user_ids) AS ids(user_id) ON botscore.user_id = ids.user_id
+            )
+            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
+            FROM temptable
+            JOIN (
+                SELECT temptable.user_id AS latest_user_id, max(time_stamp) AS latesttimestamp
+                FROM temptable
+                GROUP BY temptable.user_id
+            ) AS latesttable
+            ON temptable.user_id = latesttable.latest_user_id AND temptable.time_stamp = latesttable.latesttimestamp
+            """
+        ),
+        {
+            "user_ids": user_ids
+        }
+    )
+    return result
 
-    if age_of_user < int(config_file.get("FlowChart", "age_min")):
-        return True
-    elif age_of_user > int(config_file.get("FlowChart", "age_max")):
-        return False
-    else:
-        if user_entry.tweets_per_day:
-            expected_tweets = age_of_user * user_entry.tweets_per_day / 86400.
-            if expected_tweets > int(config_file.get("FlowChart", "expected_tweets_max")) or user_entry.num_requests > int(config_file.get("FlowChart", "reqs_max")):
-                return False
-            else:
-                return True
-        else:
+
+def dbQueryUserScreenName(user_names):
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            WITH temptable AS (
+                SELECT id, user_id, names.screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
+                FROM botscore
+                JOIN UNNEST(:screen_names) AS names(screen_name) ON botscore.screen_name = names.screen_name
+            )
+            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
+            from temptable
+            JOIN (
+                SELECT temptable.screen_name AS latest_user_screen_name, max(time_stamp) AS latesttimestamp
+                FROM temptable
+                GROUP BY temptable.screen_name
+            ) AS latesttable
+            ON temptable.screen_name = latesttable.latest_user_screen_name AND temptable.time_stamp = latesttable.latesttimestamp
+            """
+        ),
+        {
+            "screen_names": user_names
+        }
+    )
+    return result
+
+
+def increaseNumRequests(id):
+    botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            UPDATE botscore
+            SET num_requests = num_requests + 1
+            WHERE id = :id
+            """
+        ),
+        {"id": id}
+    )
+
+
+def getUserRecordStatus(user_entry, tweets_per_day, num_requests, config_file):
+    if user_entry["timestamp"]:
+        timedelta_age = datetime.now() - user_entry["timestamp"].replace(tzinfo=None)
+        age_of_user = timedelta_age.total_seconds()
+
+        if age_of_user < int(config_file.get("FlowChart", "age_min")):
+            return True
+        elif age_of_user > int(config_file.get("FlowChart", "age_max")):
             return False
+        else:
+            if tweets_per_day:
+                expected_tweets = age_of_user * tweets_per_day / 86400.
+                if expected_tweets > int(config_file.get("FlowChart", "expected_tweets_max"))\
+                        or num_requests > int(config_file.get("FlowChart", "reqs_max")):
+                    return False
+                else:
+                    return True
+            else:
+                return False
+    else:
+        return None
 
 
 @api.route("/")
@@ -48,22 +116,12 @@ def getScores():
     """
     # get the query string according to different HTTP methods
     if request.method == "GET":
-        user_ids_string = request.args.get("user_id")
-        user_names_string = request.args.get("screen_name")
+        user_ids_query = request.args.get("user_id")
+        user_names_query = request.args.get("screen_name")
     elif request.method == "POST":
         query_file = request.get_json()
-        user_ids_string = query_file.get("user_id")
-        user_names_string = query_file.get("screen_name")
-    else:
-        return jsonify(None)
-
-    # parse the query string according to the type
-    if user_ids_string:
-        user_ids = map(int, user_ids_string.split(","))
-        user_identifiers = (dbQueryUserID, user_ids)
-    elif user_names_string:
-        user_names = user_names_string.split(",")
-        user_identifiers = (dbQueryUserScreenName, user_names)
+        user_ids_query = query_file.get("user_id")
+        user_names_query = query_file.get("screen_name")
     else:
         return jsonify(None)
 
@@ -71,35 +129,67 @@ def getScores():
     config_file = configparser.ConfigParser()
     config_file.read("./config.cfg")
 
-    # process the queries
-    user_scores = dict()
-    for user_identifier in user_identifiers[1]:
-        user_entries = user_identifiers[0](user_identifier)
-        if user_entries:
-            user_latest_entry = user_entries[-1]
-            user_entry_status = getUserRecordStatus(user_latest_entry, config_file)
-            user_scores[user_identifier] = {
-                "categories": {
-                    "friend": user_latest_entry.all_bot_scores["friend"],
-                    "sentiment": user_latest_entry.all_bot_scores["sentiment"],
-                    "temporal": user_latest_entry.all_bot_scores["temporal"],
-                    "user": user_latest_entry.all_bot_scores["user"],
-                    "network": user_latest_entry.all_bot_scores["network"],
-                    "content": user_latest_entry.all_bot_scores["content"]
-                },
-                "scores": {
-                    "english": user_latest_entry.bot_score_english,
-                    "universal": user_latest_entry.bot_score_universal
-                },
-                "fresh": user_entry_status,
-                "timestamp": user_latest_entry.time_stamp
-            }
-            user_latest_entry.num_requests += 1
-        else:
-            user_scores[user_identifier] = None
-    db.session.commit()
-    return jsonify(user_scores)
+    # parse the query according to the type
+    db_results = []
+    total_request_number = 0
+    if user_ids_query:
+        if isinstance(user_ids_query, list):
+            user_ids = list(map(int, user_ids_query))
+        elif isinstance(user_ids_query, str):
+            user_ids = list(map(int, user_ids_query.split(",")))
+        total_request_number += len(user_ids)
+        db_results += dbQueryUserID(user_ids)
+
+    if user_names_query:
+        if isinstance(user_names_query, list):
+            user_names = user_names_query
+        elif isinstance(user_names_query, str):
+            user_names = user_names_query.split(",")
+        db_results += dbQueryUserScreenName(user_names)
+        total_request_number += len(user_names)
+
+    user_scores = []
+
+    for row in db_results:
+        all_bot_scores = row[3] if row[3] else dict()
+        user_record = {
+            "categories": {
+                "friend": all_bot_scores.get("friend"),
+                "sentiment": all_bot_scores.get("sentiment"),
+                "temporal": all_bot_scores.get("temporal"),
+                "user": all_bot_scores.get("user"),
+                "network": all_bot_scores.get("network"),
+                "content": all_bot_scores.get("content")
+            },
+            "user": {
+                "screen_name": row[2],
+                "id": str(row[1]) if row[1] else None
+            },
+            "scores": {
+                "english": row[4],
+                "universal": row[5]
+            },
+            "timestamp": row[6]
+        }
+
+        user_tweet_per_day = row[7]
+        num_requests = row[9]
+        user_record["fresh"] = getUserRecordStatus(
+            user_record, user_tweet_per_day, num_requests, config_file
+        )
+        user_scores.append(user_record)
+        increaseNumRequests(row[0])
+
+    hits = len(db_results)
+    response = {
+        "statuses": {
+            "hit": hits,
+            "miss": total_request_number - hits
+        },
+        "result": user_scores
+    }
+    return jsonify(response)
 
 
 if __name__ == "__main__":
-    api.run(debug=True)
+    api.run(debug=True, port=6060)
