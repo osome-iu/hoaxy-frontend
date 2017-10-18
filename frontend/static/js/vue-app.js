@@ -379,7 +379,8 @@ var app = new Vue({
         // #     #  ####    #   #  ####  #    #  ####  #       ######   ####    #     #    ####  #    #     #####  ###### #  ####  #    #  ####
 
 
-        resizeGraphs: function(){
+        resizeGraphs: function(x){
+            this.graph_column_size = x;
             var v = this;
             Vue.nextTick(function(){
                 v.timeline.redraw();
@@ -387,6 +388,7 @@ var app = new Vue({
             });
             // console.debug(this.graph_column_size);
         },
+
         shrinkGraph: function(){
             this.graph_column_size += 3;
             this.resizeGraphs();

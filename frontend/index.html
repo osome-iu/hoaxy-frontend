@@ -119,6 +119,11 @@
   #####  #    # #    # #      #    #  ####
  -->
 		<section id="graphs" v-bind:class="{'hidden': !show_graphs}" class="container-fluid row no-gutters">
+			<div class="col-12 text-center">
+				<button id=""  :disabled="graph_column_size >= 12"  class="layout-button layout-button-timeline btn btn-primary" @click="resizeGraphs(12)"><span><i class="fa fa-line-chart" aria-hidden="true"></i></span></button>
+				<button id=""  :disabled="graph_column_size == 3"  class="layout-button layout-button-split btn btn-primary" @click="resizeGraphs(3)"><span><i class="fa fa-line-chart" aria-hidden="true"></i></span><span><i class="fa fa-share-alt" aria-hidden="true"></i></span></button>
+				<button id=""  :disabled="graph_column_size <= 0"  class="layout-button layout-button-graph btn btn-primary" @click="resizeGraphs(0)"><span><i class="fa fa-share-alt" aria-hidden="true"></i></span></button>
+			</div>
 			<div class="col-md-12 text-center" id="legend">
 				<label><span class="line claim_label">&nbsp;</span> Claims</label>
 				<label><span class="line fact_checking_label">&nbsp;</span> Fact-Checks</label>
@@ -131,7 +136,7 @@
 				</div>
 				<div id="focus_label" class="text-center">Click and drag below to select time interval</div>
 
-				<button id="shrink_left_button" class="btn btn-primary" :disabled="graph_column_size <= 0" @click="shrinkTimeline">&lt;</button>
+				<!-- <button id="shrink_left_button" class="btn btn-primary" :disabled="graph_column_size <= 0" @click="shrinkTimeline">&lt;</button> -->
 
 			</div>
 
@@ -172,7 +177,7 @@
 					</div>
 
 				</div>
-				<button id="shrink_right_button"  :disabled="graph_column_size >= 12"  class="btn btn-primary" @click="shrinkGraph">&gt;</button>
+				<!-- <button id="shrink_right_button"  :disabled="graph_column_size >= 12"  class="btn btn-primary" @click="shrinkGraph">&gt;</button> -->
 			</div>
 
 

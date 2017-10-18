@@ -412,3 +412,57 @@ input:not(:checked) + .check_icons > .fa-square-o
     top: 1rem;
     right: 1rem;
 }*/
+
+.layout-button
+{
+    margin-top: 1rem;
+    /*line-height: 2rem;*/
+    vertical-align: middle;
+    font-size: .75rem;
+}
+.layout-button span i
+{
+    vertical-align: middle;
+}
+.layout-button span
+{
+    display: inline-block;
+    height: 2em;
+    width: 1em;
+    /*line-height: 2rem;*/
+    vertical-align: middle;
+    padding: 4px;
+    font-size: 1em;
+    overflow: hidden;
+    color: #222222;
+    background: white;
+    border-radius: 2px;
+    border: solid gray 1px;
+    /*border: solid darkgray 1px;*/
+}
+.layout-button-timeline span
+{
+    /*border: solid white 1px;*/
+    /*background: white;*/
+    width: 3em;
+}
+
+.layout-button-split span:first-child
+{
+    /*border: solid white 1px;*/
+    width: 1.1em;
+    /*background: white;*/
+    border-right: solid white 1px;
+}
+.layout-button-split span:last-child
+{
+    /*border: solid black 1px;*/
+    width: 1.9em;
+    /*background: black;*/
+}
+.layout-button-graph span
+{
+    /*border: solid black 1px;*/
+    width: 3em;
+    /*background: black;*/
+}
