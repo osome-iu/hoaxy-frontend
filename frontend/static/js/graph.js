@@ -672,7 +672,15 @@ function HoaxyGraph(options)
             }
 
 
-
+			// g.nodes.push({
+			//
+			// 	x: 0,
+			// 	y: 0,
+			// 	size: 10, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
+			// 	id: "fake_node", //nodes[i].screenName,
+			// 	node_id: "fake_node",
+			// 	color: "#ffffff",//nodes[i].color,
+			// });
 
 			var nodes_id = {};
 			var cnt = 0;
@@ -697,16 +705,16 @@ function HoaxyGraph(options)
 
 				node_count = node_count / 2;
 				var new_x, new_y;
-				new_x = Math.cos(360*(cnt/node_count));
-				new_y = Math.sin(360*(cnt/node_count));
+				// new_x = Math.cos(360*(cnt/node_count));
+				// new_y = Math.sin(360*(cnt/node_count));
 
 	            g.nodes.push({
-	                // x: Math.random() * 10,
-					// y: Math.random() * 10,
-					x: new_x,
-					y: new_y,
+	                x: Math.random() * 10,
+					y: Math.random() * 10,
+					// x: new_x,
+					// y: new_y,
 	                size: new_size, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
-	                label: nodes[i].screenName + " " + new_size,
+	                label: nodes[i].screenName,
 	                id: i, //nodes[i].screenName,
 					node_id: cnt,
 	                color: color,//nodes[i].color,
