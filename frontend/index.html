@@ -260,7 +260,7 @@
 						</h4>
 					</div>
 					<div class="modal-body" >
-						<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor }">
+						<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore < 35 ?'white':'black' }">
 							<p>Botometer Score:
 								<span v-if="node_modal_content.botscore > 0"><b>{{node_modal_content.botscore}}%</b></span>
 								<span v-if="!node_modal_content.botscore">Unavailable</span>

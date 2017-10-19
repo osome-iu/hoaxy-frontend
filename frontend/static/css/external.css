@@ -309,7 +309,7 @@ input:not(:checked) + .check_icons > .fa-square-o
         rgb(223,111,161) 80%,
         rgb(215,25,28) 80%,
         rgb(215,25,28) 100%);*/
-    background: linear-gradient(to top,
+    /*background: linear-gradient(to top,
         rgb(138,206,229) 0%,
         rgb(138,206,229) 20%,
         rgb(91, 148, 219) 20%,
@@ -319,7 +319,13 @@ input:not(:checked) + .check_icons > .fa-square-o
         rgb(181, 56, 80) 60%,
         rgb(181, 56, 80) 80%,
         rgb(215,25,28) 80%,
-        rgb(215,25,28) 100%);
+        rgb(215,25,28) 100%);*/
+    background: linear-gradient(to top,
+        rgb(0,0,255) 15%,
+
+        rgb(255,128,200) 50%,
+
+        rgb(255,0,0) 85%);
     border: solid black 1px;
 }
 #bot_legend_gradient span

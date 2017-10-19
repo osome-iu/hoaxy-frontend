@@ -370,14 +370,12 @@ function HoaxyGraph(options)
 		// 	{red: 171, green: 221, blue: 164} , //"#abdda4",
 		// 	{red: 43, green: 131, blue: 186} //"#2b83ba",
 		// ];
-		// var node_colors = [
-		// 	{red: 109, green: 7, blue: 7} ,
-		// 	{red: 168, green: 116, blue: 53} ,
-		// 	{red: 178, green: 178, blue: 48} ,
-		// 	{red: 166, green: 229, blue: 153} ,
-		// 	{red: 216, green: 241, blue: 255},
-		// ];
 		var node_colors = colors.node_colors.botscores;
+		var node_colors = [
+			{red: 255, green: 0, blue: 0} ,
+			{red: 255, green: 128, blue: 200} ,
+			{red: 0, green: 0, blue: 255},
+		];
 		// var node_colors = [
 		// 	{red: 85, green: 0, blue: 0} ,
 		// 	{red: 170, green: 221, blue: 0} ,
@@ -394,111 +392,111 @@ function HoaxyGraph(options)
 
 
 		// score2 = 0;
-		var color = {};
-
-		if(score < 20)
-		{
-			color = node_colors[4];
-		}
-		else if(score < 40)
-		{
-			color = node_colors[3];
-		}
-		else if(score < 60)
-		{
-			color = node_colors[2];
-		}
-		else if(score < 80)
-		{
-			color = node_colors[1];
-		}
-		else
-		{
-			color = node_colors[0];
-		}
-
-		color.r = color.red;
-		color.g = color.green;
-		color.b = color.blue;
-
-		return color;
+		// var color = {};
+        //
+		// if(score < 20)
+		// {
+		// 	color = node_colors[4];
+		// }
+		// else if(score < 40)
+		// {
+		// 	color = node_colors[3];
+		// }
+		// else if(score < 60)
+		// {
+		// 	color = node_colors[2];
+		// }
+		// else if(score < 80)
+		// {
+		// 	color = node_colors[1];
+		// }
+		// else
+		// {
+		// 	color = node_colors[0];
+		// }
+        //
+		// color.r = color.red;
+		// color.g = color.green;
+		// color.b = color.blue;
+        //
+		// return color;
 
 
 
 		// score2 = 0
-		// if(score < 30)
-		// {
-		// 	color1 = node_colors[4];
-		// 	color2 = node_colors[3];
-		//
-		// 	score2 = (score - 0) / (30 - 0);
-		// }
-		// else if(score < 50)
-		// {
-		// 	color1 = node_colors[3];
-		// 	color2 = node_colors[2];
-		// 	score2 = (score - 30) / (50 - 30)
-		// }
-		// else if(score < 70)
+		if(score < 15)
+		{
+			color1 = node_colors[2];
+			color2 = node_colors[2];
+
+			score2 = 0; //(score - 0) / (20 - 0);
+		}
+		else if(score >= 15 && score < 50)
+		{
+			color1 = node_colors[2];
+			color2 = node_colors[1];
+			score2 = (score - 15) / (50 - 15)
+		}
+		else if(score >= 50 && score < 85)
+		{
+			color1 = node_colors[1];
+			color2 = node_colors[0];
+			score2 = (score - 50) / (85 - 50);
+		}
+		else
+		{
+			color1 = node_colors[0];
+			color2 = node_colors[0];
+			score2 = 0; //(score - 80) / (100 - 80);
+		}
+
+		// if(score < 50)
 		// {
 		// 	color1 = node_colors[2];
 		// 	color2 = node_colors[1];
-		// 	score2 = (score - 50) / (70 - 50);
+		//
+		// 	score2 = (score - 0) / (50 - 0);
 		// }
 		// else
 		// {
 		// 	color1 = node_colors[1];
 		// 	color2 = node_colors[0];
-		// 	score2 = (score - 70) / (100 - 70);
+		// 	score2 = (score - 50) / (100 - 50)
 		// }
+
+		// if(score < 33)
+		// {
+		// 	color1 = node_colors[3];
+		// 	color2 = node_colors[2];
 		//
-		// // if(score < 50)
-		// // {
-		// // 	color1 = node_colors[2];
-		// // 	color2 = node_colors[1];
-		// //
-		// // 	score2 = (score - 0) / (50 - 0);
-		// // }
-		// // else
-		// // {
-		// // 	color1 = node_colors[1];
-		// // 	color2 = node_colors[0];
-		// // 	score2 = (score - 50) / (100 - 50)
-		// // }
+		// 	score2 = (score - 0) / (33 - 0);
+		// }
+		// else if(score < 66)
+		// {
+		// 	color1 = node_colors[2];
+		// 	color2 = node_colors[1];
 		//
-		// // if(score < 33)
-		// // {
-		// // 	color1 = node_colors[3];
-		// // 	color2 = node_colors[2];
-		// //
-		// // 	score2 = (score - 0) / (33 - 0);
-		// // }
-		// // else if(score < 66)
-		// // {
-		// // 	color1 = node_colors[2];
-		// // 	color2 = node_colors[1];
-		// //
-		// // 	score2 = (score - 33) / (66 - 33);
-		// // }
-		// // else
-		// // {
-		// // 	color1 = node_colors[1];
-		// // 	color2 = node_colors[0];
-		// // 	score2 = (score - 66) / (100 - 66)
-		// // }
-		// // console.debug(score, score2);
-		//
-		// score2 = score2;
-		// var r = Math.floor(color1.red + score2 * (color2.red - color1.red))//.toString(16);
-		// var g = Math.floor(color1.green + score2 * (color2.green - color1.green))//.toString(16);
-		// var b = Math.floor(color1.blue + score2 * (color2.blue - color1.blue))//.toString(16);
-		// // if(r.length < 2) r = "0"+r;
-		// // if(g.length < 2) g = "0"+g;
-		// // if(b.length < 2) b = "0"+b;
-		// // var color = "#"+r+g+b;
-		// var color = {r: r, g: g, b: b};
-		// // console.debug(color);
-		// return color;
+		// 	score2 = (score - 33) / (66 - 33);
+		// }
+		// else
+		// {
+		// 	color1 = node_colors[1];
+		// 	color2 = node_colors[0];
+		// 	score2 = (score - 66) / (100 - 66)
+		// }
+		// console.debug(score, score2);
+
+		score2 = score2;
+		var r = Math.floor(color1.red + score2 * (color2.red - color1.red))//.toString(16);
+		var g = Math.floor(color1.green + score2 * (color2.green - color1.green))//.toString(16);
+		var b = Math.floor(color1.blue + score2 * (color2.blue - color1.blue))//.toString(16);
+		// if(r.length < 2) r = "0"+r;
+		// if(g.length < 2) g = "0"+g;
+		// if(b.length < 2) b = "0"+b;
+		// var color = "#"+r+g+b;
+		var color = {r: r, g: g, b: b};
+		// console.debug(color);
+		return color;
 
 
 	}
