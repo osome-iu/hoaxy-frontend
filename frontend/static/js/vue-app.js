@@ -302,6 +302,7 @@ var app = new Vue({
                         v.timeline.update(msg.timeline);
                         v.spinStop("updateTimeline");
                         v.scrollToElement("graphs");
+                        v.timeline.redraw();
                     });
                     v.spinStop("getTimeline");
                 },
@@ -577,6 +578,7 @@ var app = new Vue({
             this.graph.zoomOut();
         },
         updateGraph: function(starting_time, ending_time){
+            this.graph_column_size = 3;
             if(this.failed_to_get_network)
                 return false;
 
