@@ -10,6 +10,11 @@
 	<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
 			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
+			<div :style="'display: block'">
+				<div>{{spinner_notices.articles}}</div>
+				<div>{{spinner_notices.timeline}}</div>
+				<div>{{spinner_notices.graph}}</div>
+			</div>
 		</div>
 
 
@@ -163,12 +168,12 @@
 				<div id="zoom_buttons" v-if="show_zoom_buttons">
 					<div class="float-left">
 						<button v-if="!getting_bot_scores.running" @click.stop.prevent="getMoreBotScores" class="mr-2 float-left btn btn-primary" id="">More Scores</button>
-	                    <button v-if="getting_bot_scores.running" disabled class="mr-2 float-left disabled btn btn-primary" id="">More Scores</button>
+	                    <button v-if="getting_bot_scores.running" disabled class="mr-2 float-left disabled btn btn-primary" id="">Fetching Scores...</button>
 	                    <!-- <button v-if="twitter_account_info.id" @click.stop.prevent="twitterLogOut()" class="btn btn-primary" id="un_authenticate_button">Disable Twitter</button> -->
 						<small>{{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.</small>
-                        <small>{{graph.score_stats.found - graph.score_stats.old}} {{graph.score_stats.found - graph.score_stats.old == 1?'is':'are'}} fresh.</small>
+                        <small v-if="graph.score_stats.found > 0">{{graph.score_stats.found - graph.score_stats.old}} {{graph.score_stats.found - graph.score_stats.old == 1?'is':'are'}} fresh.</small>
                         <div><small v-if="graph.score_stats.unavailable > 0">{{graph.score_stats.unavailable}} could not be updated.</small></div>
-						<div><small v-if="getting_bot_scores.running">Getting more scores...</small></div>
+						<!-- <div><small v-if="getting_bot_scores.running"></small></div> -->
 					</div>
 					<div class="float-right">
 

@@ -111,7 +111,7 @@ li
     font-size: 149px;
     line-height: 149px;
 }
-#spinner span
+#spinner span, #spinner > div
 {
     position: absolute;
     display: block;
@@ -133,6 +133,11 @@ li
     /*line-height: 10rem;
     margin-top: -3rem;
     margin-left: -3rem;*/
+}
+#spinner > div
+{
+    margin-top: 100px;
+    display: none;
 }
 
 #sigmagraph

@@ -82,6 +82,11 @@ var app = new Vue({
         spinner_state: 1,
         spinner_rotate: 0,
         spin_timer: 0,
+        spinner_notices: {
+            graph: "",
+            timeline: "",
+            articles: ""
+        },
 
         query_text: "",
         query_sort: "relevant",
@@ -219,6 +224,7 @@ var app = new Vue({
 
         getArticles: function(dontScroll){
             this.spinStart("getArticles");
+            this.spinner_notices.articles = "Fetching articles...";
 
             var urls_request = axios.get(configuration.articles_url, {
                 headers: configuration.articles_headers,
@@ -231,6 +237,7 @@ var app = new Vue({
             var v = this;
             urls_request.then(
                 function (response) {
+                    v.spinner_notices.articles = "";
                     var msg = response.data
                     var urls_model = msg;
                     if(!msg.articles || !msg.articles.length)
@@ -258,6 +265,7 @@ var app = new Vue({
                     v.spinStop("getArticles");
                 },
                 function (error) {
+                    v.spinner_notices.articles = "";
                     v.displayError("Get URLs Request failed: " + error);
                     console.log('Articles Request Error:', error);
                     v.spinStop("getArticles");
@@ -271,6 +279,7 @@ var app = new Vue({
 
         getTimeline: function(article_ids){
             this.spinStart("getTimeline");
+            this.spinner_notices.timeline = "Fetching timeline...";
             var timeline_request = axios.get( configuration.timeline_url, {
                 headers: configuration.timeline_headers,
                 params: {
@@ -282,6 +291,7 @@ var app = new Vue({
             var v = this;
             timeline_request.then(
                 function (response) {
+                    v.spinner_notices.timeline = "";
                     var msg = response.data;
                     v.spinStart("updateTimeline");
                     v.show_graphs = true;
@@ -296,6 +306,7 @@ var app = new Vue({
                     v.spinStop("getTimeline");
                 },
                 function (error) {
+                    v.spinner_notices.timeline = "";
                     v.displayError("Get TimeLine Request failed: " + error);
                     console.log('Timeline Request Error', error);
 
@@ -307,6 +318,7 @@ var app = new Vue({
         },
         getNetwork: function(article_ids){
             this.spinStart("getNetwork");
+            this.spinner_notices.graph = "Fetching graph...";
 
             this.timeline.removeUpdateDateRangeCallback();
             this.failed_to_get_network = false;
@@ -322,6 +334,7 @@ var app = new Vue({
             graph_request.then(
                 function (response){
                     v.spinStop("getNetwork");
+                    v.spinner_notices.graph = "Drawing Graph...";
 
                     var msg = response.data;
                     var edge_list;
@@ -330,11 +343,17 @@ var app = new Vue({
                         v.show_zoom_buttons = false;
                         v.failed_to_get_network = true;
                         edge_list = []
+                        v.spinner_notices.graph = "";
                     }
                     else
                     {
                         v.spinStart("generateNetwork");
                         //create an edge list
+
+                    }
+
+                    v.show_graphs = true;
+                    Vue.nextTick(function(){
                         edge_list = msg.edges.map(function(x){
                             y = x;
                             y.site_domain = x.domain;
@@ -342,10 +361,6 @@ var app = new Vue({
                             y.url_raw = x.canonical_url;
                             return y;
                         });
-                    }
-
-                    v.show_graphs = true;
-                    Vue.nextTick(function(){
                         v.graph.updateEdges(edge_list);
                         v.updateGraph();
                         // v.timeline.redraw();
@@ -364,6 +379,7 @@ var app = new Vue({
                     v.displayError("Get Graph Request failed: " + error.response.statusText);
                     console.log('Network Graph Request Error', error.response.statusText);
                     v.spinStop("getNetwork");
+                    v.spinner_notices.graph = "";
                 }
             );
             return graph_request;
@@ -647,6 +663,7 @@ var app = new Vue({
             node_modal_content: this.node_modal_content,
             edge_modal_content: this.edge_modal_content,
             getting_bot_scores: this.getting_bot_scores,
+            spinner_notices: this.spinner_notices,
             // twitter_account_info: this.twitter_account_info,
             twitter: this.twitter
         });

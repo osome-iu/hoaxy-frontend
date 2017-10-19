@@ -12,6 +12,7 @@ function HoaxyGraph(options)
 	var node_modal_content = options.node_modal_content || {};
 	var edge_modal_content = options.edge_modal_content || {};
 	var twitter_account_info = options.twitter_account_info || {};
+	var spinner_notices = options.spinner_notices || {};
 	var twitter = options.twitter || null;
 	var getting_bot_scores = options.getting_bot_scores || false;
 
@@ -92,6 +93,7 @@ function HoaxyGraph(options)
 	var retry_count = 0;
 	function getBotCacheScores()
     {
+		getting_bot_scores.running = true;
 		// spinStart("getBotCacheScores");
 		user_list.length = 0;
 
@@ -139,6 +141,7 @@ function HoaxyGraph(options)
 					}
 				}
 				score_stats.recompute();
+				getting_bot_scores.running = false;
 
 				//when we get the cache, go through cache and update botscores:
 				//botscore[sn] = {score: xx, old: false/true};
@@ -147,6 +150,7 @@ function HoaxyGraph(options)
 		})
 		.catch(
 			function (error) {
+				getting_bot_scores.running = false;
 				console.warn('Botometer Scores Request Error: ', error);
 
 				// if it's a network error, retry a maximum of 5 times
@@ -157,6 +161,7 @@ function HoaxyGraph(options)
 					console.info("Retry bot score cache request #", retry_count);
 					getBotCacheScores();
 				}
+
 				spinStop("getBotCacheScores");
 			}
 		);
@@ -928,6 +933,7 @@ function HoaxyGraph(options)
 			spinStop("ForceAtlas");
 			// spinStop("updateNetwork");
 			spinStop("generateNetwork");
+			spinner_notices.graph = "";
 		}, 2000 + jiggle_compensator);
 
 	    s.bind('clickNode', function (e) {
