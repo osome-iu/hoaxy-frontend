@@ -472,10 +472,11 @@ var app = new Vue({
                     var score = response.data.scores.english;
                     v.node_modal_content.botscore = Math.floor(score * 100);
                     v.node_modal_content.botcolor = v.graph.getNodeColor(score);
+                    v.node_modal_content.timestamp = moment().format("MMM D YYYY h:mma");
                 }
                 catch (e)
                 {
-                    console.error(e);
+                    console.warn(e);
                     v.node_modal_content.botscore = -1;
                     v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
                 }
