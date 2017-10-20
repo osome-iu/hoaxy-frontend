@@ -132,6 +132,19 @@ var app = new Vue({
         },
         failed_to_get_network: false,
 
+
+        feedback_form: {
+            display: false,
+            comment: "",
+            type: "",
+            type_choices: {
+                "Human":"human",
+                "Bot":"bot",
+                "Cyborg (human using e.g. a scheduler)":"cyborg",
+                "Organization":"organization"
+            }
+        },
+
         colors: colors
     },
     computed: {
@@ -396,7 +409,10 @@ var app = new Vue({
         // #     # #    #   #   # #    # #   ## #    #  #      #     # #    #   #     #   #    # #   ##    #     # #      # #    # #   #  #    #
         // #     #  ####    #   #  ####  #    #  ####  #       ######   ####    #     #    ####  #    #     #####  ###### #  ####  #    #  ####
 
-
+        submitFeedbackForm: function(){
+            this.feedback_form.display = false;
+            console.debug(this.feedback_form, this.node_modal_content);
+        },
         resizeGraphs: function(x){
             this.graph_column_size = x;
             var v = this;
@@ -531,6 +547,7 @@ var app = new Vue({
         },
         toggleNodeModal: function(force){
             this.toggleModal("node", force);
+            this.feedback_form.display = false;
         },
         displayError: function(message){
             this.error_message = message;

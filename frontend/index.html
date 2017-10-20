@@ -276,6 +276,27 @@
 								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.screenName)" class="btn btn-primary" id="">Update Bot Score</button>
 								<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
 							</p>
+
+							<div v-if="node_modal_content.botscore >= 0">
+								<button class="btn btn-primary btn-sm" @click="feedback_form.display = !feedback_form.display" >Bot Score Feedback</button>
+
+								<form class="form" v-if="feedback_form.display" @submit.prevent="submitFeedbackForm">
+									<br />
+									<div class="form-group">
+										<label>The account @{{node_modal_content.screenName}} is a :</label>
+										<select v-model="feedback_form.type" class="form-control">
+											<option v-for="value, key in feedback_form.type_choices" :value="value">{{key}}</option>
+										</select>
+									</div>
+									<div class="form-group">
+										<label>I know this because:</label>
+										<textarea v-model="feedback_form.comment" class="form-control"></textarea>
+									</div>
+									<div class="form-group">
+										<input type="submit" class="btn btn-primary" value="Submit Feedback" />
+									</div>
+								</form>
+							</div>
 						</div>
 						<h2>has quoted: <span v-if="node_modal_content.has_quoted_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.has_quoted">
