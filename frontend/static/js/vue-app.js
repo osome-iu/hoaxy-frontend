@@ -159,7 +159,9 @@ var app = new Vue({
     // #     # ######   #   #    #  ####  #####   ####
 
     methods: {
-
+        formatTime: function(time){
+            return moment(time).format("MMM D YYYY h:mm a");
+        },
         getSubsetOfArticles: function(){
             return this.articles.slice(0, this.articles_to_show);
         },
@@ -411,7 +413,36 @@ var app = new Vue({
 
         submitFeedbackForm: function(){
             this.feedback_form.display = false;
-            console.debug(this.feedback_form, this.node_modal_content);
+            var v = this;
+            if(!v.twitter_account_info.id)
+            {
+                v.twitterLogIn()
+                .then(function(){
+                    v.sendFeedbackData();
+                });
+            }
+            else
+            {
+                v.sendFeedbackData();
+            }
+
+
+        },
+        sendFeedbackData: function()
+        {
+            var feedback = {
+                screen_name: this.node_modal_content.screenName,
+                user_id: this.graph.botscores()[this.node_modal_content.screenName].user_id,
+                reported_botscore: this.node_modal_content.botscore,
+                type: this.feedback_form.type,
+                description: this.feedback_form.comment,
+                score_time: this.node_modal_content.timestamp,
+                reporter_user_id: this.twitter_account_info.id,
+                reporter_screen_name: this.twitter_account_info.screen_name,
+            };
+            this.feedback_form.type = "";
+            this.feedback_form.comment = "";
+            console.debug(feedback);
         },
         resizeGraphs: function(x){
             this.graph_column_size = x;
@@ -488,7 +519,7 @@ var app = new Vue({
                     var score = response.data.scores.english;
                     v.node_modal_content.botscore = Math.floor(score * 100);
                     v.node_modal_content.botcolor = v.graph.getNodeColor(score);
-                    v.node_modal_content.timestamp = moment().format("MMM D YYYY h:mma");
+                    v.node_modal_content.timestamp = new Date();
                 }
                 catch (e)
                 {

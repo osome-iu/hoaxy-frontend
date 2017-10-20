@@ -270,14 +270,14 @@
 								<span v-if="node_modal_content.botscore > 0"><b>{{node_modal_content.botscore}}%</b></span>
 								<span v-if="!node_modal_content.botscore">Unavailable</span>
 								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this user's timeline is set to private or has been deleted entirely.</span>
-								<div v-if="node_modal_content.botscore > 0">Last calculated: {{node_modal_content.timestamp}}</div>
+								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
 							</p>
 							<p v-if="">
 								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.screenName)" class="btn btn-primary" id="">Update Bot Score</button>
 								<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
 							</p>
 
-							<div v-if="node_modal_content.botscore >= 0">
+							<div v-if="node_modal_content.botscore > 0">
 								<button class="btn btn-primary btn-sm" @click="feedback_form.display = !feedback_form.display" >Bot Score Feedback</button>
 
 								<form class="form" v-if="feedback_form.display" @submit.prevent="submitFeedbackForm">

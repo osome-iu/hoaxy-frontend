@@ -135,7 +135,7 @@ function HoaxyGraph(options)
 					{
 						var sn = user.user.screen_name;
 						var score = user.scores.english;
-						botscores[sn] = {score: score, old: !user.fresh, time: new Date(user.timestamp) };
+						botscores[sn] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id };
                         updateNodeColor(sn, score);
 
 					}
@@ -312,7 +312,8 @@ function HoaxyGraph(options)
 			botscores[sn] = {
 				score: response.data.scores.english,
 				old: false,
-				time: new Date()
+				time: new Date(),
+				user_id: response.data.user.id
 			}
 			updateNodeColor(sn, botscores[sn].score);
 		},
@@ -955,7 +956,7 @@ function HoaxyGraph(options)
 				score = Math.floor(score * 100);
 				node_modal_content.botcolor = score != 0 ? getNodeColor(score/100) : "";
 				node_modal_content.botscore = score;
-				node_modal_content.timestamp = moment(botscores[node.screenName].time).format("MMM D YYYY h:mm a");
+				node_modal_content.timestamp =botscores[node.screenName].time;
 			}
 			else
 			{
