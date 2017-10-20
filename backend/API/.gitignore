@@ -3,4 +3,5 @@
 *.xml
 *.log
 *.err
+*.txt
 .db.connection
