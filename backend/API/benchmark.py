@@ -11,12 +11,12 @@ def dbQueryUserScreenNameIn(user_names):
             """
             SELECT DISTINCT ON (screen_name) id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
             from botscore
-            where screen_name in (:screen_name)
+            where screen_name IN :screen_names
             ORDER BY screen_name, time_stamp DESC
             """
         ),
         {
-            "screen_names": user_names
+            "screen_names": tuple(user_names)
         }
     )
     return result
@@ -66,4 +66,7 @@ if __name__ == "__main__":
     #dbQueryUserScreenName(name_list)
     #print(prepareNameList(10))
     name_list = prepareNameList(10)
-    print(dbQueryUserScreenNameIn(name_list))
+    resultIn = dbQueryUserScreenNameIn(name_list)
+    result = dbQueryUserScreenName(name_list)
+    print(len(list(result)))
+    print(len(list(resultIn)))
