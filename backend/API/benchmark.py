@@ -2,6 +2,7 @@
 import sqlalchemy
 from launcher import botscore_connection
 import timeit
+import random
 
 
 def dbQueryUserScreenName(user_names):
@@ -31,16 +32,19 @@ def dbQueryUserScreenName(user_names):
 
 
 def prepareNameList(num):
-    first_n_lines = []
     with open("./randnamelist.txt") as f:
-        for i in range(num):
-            first_n_lines.append(f.readline().strip())
-    return first_n_lines
+        file_lines = f.readlines()
+    rand_index = random.sample(range(len(file_lines)), num)
+    lines = []
+    for item in rand_index:
+        lines.append(file_lines[item].strip())
+    return lines
 
 
 if __name__ == "__main__":
     #print("hello")
     #print(prepareNameList(10))
-    print(timeit.timeit("dbQueryUserScreenName(name_list)", setup="from __main__ import dbQueryUserScreenName, prepareNameList\nname_list=prepareNameList(1000)", number=100))
+    print(timeit.timeit("dbQueryUserScreenName(name_list)", setup="from __main__ import dbQueryUserScreenName, prepareNameList\nname_list=prepareNameList(1000)", number=1))
     #name_list = prepareNameList(10)
     #dbQueryUserScreenName(name_list)
+    #print(prepareNameList(10))
