@@ -42,7 +42,7 @@ def dbQueryUserScreenNameIn(user_names):
     result = botscore_connection.execute(
         sqlalchemy.text(
             """
-            SELECT DISTINCT ON (screen_name) id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_requests
+            SELECT DISTINCT ON (screen_name) id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
             from botscore
             where screen_name IN :screen_names
             ORDER BY screen_name, time_stamp DESC
