@@ -38,6 +38,23 @@ def dbQueryUserID(user_ids):
     return result
 
 
+def dbQueryUserScreenNameIn(user_names):
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            SELECT DISTINCT ON (screen_name) id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_requests
+            from botscore
+            where screen_name IN :screen_names
+            ORDER BY screen_name, time_stamp DESC
+            """
+        ),
+        {
+            "screen_names": tuple(user_names)
+        }
+    )
+    return result
+
+
 def dbQueryUserScreenName(user_names):
     result = botscore_connection.execute(
         sqlalchemy.text(
@@ -145,7 +162,7 @@ def getScores():
             user_names = user_names_query
         elif isinstance(user_names_query, str):
             user_names = user_names_query.split(",")
-        db_results += dbQueryUserScreenName(user_names)
+        db_results += dbQueryUserScreenNameIn(user_names)
         total_request_number += len(user_names)
 
     user_scores = []
