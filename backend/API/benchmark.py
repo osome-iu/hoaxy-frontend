@@ -5,6 +5,23 @@ import timeit
 import random
 
 
+def dbQueryUserScreenNameIn(user_names):
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            SELECT DISTINCT ON (screen_name) id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
+            from botscore
+            where screen_name in (:screen_name)
+            ORDER BY screen_name, time_stamp DESC
+            """
+        ),
+        {
+            "screen_names": user_names
+        }
+    )
+    return result
+
+
 def dbQueryUserScreenName(user_names):
     result = botscore_connection.execute(
         sqlalchemy.text(
@@ -44,7 +61,9 @@ def prepareNameList(num):
 if __name__ == "__main__":
     #print("hello")
     #print(prepareNameList(10))
-    print(timeit.timeit("dbQueryUserScreenName(name_list)", setup="from __main__ import dbQueryUserScreenName, prepareNameList\nname_list=prepareNameList(1000)", number=1))
+    #print(timeit.timeit("dbQueryUserScreenName(name_list)", setup="from __main__ import dbQueryUserScreenName, prepareNameList\nname_list=prepareNameList(1000)", number=1))
     #name_list = prepareNameList(10)
     #dbQueryUserScreenName(name_list)
     #print(prepareNameList(10))
+    name_list = prepareNameList(10)
+    print(dbQueryUserScreenNameIn(name_list))
