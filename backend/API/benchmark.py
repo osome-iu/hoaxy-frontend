@@ -39,4 +39,8 @@ def prepareNameList(num):
 
 
 if __name__ == "__main__":
-    print("dbQueryUserScreenName(prepareNameList(10))", setup="from __main__ import *")
+    #print("hello")
+    #print(prepareNameList(10))
+    print(timeit.timeit("dbQueryUserScreenName(name_list)", setup="from __main__ import dbQueryUserScreenName, prepareNameList\nname_list=prepareNameList(1000)", number=100))
+    #name_list = prepareNameList(10)
+    #dbQueryUserScreenName(name_list)
