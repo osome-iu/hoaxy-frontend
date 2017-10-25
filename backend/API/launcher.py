@@ -81,7 +81,7 @@ def dbQueryUserScreenName(user_names):
     return result
 
 
-def increaseNumRequests(id):
+def increaseNumRequest(id):
     botscore_connection.execute(
         sqlalchemy.text(
             """
@@ -91,6 +91,19 @@ def increaseNumRequests(id):
             """
         ),
         {"id": id}
+    )
+
+
+def increaseNumRequests(id_list):
+    botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            UPDATE botscore
+            SET num_requests = num_requests + 1
+            WHERE id in :ids
+            """
+        ),
+        {"ids": tuple(id_list)}
     )
 
 
@@ -166,6 +179,7 @@ def getScores():
         total_request_number += len(user_names)
 
     user_scores = []
+    user_to_update = []
 
     for row in db_results:
         all_bot_scores = row[3] if row[3] else dict()
@@ -195,7 +209,7 @@ def getScores():
             user_record, user_tweet_per_day, num_requests, config_file
         )
         user_scores.append(user_record)
-        increaseNumRequests(row[0])
+        user_to_update.append(row[0])
 
     hits = len(db_results)
     response = {
@@ -205,6 +219,9 @@ def getScores():
         },
         "result": user_scores
     }
+
+    increaseNumRequests(user_to_update)
+
     return jsonify(response)
 
 
