@@ -2,8 +2,6 @@
 
 #Author: Mihai Avram, e-mail: mihai.v.avram@gmail.com
 
-#TODO BEFORE RUNNING: Change database configuration settings in pgsqlconn
-
 #ALL IMPORTS
 #for connecting to the database
 import psycopg2
@@ -81,8 +79,15 @@ if __name__ == '__main__':
     #Twitter Search API Instance
     twitter = Twitter(auth=oauth)
 
+    #Database connection
+    DB_HOST_NAME = keysandsecrets_json['DB_HOST_NAME']
+    DB_USER = keysandsecrets_json['DB_USER']
+    DB_PASSWORD = keysandsecrets_json['DB_PASSWORD']
+    DB_NAME = keysandsecrets_json['DB_NAME']
+    DB_PORT = keysandsecrets_json['DB_PORT']
+       
     #connecting to the database
-    pgsqlconn = psycopg2.connect(host='', user='', password='', dbname='', port='')
+    pgsqlconn = psycopg2.connect(host=DB_HOST_NAME, user=DB_USER, password=DB_PASSWORD, dbname=DB_NAME, port=DB_PORT)
     #cursor needed to execute db operations
     botometer_cursor = pgsqlconn.cursor()
     
