@@ -107,6 +107,9 @@ if __name__ == '__main__':
                 populated_target_userids_and_profiles[user_id[0]] = no_profile_found_dict
         except:
             error_log_file.write("USER PROFILE COULD NOT BE RETRIEVED, " + "UserId=" + str(user_id[0]) + ", Error=" + str(sys.exc_info()[0]) + "\n")
+            no_profile_found_dict = {}
+            no_profile_found_dict['no-profile-found'] = 'No profile was available at the time when this user was reported'
+            populated_target_userids_and_profiles[user_id[0]] = no_profile_found_dict
             continue
             
     #populate null_profiles
@@ -128,6 +131,9 @@ if __name__ == '__main__':
                 populated_target_userids_and_targettimelinetweets[user_id[0]] = no_timeline_tweets_found_dict
         except:
             error_log_file.write("USER TWEET TIMELINE COULD NOT BE RETRIEVED, " + "UserId=" + str(user_id[0]) + ", Error=" + str(sys.exc_info()[0]) + "\n")
+            no_timeline_tweets_found_dict = {}
+            no_timeline_tweets_found_dict['no-timeline-tweets-found'] = 'There were no timeline tweets available at the time when this user was reported'
+            populated_target_userids_and_targettimelinetweets[user_id[0]] = no_timeline_tweets_found_dict
             continue
             
     #populate timeline_tweets
@@ -149,7 +155,11 @@ if __name__ == '__main__':
                 populated_target_userids_and_targetmentiontweets[user_id[0]] = no_mention_tweets_found_dict
         except:
             error_log_file.write("USER MENTION TIMELINE NOT BE RETRIEVED, " + "UserId=" + str(user_id[0]) + ", Error=" + str(sys.exc_info()[0]) + "\n")
+            no_mention_tweets_found_dict = {}
+            no_mention_tweets_found_dict['no-mention-tweets-found'] = 'There were no mention tweets available at the time when this user was reported'
+            populated_target_userids_and_targetmentiontweets[user_id[0]] = no_mention_tweets_found_dict
             continue
+
     #populate mention_tweets
     populate_target_profiles_timelinetweets_mentiontweets("target_mention_tweets", populated_target_userids_and_targetmentiontweets)
   
