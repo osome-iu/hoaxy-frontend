@@ -17,9 +17,11 @@
 }
 ```
 
-2. Create a Cron job that executes the `FetchAndUpdateFeedback_ProfilesTimelinesMentions.py` file every 20 minutes i.e. and filling the `<>` parameters
+2. Create a python environment using `conda create` if needed, then create a `.sh` shell script that executes the `FetchAndUpdateFeedback_ProfilesTimelinesMentions.py` script using that given python environment.
 
-`*/20 * * * * <user> python /<path_to_this_file>/FetchAndUpdateFeedback_ProfilesTimelinesMentions.py`
+3. Create a Cron job that executes the `FetchAndUpdateFeedback_ProfilesTimelinesMentions.sh` file every 20 minutes i.e. and filling the `<>` parameters
+
+`*/20 * * * * <user> /<path_to_this_file>/FetchAndUpdateFeedback_ProfilesTimelinesMentions.sh`
 
 ## Miscellanea
 
