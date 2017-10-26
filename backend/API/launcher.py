@@ -174,7 +174,7 @@ def getScores():
         db_results += dbQueryUserID(user_ids)
 
     t2 = time.time()
-    print("Done parsing the query, start to SQL, %.4f" % t2-t1)
+    print("Done parsing the query, start to SQL, %.4f" % (t2-t1))
     if user_names_query:
         if isinstance(user_names_query, list):
             user_names = user_names_query
@@ -184,7 +184,7 @@ def getScores():
         total_request_number += len(user_names)
 
     t3 = time.time()
-    print("Done SQL, start to return, %.4f" % t3-t2)
+    print("Done SQL, start to return, %.4f" % (t3-t2))
 
     user_scores = []
     user_to_update = []
@@ -229,13 +229,13 @@ def getScores():
     }
 
     t4 = time.time()
-    print("Done return, %.4f" % t4-t3)
+    print("Done return, %.4f" % (t4-t3))
 
     increaseNumRequests(user_to_update)
 
     t5 = time.time()
 
-    print("Done increase, %.4f" % t5-t4)
+    print("Done increase, %.4f" % (t5-t4))
 
     return jsonify(response)
 
