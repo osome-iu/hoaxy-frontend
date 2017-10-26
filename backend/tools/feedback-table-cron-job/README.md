@@ -25,4 +25,4 @@
 
 ## Miscellanea
 
-Be careful of the Twitter API rate limits on the profile, timelines, and mentions. Also there will be a `.err` file that will be created and appended to as the script runs which notifies one of the users that the API failed to retrieve the information of.
+Be careful of the Twitter API rate limits on the profile, timelines, and mentions. Also there will be a `.err` file that will be created and appended to as the script runs which notifies one of the users that the API failed to retrieve the information of. Also, if using any local paths in the script, make sure they are changed to absolute paths before executing the cron job as the cron job will not have context of where the "local" files are located.
