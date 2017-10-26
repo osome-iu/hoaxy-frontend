@@ -1,8 +1,9 @@
 # Feedback Table Cron Job
 
-## Set up:
+## Set up
 
 1. Create a file named "iuni-twitterapi-keys-and-secrets.json" in this directory and fill it with the following text filling in the `<>` parameters:
+```
 {
     "IUNI_TWITTERAPI_ACCESS_TOKEN" : "<str>",
     "IUNI_TWITTERAPI_ACCESS_SECRET" : "<str>",
@@ -14,6 +15,7 @@
     "DB_NAME" : "<str>",
     "DB_PORT" : <int>
 }
+```
 
 2. Create a Cron job that executes the `FetchAndUpdateFeedback_ProfilesTimelinesMentions.py` file every 20 minutes i.e. and filling the `<>` parameters
 
