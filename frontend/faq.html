@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Claim and Fact Checking Spreading Statistics</title>
+	<!--#include virtual="./includes/includes.html" -->
+</head>
+
+<body>
+	<div id="vue-app">
+		<!--#set var="subtitle" value="Frequently Asked Questions About Hoaxy" -->
+		<!--#include virtual="./includes/header.html" -->
+
+        <section id="faq" class="container-fluid">
+        	<div class="container">
+        		<dl>
+        			<dt>Q: What is Hoaxy?</dt>
+        			<dd>
+        				<em>Hoaxy</em> visualizes the spread of claims and related fact checking online. A claim may be a fake news article, hoax, rumor, conspiracy theory, satire, or even an accurate report. Anyone can use Hoaxy to explore how claims spread across social media. You can select any matching fact-checking articles to observe how those spread as well.
+        			</dd>
+
+
+        			<dt>Q: How does it work?</dt>
+        			<dd>
+        				A: We track the social sharing of links to stories published by two types of websites: (1) <em>Independent fact-checking organizations</em>, such as snopes.com, politifact.com, and factcheck.org, that routinely fact check unverified claims. (2) <em>Sources</em> that often publish inaccurate, unverified, or satirical claims according to <a href="https://docs.google.com/spreadsheets/d/1S5eDzOUEByRcHSwSNmSqjQMpaKcKXmUzYT6YlRy3UOg/edit?usp=sharing" target="_blank">lists</a> compiled and published by reputable news and fact-checking organizations.
+        			</dd>
+
+
+        			<dt>Q: What does the visualization show?</dt>
+        			<dd>
+        				A: Hoaxy visualizes two aspects of the spread of claims and fact checking: <em>temporal trends</em> and <em>diffusion networks</em>. Temporal trends plot the cumulative number of Twitter shares over time. The user can zoom in on any time interval. Diffusion networks display how claims spread from person to person. Each node is a Twitter account and two nodes are connected if a meme (link to a story) is passed between those two accounts via retweets, replies, quotes, or mentions. The color of a connection indicates the type of information: claims and fact checks. Clicking on an edge reveals the tweet(s) and the link to the shared story; clicking on a node reveals claims shared by the corresponding user. The network may be pruned for performance.
+        			</dd>
+
+
+        			<dt>Q: Who decides what is true or not? </dt>
+        			<dd>
+        				A: <u>We do <em>not</em> decide what is true or false</u>. Not all claims you can visualize on Hoaxy are false, nor can we track all false stories. We aren’t even saying that the fact checkers are 100% correct all the time. You can use the Hoaxy tool to observe how unverified stories and the fact checking of those stories spread on public social media. We welcome users to click on links to fact-checking sites to see what they’ve found in their research, but it’s up for you to evaluate the evidence about a claim and its rebuttal.
+        			</dd>
+
+
+        			<dt>Q: Do you have an editorial team? </dt>
+        			<dd>
+        				A: No. Hoaxy tracks claims and fact checks automatically, 24/7. We do not read the contents of the articles we track. This is why we cannot establish whether a claim is accurate, nor whether a particular claim was verified by a particular fact check.
+        			</dd>
+
+
+        			<dt>Q: How do you match claims to fact-checks? </dt>
+        			<dd>
+        				A: We use search engine technology (think of Google) to retrieve claims and fact checks. The user enters a query and we match it against our index of claims to find relevant articles. We perform the same procedure to find fact checks matching the query. The user can select claims and fact-checking articles to be visualized.
+        			</dd>
+
+
+        			<dt>Q: How do you track the spread of a claim?</dt>
+        			<dd>
+        				A: We collect public tweets that include links to stories published by websites in the list of sources and fact-checking organizations. We fetch the page linked in the tweet and store the URL and the text of the page of the article, adding them to our index together with the tweet. When the user submits a query we match the most relevant or recent articles (claims and fact checks) and select all the tweets that linked to them. These tweets are displayed in the interactive visualizations.
+        			</dd>
+
+
+        			<dt>Q: What is the source of social media data?</dt>
+        			<dd>
+        				A: At the moment we only collect data from Twitter.
+        			</dd>
+
+
+        			<dt>Q: Do you access any private conversations?</dt>
+        			<dd>
+        				A: No, we only access public tweets.
+        			</dd>
+
+
+        			<dt>Q: Do you provide an API to the data you collect?</dt>
+        			<dd>
+        				A: Yes, check out the free <a href="https://market.mashape.com/truthy/hoaxy" target="_blank">Hoaxy API</a> available on Mashape.
+        			</dd>
+
+
+        			<dt>Q: Can I cite Hoaxy in my work?</dt>
+        			<dd>
+        				A: Yes, if you use Hoaxy for your work then please cite the following article:
+        				<br />
+        				<p>
+        					Chengcheng Shao, Giovanni Luca Ciampaglia, Alessandro Flammini, and Filippo Menczer (2016). Hoaxy: A Platform for Tracking Online Misinformation. In Proceedings of the 25th International Conference Companion on World Wide Web (WWW '16 Companion). Pages 745-750. DOI: http://dx.doi.org/10.1145/2872518.2890098				</p>
+
+        					You can also import the following bibtex code into your favorite bibliographic tool:
+        					<br />
+        					<br />
+        					<pre>
+        @inproceedings{Shao:2016:HPT:2872518.2890098,
+        	author = {Shao, Chengcheng and Ciampaglia, Giovanni Luca and Flammini, Alessandro and Menczer, Filippo},
+        	title = {Hoaxy: A Platform for Tracking Online Misinformation},
+        	booktitle = {Proceedings of the 25th International Conference Companion on World Wide Web},
+        	series = {WWW '16 Companion},
+        	year = {2016},
+        	pages = {745--750},
+        	url = {http://dx.doi.org/10.1145/2872518.2890098},
+        	doi = {10.1145/2872518.2890098}
+        }
+        					</pre>
+
+        				</dd>
+
+
+        				<dt>Q: What technology does Hoaxy use?</dt>
+        				<dd>
+        					A: Hoaxy is written primarily in Python. On the backend we use Apache Lucene (for full-text indexing and retrieval), Scrapy (for web crawling), Apache Tika (for metadata extraction), RSS (for feed aggregation), PostgreSQL (for data indexing and storage), and SQLAlchemy (for object-relational mapping). On the frontend we use Bootstrap, NV.D3 (for the chart), and Sigma-js (for the network). We collect data from Twitter using the public streaming API.
+        				</dd>
+
+
+        				<dt>Q: Is Hoaxy open source?</dt>
+        				<dd>
+        					A: Yes. This makes it possible for colleagues, fact checkers, and reporters around the world to deploy versions of the tool to map the spread of claims in their own countries and in languages other then English. The code is available in two repositories: a <a href="https://github.com/IUNetSci/hoaxy-backend">backend</a> and a <a href="https://github.com/IUNetSci/hoaxy-frontend">frontend</a>.  Please contact <a href="http://www.glciampaglia.com/">us</a> to let us know if you are using our code.
+        				</dd>
+
+
+        				<dt>Q: Who are the Hoaxy developers?</dt>
+        				<dd>
+        					A: Hoaxy is a joint project of the Indiana University Network Science Institute (<a href="https://iuni.iu.edu/" target="_blank">IUNI</a>) and the Center for Complex Networks and Systems Research (<a href="http://cnets.indiana.edu/" target="_blank">CNetS</a>).  <a href="http://cnets.indiana.edu/fil/" target="_blank">Filippo Menczer</a> and <a href="http://www.glciampaglia.com/" target="_blank">Giovanni Luca Ciampaglia</a> coordinate the project. Other team members include <a href="http://shaochengcheng.github.io/" target="_blank">Chengcheng Shao</a>, <a href="https://www.linkedin.com/in/lei-wang-ba679483?trk=hp-identity-name" target="_blank">Lei Wang</a>, <a href="https://www.linkedin.com/in/gregory-maus-016b021b" target="_blank">Gregory Maus</a>, <a href="http://www.liangdesigner.com/" target="_blank">Liang Chen</a>, <a href="http://iuni.iu.edu/people/person/ben-serrette" target="_blank">Ben Serrette</a>, and <a href="http://iuni.iu.edu/people/person/valentin-pentchev" target="_blank">Valentin Pentchev</a>.  We are members of the of <a href="https://firstdraftnews.com/academic-partners/" target="_blank">First Draft Academic Partner Network</a>.
+        				</dd>
+
+        			</dl>
+        		</div>
+
+        </section>
+
+	</div>
+
+
+
+	<script>
+	// $("#faq dt").each(function(){
+	// 			var dt = $(this);
+	// 			var t = dt.text();
+	// 			dt.empty();
+	// 			var id = t.replace("Q: ", "").replace("?", "").replace(/[^\w]/g, "_");
+	// 			var new_content = "";
+	// 			new_content = "<a href='#" + id + "' id='" + id + "'>";
+	// 			new_content += t;
+	// 			new_content += "</a>";
+	// 			dt.html(new_content);
+	// 		});
+	var app = new Vue({
+
+		el: '#vue-app',
+		data:{
+			show_tutorial_link: undefined
+		},
+		methods: {
+		},
+		mounted: function(){
+		}
+	});
+
+	</script>
+	<!--#include virtual="./includes/footer.html" -->
+</body>
+</html>
