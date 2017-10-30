@@ -315,22 +315,22 @@ input:not(:checked) + .check_icons > .fa-square-o
         rgb(215,25,28) 80%,
         rgb(215,25,28) 100%);*/
     /*background: linear-gradient(to top,
-        rgb(138,206,229) 0%,
-        rgb(138,206,229) 20%,
-        rgb(91, 148, 219) 20%,
-        rgb(91, 148, 219) 40%,
-        rgb(57, 106, 211) 40%,
-        rgb(57, 106, 211) 60%,
-        rgb(181, 56, 80) 60%,
-        rgb(181, 56, 80) 80%,
-        rgb(215,25,28) 80%,
-        rgb(215,25,28) 100%);*/
-    background: linear-gradient(to top,
+        rgb(0,0,255) 0%,
+        rgb(0,0,255) 20%,
+        rgb(170, 90, 220) 20%,
+        rgb(170, 90, 220) 40%,
+        rgb(255, 128, 200) 40%,
+        rgb(255, 128, 200) 60%,
+        rgb(245, 90, 150) 60%,
+        rgb(245, 90, 150) 80%,
+        rgb(255,0,0) 80%,
+        rgb(255,0,0) 100%);*/
+    /*background: linear-gradient(to top,
         rgb(0,0,255) 15%,
 
         rgb(255,128,200) 50%,
 
-        rgb(255,0,0) 85%);
+        rgb(255,0,0) 85%);*/
     border: solid black 1px;
 }
 #bot_legend_gradient span

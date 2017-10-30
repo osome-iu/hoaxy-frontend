@@ -7,15 +7,20 @@ var colors = {
         "fact_checking" : 'darkblue',
         "claim" : 'darkblue',
         "botscores": [
-            {red: 215, green: 25, blue: 28},
-
-            {red: 181, green: 56, blue: 80},
-            // {red: 164, green: 38, blue: 85},
-            // {red: 60, green: 65, blue:196},
-            {red: 57, green: 106, blue:211},
-            {red: 91, green: 148, blue:219},
-
-            {red: 138, green: 206, blue: 229} ,
+            {red: 255, green: 0, blue: 0} ,
+			{red: 245, green: 90, blue: 150} ,
+			{red: 255, green: 128, blue: 200} ,
+			{red: 170, green: 90, blue: 220} ,
+			{red: 0, green: 0, blue: 255}
+            // {red: 215, green: 25, blue: 28},
+            //
+            // {red: 181, green: 56, blue: 80},
+            // // {red: 164, green: 38, blue: 85},
+            // // {red: 60, green: 65, blue:196},
+            // {red: 57, green: 106, blue:211},
+            // {red: 91, green: 148, blue:219},
+            //
+            // {red: 138, green: 206, blue: 229} ,
 
 
             // {red: 215, green: 25, blue: 28} ,

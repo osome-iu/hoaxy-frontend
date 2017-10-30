@@ -160,7 +160,22 @@
 				</div>
 				<div  v-if="show_zoom_buttons" id="bot_legend" class="d-flex align-items-center justify-content-center flex-column">
 					<div class="likely_bot">Likely Bot</div>
-					<div class="" id="bot_legend_gradient">
+					<div
+						class=""
+						id="bot_legend_gradient"
+						:style="
+							'background: linear-gradient(to top, rgb('
+							+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ') 0%, rgb('
+							+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ') 20%, rgb('
+							+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ',' + colors.node_colors.botscores[3].blue + ') 20%, rgb('
+							+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ',' + colors.node_colors.botscores[3].blue + ') 40%, rgb('
+							+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ',' + colors.node_colors.botscores[2].blue + ') 40%, rgb('
+							+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ',' + colors.node_colors.botscores[2].blue + ') 60%, rgb('
+							+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ',' + colors.node_colors.botscores[1].blue + ') 60%, rgb('
+							+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ',' + colors.node_colors.botscores[1].blue + ') 80%, rgb('
+							+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ') 80%, rgb('
+							+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ') 100%)'"
+						>
 
 					</div>
 					<div class="likely_human">Likely Human</div>
