@@ -356,7 +356,7 @@ p {
     vertical-align: top;
 }
 
-li.claim, li.claim a, .claim_label
+/*li.claim, li.claim a, .claim_label
 {
     color: white;
     background-color: #4B3F72;
@@ -377,14 +377,14 @@ li.claim .article_domain a:hover
 li.fact_checking .article_domain, li.fact_checking .article_domain a, li.fact_checking .article_date, #article_list li.fact_checking .article_stats
 {
     /*color: rgba(0, 0, 0, .5);*/
-    color: rgba(255, 255, 255, .8);
+    /*color: rgba(255, 255, 255, .8);
 }
 li.fact_checking .article_domain a:hover
-{
+{*/
     /*color: rgba(0, 0, 0, 1);*/
-
+/*
     color: rgba(255, 255, 255, 1);
-}
+}*/
 
 .article_stats span
 {
@@ -402,7 +402,7 @@ li.fact_checking .article_domain a:hover
 }
 #select_all_section > label > div
 {
-    background: lightgray;
+    /*background: lightgray;*/
     height: 4rem;
     line-height: 4rem;
     vertical-align: middle;
@@ -418,7 +418,7 @@ li.fact_checking .article_domain a:hover
 }
 #select_all_section input:checked + .fa + .fa + div
 {
-    background: darkgray;
+    /*background: darkgray;*/
 }
 
 #graphs>div {
