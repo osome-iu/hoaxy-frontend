@@ -150,6 +150,8 @@ var app = new Vue({
             }
         },
 
+        source_dropdown_open: false,
+        
         colors: colors
     },
     computed: {
