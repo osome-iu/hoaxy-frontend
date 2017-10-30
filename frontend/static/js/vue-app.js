@@ -111,6 +111,8 @@ var app = new Vue({
         error_message: "",
         show_edge_modal: false,
         show_node_modal: false,
+        show_tutorial_link: true,
+        show_tutorial_modal: false,
         modal_opacity: false,
         edge_modal_content: {
             edge: {},
@@ -151,7 +153,7 @@ var app = new Vue({
         },
 
         source_dropdown_open: false,
-        
+
         colors: colors
     },
     computed: {
@@ -593,6 +595,9 @@ var app = new Vue({
         },
         toggleErrorModal: function(force){
             this.toggleModal('error', force);
+        },
+        toggleTutorialModal: function(force){
+            this.toggleModal('tutorial', force);
         },
         toggleModal: function(modal, force)
         {

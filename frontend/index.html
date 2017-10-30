@@ -7,6 +7,15 @@
 </head>
 
 <body>
+	<div id="fb-root"></div>
+	<!-- <script>(function(d, s, id) {
+	  var js, fjs = d.getElementsByTagName(s)[0];
+	  if (d.getElementById(id)) return;
+	  js = d.createElement(s); js.id = id;
+	  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.8&appId=350021671841699";
+	  fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+	</script> -->
 	<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
 			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
@@ -219,27 +228,58 @@
 		#     #  ####  #####  #    # ######  ####
 		-->
 
-        <div id="errorModal" :class="{'modal-show': show_error_modal}" @click.stop="toggleErrorModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
+		<div
+		id="tutorialModal"
+		:class="{'modal-show': show_tutorial_modal}"
+		@click.stop="toggleTutorialModal()"
+		class="modal "
+		tabindex="-1"
+		role="dialog"
+		aria-labelledby="tutorialModalLabel"
+		:style="modal_opacity?'opacity: 1;':'opacity: 0;'"
+		aria-labelledby="nodeModalLabel">
             <div class="modal-dialog" role="document">
-                <div @click.stop="" class="alert m-5 alert-danger">
+                <div @click.stop="" class="alert m-5 alert-info">
                     <div class="modal-header">
-                        <h4 class="modal-title text-center" id="errorModalLabel" >
-							An Error Occurred
+                        <h4 class="modal-title text-center" id="tutorialModalLabel" >
+							Tutorial
                         </h4>
-						<button type="button" class="close float-right"  @click="toggleErrorModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
+						<button type="button" class="close float-right"  @click="toggleTutorialModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     </div>
-                    <div class="modal-body" id="errorModalBody" >
+                    <div class="modal-body text-center" id="tutorial_modalBody" >
 						<div class="d-flex align-items-center">
-							<i class="float-left m-2 fa fa-3x fa-exclamation-triangle" aria-hidden="true"></i>
-							<span>{{error_message}}</span>
+							<iframe width="560" height="315" src="https://www.youtube.com/embed/YoO7DDMvhUQ?rel=0" frameborder="0" allowfullscreen></iframe>
+
 						</div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="toggleErrorModal()">Close</button>
+                        <button type="button" class="btn btn-secondary" @click="toggleTutorialModal()">Close</button>
                     </div>
                 </div>
             </div>
         </div>
+
+		<div id="errorModal" :class="{'modal-show': show_error_modal}" @click.stop="toggleErrorModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
+			<div class="modal-dialog" role="document">
+				<div @click.stop="" class="alert m-5 alert-danger">
+					<div class="modal-header">
+						<h4 class="modal-title text-center" id="errorModalLabel" >
+							An Error Occurred
+						</h4>
+						<button type="button" class="close float-right"  @click="toggleErrorModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
+					</div>
+					<div class="modal-body" id="errorModalBody" >
+						<div class="d-flex align-items-center">
+							<i class="float-left m-2 fa fa-3x fa-exclamation-triangle" aria-hidden="true"></i>
+							<span>{{error_message}}</span>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" @click="toggleErrorModal()">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
 
 		<div id="edgeModal" :class="{'modal-show': show_edge_modal}" @click.stop="toggleEdgeModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="edgeModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">

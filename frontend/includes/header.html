@@ -27,6 +27,7 @@
 			<h1 class="hoaxy-logo"><a href="/"><i class="fa fa-retweet"></i> HOAXY</a><sup><small>beta</small></sup></h1>
 			<p class="" id="subtitle">
 				Visualize the spread of claims and fact checking.
+                 <a v-if="show_tutorial_link !== undefined" @click.prevent="toggleTutorialModal()" href="#" id="tutorial_link" >Click here for a tutorial. <i class="fa fa-youtube-play" aria-hidden="true"></i></a>
 			</p>
 
 			<h2><!--#echo var="subtitle" --></h2>

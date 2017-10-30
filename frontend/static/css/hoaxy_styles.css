@@ -696,3 +696,22 @@ white-space: nowrap;
 #source_dropdown:hover ul {
 	display: block;
 }
+
+#tutorial_link
+{
+	font-weight: bold;
+}
+#tutorial_link i
+{
+	font-size: 1.5em;
+	vertical-align: top;
+}
+
+#tutorialModal .modal-dialog
+{
+    max-width: 800px;
+}
+#tutorialModal iframe
+{
+    margin: 0 auto;
+}
