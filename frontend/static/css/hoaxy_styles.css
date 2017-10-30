@@ -248,17 +248,20 @@ p {
 
 
 
-#article_list li, #select_all_section
+/*#article_list li, */
+#select_all_section
 {
     display: block;
 }
-#article_list label, #select_all_section label
+/*#article_list label, */
+#select_all_section label
 {
     display: block;
     position: relative;
 }
 
-#article_list input, #select_all_section input
+/*#article_list input,*/
+#select_all_section input
 {
     float: left;
     /*margin: .5rem;*/
@@ -275,7 +278,13 @@ p {
 
 }
 
-#article_list .fa,
+#article_list .fa
+{
+
+    font-size: 3rem;
+    margin-left: .5rem;
+}
+
 #select_all_section .fa
 {
     position: absolute;
@@ -290,22 +299,22 @@ p {
     top: 50%;
     margin-top: -1.5rem;
 }
-#article_list .fa-check-square-o,
+/*#article_list .fa-check-square-o,*/
 #select_all_section .fa-check-square-o
 {
     display: none;
 }
-#article_list input:checked + .fa-square-o,
+/*#article_list input:checked + .fa-square-o,*/
 #select_all_section input:checked + .fa-square-o
 {
     display: none;
 }
-#article_list input:checked + .fa-square-o + .fa-check-square-o,
+/*#article_list input:checked + .fa-square-o + .fa-check-square-o,*/
 #select_all_section input:checked + .fa-square-o + .fa-check-square-o
 {
     display: inline-block;
 }
-#article_list label > div, #select_all_section label > div,
+/*#article_list label > div, #select_all_section label > div,*/
 #select_all_section label > div, #select_all_section label > div
 {
     display: block;
@@ -332,11 +341,19 @@ p {
     display: inline-block;
     margin-right: .5rem;
 }
+#article_list li
+{
+    margin-bottom: auto;
+}
 
-.fact_checking_label, .claim_label
+#articles .fact_checking_label, #articles .claim_label
 {
     padding: 0 .5rem;
     /*border-radius: .25rem;*/
+    width: auto;
+    height: auto;
+    display: inline;
+    vertical-align: top;
 }
 
 li.claim, li.claim a, .claim_label
@@ -412,6 +429,7 @@ section, nav.tab_container
     position: relative;
     background: #FAFAFA;
     padding-top: 2rem;
+    margin-bottom: 0;
 
 }
 section#form, section#articles, section#graphs
@@ -475,6 +493,7 @@ header
 {
 	z-index: 10;
     padding-bottom: 0;
+    margin-bottom: 0;
 }
 #form
 {

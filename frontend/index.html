@@ -41,7 +41,7 @@
 		#        ####  #    # #    #
 
 	-->
-		<section id="form" class="container">
+		<section id="form" class="container-fluid">
 			<form @submit.stop.prevent="submitForm()">
 				<div class="container">
 					<div class="col-12 form-group text-center">
@@ -63,6 +63,7 @@
 					</div>
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
+						<span class="number" title="Search for claims.">1</span>
 						<button class="btn btn-primary btn-blue" id="submit" :disabled="input_disabled" > Search </button>
 					</div>
 					<div class="clearfix"></div>
@@ -82,14 +83,79 @@
   -->
 		<section id="articles" v-bind:class="{'hidden': !show_articles}" class="container-fluid">
 			<div class="container">
-				<div>
-					<p>Select claims and fact checking articles to visualize.</p>
+				<div class="col-12">
+					<span class="number" title="Select articles to visualize.">2</span>
+					<h2>Select <span class="claim_label rounded">claims</span> and <span class="rounded fact_checking_label">fact checking</span> articles to visualize.</h2>
+				</div>
+				<div class="row">
+					<div class="col-md-4 col-12">
+
+						<div id="select_all_section">
+							<label>
+								<input type="checkbox" id="select_all" /><i class="fa fa-square-o" aria-hidden="true"></i><i class="fa fa-check-square-o" aria-hidden="true"></i>
+								<div class="rounded">
+									<span class="article_title">Select Top 20</span>
+								</div>
+							</label>
+						</div>
+
+					</div>
+
+					<div class="col-md-4 col-6 text-md-center text-left">
+						<div style="position: relative">
+							<span class="number" title="Visualize the articles into a timeline and graph.">3</span>
+							<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary btn-blue" id="visualize_top"> Visualize </button>
+						</div>
+					</div>
+
+					<div id="sharing_buttons" class="col-md-4 col-6 text-right">
+						<span id="twitter-button">
+							<a class="twitter-share-button"
+							href="https://twitter.com/share"
+							data-text="Hoaxy: How claims spread online"
+							data-url="http://hoaxy.iuni.iu.edu/"
+							data-size="small">
+							Tweet</a>
+						</span>
+
+						<span id="fb-button">
+							<span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
+								<a class="fb-xfbml-parse-ignore" target="_blank"
+								href="">Share</a>
+							</span>
+						</span>
+
+					</div>
 				</div>
 
-				<p class="text-center">
-					<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary" id="visualize_top"> Visualize </button>
+<!-- <li class="claim">
+	<label>
+		<input id="637129" value="637129" type="checkbox">
+		<i class="fa fa-square-o" aria-hidden="true"></i>
+		<i class="fa fa-check-square-o" aria-hidden="true"></i>
+		<div class="rounded">
+			<span class="article_title">
 
-				</p>
+				<a href="http://www.disclose.tv/news/spider_drinks_graphene_spins_a_web_that_can_carry_a_human/140186" target="_blank">
+					Spider Drinks Graphene, Spins A Web That Can Carry A Human – Disclose.tv
+				</a>
+			</span>
+			<div class="col-lg-6 col-md-7 col-xs-12">
+				<span class="article_domain">
+					From <a href="http://disclose.tv" target="_blank">disclose.tv</a>
+				</span>
+				<span class="article_date">on Sep 5, 2017</span>
+			</div>
+			<div class="text-md-right col-lg-6 col-md-5 col-xs-12 article_stats">
+				<span><b>79</b> Tweets</span>
+				<br class="hidden-lg-up">
+				<span id="facebook_count_25244"><b>2555</b> Facebook Shares</span>
+			</div>
+			<div class="clearfix"></div>
+		</div>
+	</label>
+</li> -->
+
 				<ul class="list-unstyled" id="article_list">
 					<li v-for="article, index in getSubsetOfArticles()" :class="article.site_type" class="rounded">
 						<label class="row p-3">
@@ -103,7 +169,10 @@
 								<span class="article_title"><a :href="article.url_raw" target="_blank">{{article.title}}</a></span>
 								<span class=""><span class="article_domain">From <a :href="'http://' + article.site_domain" target="_blank">{{article.site_domain}}</a></span>
 								<span class="article_date">on {{getDateline(article.pub_date)}}</span></span>
-								<span class="article_stats"><span><b>{{article.number_of_tweets}}</b> Tweets</span></span>
+								<span class="article_stats">
+									<span><b>{{article.number_of_tweets}}</b> Tweets</span>
+									<!-- <span><b></b> Facebook Shares</span> -->
+								</span>
 								<div class="clearfix"></div>
 							</div>
 						</label>
