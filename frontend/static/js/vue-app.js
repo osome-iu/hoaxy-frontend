@@ -157,6 +157,9 @@ var app = new Vue({
         colors: colors
     },
     computed: {
+        all_selected: function(){
+            return this.checked_articles.length === 20;
+        }
     },
 
     // #     #
@@ -168,6 +171,25 @@ var app = new Vue({
     // #     # ######   #   #    #  ####  #####   ####
 
     methods: {
+
+        selectTop20: function(){
+            var articles = this.getSubsetOfArticles();
+            var is_checked = this.all_selected;
+
+            this.checked_articles = [];
+            if(!is_checked)
+            {
+                for(var i = 0; i < 20; i+=1)
+                {
+                    if(i >= articles.length)
+                    {
+                        break;
+                    }
+                    this.checked_articles.push(articles[i].url_id);
+                }
+            }
+        },
+
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
         },

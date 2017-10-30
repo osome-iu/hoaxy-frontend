@@ -92,7 +92,7 @@
 
 						<div id="select_all_section">
 							<label>
-								<input type="checkbox" id="select_all" /><i class="fa fa-square-o" aria-hidden="true"></i><i class="fa fa-check-square-o" aria-hidden="true"></i>
+								<input type="checkbox" id="select_all" @change="selectTop20" :checked="all_selected" /><i class="fa fa-square-o" aria-hidden="true"></i><i class="fa fa-check-square-o" aria-hidden="true"></i>
 								<div class="rounded">
 									<span class="article_title">Select Top 20</span>
 								</div>
