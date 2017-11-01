@@ -26,21 +26,21 @@ def print_exception():
 #retrieve feedback target_user_id of all entries which have target_profile as null
 def get_null_targetprofiles():
     #first we start with top 10 to not overload the Twitter API
-    botometer_cursor.execute("SELECT target_user_id FROM feedback WHERE target_profile IS NULL LIMIT 10;")
+    botometer_cursor.execute("SELECT target_user_id FROM feedback WHERE target_profile IS NULL LIMIT 100;")
     null_profiles = botometer_cursor.fetchall()
     return(null_profiles)
 
 #retrieve feedback target_user_id of all entries which have target_timeline_tweets as null
 def get_null_targettimelinetweets():
     #first we start with top 10 to not overload the Twitter API
-    botometer_cursor.execute("SELECT target_user_id FROM feedback WHERE target_timeline_tweets IS NULL LIMIT 10;")
+    botometer_cursor.execute("SELECT target_user_id FROM feedback WHERE target_timeline_tweets IS NULL LIMIT 100;")
     null_profiles = botometer_cursor.fetchall()
     return(null_profiles)
 
 #retrieve feedback target_user_id of all entries which have target_mention_tweets as null
 def get_null_targetmentiontweets():
     #first we start with top 10 to not overload the Twitter API
-    botometer_cursor.execute("SELECT target_user_id, target_screen_name FROM feedback WHERE target_mention_tweets IS NULL LIMIT 10;")
+    botometer_cursor.execute("SELECT target_user_id, target_screen_name FROM feedback WHERE target_mention_tweets IS NULL LIMIT 100;")
     null_profiles = botometer_cursor.fetchall()
     return(null_profiles)
 
