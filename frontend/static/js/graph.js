@@ -274,7 +274,10 @@ function HoaxyGraph(options)
 			.catch(twitterResponseFail);
 			var user_mentions = twitter.getUserMentions(screen_name);
 			user_mentions.then(function(response){
-				user.mentions = response;
+                if(response.statuses)
+                    user.mentions = response.statuses;
+                else
+                    user.mentions = response;
 			}, function(){})
 			.catch(twitterResponseFail);
 
