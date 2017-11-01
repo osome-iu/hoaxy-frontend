@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 #Author: Mihai Avram, e-mail: mihai.v.avram@gmail.com
+#Note: Reused some code from https://github.com/IUNetSci/botometer-python/blob/master/botometer/__init__.py
 
 #ALL IMPORTS
 #for connecting to the database
@@ -9,8 +10,9 @@ import psycopg2
 import json
 #for error logging
 import sys, traceback
-#Importing Twitter library essentials
-from twitter import Twitter, OAuth, TwitterHTTPError, TwitterStream
+#Importing Twitter API library essentials, using tweepy for the Twitter requests
+import tweepy
+from tweepy.error import RateLimitError
 
 #for obtaining keys and passwords needed to execute the code using various tools and libraries
 keysandsecrets_json = json.load(open('iuni-twitterapi-keys-and-secrets.json'))
@@ -38,7 +40,7 @@ def get_null_targettimelinetweets():
 #retrieve feedback target_user_id of all entries which have target_mention_tweets as null
 def get_null_targetmentiontweets():
     #first we start with top 10 to not overload the Twitter API
-    botometer_cursor.execute("SELECT target_user_id FROM feedback WHERE target_mention_tweets IS NULL LIMIT 10;")
+    botometer_cursor.execute("SELECT target_user_id, target_screen_name FROM feedback WHERE target_mention_tweets IS NULL LIMIT 10;")
     null_profiles = botometer_cursor.fetchall()
     return(null_profiles)
 
@@ -73,11 +75,14 @@ if __name__ == '__main__':
     CONSUMER_KEY = keysandsecrets_json['IUNI_TWITTERAPI_CONSUMER_KEY']
     CONSUMER_SECRET = keysandsecrets_json['IUNI_TWITTERAPI_CONSUMER_SECRET']
 
-    #Accessing Twitter API using the tokens
-    oauth = OAuth(ACCESS_TOKEN, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
-
-    #Twitter Search API Instance
-    twitter = Twitter(auth=oauth)
+    #Accessing Twitter data using Tweepy and the tokens
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+    twitter_api = tweepy.API(
+            auth,
+            parser=tweepy.parsers.JSONParser(),
+            wait_on_rate_limit=True,
+    ) 
 
     #Database connection
     DB_HOST_NAME = keysandsecrets_json['DB_HOST_NAME']
@@ -90,7 +95,7 @@ if __name__ == '__main__':
     pgsqlconn = psycopg2.connect(host=DB_HOST_NAME, user=DB_USER, password=DB_PASSWORD, dbname=DB_NAME, port=DB_PORT)
     #cursor needed to execute db operations
     botometer_cursor = pgsqlconn.cursor()
-    
+          
     #POPULATING NULL PROFILES
     populated_target_userids_and_profiles = {}
     null_profiles = get_null_targetprofiles()
@@ -98,8 +103,13 @@ if __name__ == '__main__':
     #for loop on result above and retrieve null_profiles from Twitter API
     for user_id in null_profiles:
         try:
-            #User Profile query (rate-limit = 300requests/15min)
-            populated_target_userids_and_profiles[user_id[0]] = twitter.users.lookup(user_id=user_id[0])
+            try:
+                #User Profile query (rate-limit = 900requests/15min)
+                user_data = twitter_api.get_user(user_id[0])
+            except RateLimitError as e:
+                error_log_file.write("RATE LIMIT EXCEEDED FOR TWITTER API METHOD: " + "users/search" + ", UserId=" + str(user_id) + "\n")
+                break
+            populated_target_userids_and_profiles[user_id[0]] = user_data
             #Checking if the list is empty
             if not populated_target_userids_and_profiles[user_id[0]]:
                 no_profile_found_dict = {}
@@ -114,6 +124,7 @@ if __name__ == '__main__':
             
     #populate null_profiles
     populate_target_profiles_timelinetweets_mentiontweets("target_profile", populated_target_userids_and_profiles)
+
     
     #POPULATING NULL TARGET TIMELINE TWEETS
     populated_target_userids_and_targettimelinetweets = {}
@@ -122,8 +133,12 @@ if __name__ == '__main__':
     #for loop on result above and retrieve target_timeline_tweets from Twitter API
     for user_id in null_targettimelinetweets:
         try:
-            #Timeline Tweets query (rate-limit = 1500requests/15min)
-            populated_target_userids_and_targettimelinetweets[user_id[0]] = twitter.statuses.user_timeline(user_id=user_id[0], count=200)
+            try:
+                #Timeline Tweets query (rate-limit = 900requests/15min)
+                populated_target_userids_and_targettimelinetweets[user_id[0]] = twitter_api.user_timeline(user_id[0], count=200)
+            except RateLimitError as e:
+                error_log_file.write("RATE LIMIT EXCEEDED FOR TWITTER API METHOD: " + "statuses/user_timeline" + ", UserId=" + str(user_id) + "\n")
+                break
             #Checking if the list is empty
             if not populated_target_userids_and_targettimelinetweets[user_id[0]]:
                 no_timeline_tweets_found_dict = {}
@@ -138,26 +153,35 @@ if __name__ == '__main__':
             
     #populate timeline_tweets
     populate_target_profiles_timelinetweets_mentiontweets("target_timeline_tweets", populated_target_userids_and_targettimelinetweets)
-        
+
+    
     #POPULATING NULL TARGET MENTION TWEETS
     populated_target_userids_and_targetmentiontweets = {}
     null_targetmentiontweets = get_null_targetmentiontweets()
     
     #for loop on result above and retrieve target_mention_tweets from Twitter API
-    for user_id in null_targetmentiontweets:
-        try:
-            #Mention Tweets query (rate-limit = 75requests/15min)
-            populated_target_userids_and_targetmentiontweets[user_id[0]] = twitter.statuses.mentions_timeline(user_id=user_id[0], count=200)
+    for user_id, screen_name in null_targetmentiontweets:
+        try: 
+            at_screen_name = '@' + screen_name
+            try:
+                #Search Tweets query (rate-limit = 180requests/15min)
+                user_search = twitter_api.search(at_screen_name, count=100)
+                            
+            except RateLimitError as e:
+                error_log_file.write("RATE LIMIT EXCEEDED FOR TWITTER API METHOD: " + "search/tweets" + ", UserId=" + str(user_id) + "\n")
+                break
+            
+            populated_target_userids_and_targetmentiontweets[user_id] = user_search['statuses']                           
             #Checking if list is empty
-            if not populated_target_userids_and_targetmentiontweets[user_id[0]]:
+            if not populated_target_userids_and_targetmentiontweets[user_id]:
                 no_mention_tweets_found_dict = {}
                 no_mention_tweets_found_dict['no-mention-tweets-found'] = 'There were no mention tweets available at the time when this user was reported'
-                populated_target_userids_and_targetmentiontweets[user_id[0]] = no_mention_tweets_found_dict
+                populated_target_userids_and_targetmentiontweets[user_id] = no_mention_tweets_found_dict
         except:
-            error_log_file.write("USER MENTION TIMELINE NOT BE RETRIEVED, " + "UserId=" + str(user_id[0]) + ", Error=" + str(sys.exc_info()[0]) + "\n")
+            error_log_file.write("USER MENTION TIMELINE COULD NOT BE RETRIEVED, " + "UserId=" + str(user_id) + ", Error=" + str(sys.exc_info()[0]) + "\n")
             no_mention_tweets_found_dict = {}
             no_mention_tweets_found_dict['no-mention-tweets-found'] = 'There were no mention tweets available at the time when this user was reported'
-            populated_target_userids_and_targetmentiontweets[user_id[0]] = no_mention_tweets_found_dict
+            populated_target_userids_and_targetmentiontweets[user_id] = no_mention_tweets_found_dict
             continue
 
     #populate mention_tweets
