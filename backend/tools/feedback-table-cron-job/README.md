@@ -19,7 +19,9 @@
 
 2. Create a python environment using `conda create` if needed, then create a `.sh` shell script that executes the `FetchAndUpdateFeedback_ProfilesTimelinesMentions.py` script using that given python environment.
 
-3. Create a Cron job that executes the `FetchAndUpdateFeedback_ProfilesTimelinesMentions.sh` file every 20 minutes i.e. and filling the `<>` parameters
+3. In the conda environment install any dependencies that the `FetchAndUpdateFeedback_ProfilesTimelinesMentions.py` script may need to use (see import statements at the top of the script) such as `tweepy` or `psycopg2`. You may install these dependencies with `pip install <dependency-list>` i.e. `pip install tweepy psycopg2`.
+
+4. Create a Cron job that executes the `FetchAndUpdateFeedback_ProfilesTimelinesMentions.sh` file every 20 minutes i.e. and filling the `<>` parameters
 
 `*/20 * * * * <user> /<path_to_this_file>/FetchAndUpdateFeedback_ProfilesTimelinesMentions.sh`
 
