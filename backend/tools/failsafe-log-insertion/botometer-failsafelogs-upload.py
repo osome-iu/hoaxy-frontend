@@ -59,6 +59,30 @@ def botscore_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, 
         pgsqlconn.rollback()
         raise
 
+
+def check_for_feedback_duplicates(source_user_id, target_user_id, time_stamp):
+    try:
+        botbase_cursor.execute("""SELECT COUNT(*) FROM public.feedback WHERE source_user_id=%s AND target_user_id=%s AND time_stamp=to_timestamp(%s);""", (source_user_id, target_user_id, time_stamp))
+        duplicate_num = botbase_cursor.fetchone()
+        return(duplicate_num[0])
+    except:
+        #raising to top handler in main
+        print_exception()
+        raise
+    
+def check_for_botscore_duplicates(user_id, time_stamp, requester_ip):
+    try:
+        botbase_cursor.execute("""SELECT COUNT(*) FROM public.botscore WHERE user_id=%s AND time_stamp=to_timestamp(%s) AND requester_ip=%s;""", (user_id, time_stamp, requester_ip))
+        duplicate_num = botbase_cursor.fetchone()
+        return(duplicate_num[0])
+    except:
+        #raising to top handler in main
+        print_exception()
+        raise
+
+
+
+    
 #GLOBAL VARIABLES
 total_number_of_lines_parsed = 0
 errors_and_informational_count = 0
@@ -68,9 +92,13 @@ non_proper_feedback_log_count = 0
 non_proper_botscore_log_count = 0
 feedback_records_committed = 0
 feedback_fail_commits = 0
+feedback_failed_lookups = 0 
+feedback_duplicates_found = 0
 botscore_records_found = 0
 botscore_records_committed = 0
 botscore_fail_commits = 0
+botscore_failed_lookups = 0 
+botscore_duplicates_found = 0
 json_with_no_type_count = 0
 failed_to_retrieve_proper_fields_count = 0
 
@@ -159,33 +187,47 @@ if __name__ == '__main__':
                     target_profile = json.loads(line_json['target_profile'])
                     target_profile = json.dumps(target_profile)
                 except:                                               
-                    target_profile = {}                                                             |                    target_profile['no-profile-found'] = 'No profile was available at the time when this user was reported' 
+                    target_profile = {}
+                    target_profile['no-profile-found'] = 'No profile was available at the time when this user was reported' 
                     target_profile = json.dumps(target_profile)          
                 try:
                     target_timeline_tweets = json.loads(line_json['target_timeline_tweets'])
                     target_timeline_tweets = json.dumps(target_timeline_tweets)
                 except:
-                    target_timeline_tweets = {}                                                                          target_timeline_tweets['no-timeline-tweets-found'] = 'There were no timeline tweets available at the time when this user was reported'                                                                    target_timeline_tweets = json.dumps(target_timeline_tweets)                
+                    target_timeline_tweets = {}
+                    target_timeline_tweets['no-timeline-tweets-found'] = 'There were no timeline tweets available at the time when this user was reported'
+                    target_timeline_tweets = json.dumps(target_timeline_tweets)                
                 try:
                     target_mention_tweets = json.loads(line_json['target_mention_tweets'])
                     target_mention_tweets = json.dumps(target_mention_tweets)
                 except:
                     target_mention_tweets = {}                                                       
                     target_mention_tweets['no-mention-tweets-found'] = 'There were no mention tweets available at the time when this user was reported'   
-                    target_mention_tweets = json.dumps(target_mention_tweets
+                    target_mention_tweets = json.dumps(target_mention_tweets)
                 try:
                     target_reported_botscores = json.loads(line_json['target_reported_botscores']) 
                     target_reported_botscores = json.dumps(target_reported_botscores)
                 except:
                     target_reported_botscores = None 
-                #attempting to commit feedback record
+
+                #check if this feedback record has not already been committed before
                 try:
-                    feedback_insertion_script(source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label, \
-                                  feedback_text, target_profile, target_timeline_tweets, target_mention_tweets, target_reported_botscores)
-                    feedback_records_committed = feedback_records_committed + 1
+                    feedback_duplicates_exist = check_for_feedback_duplicates(source_user_id, target_user_id, time_stamp)
+                    if feedback_duplicates_exist:
+                        feedback_duplicates_found = feedback_duplicates_found + 1
+                        continue
+                    else:
+                        #attempting to commit feedback record
+                        try:
+                            feedback_insertion_script(source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label, \
+                            feedback_text, target_profile, target_timeline_tweets, target_mention_tweets, target_reported_botscores)
+                            feedback_records_committed = feedback_records_committed + 1
+                        except:
+                            error_log_file.write("DB FEEDBACK INSERTION ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                            feedback_fail_commits = feedback_fail_commits + 1
                 except:
-                    error_log_file.write("DB FEEDBACK INSERTION ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
-                    feedback_fail_commits = feedback_fail_commits + 1                         
+                    error_log_file.write("DB FEEDBACK DUPLICATE LOOKUP ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                    feedback_failed_lookups = feedback_failed_lookups + 1                                                       
 
             #handling of botscore logs
             if line_json["type"] == "log":     
@@ -246,14 +288,25 @@ if __name__ == '__main__':
                 except:
                     num_requests = 0
                     
-                #attempting to commit botscore record
+                #check if this botscore has not already been committed before
                 try:
-                    botscore_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, \
+                    botscore_duplicates_exist = check_for_botscore_duplicates(user_id, time_stamp, requester_ip)
+                    if botscore_duplicates_exist:
+                        botscore_duplicates_found = botscore_duplicates_found + 1
+                        continue
+                    else:
+                        #attempting to commit botscore record
+                        try:
+                            botscore_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, \
                                   bot_score_universal, requester_ip, tweets_per_day, num_submitted_timeline_tweets, num_submitted_mention_tweets, num_requests)
-                    botscore_records_committed = botscore_records_committed + 1
+                            botscore_records_committed = botscore_records_committed + 1
+                        except:
+                            error_log_file.write("DB BOTSCORE INSERTION ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                            botscore_fail_commits = botscore_fail_commits + 1  
                 except:
-                    error_log_file.write("DB BOTSCORE INSERTION ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
-                    botscore_fail_commits = botscore_fail_commits + 1  
+                    error_log_file.write("DB BOTSCORE DUPLICATE LOOKUP ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                    botscore_failed_lookups = botscore_failed_lookups + 1
+
         print("Finished importing log: ", log)
         sys.stdout.flush()
 
@@ -279,10 +332,12 @@ if __name__ == '__main__':
     print("feedback-records-successfully-committed: ",feedback_records_committed) 
     print("non-proper-feedback-log-count: ",non_proper_feedback_log_count)  
     print("feedback-logs-failed-to-be-committed: ",feedback_fail_commits)  
+    print("feedback-failed-duplicate-lookups: ",feedback_failed_lookups)
+    print("feedback-duplicates-found-which-were-not-re-committed: ",feedback_duplicates_found)
     print("botscore-records-found: ",botscore_records_found)     
     print("botscore-records-successfully-committed: ",botscore_records_committed) 
     print("non-proper-botscore-log-count: ",non_proper_botscore_log_count)  
     print("botscore-logs-failed-to-be-committed: ",botscore_fail_commits)      
-
-
+    print("botscore-failed-duplicate-lookups: ",botscore_failed_lookups)
+    print("botscore-duplicates-found-which-were-not-re-committed: ",botscore_duplicates_found)
 
