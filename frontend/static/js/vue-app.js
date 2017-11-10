@@ -435,15 +435,16 @@ var app = new Vue({
         },
         sendFeedbackData: function()
         {
-            var feedback = {
-                screen_name: this.node_modal_content.screenName,
-                user_id: this.graph.botscores()[this.node_modal_content.screenName].user_id,
+            var feedback = var feedback = {
+                source_user_id: this.twitter_account_info.id,
+                target_user_id: this.graph.botscores()[this.node_modal_content.screenName].user_id,
+                target_screen_name: this.node_modal_content.screenName,
+                feedback_label: this.feedback_form.type,
+                feedback_text: this.feedback_form.comment,
+
+                botscore_computed_time: this.node_modal_content.timestamp,
                 reported_botscore: this.node_modal_content.botscore,
-                type: this.feedback_form.type,
-                description: this.feedback_form.comment,
-                score_time: this.node_modal_content.timestamp,
-                reporter_user_id: this.twitter_account_info.id,
-                reporter_screen_name: this.twitter_account_info.screen_name,
+                source_screen_name: this.twitter_account_info.screen_name,
             };
             this.feedback_form.type = "";
             this.feedback_form.comment = "";
