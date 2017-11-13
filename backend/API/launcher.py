@@ -131,12 +131,16 @@ def getScores():
     if request.method == "GET":
         user_ids_query = request.args.get("user_id")
         user_names_query = request.args.get("screen_name")
+        if (not user_ids_query) and (not user_names_query):
+            return jsonify({'success': False}), 400
     elif request.method == "POST":
         query_file = request.get_json()
         user_ids_query = query_file.get("user_id")
         user_names_query = query_file.get("screen_name")
+        if (not user_ids_query) and (not user_names_query):
+            return jsonify({'success': False}), 400
     else:
-        return jsonify(None)
+        return jsonify({'success': False}), 405
 
     # load the config file
     config_file = configparser.ConfigParser()
@@ -235,7 +239,6 @@ def insertFeedback():
         except Exception as e:
             print(e)
             return jsonify({'success': False}), 400
-
 
     return jsonify({'success': False}), 405
 
