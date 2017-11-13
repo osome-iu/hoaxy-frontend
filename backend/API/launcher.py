@@ -13,27 +13,18 @@ botscore_engine = sqlalchemy.create_engine(connection_string)
 botscore_connection = botscore_engine.connect()
 
 
-def dbQueryUserID(user_ids):
+def dbQueryUserIDIn(user_ids):
     result = botscore_connection.execute(
         sqlalchemy.text(
             """
-            WITH temptable AS (
-                SELECT id, ids.user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
-                FROM botscore
-                JOIN UNNEST(:user_ids) AS ids(user_id) ON botscore.user_id = ids.user_id
-            )
-            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
-            FROM temptable
-            JOIN (
-                SELECT temptable.user_id AS latest_user_id, max(time_stamp) AS latesttimestamp
-                FROM temptable
-                GROUP BY temptable.user_id
-            ) AS latesttable
-            ON temptable.user_id = latesttable.latest_user_id AND temptable.time_stamp = latesttable.latesttimestamp
+            SELECT DISTINCT ON (user_id) id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
+            FROM botscore
+            WHERE user_id IN :user_ids
+            ORDER BY user_id, time_stamp DESC
             """
         ),
         {
-            "user_ids": user_ids
+            "user_ids": tuple(user_ids)
         }
     )
     return result
@@ -51,32 +42,6 @@ def dbQueryUserScreenNameIn(user_names):
         ),
         {
             "screen_names": tuple(user_names)
-        }
-    )
-    return result
-
-
-def dbQueryUserScreenName(user_names):
-    result = botscore_connection.execute(
-        sqlalchemy.text(
-            """
-            WITH temptable AS (
-                SELECT id, user_id, names.screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
-                FROM botscore
-                JOIN UNNEST(:screen_names) AS names(screen_name) ON botscore.screen_name = names.screen_name
-            )
-            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
-            from temptable
-            JOIN (
-                SELECT temptable.screen_name AS latest_user_screen_name, max(time_stamp) AS latesttimestamp
-                FROM temptable
-                GROUP BY temptable.screen_name
-            ) AS latesttable
-            ON temptable.screen_name = latesttable.latest_user_screen_name AND temptable.time_stamp = latesttable.latesttimestamp
-            """
-        ),
-        {
-            "screen_names": user_names
         }
     )
     return result
@@ -171,7 +136,7 @@ def getScores():
         elif isinstance(user_ids_query, str):
             user_ids = list(map(int, user_ids_query.split(",")))
         total_request_number += len(user_ids)
-        db_results += dbQueryUserID(user_ids)
+        db_results += dbQueryUserIDIn(user_ids)
 
     t2 = time.time()
     print("Done parsing the query, start to SQL, %.4f" % (t2-t1))
