@@ -8,6 +8,9 @@ createDB:
 createTB:
 	psql -U postgres -f CreateTablesScript.sql -d botometer
 
+createFeedbackTB:
+	psql -U postgres -f FeedbackTableCreation.sql -d botometer
+
 insertData:
 	psql -U postgres -f InitialBasicDataInsertionScript.sql -d botometer
 
