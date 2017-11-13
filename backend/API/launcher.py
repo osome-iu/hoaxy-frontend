@@ -73,6 +73,21 @@ def dbIncreaseNumRequests(id_list):
     )
 
 
+def dbInsertFeedback(feedback):
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            INSERT INTO public.feedback(source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label,
+                feedback_text, target_profile, target_timeline_tweets, target_mention_tweets)
+            VALUES (:source_user_id, :target_user_id, :target_screen_name, :time_stamp, :feedback_label,
+                :feedback_text, :target_profile, :target_timeline_tweets, :target_mention_tweets)
+            """
+        ),
+        feedback
+    )
+    return result
+
+
 def getUserRecordStatus(user_entry, tweets_per_day, num_requests, config_file):
     if user_entry["timestamp"]:
         timedelta_age = datetime.now() - user_entry["timestamp"].replace(tzinfo=None)
@@ -204,6 +219,25 @@ def getScores():
 
     return jsonify(response)
 
+
+@api.route("/api/feedback", methods=["POST"])
+def insertFeedback():
+    """
+    The feedback insertion endpoint.
+    """
+    if request.method == "POST":
+        try:
+            feedback = request.get_json()
+
+            dbInsertFeedback(feedback)
+            # process the feedback
+            return jsonify({'success': True}), 201
+        except Exception as e:
+            print(e)
+            return jsonify({'success': False}), 400
+
+
+    return jsonify({'success': False}), 405
 
 if __name__ == "__main__":
     api.run(debug=True, port=6060)
