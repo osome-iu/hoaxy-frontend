@@ -47,7 +47,7 @@ def dbQueryUserScreenNameIn(user_names):
     return result
 
 
-def increaseNumRequest(id):
+def dbIncreaseNumRequest(id):
     botscore_connection.execute(
         sqlalchemy.text(
             """
@@ -60,7 +60,7 @@ def increaseNumRequest(id):
     )
 
 
-def increaseNumRequests(id_list):
+def dbIncreaseNumRequests(id_list):
     botscore_connection.execute(
         sqlalchemy.text(
             """
@@ -196,7 +196,7 @@ def getScores():
     t4 = time.time()
     print("Done return, %.4f" % (t4-t3))
 
-    increaseNumRequests(user_to_update)
+    dbIncreaseNumRequests(user_to_update)
 
     t5 = time.time()
 
