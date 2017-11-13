@@ -14,11 +14,12 @@ CREATE TABLE public.botscore
   tweets_per_day real,
   num_submitted_timeline_tweets integer,
   num_submitted_mention_tweets integer,
-  num_requests integer,
+  num_requests integer
 )
 WITH (
   OIDS=FALSE
 );
+
 ALTER TABLE public.botscore
   OWNER TO botometer;
 -- Index: public.botscore_ix_botscoreenglish
