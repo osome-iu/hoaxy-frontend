@@ -435,7 +435,7 @@ var app = new Vue({
         },
         sendFeedbackData: function()
         {
-            var feedback = var feedback = {
+            var feedback = {
                 source_user_id: this.twitter_account_info.id,
                 target_user_id: this.graph.botscores()[this.node_modal_content.screenName].user_id,
                 target_screen_name: this.node_modal_content.screenName,
