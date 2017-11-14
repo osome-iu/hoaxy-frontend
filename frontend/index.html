@@ -122,86 +122,100 @@
  #     # #####  ###### #####  #    #      #
  #     # #   #  #    # #      #    # #    #
   #####  #    # #    # #      #    #  ####
- -->
-		<section id="graphs" v-bind:class="{'hidden': !show_graphs}" class="container-fluid row no-gutters">
-			<div class="col-12 text-center">
-				<button id=""  :disabled="graph_column_size >= 12"  class="layout-button layout-button-timeline btn btn-primary" @click="resizeGraphs(12)"><span><i class="fa fa-line-chart" aria-hidden="true"></i></span></button>
-				<button id=""  :disabled="graph_column_size == 3"  class="layout-button layout-button-split btn btn-primary" @click="resizeGraphs(3)"><span><i class="fa fa-line-chart" aria-hidden="true"></i></span><span><i class="fa fa-share-alt" aria-hidden="true"></i></span></button>
-				<button id=""  :disabled="graph_column_size <= 0"  class="layout-button layout-button-graph btn btn-primary" @click="resizeGraphs(0)"><span><i class="fa fa-share-alt" aria-hidden="true"></i><i class="fa fa-rotate-270 fa-share-alt" aria-hidden="true"></i></span></button>
+-->
+    <section id="graphs" v-bind:class="{'hidden': !show_graphs}" class="container-fluid row no-gutters">
+
+
+
+        <div id="timeline"
+            class="col-12 card"
+            :style="graph_column_size <= 0 ? 'display: none' : ''"
+            :class="'col-md-' + (graph_column_size === 12? 11: graph_column_size )">
+            <p class="text-center">Timeline</p>
+            <div id="chart" style="width: 100%; height: 80vh; margin: 0 auto;" >
+                <svg></svg>
+            </div>
+            <!-- <div id="focus_label" class="text-center">Click and drag below to select time interval</div> -->
+        </div>
+
+        <div class="col-md-1 col-12 text-center">
+            <div class="d-none d-md-block">
+				<p class="m-0 text-center">Layout</p>
+	            <button id=""  :disabled="graph_column_size >= 12"  class="layout-button layout-button-timeline btn btn-primary" @click="resizeGraphs(12)"><span><i class="fa fa-line-chart" aria-hidden="true"></i></span></button>
+	            <button id=""  :disabled="graph_column_size == 3"  class="layout-button layout-button-split btn btn-primary" @click="resizeGraphs(3)"><span><i class="fa fa-line-chart" aria-hidden="true"></i></span><span><i class="fa fa-share-alt" aria-hidden="true"></i></span></button>
+	            <button id=""  :disabled="graph_column_size <= 0"  class="layout-button layout-button-graph btn btn-primary" @click="resizeGraphs(0)"><span><i class="fa fa-share-alt" aria-hidden="true"></i><i class="fa fa-rotate-270 fa-share-alt" aria-hidden="true"></i></span></button>
 			</div>
-			<div class="col-md-12 text-center" id="legend">
-				<label><span class="line claim_label">&nbsp;</span> Claims</label>
-				<label><span class="line fact_checking_label">&nbsp;</span> Fact-Checks</label>
+			<div class="mt-3 text-center" id="legend">
+				<label><span class="line claim_label">&nbsp;</span><br /> Claims</label>
+				<label><span class="line fact_checking_label">&nbsp;</span><br /> Fact-Checks</label>
 			</div>
+		</div>
 
+        <div id="sigmagraph"
+            class="col-12 card"
+            :style="graph_column_size >= 12 ? 'display: none' : ''"
+            :class="'col-md-' + (12-graph_column_size-1)">
 
-			<div id="timeline"  :style="graph_column_size <= 0 ? 'display: none' : ''" class="col-12"  :class="'col-md-' + (graph_column_size)">
-				<div id="chart" style="width: 100%; height: 80vh; margin: 0 auto;" >
-					<svg></svg>
+            <p class="text-center">Network</p>
+            <div id="graph_error" class="p-5 d-flex flex-column justify-content-center" v-if="failed_to_get_network">
+                There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
+            </div>
+            <div id="graph-container" style="width: 100%; height: 80vh; margin: 0 auto;">
+
+            </div>
+            <div  v-if="show_zoom_buttons" id="graph_help_text">
+                Click on network nodes and edges for details.
+            </div>
+
+	        <div class="d-flex-inline flex-column align-items-end " id="zoom_buttons" v-if="show_zoom_buttons">
+
+				<div class="bg-light rounded p-2">
+					<div class="d-flex flex-row justify-content-center ">
+
+		                <button class="btn btn-primary ml-1 mr-1" type="button" value ="-" id="zoom-out" v-if="show_zoom_buttons" @click="zoomOutGraph"><i class="fa fa-minus" aria-hidden="true"></i></button>
+		                <button class="btn btn-primary ml-1 mr-1" type="button" value ="+" id="zoom-in" v-if="show_zoom_buttons" @click="zoomInGraph"><i class="fa fa-plus" aria-hidden="true"></i></button>
+		            </div>
+		            <div class="mt-2 text-center">
+		                <button v-if="!getting_bot_scores.running" @click.stop.prevent="getMoreBotScores" class="btn btn-primary" id="">Update Bot Scores</button>
+		                <button v-if="getting_bot_scores.running" disabled class="disabled btn btn-primary" id="">Fetching Scores...</button>
+		                <div class="text-right pt-1">
+		                    <div>{{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.</div>
+		                    <div v-if="graph.score_stats.found > 0">{{graph.score_stats.found - graph.score_stats.old}} {{graph.score_stats.found - graph.score_stats.old == 1?'is':'are'}} fresh.</div>
+		                    <div v-if="graph.score_stats.unavailable > 0">{{graph.score_stats.unavailable}} could not be updated.</div>
+		                    <!-- <div><small v-if="getting_bot_scores.running"></small></div> -->
+		                </div>
+		            </div>
 				</div>
-				<div id="focus_label" class="text-center">Click and drag below to select time interval</div>
 
-				<!-- <button id="shrink_left_button" class="btn btn-primary" :disabled="graph_column_size <= 0" @click="shrinkTimeline">&lt;</button> -->
-
-			</div>
-
-
-			<div class="col-12" id="sigmagraph" :style="graph_column_size >= 12 ? 'display: none' : ''" :class="'col-md-' + (12-graph_column_size)">
-
-
-				<div id="graph_error" class="p-5 d-flex flex-column justify-content-center" v-if="failed_to_get_network">
-					There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
-				</div>
-				<div id="graph-container" style="width: 100%; height: 80vh; margin: 0 auto;">
-
-				</div>
-				<div  v-if="show_zoom_buttons" id="graph_help_text">
-					Click on network nodes and edges for details.
-				</div>
-				<div  v-if="show_zoom_buttons" id="bot_legend" class="d-flex align-items-center justify-content-center flex-column">
-					<div class="likely_bot">Likely Bot</div>
+				<div  v-if="show_zoom_buttons" id="bot_legend" class="text-right p-2">
 					<div
-						class=""
+						class="rounded"
 						id="bot_legend_gradient"
 						:style="
-							'background: linear-gradient(to top, rgb('
-							+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ') 0%, rgb('
-							+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ') 20%, rgb('
-							+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ',' + colors.node_colors.botscores[3].blue + ') 20%, rgb('
-							+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ',' + colors.node_colors.botscores[3].blue + ') 40%, rgb('
-							+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ',' + colors.node_colors.botscores[2].blue + ') 40%, rgb('
-							+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ',' + colors.node_colors.botscores[2].blue + ') 60%, rgb('
-							+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ',' + colors.node_colors.botscores[1].blue + ') 60%, rgb('
-							+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ',' + colors.node_colors.botscores[1].blue + ') 80%, rgb('
-							+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ') 80%, rgb('
-							+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ') 100%)'"
+						'background: linear-gradient(to left, rgb('
+						+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ') 0%, rgb('
+						+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ') 20%, rgb('
+						+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ',' + colors.node_colors.botscores[3].blue + ') 20%, rgb('
+						+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ',' + colors.node_colors.botscores[3].blue + ') 40%, rgb('
+						+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ',' + colors.node_colors.botscores[2].blue + ') 40%, rgb('
+						+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ',' + colors.node_colors.botscores[2].blue + ') 60%, rgb('
+						+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ',' + colors.node_colors.botscores[1].blue + ') 60%, rgb('
+						+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ',' + colors.node_colors.botscores[1].blue + ') 80%, rgb('
+						+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ') 80%, rgb('
+						+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ') 100%)'"
 						>
 
-					</div>
-					<div class="likely_human">Likely Human</div>
+						<div class="likely_bot">Likely Bot</div>
+						<div class="likely_human">Likely Human</div>
+						</div>
 				</div>
-				<div id="zoom_buttons" v-if="show_zoom_buttons">
-					<div class="float-left">
-						<button v-if="!getting_bot_scores.running" @click.stop.prevent="getMoreBotScores" class="mr-2 float-left btn btn-primary" id="">Update Bot Scores</button>
-	                    <button v-if="getting_bot_scores.running" disabled class="mr-2 float-left disabled btn btn-primary" id="">Fetching Scores...</button>
-	                    <!-- <button v-if="twitter_account_info.id" @click.stop.prevent="twitterLogOut()" class="btn btn-primary" id="un_authenticate_button">Disable Twitter</button> -->
-						<small>{{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.</small>
-                        <small v-if="graph.score_stats.found > 0">{{graph.score_stats.found - graph.score_stats.old}} {{graph.score_stats.found - graph.score_stats.old == 1?'is':'are'}} fresh.</small>
-                        <div><small v-if="graph.score_stats.unavailable > 0">{{graph.score_stats.unavailable}} could not be updated.</small></div>
-						<!-- <div><small v-if="getting_bot_scores.running"></small></div> -->
-					</div>
-					<div class="float-right">
-
-						<button class="btn btn-primary" type="button" value ="-" id="zoom-out" v-if="show_zoom_buttons" @click="zoomOutGraph"><i class="fa fa-minus" aria-hidden="true"></i></button>
-						<button class="btn btn-primary" type="button" value ="+" id="zoom-in" v-if="show_zoom_buttons" @click="zoomInGraph"><i class="fa fa-plus" aria-hidden="true"></i></button>
-					</div>
-
-				</div>
-				<!-- <button id="shrink_right_button"  :disabled="graph_column_size >= 12"  class="btn btn-primary" @click="shrinkGraph">&gt;</button> -->
-			</div>
+	        </div>
+		</div>
+    <!-- <button id="shrink_right_button"  :disabled="graph_column_size >= 12"  class="btn btn-primary" @click="shrinkGraph">&gt;</button> -->
+    </div>
 
 
-		</section>
+    </section>
 
 
 
