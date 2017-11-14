@@ -441,11 +441,27 @@ var app = new Vue({
                 target_screen_name: this.node_modal_content.screenName,
                 feedback_label: this.feedback_form.type,
                 feedback_text: this.feedback_form.comment,
+                target_profile: null,
+                target_timeline_tweets: null,
+                target_mention_tweets: null,
+                time_stamp: new Date(),
 
                 botscore_computed_time: this.node_modal_content.timestamp,
                 reported_botscore: this.node_modal_content.botscore,
                 source_screen_name: this.twitter_account_info.screen_name,
             };
+
+            var prom = axios({
+                method: "POST",
+                url: configuration.feedback_url,
+                data: feedback
+            })
+            .then(function(response){
+                console.debug(response.data);
+            }, function(error){
+                console.debug(error);
+            });
+
             this.feedback_form.type = "";
             this.feedback_form.comment = "";
             console.debug(feedback);

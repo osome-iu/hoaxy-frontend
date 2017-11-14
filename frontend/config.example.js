@@ -33,9 +33,10 @@ configuration = function(){
 		"Accept": "application/json"
 	};
 
-	obj.botcache_url = "https://example.com";
+	obj.botcache_url = "https://example.com/api/scores";
+	obj.feedback_url = "https://example.com/api/feedback";
 
-    obj.twitter_key = "";
+	obj.twitter_key = "";
 
 
 	return obj;
