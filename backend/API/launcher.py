@@ -192,8 +192,4 @@ def getScores():
 
 
 if __name__ == "__main__":
-<<<<<<< HEAD
     api.run(debug=True, port=6060)
-=======
-    api.run(debug=True, host="192.168.33.10", port=5000)
->>>>>>> vue
