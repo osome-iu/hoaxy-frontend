@@ -169,6 +169,26 @@ li
     white-space: nowrap;
     line-height: 1;
 }
+.graph_legend
+{
+    position: relative;
+    /*z-index: 11;*/
+}
+.graph_legend > div
+{
+    position: relative;
+}
+.bg-light.bg-semi-transparent
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    opacity: .8;
+    /*z-index: 10;*/
+}
 
 /*#bot_legend
 {
@@ -412,6 +432,11 @@ input:not(:checked) + .check_icons > .fa-square-o
     top: 1rem;
     right: 1rem;
 }*/
+#legend label
+{
+    display: block;
+    margin: 0 auto;
+}
 
 .layout-button
 {
@@ -419,6 +444,9 @@ input:not(:checked) + .check_icons > .fa-square-o
     /*line-height: 2rem;*/
     vertical-align: middle;
     font-size: .75rem;
+    display: block;
+    margin: 1rem auto;
+
 }
 .layout-button span i
 {
