@@ -405,6 +405,23 @@ var app = new Vue({
             );
             return graph_request;
         },
+        getTwitterSearchResults: function(query){
+            // In this particular case we are obtaining the query as a string, i.e. "cute kitties" and not "cute" and "kitties" separately
+            // Hence we need to convert the query into a quote-string URI i.e. cute%23kitties
+            var query_string = query.replace(" ","%23");
+            // Sending request to getTweets endpoint in tweets.js code-file
+            tweetsReponse = this.twitter.getTweets(query_string);
+            // Handling the getTweets response
+            tweetsReponse.then(function(response){
+              console.log("TWEETS RESPONSE SUCCESSFUL:");
+              console.log(response);
+            }, function(){})
+            .catch(function(error){
+              console.log("TWEETS RESPONSE ERROR:");
+              console.log(error);
+            });
+            return "LEFT TO DO";
+        },
 
 
 
@@ -577,20 +594,22 @@ var app = new Vue({
         		this.spinStop();
       	  }
       	  else {
-        		this.show_articles = false;
+            this.show_articles = false;
         		this.show_graphs = false;
-        		this.checked_articles = [];
+        		// this.checked_articles = [];
         		// $("#select_all").prop("checked", false);
-        		if(!this.query_text || this.query_text.startsWith("http"))
+        		if(!this.query_text)
         		{
-              this.displayError("You must input a URL.");
+              this.displayError("You must input a valid search query.");
               this.spinStop(true);
               return false;
         		}
+            var response = this.getTwitterSearchResults(this.query_text);
+            console.log("FINISHED:" + response);
         		//this.changeURLParams();
         		//this.getArticles(dontScroll);
         		this.spinStop();
-        	}
+      	  }
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
