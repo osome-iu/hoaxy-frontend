@@ -149,8 +149,8 @@ var app = new Vue({
                 "Organization":"organization"
             }
         },
-
-        colors: colors
+        colors: colors,
+        searchBy: 'hoaxy'
     },
     computed: {
     },
@@ -560,21 +560,37 @@ var app = new Vue({
             var p = this.twitter.logOut();
             this.twitter_account_info = {};
         },
-
         submitForm: function(dontScroll){
-            this.show_articles = false;
-            this.show_graphs = false;
-            this.checked_articles = [];
-            // $("#select_all").prop("checked", false);
-            if(!this.query_text)
-            {
-                this.displayError("You must input a claim.");
-                this.spinStop(true);
-                return false;
-            }
-            this.changeURLParams();
-            this.getArticles(dontScroll);
-            this.spinStop();
+    	    if(this.searchBy == 'hoaxy') {
+        		this.show_articles = false;
+        		this.show_graphs = false;
+        		this.checked_articles = [];
+        		// $("#select_all").prop("checked", false);
+        		if(!this.query_text)
+        		{
+              this.displayError("You must input a claim.");
+              this.spinStop(true);
+              return false;
+        		}
+        		this.changeURLParams();
+        		this.getArticles(dontScroll);
+        		this.spinStop();
+      	  }
+      	  else {
+        		this.show_articles = false;
+        		this.show_graphs = false;
+        		this.checked_articles = [];
+        		// $("#select_all").prop("checked", false);
+        		if(!this.query_text || this.query_text.startsWith("http"))
+        		{
+              this.displayError("You must input a URL.");
+              this.spinStop(true);
+              return false;
+        		}
+        		//this.changeURLParams();
+        		//this.getArticles(dontScroll);
+        		this.spinStop();
+        	}
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;

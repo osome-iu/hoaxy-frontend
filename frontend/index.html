@@ -35,13 +35,25 @@
 			<form @submit.stop.prevent="submitForm()">
 				<div class="container">
 					<div class="col-12 form-group text-center">
-						<input id="query" class="form-control" type="text " v-model="query_text"  :disabled="input_disabled" />
+						<div class="col-12 text-center form-group">
+							<span class="radio-container">
+								<label class="">Search Using:
+									<input v-model="searchBy" type="radio" name="search_type" id='search_type_phrase' value="hoaxy" /> Hoaxy
+								</label>
+							</span>
+							<span class="radio-container">
+								<label class="">
+									<input v-model="searchBy" type="radio" name="search_type" id="search_type_url" value="twitter_search_api" /> Twitter Search API
+								</label>
+							</span>
+						</div>
+					  <input id="query" class="form-control" type="text " v-model="query_text"  :disabled="input_disabled" />
 
 					</div>
 
 					<div class="col-12 text-center form-group">
 						<span class="radio-container">
-							<label class="">
+							<label class="">Show:
 								<input v-model="query_sort" type="radio" name="sort_by" id='sort_by_relevant' checked value="relevant"  :disabled="input_disabled" /> Relevant
 							</label>
 						</span>
