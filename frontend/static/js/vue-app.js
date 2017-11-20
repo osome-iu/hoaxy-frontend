@@ -1,7 +1,7 @@
 var max_articles = 20;
 
 var TWEET_URL = "https://twitter.com/%0/status/%1";
-// var debug = true;
+var debug = false; //true;
 var colors = {
     node_colors : {
         "fact_checking" : 'darkblue',
