@@ -1,7 +1,7 @@
 var max_articles = 20;
 
 var TWEET_URL = "https://twitter.com/%0/status/%1";
-
+var debug = true;
 var colors = {
     node_colors : {
         "fact_checking" : 'darkblue',
@@ -153,6 +153,13 @@ var app = new Vue({
         colors: colors
     },
     computed: {
+        animationPlaying: function(){
+            if(!this.graph)
+            {
+                return false;
+            }
+            return this.graph.playing();
+        }
     },
 
     // #     #
@@ -230,8 +237,10 @@ var app = new Vue({
             clearTimeout(this.spin_timer);
             this.spin_timer = setTimeout(function(){
                 v.displayError("The app is taking too long to respond.  Please try again later.");
+                console.debug(v.spin_key_table);
                 v.spin_key_table.length = 0;
                 v.spinStop();
+
             }, 90000);
         },
 
@@ -280,6 +289,13 @@ var app = new Vue({
                     if(!dontScroll)
                     {
                         v.scrollToElement("articles");
+                    }
+
+                    if(debug)
+                    {
+                        v.checked_articles.push(v.articles[0].url_id);
+                        v.getTimeline(v.checked_articles);
+                        v.getNetwork(v.checked_articles);
                     }
 
                     v.spinStop("getArticles");
@@ -484,6 +500,13 @@ var app = new Vue({
             this.graph_column_size -= 3;
             this.resizeGraphs();
 
+        },
+        filterGraph: function(){
+            var tstamp = (new Date(2017, 5, 15)).getTime();
+            this.graph.filter(tstamp);
+        },
+        startGraphAnimation: function(){
+            this.graph.startFilterAnimation();
         },
 
         twitterLogIn: function(){

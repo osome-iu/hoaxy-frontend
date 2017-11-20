@@ -149,6 +149,10 @@
 				<label class=""><span class=" line claim_label">&nbsp;</span><br /> Claims</label>
 				<label class=""><span class=" line fact_checking_label">&nbsp;</span><br /> Fact-Checks</label>
 			</div>
+			<div class="mt-3 text-center">
+				<button @click="startGraphAnimation" :disabled="!graph || animationPlaying" :class="{'disabled': (!graph || animationPlaying)}" class="btn btn-primary">Play</button>
+				{{ animationPlaying }}
+			</div>
 		</div>
 
         <div id="sigmagraph"
