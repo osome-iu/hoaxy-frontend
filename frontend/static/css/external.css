@@ -434,7 +434,7 @@ input:not(:checked) + .check_icons > .fa-square-o
 }*/
 #legend label
 {
-    display: block;
+    /*display: block;*/
     margin: 0 auto;
 }
 
