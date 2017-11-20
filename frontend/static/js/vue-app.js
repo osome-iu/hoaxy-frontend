@@ -1,7 +1,7 @@
 var max_articles = 20;
 
 var TWEET_URL = "https://twitter.com/%0/status/%1";
-var debug = true;
+// var debug = true;
 var colors = {
     node_colors : {
         "fact_checking" : 'darkblue',
@@ -164,19 +164,9 @@ var app = new Vue({
         colors: colors
     },
     computed: {
-<<<<<<< HEAD
         all_selected: function(){
             return this.checked_articles.length === 20;
         }
-=======
-        // : function(){
-        //     if(!this.graph)
-        //     {
-        //         return false;
-        //     }
-        //     return this.graph.playing();
-        // }
->>>>>>> vue
     },
 
     // #     #
