@@ -15,6 +15,11 @@ function HoaxyGraph(options)
 	var spinner_notices = options.spinner_notices || {};
 	var twitter = options.twitter || null;
 	var getting_bot_scores = options.getting_bot_scores || false;
+	var graphAnimation = options.graphAnimation || {playing: false, increment: 0, total_increments: 40};
+
+	var timespan = {
+		start_time: 0, end_time: 0
+	};
 
 	var score_stats = {
 		total: 0,
@@ -554,10 +559,20 @@ function HoaxyGraph(options)
 
 		document.getElementById("graph-container").innerHTML = "";
 	}
-
+ //
+ // #     #                                       #####
+ // #     # #####  #####    ##   ##### ######    #     # #####    ##   #####  #    #
+ // #     # #    # #    #  #  #    #   #         #       #    #  #  #  #    # #    #
+ // #     # #    # #    # #    #   #   #####     #  #### #    # #    # #    # ######
+ // #     # #####  #    # ######   #   #         #     # #####  ###### #####  #    #
+ // #     # #      #    # #    #   #   #         #     # #   #  #    # #      #    #
+ //  #####  #      #####  #    #   #   ######     #####  #    # #    # #      #    #
 
 	function UpdateGraph(start_time, end_time)
 	{
+
+		clearTimeout(animationTimeout);
+
 		// spinStart("updateNetwork");
 		console.debug("Updating Graph");
 		KillGraph();
@@ -580,7 +595,8 @@ function HoaxyGraph(options)
 	    nodes = {},
 		count,
 	    edgeCount = {};
-
+		timespan.start_time = 0;
+		timespan.end_time = 0;
 		var node_count = 0, edge_count=0;
 	    try
 	    {
@@ -600,9 +616,22 @@ function HoaxyGraph(options)
 					// 	continue;
 
 					if(start_time && tweet_created_at < start_time)
+					{
 						continue;
+					}
 					if(end_time && tweet_created_at > end_time)
+					{
 						continue;
+					}
+
+					if(!timespan.start_time || tweet_created_at < timespan.start_time)
+					{
+						timespan.start_time = tweet_created_at;
+					}
+					if(!timespan.end_time || tweet_created_at > timespan.end_time)
+					{
+						timespan.end_time = tweet_created_at;
+					}
 
 					var url_raw = edge.url_raw, title = edge.title;
 
@@ -720,6 +749,7 @@ function HoaxyGraph(options)
 	            g.nodes.push({
 	                x: Math.random() * 10,
 					y: Math.random() * 10,
+					orig_size: nodes[i].size,
 					// x: new_x,
 					// y: new_y,
 	                size: new_size, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
@@ -754,6 +784,7 @@ function HoaxyGraph(options)
 							to_node_id: nodes_id[j],
 							size: (Number(nodes[i].outgoing[j].count)),
 							type: "arrow",
+							edge_type: nodes[i].outgoing[j].type,
 							color: edge_colors[nodes[i].outgoing[j].type],//Giovanni said use a third color
 							count: edgeIndex,
 							min_tweet_created_at: nodes[i].outgoing[j].min_tweet_created_at,
@@ -780,6 +811,14 @@ function HoaxyGraph(options)
 		drawGraph();
 	    return graph;
 	}
+
+ // #     #                         #     #
+ // #     #  ####  ###### #####     ##   ##  ####  #####    ##   #
+ // #     # #      #      #    #    # # # # #    # #    #  #  #  #
+ // #     #  ####  #####  #    #    #  #  # #    # #    # #    # #
+ // #     #      # #      #####     #     # #    # #    # ###### #
+ // #     # #    # #      #   #     #     # #    # #    # #    # #
+ //  #####   ####  ###### #    #    #     #  ####  #####  #    # ######
 
 	function GenerateUserModal(e)
 	{
@@ -886,6 +925,14 @@ function HoaxyGraph(options)
 	}
 
 
+ // ######                           #####
+ // #     # #####    ##   #    #    #     # #####    ##   #####  #    #
+ // #     # #    #  #  #  #    #    #       #    #  #  #  #    # #    #
+ // #     # #    # #    # #    #    #  #### #    # #    # #    # ######
+ // #     # #####  ###### # ## #    #     # #####  ###### #####  #    #
+ // #     # #   #  #    # ##  ##    #     # #   #  #    # #      #    #
+ // ######  #    # #    # #    #     #####  #    # #    # #      #    #
+
 	function drawGraph() {
 
 
@@ -929,7 +976,7 @@ function HoaxyGraph(options)
 			updateNodeColor(i, botscores[i].score);
 		}
 
-
+		// var that = this;
 		spinStart("ForceAtlas");
 		setTimeout(function () {
             // getBotCacheScores();
@@ -940,6 +987,9 @@ function HoaxyGraph(options)
 			// spinStop("updateNetwork");
 			spinStop("generateNetwork");
 			spinner_notices.graph = "";
+
+			// FilterEdges();
+
 		}, 2000 + jiggle_compensator);
 
 	    s.bind('clickNode', function (e) {
@@ -1105,9 +1155,242 @@ function HoaxyGraph(options)
 	}).call(this);
 
 
+ // #######
+ // #       # #      ##### ###### #####
+ // #       # #        #   #      #    #
+ // #####   # #        #   #####  #    #
+ // #       # #        #   #      #####
+ // #       # #        #   #      #   #
+ // #       # ######   #   ###### #    #
+
+	function FilterEdges(filterTimestamp){
+
+		// if(!filterTimestamp)
+		// {
+		// 	var filterDate = new Date();
+		// 	filterTimestamp = filterDate.getTime();
+		// }
+		filterTimestamp = filterTimestamp || timespan.end_time;
+		var count = 0;
+		var filtered_count = 0;
+		var unfiltered_nodes = [];
+
+		var edges = s.graph.edges();
+		var nodes = s.graph.nodes();
+
+		var edge_colors = {
+			"fact_checking": colors.edge_colors.fact_checking,
+			"claim": colors.edge_colors.claim,
+		};
+
+
+
+
+
+		// g.nodes.push({
+		//
+		// 	x: 0,
+		// 	y: 0,
+		// 	size: 10, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
+		// 	id: "fake_node", //nodes[i].screenName,
+		// 	node_id: "fake_node",
+		// 	color: "#ffffff",//nodes[i].color,
+		// });
+
+		// var nodes_id = {};
+		// var cnt = 0;
+		// for (var i in nodes)// i is index
+		// {
+		// 	var percent = Math.sqrt(nodes[i].size) / Math.sqrt(max_size);
+		// 	var new_size = (percent * 1000) + 1;
+		// 	if(new_size < 300)
+		// 	{
+		// 		new_size = 300;
+		// 	}
+		// 	var score = botscores[nodes[i].screenName];
+		// 	if(score && score.score)
+		// 	{
+		// 		score = score.score;
+		// 	}
+		// 	else
+		// 	{
+		// 		score = false;
+		// 	}
+		// 	var color = getNodeColor(score);
+        //
+		// 	node_count = node_count / 2;
+		// 	var new_x, new_y;
+
+		var unfiltered_node_edge_counts = {};
+		var max_size = 0;
+		var min_size = 0;
+		var node_count = 0;
+
+		for(var i in edges)
+		{
+			var edge = edges[i];
+
+			count ++;
+			if(edge.min_tweet_created_at >= filterTimestamp)
+			{
+				//filtered
+				filtered_count ++;
+				edge.color =  "rgba(0,0,0,.05)";
+			}
+			else
+			{
+				//not filtered
+				unfiltered_node_edge_counts[edge.target] = unfiltered_node_edge_counts[edge.target] || 0;
+				unfiltered_node_edge_counts[edge.source] = unfiltered_node_edge_counts[edge.source] || 0;
+
+				unfiltered_node_edge_counts[edge.target] += 1;
+				unfiltered_node_edge_counts[edge.source] += 1;
+
+				edge.color = edge_colors[edge.edge_type];
+				unfiltered_nodes.push(edge.target);
+				unfiltered_nodes.push(edge.source);
+
+			}
+		}
+
+		for(var i in unfiltered_node_edge_counts)
+		{
+			node_count ++;
+			if(unfiltered_node_edge_counts[i] > max_size)
+			{
+				max_size = unfiltered_node_edge_counts[i];
+			}
+			if(unfiltered_node_edge_counts[i] < min_size)
+			{
+				min_size = unfiltered_node_edge_counts[i];
+			}
+		}
+
+		for(var i in nodes)
+		{
+			var node = nodes[i];
+
+
+
+			if(unfiltered_nodes.indexOf(node.id) === -1)
+			{
+				//filtered
+
+				node.color = "rgba(0,0,0,.05)";
+				node.borderColor = "rgba(0,0,0,.05)";
+
+				var percent = Math.sqrt(min_size) / Math.sqrt(max_size);
+				var new_size = (percent * 1000) + 1;
+				if(new_size < 300)
+				{
+					new_size = 300;
+				}
+
+				node.size = new_size;
+			}
+			else
+			{
+				//not filtered
+
+				var percent = Math.sqrt(unfiltered_node_edge_counts[node.id]) / Math.sqrt(max_size);
+				var new_size = (percent * 1000) + 1;
+				if(new_size < 300)
+				{
+					new_size = 300;
+				}
+
+				node.size = new_size;
+
+				score = false;
+				if(botscores[node.id])
+				{
+					score = botscores[node.id].score;
+				}
+				updateNodeColor(node.id, score);
+				// console.debug(node.id, botscores[node.id]);
+			}
+		}
+		// console.debug("filter", filterTimestamp);
+		refreshGraph();
+	}
+
+	graphAnimation.playing = false;
+	graphAnimation.paused = false;
+	graphAnimation.increment = 0;
+	var animationTimeout = 0;
+	function AnimateFilter(timestamp)
+	{
+		graphAnimation.current_timestamp = timestamp;
+		FilterEdges(timestamp);
+
+		//Stop animating if it's past the end_time of the graph.
+		if(timestamp > timespan.end_time || graphAnimation.increment > graphAnimation.total_increments)
+		{
+			FilterEdges((new Date()).getTime());
+			graphAnimation.increment = 0;
+			graphAnimation.playing = false;
+			return false;
+		}
+
+		var increment = (timespan.end_time - timespan.start_time) / graphAnimation.total_increments;
+		// if(increment < 86400000)
+		// {
+		// 	increment = 86400000; //min resolution is one day.
+		// }
+
+		var new_timestamp = timestamp + increment; //(86400 * 1000); //decrement one day
+
+		animationTimeout = setTimeout(function(){
+			graphAnimation.increment += 1;
+			AnimateFilter(new_timestamp);
+		}, 120);
+	}
+	function StartAnimation()
+	{
+		console.debug(timespan);
+		graphAnimation.increment = 1;
+		graphAnimation.playing  = true;
+		graphAnimation.paused = false;
+		AnimateFilter(timespan.start_time);
+		console.debug(graphAnimation.current_timestamp);
+	}
+
+	function StopAnimation(){
+		clearTimeout(animationTimeout);
+		graphAnimation.increment = 0;
+		graphAnimation.playing  = false;
+		graphAnimation.paused = false;
+		console.debug(graphAnimation.current_timestamp);
+	}
+	function PauseAnimation(){
+		clearTimeout(animationTimeout);
+		graphAnimation.paused = true;
+		console.debug(graphAnimation.current_timestamp);
+		console.debug("PAUSE");
+	}
+	function UnpauseAnimation(){
+		graphAnimation.paused = false;
+		AnimateFilter(graphAnimation.current_timestamp);
+		console.debug(graphAnimation.current_timestamp);
+	}
+
+
+ // ######
+ // #     # ###### ##### #    # #####  #    #
+ // #     # #        #   #    # #    # ##   #
+ // ######  #####    #   #    # #    # # #  #
+ // #   #   #        #   #    # #####  #  # #
+ // #    #  #        #   #    # #   #  #   ##
+ // #     # ######   #    ####  #    # #    #
 
 
 	console.debug("Graph initialized");
+
+	returnObj.filter = FilterEdges;
+	returnObj.startAnimation = StartAnimation;
+	returnObj.stopAnimation = StopAnimation;
+	returnObj.pauseAnimation = PauseAnimation;
+	returnObj.unpauseAnimation = UnpauseAnimation;
 
 	returnObj.updateEdges = UpdateEdges;
 	returnObj.updateGraph = UpdateGraph;

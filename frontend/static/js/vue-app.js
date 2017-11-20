@@ -1,7 +1,7 @@
 var max_articles = 20;
 
 var TWEET_URL = "https://twitter.com/%0/status/%1";
-
+var debug = true;
 var colors = {
     node_colors : {
         "fact_checking" : 'darkblue',
@@ -139,6 +139,13 @@ var app = new Vue({
         },
         failed_to_get_network: false,
 
+        graphAnimation: {
+            playing: false,
+            increment: 0,
+            total_increments: 240,
+            current_timestamp: 0,
+            paused: false
+        },
 
         feedback_form: {
             display: false,
@@ -157,9 +164,19 @@ var app = new Vue({
         colors: colors
     },
     computed: {
+<<<<<<< HEAD
         all_selected: function(){
             return this.checked_articles.length === 20;
         }
+=======
+        // : function(){
+        //     if(!this.graph)
+        //     {
+        //         return false;
+        //     }
+        //     return this.graph.playing();
+        // }
+>>>>>>> vue
     },
 
     // #     #
@@ -256,8 +273,10 @@ var app = new Vue({
             clearTimeout(this.spin_timer);
             this.spin_timer = setTimeout(function(){
                 v.displayError("The app is taking too long to respond.  Please try again later.");
+                console.debug(v.spin_key_table);
                 v.spin_key_table.length = 0;
                 v.spinStop();
+
             }, 90000);
         },
 
@@ -306,6 +325,16 @@ var app = new Vue({
                     if(!dontScroll)
                     {
                         v.scrollToElement("articles");
+                    }
+
+                    if(debug)
+                    {
+                        v.checked_articles.push(v.articles[0].url_id);
+                        v.checked_articles.push(v.articles[1].url_id);
+                        v.checked_articles.push(v.articles[2].url_id);
+                        v.checked_articles.push(v.articles[3].url_id);
+                        v.getTimeline(v.checked_articles);
+                        v.getNetwork(v.checked_articles);
                     }
 
                     v.spinStop("getArticles");
@@ -511,6 +540,22 @@ var app = new Vue({
             this.resizeGraphs();
 
         },
+        filterGraph: function(){
+            var tstamp = (new Date(2017, 5, 15)).getTime();
+            this.graph.filter(tstamp);
+        },
+        startGraphAnimation: function(){
+            this.graph.startAnimation();
+        },
+        stopGraphAnimation: function(){
+            this.graph.stopAnimation();
+        },
+        pauseGraphAnimation: function(){
+            this.graph.pauseAnimation();
+        },
+        unpauseGraphAnimation: function(){
+            this.graph.unpauseAnimation();
+        },
 
         twitterLogIn: function(){
             var me = this.twitter.verifyMe();
@@ -694,6 +739,16 @@ var app = new Vue({
         //     console.debug(this.twitter.me());
         //     console.debug(this.twitter_authorized);
         // }
+        // "graph.playing": function(){
+        //     if(this.graph.playing === true)
+        //     {
+        //         this.animationPlaying = true;
+        //     }
+        //     else
+        //     {
+        //         this.animationPlaying = false;
+        //     }
+        // }
     },
 
     //  #     #
@@ -767,7 +822,8 @@ var app = new Vue({
             getting_bot_scores: this.getting_bot_scores,
             spinner_notices: this.spinner_notices,
             // twitter_account_info: this.twitter_account_info,
-            twitter: this.twitter
+            twitter: this.twitter,
+            graphAnimation: this.graphAnimation
         });
 
         //create the chart that is used to visualize the timeline
