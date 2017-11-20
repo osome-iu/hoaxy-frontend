@@ -15,10 +15,11 @@ function HoaxyGraph(options)
 	var spinner_notices = options.spinner_notices || {};
 	var twitter = options.twitter || null;
 	var getting_bot_scores = options.getting_bot_scores || false;
+	var graphAnimation = options.graphAnimation || {playing: false, increment: 0, total_increments: 40};
 
 	var timespan = {
 		start_time: 0, end_time: 0
-	}
+	};
 
 	var score_stats = {
 		total: 0,
@@ -593,7 +594,8 @@ function HoaxyGraph(options)
 	    nodes = {},
 		count,
 	    edgeCount = {};
-
+		timespan.start_time = 0;
+		timespan.end_time = 0;
 		var node_count = 0, edge_count=0;
 	    try
 	    {
@@ -746,6 +748,7 @@ function HoaxyGraph(options)
 	            g.nodes.push({
 	                x: Math.random() * 10,
 					y: Math.random() * 10,
+					orig_size: nodes[i].size,
 					// x: new_x,
 					// y: new_y,
 	                size: new_size, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
@@ -1160,6 +1163,7 @@ function HoaxyGraph(options)
  // #       # ######   #   ###### #    #
 
 	function FilterEdges(filterTimestamp){
+
 		// if(!filterTimestamp)
 		// {
 		// 	var filterDate = new Date();
@@ -1179,6 +1183,48 @@ function HoaxyGraph(options)
 		};
 
 
+
+
+
+		// g.nodes.push({
+		//
+		// 	x: 0,
+		// 	y: 0,
+		// 	size: 10, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
+		// 	id: "fake_node", //nodes[i].screenName,
+		// 	node_id: "fake_node",
+		// 	color: "#ffffff",//nodes[i].color,
+		// });
+
+		// var nodes_id = {};
+		// var cnt = 0;
+		// for (var i in nodes)// i is index
+		// {
+		// 	var percent = Math.sqrt(nodes[i].size) / Math.sqrt(max_size);
+		// 	var new_size = (percent * 1000) + 1;
+		// 	if(new_size < 300)
+		// 	{
+		// 		new_size = 300;
+		// 	}
+		// 	var score = botscores[nodes[i].screenName];
+		// 	if(score && score.score)
+		// 	{
+		// 		score = score.score;
+		// 	}
+		// 	else
+		// 	{
+		// 		score = false;
+		// 	}
+		// 	var color = getNodeColor(score);
+        //
+		// 	node_count = node_count / 2;
+		// 	var new_x, new_y;
+
+		var unfiltered_node_edge_counts = {};
+		var max_size = 0;
+		var min_size = 0;
+		var node_count = 0;
+
 		for(var i in edges)
 		{
 			var edge = edges[i];
@@ -1193,6 +1239,12 @@ function HoaxyGraph(options)
 			else
 			{
 				//not filtered
+				unfiltered_node_edge_counts[edge.target] = unfiltered_node_edge_counts[edge.target] || 0;
+				unfiltered_node_edge_counts[edge.source] = unfiltered_node_edge_counts[edge.source] || 0;
+
+				unfiltered_node_edge_counts[edge.target] += 1;
+				unfiltered_node_edge_counts[edge.source] += 1;
+
 				edge.color = edge_colors[edge.edge_type];
 				unfiltered_nodes.push(edge.target);
 				unfiltered_nodes.push(edge.source);
@@ -1200,9 +1252,25 @@ function HoaxyGraph(options)
 			}
 		}
 
+		for(var i in unfiltered_node_edge_counts)
+		{
+			node_count ++;
+			if(unfiltered_node_edge_counts[i] > max_size)
+			{
+				max_size = unfiltered_node_edge_counts[i];
+			}
+			if(unfiltered_node_edge_counts[i] < min_size)
+			{
+				min_size = unfiltered_node_edge_counts[i];
+			}
+		}
+
 		for(var i in nodes)
 		{
 			var node = nodes[i];
+
+
+
 			if(unfiltered_nodes.indexOf(node.id) === -1)
 			{
 				//filtered
@@ -1210,10 +1278,28 @@ function HoaxyGraph(options)
 				node.color = "rgba(0,0,0,.05)";
 				node.borderColor = "rgba(0,0,0,.05)";
 
+				var percent = Math.sqrt(min_size) / Math.sqrt(max_size);
+				var new_size = (percent * 1000) + 1;
+				if(new_size < 300)
+				{
+					new_size = 300;
+				}
+
+				node.size = new_size;
 			}
 			else
 			{
 				//not filtered
+
+				var percent = Math.sqrt(unfiltered_node_edge_counts[node.id]) / Math.sqrt(max_size);
+				var new_size = (percent * 1000) + 1;
+				if(new_size < 300)
+				{
+					new_size = 300;
+				}
+
+				node.size = new_size;
+
 				score = false;
 				if(botscores[node.id])
 				{
@@ -1227,39 +1313,44 @@ function HoaxyGraph(options)
 		refreshGraph();
 	}
 
-	var day = 0;
-	var playing = false;
+	graphAnimation.playing = false;
+	graphAnimation.increment = 0;
 	function AnimateFilter(timestamp)
 	{
-		console.debug(day, playing);
+		console.debug(timestamp, graphAnimation.increment);
+		// console.debug(graphAnimation.increment, graphAnimation.playing);
 		FilterEdges(timestamp);
 		// console.debug(timestamp);
 
 		// console.debug(timestamp, timespan.start_time);
 
 		//Stop animating if it's past the end_time of the graph.
-		if(timestamp > timespan.end_time)
+		if(timestamp > timespan.end_time || graphAnimation.increment > graphAnimation.total_increments)
 		{
 			FilterEdges((new Date()).getTime());
-			playing = false;
+			graphAnimation.playing = false;
 			return false;
 		}
 
-		var increment = (timespan.end_time - timespan.start_time) / 40;
+		var increment = (timespan.end_time - timespan.start_time) / graphAnimation.total_increments;
+		// if(increment < 86400000)
+		// {
+		// 	increment = 86400000; //min resolution is one day.
+		// }
 
 		var new_timestamp = timestamp + increment; //(86400 * 1000); //decrement one day
 		// console.debug(new_timestamp);
 
 		setTimeout(function(){
-			day += 1;
+			graphAnimation.increment += 1;
 			AnimateFilter(new_timestamp);
-		}, 250);
+		}, 120);
 	}
 	function StartAnimateFilter()
 	{
-		// console.debug(timespan);
-		day = 1;
-		playing = true;
+		console.debug(timespan);
+		graphAnimation.increment = 1;
+		graphAnimation.playing  = true;
 		AnimateFilter(timespan.start_time);
 	}
 
@@ -1275,7 +1366,6 @@ function HoaxyGraph(options)
 
 	console.debug("Graph initialized");
 
-	returnObj.playing = function(){ return playing; };
 	returnObj.filter = FilterEdges;
 	returnObj.startFilterAnimation = StartAnimateFilter;
 	returnObj.updateEdges = UpdateEdges;

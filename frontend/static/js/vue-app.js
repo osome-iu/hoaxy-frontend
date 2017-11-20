@@ -137,6 +137,11 @@ var app = new Vue({
         },
         failed_to_get_network: false,
 
+        graphAnimation: {
+            playing: false,
+            increment: 0,
+            total_increments: 240
+        },
 
         feedback_form: {
             display: false,
@@ -153,13 +158,13 @@ var app = new Vue({
         colors: colors
     },
     computed: {
-        animationPlaying: function(){
-            if(!this.graph)
-            {
-                return false;
-            }
-            return this.graph.playing();
-        }
+        // : function(){
+        //     if(!this.graph)
+        //     {
+        //         return false;
+        //     }
+        //     return this.graph.playing();
+        // }
     },
 
     // #     #
@@ -294,6 +299,9 @@ var app = new Vue({
                     if(debug)
                     {
                         v.checked_articles.push(v.articles[0].url_id);
+                        v.checked_articles.push(v.articles[1].url_id);
+                        v.checked_articles.push(v.articles[2].url_id);
+                        v.checked_articles.push(v.articles[3].url_id);
                         v.getTimeline(v.checked_articles);
                         v.getNetwork(v.checked_articles);
                     }
@@ -688,6 +696,16 @@ var app = new Vue({
         //     console.debug(this.twitter.me());
         //     console.debug(this.twitter_authorized);
         // }
+        // "graph.playing": function(){
+        //     if(this.graph.playing === true)
+        //     {
+        //         this.animationPlaying = true;
+        //     }
+        //     else
+        //     {
+        //         this.animationPlaying = false;
+        //     }
+        // }
     },
 
     //  #     #
@@ -761,7 +779,8 @@ var app = new Vue({
             getting_bot_scores: this.getting_bot_scores,
             spinner_notices: this.spinner_notices,
             // twitter_account_info: this.twitter_account_info,
-            twitter: this.twitter
+            twitter: this.twitter,
+            graphAnimation: this.graphAnimation
         });
 
         //create the chart that is used to visualize the timeline
