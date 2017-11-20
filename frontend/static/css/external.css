@@ -438,13 +438,17 @@ input:not(:checked) + .check_icons > .fa-square-o
     margin: 0 auto;
 }
 
+.animation-control, .layout-button
+{
+    vertical-align: middle;
+    font-size: .75rem;
+    display: block;
+
+}
 .layout-button
 {
     margin-top: 1rem;
     /*line-height: 2rem;*/
-    vertical-align: middle;
-    font-size: .75rem;
-    display: block;
     margin: 1rem auto;
 
 }

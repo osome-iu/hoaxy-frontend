@@ -140,7 +140,9 @@ var app = new Vue({
         graphAnimation: {
             playing: false,
             increment: 0,
-            total_increments: 240
+            total_increments: 240,
+            current_timestamp: 0,
+            paused: false
         },
 
         feedback_form: {
@@ -514,7 +516,16 @@ var app = new Vue({
             this.graph.filter(tstamp);
         },
         startGraphAnimation: function(){
-            this.graph.startFilterAnimation();
+            this.graph.startAnimation();
+        },
+        stopGraphAnimation: function(){
+            this.graph.stopAnimation();
+        },
+        pauseGraphAnimation: function(){
+            this.graph.pauseAnimation();
+        },
+        unpauseGraphAnimation: function(){
+            this.graph.unpauseAnimation();
         },
 
         twitterLogIn: function(){

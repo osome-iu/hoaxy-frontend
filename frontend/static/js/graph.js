@@ -571,6 +571,7 @@ function HoaxyGraph(options)
 	function UpdateGraph(start_time, end_time)
 	{
 
+		clearTimeout(animationTimeout);
 
 		// spinStart("updateNetwork");
 		console.debug("Updating Graph");
@@ -1314,20 +1315,19 @@ function HoaxyGraph(options)
 	}
 
 	graphAnimation.playing = false;
+	graphAnimation.paused = false;
 	graphAnimation.increment = 0;
+	var animationTimeout = 0;
 	function AnimateFilter(timestamp)
 	{
-		console.debug(timestamp, graphAnimation.increment);
-		// console.debug(graphAnimation.increment, graphAnimation.playing);
+		graphAnimation.current_timestamp = timestamp;
 		FilterEdges(timestamp);
-		// console.debug(timestamp);
-
-		// console.debug(timestamp, timespan.start_time);
 
 		//Stop animating if it's past the end_time of the graph.
 		if(timestamp > timespan.end_time || graphAnimation.increment > graphAnimation.total_increments)
 		{
 			FilterEdges((new Date()).getTime());
+			graphAnimation.increment = 0;
 			graphAnimation.playing = false;
 			return false;
 		}
@@ -1339,19 +1339,39 @@ function HoaxyGraph(options)
 		// }
 
 		var new_timestamp = timestamp + increment; //(86400 * 1000); //decrement one day
-		// console.debug(new_timestamp);
 
-		setTimeout(function(){
+		animationTimeout = setTimeout(function(){
 			graphAnimation.increment += 1;
 			AnimateFilter(new_timestamp);
 		}, 120);
 	}
-	function StartAnimateFilter()
+	function StartAnimation()
 	{
 		console.debug(timespan);
 		graphAnimation.increment = 1;
 		graphAnimation.playing  = true;
+		graphAnimation.paused = false;
 		AnimateFilter(timespan.start_time);
+		console.debug(graphAnimation.current_timestamp);
+	}
+
+	function StopAnimation(){
+		clearTimeout(animationTimeout);
+		graphAnimation.increment = 0;
+		graphAnimation.playing  = false;
+		graphAnimation.paused = false;
+		console.debug(graphAnimation.current_timestamp);
+	}
+	function PauseAnimation(){
+		clearTimeout(animationTimeout);
+		graphAnimation.paused = true;
+		console.debug(graphAnimation.current_timestamp);
+		console.debug("PAUSE");
+	}
+	function UnpauseAnimation(){
+		graphAnimation.paused = false;
+		AnimateFilter(graphAnimation.current_timestamp);
+		console.debug(graphAnimation.current_timestamp);
 	}
 
 
@@ -1367,7 +1387,11 @@ function HoaxyGraph(options)
 	console.debug("Graph initialized");
 
 	returnObj.filter = FilterEdges;
-	returnObj.startFilterAnimation = StartAnimateFilter;
+	returnObj.startAnimation = StartAnimation;
+	returnObj.stopAnimation = StopAnimation;
+	returnObj.pauseAnimation = PauseAnimation;
+	returnObj.unpauseAnimation = UnpauseAnimation;
+
 	returnObj.updateEdges = UpdateEdges;
 	returnObj.updateGraph = UpdateGraph;
 	returnObj.getNewScores = getNewScores;
