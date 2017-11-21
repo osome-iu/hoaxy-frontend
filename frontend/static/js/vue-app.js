@@ -235,6 +235,9 @@ var app = new Vue({
             }, 90000);
         },
         buildTwitterSearchEdgeList: function(tweetsResponse){
+          this.spinStart("buildGraph");
+          this.spinner_notices.timeline = "Building Graph and Timeline...";
+
           // Edge list
           var twitterEdges = [];
           // Edge object
@@ -247,7 +250,7 @@ var app = new Vue({
             id: undefined,
             is_mention: "",
             pub_date: "",
-            site_domain:"",
+            site_domain:"test",
             site_type:"claim",
             title:"",
             to_user_id:"",
@@ -256,7 +259,7 @@ var app = new Vue({
             tweet_id:"",
             tweet_type:"",
             url_id: undefined,
-            url_raw:""
+            url_raw:"www.test.com"
           };
 
           // Timeline stuff
@@ -270,12 +273,16 @@ var app = new Vue({
               volume: []
             }
           };
-
+          var v = this;
+          var total_claims = 0;
+          var total_dates = 0;
           // Looping over twitter results and adding the articles that we need to further get timelines and graphs of
           var twitterEntities = tweetsResponse.statuses;
-          console.log("here");
+          console.log("twitter entities");
           console.log(twitterEntities);
-          Object.keys(twitterEntities).forEach(function(key) {
+          var totalTwitterEntities = twitterEntities.length;
+          var previousDate = "";
+          for (var key = totalTwitterEntities-1; key>=0; key--) {
               // Checking for mentions
               if (twitterEntities[key].entities.user_mentions.length > 0) {
                 // Mentions found, creating edges for each one
@@ -314,7 +321,7 @@ var app = new Vue({
                   if (nonNullFrom && nonNullTo) {
                     // Populate the rest of the edge entities
                     var createdAt = twitterEntities[key].created_at;
-                    // Changing to the RFC 2822 date time format
+                    // Changing to the YYYY-MM-DDT00:00:00Z date format
                     var createdAtArray = createdAt.split(" ");
                     // Invoking the moment.js package to yield us the number months
                     var month = moment.monthsShort().indexOf(createdAtArray[1]) + 1;
@@ -324,17 +331,25 @@ var app = new Vue({
                       monthStr = "0" + monthStr;
                     }
                     // Creating final formatted date
-                    var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T" + createdAtArray[3] + "Z";
-                    console.log(formattedDate);
+                    var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
+
+                    // Updating edges
                     twitterEdge.date_published = formattedDate;
                     twitterEdge.pub_date = formattedDate;
                     twitterEdge.tweet_created_at = formattedDate;
-
+                    twitterEdge.tweet_type = "mention";
                     twitterEdges.push(twitterEdge);
 
                     // Updating the timeline
-                    timeline.claim.timestamp.push(formattedDate);
-                    timeline.claim.volume.push(1);
+                    total_claims+=1;
+                    if (previousDate != formattedDate) {
+                      total_dates+=1;
+                      timeline.claim.timestamp.push(formattedDate);
+                      timeline.claim.volume.push(total_claims);
+                      previousDate = formattedDate;
+                    } else {
+                      timeline.claim.volume[total_dates-1] = total_claims;
+                    }
 
                     timeline.fact_checking.timestamp.push(formattedDate);
                     timeline.fact_checking.volume.push(0);
@@ -343,36 +358,76 @@ var app = new Vue({
               }
 
             }
-          });
-          console.log("TWITTER EDGES:");
-          console.log(twitterEdges);
-          // Updating the graph with new edges
-          this.show_graphs = false;
-          this.graph.updateEdges([]);
-          this.graph.updateEdges(twitterEdges);
-          // Timeline stuff
-          this.show_graphs = true;
-
-
-
-          this.timeline.update(timeline);
-          this.scrollToElement("graphs");
-          this.timeline.redraw();
-
-          // Graph stuff
-          this.show_graphs = true;
-          var v = this;
+          }
+          v.spinner_notices.timeline = "";
+          v.spinStart("updateTimeline");
+          v.show_graphs = true;
+          //update the timeline on the next tick because at this point
+          // the graphs are still hidden. Graphs will be visible on the
+          // next tick
           Vue.nextTick(function(){
-              console.log("test");
-
-              });
-              v.graph.updateEdges(twitterEdges);
-              v.updateGraph();
+              v.timeline.update(timeline);
+              v.spinStop("updateTimeline");
+              v.scrollToElement("graphs");
               v.timeline.redraw();
+          });
 
-          this.scrollToElement("graphs");
+          this.spinStart("getNetwork");
+          this.spinner_notices.graph = "Fetching graph...";
+
+          this.timeline.removeUpdateDateRangeCallback();
+          this.failed_to_get_network = false;
+
+          v.spinStop("getNetwork");
+          v.spinner_notices.graph = "Drawing Graph...";
+          v.spinStart("generateNetwork");
+
+          v.show_graphs = true;
+          var edge_list = [];
+          Vue.nextTick(function(){
+              edge_list = twitterEdges.map(function(x){
+                  y = x;
+                  return y;
+              });
+              v.graph.updateEdges(edge_list);
+              v.updateGraph();
+              // v.timeline.redraw();
+              v.spinStop("generateNetwork");
+              v.scrollToElement("graphs");
+          });
+
+          this.spinStop("buildGraph");
+          return "ok";
+          //HOLD off
+          // this.spinStop("buildGraph");
+          // console.log("TWITTER EDGES:");
+          // console.log(twitterEdges);
+          // // Updating the graph with new edges
+          // this.show_graphs = false;
+          // this.graph.updateEdges([]);
+          // this.graph.updateEdges(twitterEdges);
+          // // Timeline stuff
+          // this.show_graphs = true;
+          // this.timeline.update(timeline);
+          // this.scrollToElement("graphs");
+          // this.timeline.redraw();
+          //
+          // // Graph stuff
+          // this.show_graphs = true;
+          // var v = this;
+          // Vue.nextTick(function(){
+          //     console.log("test");
+          //
+          //     });
+          //     v.graph.updateEdges(twitterEdges);
+          //     v.updateGraph();
+          //     v.timeline.redraw();
+          //
+          // this.scrollToElement("graphs");
         },
         getTwitterSearchResults: function(query){
+            this.spinStart("getTwitterSearchResults");
+            this.spinner_notices.timeline = "Searching Twitter...";
             var v = this;
             var response = undefined;
             // In this particular case we are obtaining the query as a string, i.e. "cute kitties" and not "cute" and "kitties" separately
@@ -384,14 +439,16 @@ var app = new Vue({
             tweetsReponse.then(function(response){
               console.log("TWEETS RESPONSE SUCCESSFUL:");
               console.log(response);
+              v.spinStop("getTwitterSearchResults");
               var testResponse = v.buildTwitterSearchEdgeList(response);
-
-              // return response.statuses;
+              return response;
             }, function(){})
             .catch(function(error){
               console.log("TWEETS RESPONSE ERROR:");
               console.log(error);
-              // return "Request failed";
+              v.spinStop("getTwitterSearchResults");
+              return response;
+              return "Request failed";
             });
             return response;
         },
@@ -749,7 +806,6 @@ var app = new Vue({
               return false;
         		}
             var tweetsResponse = this.getTwitterSearchResults(this.query_text);
-
         		//this.changeURLParams();
         		//this.getArticles(dontScroll);
         		this.spinStop();
