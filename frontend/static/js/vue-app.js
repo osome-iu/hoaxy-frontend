@@ -245,10 +245,10 @@ var app = new Vue({
             from_user_id:"",
             from_user_screen_name:"",
             id: undefined,
-            is_mention: undefined,
-            pub_date: undefined,
+            is_mention: "",
+            pub_date: "",
             site_domain:"",
-            site_type:"",
+            site_type:"claim",
             title:"",
             to_user_id:"",
             to_user_screen_name:"",
@@ -257,6 +257,18 @@ var app = new Vue({
             tweet_type:"",
             url_id: undefined,
             url_raw:""
+          };
+
+          // Timeline stuff
+          var timeline = {
+            claim: {
+              timestamp: [],
+              volume: []
+            },
+            fact_checking: {
+              timestamp: [],
+              volume: []
+            }
           };
 
           // Looping over twitter results and adding the articles that we need to further get timelines and graphs of
@@ -270,32 +282,62 @@ var app = new Vue({
                 for (var mention = 0; mention < twitterEntities[key].entities.user_mentions.length; mention++) {
                   var nonNullFrom = false;
                   var nonNullTo = false;
+
                   try {
                     twitterEdge.from_user_id = twitterEntities[key].entities.user_mentions[mention].id_str;
                     nonNullFrom = true;
                   } catch(err) {
                     twitterEdge.from_user_id = "";
                   }
+
                   try {
-                    nonNullFrom = true;
                     twitterEdge.from_user_screen_name = twitterEntities[key].entities.user_mentions[mention].screen_name;
+                    nonNullFrom = true;
                   } catch(err) {
                     twitterEdge.from_user_screen_name = "";
                   }
+
                   try {
+                    twitterEdge.to_user_id = twitterEntities[key].user.id_str;
                     nonNullTo = true;
-                    twitterEdge.to_user_id = twitterEntities[key].entities.user.id_str;
                   } catch(err) {
                     twitterEdge.to_user_id = "";
                   }
+
                   try {
+                    twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
                     nonNullTo = true;
-                    twitterEdge.to_user_screen_name = twitterEntities[key].entities.user.screen_name;
                   } catch(err) {
                       twitterEdge.to_user_screen_name = "";
                   }
+
                   if (nonNullFrom && nonNullTo) {
-                       twitterEdges.push(twitterEdge);
+                    // Populate the rest of the edge entities
+                    var createdAt = twitterEntities[key].created_at;
+                    // Changing to the RFC 2822 date time format
+                    var createdAtArray = createdAt.split(" ");
+                    // Invoking the moment.js package to yield us the number months
+                    var month = moment.monthsShort().indexOf(createdAtArray[1]) + 1;
+                    var monthStr = month.toString();
+                    // Padding the month with an extra prefix 0 in case it is just length of one i.e. 8 -> 08
+                    if (monthStr.length == 1) {
+                      monthStr = "0" + monthStr;
+                    }
+                    // Creating final formatted date
+                    var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T" + createdAtArray[3] + "Z";
+                    console.log(formattedDate);
+                    twitterEdge.date_published = formattedDate;
+                    twitterEdge.pub_date = formattedDate;
+                    twitterEdge.tweet_created_at = formattedDate;
+
+                    twitterEdges.push(twitterEdge);
+
+                    // Updating the timeline
+                    timeline.claim.timestamp.push(formattedDate);
+                    timeline.claim.volume.push(1);
+
+                    timeline.fact_checking.timestamp.push(formattedDate);
+                    timeline.fact_checking.volume.push(0);
                   }
 
               }
@@ -308,6 +350,26 @@ var app = new Vue({
           this.show_graphs = false;
           this.graph.updateEdges([]);
           this.graph.updateEdges(twitterEdges);
+          // Timeline stuff
+          this.show_graphs = true;
+
+
+
+          this.timeline.update(timeline);
+          this.scrollToElement("graphs");
+          this.timeline.redraw();
+
+          // Graph stuff
+          this.show_graphs = true;
+          var v = this;
+          Vue.nextTick(function(){
+              console.log("test");
+
+              });
+              v.graph.updateEdges(twitterEdges);
+              v.updateGraph();
+              v.timeline.redraw();
+
           this.scrollToElement("graphs");
         },
         getTwitterSearchResults: function(query){
