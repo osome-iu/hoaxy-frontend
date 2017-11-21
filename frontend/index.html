@@ -194,14 +194,44 @@
 		                <button v-if="getting_bot_scores.running" disabled class="disabled btn btn-primary" id="">Fetching Scores...</button>
 		                <div class="text-right pt-1">
 		                    <div>{{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.</div>
-		                    <div v-if="graph.score_stats.found > 0">{{graph.score_stats.found - graph.score_stats.old}} {{graph.score_stats.found - graph.score_stats.old == 1?'is':'are'}} fresh.</div>
+		                    <div v-if="graph.score_stats.found > 0" style="cursor: pointer" @click="info_text='Fresh indicates that the bot score was calculated relatively recently.'">
+								{{graph.score_stats.found - graph.score_stats.old}} {{graph.score_stats.found - graph.score_stats.old == 1?'is':'are'}} fresh.
+							</div>
 		                    <div v-if="graph.score_stats.unavailable > 0">{{graph.score_stats.unavailable}} could not be updated.</div>
-		                    <!-- <div><small v-if="getting_bot_scores.running"></small></div> -->
-		                </div>
-		            </div>
-				</div>
+                            <!-- <div><small v-if="getting_bot_scores.running"></small></div> -->
+                        </div>
+                    </div>
+                    <div class="mt-2 p-2 text-center">
+                        <div class="row" style="cursor: pointer" @click="info_text='Each circular node represents a twitter user. The larger the circle, the more popular the user. Colors indicate the likelyhood that the user is a bot.'">
+                            <div class="p-1 text-right col-6">
+                                <i class="fa fa-circle-o" aria-hidden="true"></i>
+                                <i class="fa fa-circle-o fa-lg" aria-hidden="true"></i>
+                            </div>
+                            <div class="p-1 text-left col-6">
+								<i class="float-right pr-2 info-button fa fa-question-circle" aria-hidden="true"></i>
+                                Users
 
-				<div  v-if="show_zoom_buttons" id="bot_legend" class="text-right p-2">
+                            </div>
+                        </div>
+                        <div class="row"  style="cursor: pointer" @click="info_text='The edges that connect the nodes represent tweets that connect users through retweets or mentions.  The direction of the arrow indicates the flow of information. The color of the edge indicates whether the tweet contains a link to a claim or a link to a fact-checking article'">
+                            <div class="p-1 text-right col-6">
+                                <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
+                                <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+                            </div>
+                            <div class="p-1 text-left col-6">
+								<i class="float-right pr-2  info-button fa fa-question-circle" aria-hidden="true"></i>
+                                Tweets
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div style="cursor: pointer"
+					@click="info_text='The color of a node indicates the twitter user\'s likelyhood of being either a bot or a human.  Scores are calculated using Botometer\'s algorithms and information from a user\'s twitter timeline.  For more information, see the FAQ.'"
+					v-if="show_zoom_buttons"
+					id="bot_legend"
+					class="text-right p-2">
 					<div
 						class="rounded"
 						id="bot_legend_gradient"
@@ -244,6 +274,37 @@
 		#     # #    # #    # #    # #      #    #
 		#     #  ####  #####  #    # ######  ####
 		-->
+
+        <div id="infoModal"
+			:class="{'modal-show': info_text!==''}"
+			@click.stop="info_text=''"
+			class="modal " tabindex="-1"
+			role="dialog"
+			aria-labelledby="infoModalLabel"
+			style="opacity: 1"
+			aria-labelledby="nodeModalLabel">
+            <div class="modal-dialog" role="document">
+                <div @click.stop="" class="alert m-5 alert-info">
+                    <!-- <div class="modal-header">
+                        <h4 class="modal-title text-center" id="infoModalLabel" >
+							An Error Occurred
+                        </h4>
+						<button type="button" class="close float-right"  @click="toggleErrorModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div> -->
+                    <div class="modal-body" id="infoModalBody" >
+						<div class="d-flex align-items-center">
+							<i class="float-left m-2 fa fa-3x fa-question-circle" aria-hidden="true"></i>
+							<span>{{info_text}}</span>
+						</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="info_text = ''">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
 
         <div id="errorModal" :class="{'modal-show': show_error_modal}" @click.stop="toggleErrorModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
             <div class="modal-dialog" role="document">

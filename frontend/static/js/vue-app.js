@@ -79,6 +79,7 @@ var app = new Vue({
         show_zoom_buttons: false,
         graph_column_size: 3,
 
+        info_text: '',
 
         articles: [],
         articles_to_show: max_articles,
@@ -300,6 +301,7 @@ var app = new Vue({
 
                     if(debug)
                     {
+                        console.log("DEBUG");
                         v.checked_articles.push(v.articles[0].url_id);
                         v.checked_articles.push(v.articles[1].url_id);
                         v.checked_articles.push(v.articles[2].url_id);
