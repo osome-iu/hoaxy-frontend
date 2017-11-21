@@ -234,6 +234,105 @@ var app = new Vue({
                 v.spinStop();
             }, 90000);
         },
+        buildTwitterSearchEdgeList: function(tweetsResponse){
+          // Edge list
+          var twitterEdges = [];
+          // Edge object
+          var twitterEdge = {
+            canonical_url:"",
+            date_published:"",
+            domain:"",
+            from_user_id:"",
+            from_user_screen_name:"",
+            id: undefined,
+            is_mention: undefined,
+            pub_date: undefined,
+            site_domain:"",
+            site_type:"",
+            title:"",
+            to_user_id:"",
+            to_user_screen_name:"",
+            tweet_created_at:"",
+            tweet_id:"",
+            tweet_type:"",
+            url_id: undefined,
+            url_raw:""
+          };
+
+          // Looping over twitter results and adding the articles that we need to further get timelines and graphs of
+          var twitterEntities = tweetsResponse.statuses;
+          console.log("here");
+          console.log(twitterEntities);
+          Object.keys(twitterEntities).forEach(function(key) {
+              // Checking for mentions
+              if (twitterEntities[key].entities.user_mentions.length > 0) {
+                // Mentions found, creating edges for each one
+                for (var mention = 0; mention < twitterEntities[key].entities.user_mentions.length; mention++) {
+                  var nonNullFrom = false;
+                  var nonNullTo = false;
+                  try {
+                    twitterEdge.from_user_id = twitterEntities[key].entities.user_mentions[mention].id_str;
+                    nonNullFrom = true;
+                  } catch(err) {
+                    twitterEdge.from_user_id = "";
+                  }
+                  try {
+                    nonNullFrom = true;
+                    twitterEdge.from_user_screen_name = twitterEntities[key].entities.user_mentions[mention].screen_name;
+                  } catch(err) {
+                    twitterEdge.from_user_screen_name = "";
+                  }
+                  try {
+                    nonNullTo = true;
+                    twitterEdge.to_user_id = twitterEntities[key].entities.user.id_str;
+                  } catch(err) {
+                    twitterEdge.to_user_id = "";
+                  }
+                  try {
+                    nonNullTo = true;
+                    twitterEdge.to_user_screen_name = twitterEntities[key].entities.user.screen_name;
+                  } catch(err) {
+                      twitterEdge.to_user_screen_name = "";
+                  }
+                  if (nonNullFrom && nonNullTo) {
+                       twitterEdges.push(twitterEdge);
+                  }
+
+              }
+
+            }
+          });
+          console.log("TWITTER EDGES:");
+          console.log(twitterEdges);
+          // Updating the graph with new edges
+          this.show_graphs = false;
+          this.graph.updateEdges([]);
+          this.graph.updateEdges(twitterEdges);
+          this.scrollToElement("graphs");
+        },
+        getTwitterSearchResults: function(query){
+            var v = this;
+            var response = undefined;
+            // In this particular case we are obtaining the query as a string, i.e. "cute kitties" and not "cute" and "kitties" separately
+            // Hence we need to convert the query into a quote-string URI i.e. cute%23kitties
+            var query_string = query.replace(" ","%23");
+            // Sending request to getTweets endpoint in tweets.js code-file
+            tweetsReponse = this.twitter.getTweets(query_string);
+            // Handling the get Tweets response
+            tweetsReponse.then(function(response){
+              console.log("TWEETS RESPONSE SUCCESSFUL:");
+              console.log(response);
+              var testResponse = v.buildTwitterSearchEdgeList(response);
+
+              // return response.statuses;
+            }, function(){})
+            .catch(function(error){
+              console.log("TWEETS RESPONSE ERROR:");
+              console.log(error);
+              // return "Request failed";
+            });
+            return response;
+        },
 
         //   ##        #   ##   #    #    ###### #    # #    #  ####  ##### #  ####  #    #  ####
         //  #  #       #  #  #   #  #     #      #    # ##   # #    #   #   # #    # ##   # #
@@ -404,23 +503,6 @@ var app = new Vue({
                 }
             );
             return graph_request;
-        },
-        getTwitterSearchResults: function(query){
-            // In this particular case we are obtaining the query as a string, i.e. "cute kitties" and not "cute" and "kitties" separately
-            // Hence we need to convert the query into a quote-string URI i.e. cute%23kitties
-            var query_string = query.replace(" ","%23");
-            // Sending request to getTweets endpoint in tweets.js code-file
-            tweetsReponse = this.twitter.getTweets(query_string);
-            // Handling the getTweets response
-            tweetsReponse.then(function(response){
-              console.log("TWEETS RESPONSE SUCCESSFUL:");
-              console.log(response);
-            }, function(){})
-            .catch(function(error){
-              console.log("TWEETS RESPONSE ERROR:");
-              console.log(error);
-            });
-            return "LEFT TO DO";
         },
 
 
@@ -596,7 +678,7 @@ var app = new Vue({
       	  else {
             this.show_articles = false;
         		this.show_graphs = false;
-        		// this.checked_articles = [];
+        		this.checked_articles = [];
         		// $("#select_all").prop("checked", false);
         		if(!this.query_text)
         		{
@@ -604,8 +686,8 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
-            var response = this.getTwitterSearchResults(this.query_text);
-            console.log("FINISHED:" + response);
+            var tweetsResponse = this.getTwitterSearchResults(this.query_text);
+
         		//this.changeURLParams();
         		//this.getArticles(dontScroll);
         		this.spinStop();
