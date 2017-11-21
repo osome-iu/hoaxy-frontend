@@ -509,3 +509,12 @@ input:not(:checked) + .check_icons > .fa-square-o
     margin: 0 5px;
 
 }
+
+.graph_legend div.row .info-button
+{
+    color: lightgray;
+}
+.graph_legend div.row:hover .info-button
+{
+    color: black;
+}
