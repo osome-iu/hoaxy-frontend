@@ -5,6 +5,7 @@ from flask_cors import CORS
 import configparser
 from datetime import datetime
 import time
+from collections import Counter
 
 api = Flask(__name__)
 CORS(api)
@@ -266,12 +267,19 @@ def viewFeedback():
         return jsonify({'success': False}), 405
 
     feedbacks = []
+    labels = []
     db_results = dbQueryFeedback()
     for db_result in db_results:
+        labels.append(db_result[2])
         if db_result[2] != "block" and db_result[2] != "unfollow":
             feedbacks.append(db_result)
 
-    return render_template("showfeedback.html", feedbacks=feedbacks)
+    return render_template(
+        "showfeedback.html",
+        feedbacks=feedbacks,
+        total_num = len(labels),
+        label_counter = Counter(labels)
+    )
 
 
 if __name__ == "__main__":
