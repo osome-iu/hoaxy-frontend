@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 import sqlalchemy
 from flask import Flask, jsonify, request, render_template
+from flask_basicauth import BasicAuth
 from flask_cors import CORS
 import configparser
 from datetime import datetime
@@ -12,6 +13,10 @@ CORS(api)
 connection_string = open('.db.connection').read()
 botscore_engine = sqlalchemy.create_engine(connection_string)
 botscore_connection = botscore_engine.connect()
+
+api.config['BASIC_AUTH_USERNAME'] = 'nan'
+api.config['BASIC_AUTH_PASSWORD'] = 'nanisawesome'
+basic_auth = BasicAuth(api)
 
 
 def dbQueryUserIDIn(user_ids):
@@ -282,6 +287,7 @@ def insertFeedback():
 
 
 @api.route("/api/showfeedback", methods=["GET"])
+@basic_auth.required
 def showFeedback():
     if request.method != "GET":
         return jsonify({'success': False}), 405
@@ -303,6 +309,7 @@ def showFeedback():
 
 
 @api.route("/api/showfeedbackwithscore", methods=["GET"])
+@basic_auth.required
 def showFeedbackwithScore():
     if request.method != "GET":
         return jsonify({'success': False}), 405
