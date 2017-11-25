@@ -1,6 +1,6 @@
 # -*- coding: utf8 -*-
 import sqlalchemy
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from flask_cors import CORS
 import configparser
 from datetime import datetime
@@ -43,6 +43,18 @@ def dbQueryUserScreenNameIn(user_names):
         {
             "screen_names": tuple(user_names)
         }
+    )
+    return result
+
+
+def dbQueryFeedback():
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            SELECT id, source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label, feedback_text
+            from feedback
+            """
+        )
     )
     return result
 
@@ -241,6 +253,17 @@ def insertFeedback():
             return jsonify({'success': False}), 400
 
     return jsonify({'success': False}), 405
+
+
+@api.route("/view/feedback", methods=["GET"])
+def viewFeedback():
+    if request.method != "GET":
+        return jsonify({'success': False}), 405
+
+    feedbacks = dbQueryFeedback()
+
+    return render_template("showfeedback.html", feedbacks=feedbacks)
+
 
 if __name__ == "__main__":
     api.run(debug=True, port=6060)
