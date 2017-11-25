@@ -65,7 +65,7 @@
 					</div>
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-						<button class="btn btn-primary btn-blue" id="submit" :disabled="input_disabled" > Search </button>
+						<button class="btn btn-primary btn-blue" id="submit" :disabled="input_disabled" >{{ searchBy == 'hoaxy' ? 'Search' : 'Visualize' }} </button>
 					</div>
 					<div class="clearfix"></div>
 				</form>
