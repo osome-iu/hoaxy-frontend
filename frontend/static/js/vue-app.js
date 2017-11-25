@@ -242,24 +242,24 @@ var app = new Vue({
           var twitterEdges = [];
           // Edge object
           function TwitterEdge() {
-            this.canonical_url="www.testtest.com";
+            this.canonical_url="";
             this.date_published="";
-            this.domain="test.com";
+            this.domain="";
             this.from_user_id="";
             this.from_user_screen_name="";
-            this.id=678857;
+            this.id=undefined;
             this.is_mention= false;
             this.pub_date= "";
-            this.site_domain="test";
+            this.site_domain="";
             this.site_type="claim";
-            this.title="test";
+            this.title="";
             this.to_user_id="";
             this.to_user_screen_name="";
             this.tweet_created_at="";
-            this.tweet_id="915311028266729475";
+            this.tweet_id="";
             this.tweet_type="";
-            this.url_id= 8376291;
-            this.url_raw="www.test.com";
+            this.url_id= undefined;
+            this.url_raw="";
           }
 
           // Timeline stuff
@@ -322,6 +322,13 @@ var app = new Vue({
 
                   if (nonNullFrom && nonNullTo) {
                     // Populate the rest of the edge entities
+
+                    // Attempting to retrieve tweet id
+                    try {
+                      twitterEdge.tweet_id = twitterEntities[key].id_str;
+                    } catch(err) {
+                        twitterEdge.tweet_id = "";
+                    }
                     var createdAt = twitterEntities[key].created_at;
                     // Changing to the YYYY-MM-DDT00:00:00Z date format
                     var createdAtArray = createdAt.split(" ");
