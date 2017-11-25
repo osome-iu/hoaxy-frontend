@@ -36,18 +36,18 @@ h1 {
     <table>
     <tr>
         <th>id</th>
-        <th>source_user_id</th>
         <th>target_user_id</th>
         <th>target_screen_name</th>
-        <th>time_stamp</th>
         <th>feedback_label</th>
         <th>feedback_text</th>
+        <th>time_stamp</th>
     </tr>
     {% for feedback in feedbacks%}
     <tr>
-        {% for i in range(7)%}
+        {% for i in range(5)%}
             <th>{{feedback[i]}}</th>
         {% endfor%}
+        <th>{{feedback[5]|strftime}}</th>
     </tr>
     {% endfor %}
   <tr>
