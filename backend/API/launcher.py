@@ -60,6 +60,23 @@ def dbQueryFeedback():
     return result
 
 
+def dbQueryFeedbackWithScore():
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            SELECT target_screen_name, feedback_label, feedback_text, feedback.time_stamp, feedbackscore.bot_score_english, feedbackscore.bot_score_universal, feedbackscore.time_stamp FROM feedback
+            LEFT JOIN
+            (SELECT DISTINCT ON (user_id) id, user_id, screen_name, bot_score_english, bot_score_universal, botscore.time_stamp
+            FROM botscore
+            WHERE user_id IN (SELECT target_user_id FROM feedback)
+            ORDER BY user_id, botscore.time_stamp DESC) AS feedbackscore
+            ON target_user_id = user_id;
+            """
+        )
+    )
+    return result
+
+
 def dbIncreaseNumRequest(id):
     botscore_connection.execute(
         sqlalchemy.text(
@@ -126,7 +143,10 @@ def getUserRecordStatus(user_entry, tweets_per_day, num_requests, config_file):
 
 @api.template_filter('strftime')
 def _jinja2_filter_datetime(date, fmt=None):
-    return date.strftime("%y-%m-%d %H:%M")
+    if date:
+        return date.strftime("%y-%m-%d %H:%M")
+    else:
+        return None
 
 
 @api.route("/")
@@ -262,7 +282,7 @@ def insertFeedback():
 
 
 @api.route("/api/showfeedback", methods=["GET"])
-def viewFeedback():
+def showFeedback():
     if request.method != "GET":
         return jsonify({'success': False}), 405
 
@@ -276,6 +296,28 @@ def viewFeedback():
 
     return render_template(
         "showfeedback.html",
+        feedbacks=feedbacks,
+        total_num = len(labels),
+        label_counter = Counter(labels)
+    )
+
+
+@api.route("/api/showfeedbackwithscore", methods=["GET"])
+def showFeedbackwithScore():
+    if request.method != "GET":
+        return jsonify({'success': False}), 405
+
+    feedbacks = []
+    labels = []
+    db_results = dbQueryFeedbackWithScore()
+    for db_result in db_results:
+        labels.append(db_result[2])
+        if db_result[1] != "block" and db_result[1] != "unfollow":
+            feedbacks.append(db_result)
+
+    print(feedbacks)
+    return render_template(
+        "showfeedbackwithscore.html",
         feedbacks=feedbacks,
         total_num = len(labels),
         label_counter = Counter(labels)
