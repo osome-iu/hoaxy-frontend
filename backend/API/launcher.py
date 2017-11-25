@@ -311,7 +311,7 @@ def showFeedbackwithScore():
     labels = []
     db_results = dbQueryFeedbackWithScore()
     for db_result in db_results:
-        labels.append(db_result[2])
+        labels.append(db_result[1])
         if db_result[1] != "block" and db_result[1] != "unfollow":
             feedbacks.append(db_result)
 
