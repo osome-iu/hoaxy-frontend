@@ -315,7 +315,6 @@ def showFeedbackwithScore():
         if db_result[1] != "block" and db_result[1] != "unfollow":
             feedbacks.append(db_result)
 
-    print(feedbacks)
     return render_template(
         "showfeedbackwithscore.html",
         feedbacks=feedbacks,
