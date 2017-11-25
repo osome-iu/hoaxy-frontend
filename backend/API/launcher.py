@@ -51,7 +51,7 @@ def dbQueryFeedback():
     result = botscore_connection.execute(
         sqlalchemy.text(
             """
-            SELECT id, target_user_id, target_screen_name, feedback_label, feedback_text, time_stamp
+            SELECT id, target_screen_name, feedback_label, feedback_text, time_stamp
             from feedback
             """
         )
@@ -265,7 +265,11 @@ def viewFeedback():
     if request.method != "GET":
         return jsonify({'success': False}), 405
 
-    feedbacks = dbQueryFeedback()
+    feedbacks = []
+    db_results = dbQueryFeedback()
+    for db_result in db_results:
+        if db_result[2] != "block" and db_result[2] != "unfollow":
+            feedbacks.append(db_result)
 
     return render_template("showfeedback.html", feedbacks=feedbacks)
 
