@@ -255,7 +255,7 @@ def insertFeedback():
     return jsonify({'success': False}), 405
 
 
-@api.route("/view/feedback", methods=["GET"])
+@api.route("/api/showfeedback", methods=["GET"])
 def viewFeedback():
     if request.method != "GET":
         return jsonify({'success': False}), 405
