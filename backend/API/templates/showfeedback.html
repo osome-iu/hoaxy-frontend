@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Botometer Feedback</title>
+    <style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+table, th, td {
+    border: 1px solid black;
+    
+}
+
+h1 {
+    text-align: center;
+}
+</style>
+</head>
+<body>
+    <h1>Botometer Feedback</h1>
+
+    <table>
+    <tr>
+        <th>id</th>
+        <th>source_user_id</th>
+        <th>target_user_id</th>
+        <th>target_screen_name</th>
+        <th>time_stamp</th>
+        <th>feedback_label</th>
+        <th>feedback_text</th>
+    </tr>
+    {% for feedback in feedbacks%}
+    <tr>
+        {% for i in range(7)%}
+            <th>{{feedback[i]}}</th>
+        {% endfor%}
+    </tr>
+    {% endfor %}
+  <tr>
+  </tr>
+</table>
+</body>
+</html>
