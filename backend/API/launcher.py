@@ -51,7 +51,7 @@ def dbQueryFeedback():
     result = botscore_connection.execute(
         sqlalchemy.text(
             """
-            SELECT id, source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label, feedback_text
+            SELECT id, target_user_id, target_screen_name, feedback_label, feedback_text, time_stamp
             from feedback
             """
         )
@@ -121,6 +121,11 @@ def getUserRecordStatus(user_entry, tweets_per_day, num_requests, config_file):
                 return False
     else:
         return None
+
+
+@api.template_filter('strftime')
+def _jinja2_filter_datetime(date, fmt=None):
+    return date.strftime("%y-%m-%d %H:%M")
 
 
 @api.route("/")
