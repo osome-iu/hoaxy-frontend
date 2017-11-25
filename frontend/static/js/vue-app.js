@@ -241,26 +241,26 @@ var app = new Vue({
           // Edge list
           var twitterEdges = [];
           // Edge object
-          var twitterEdge = {
-            canonical_url:"",
-            date_published:"",
-            domain:"",
-            from_user_id:"",
-            from_user_screen_name:"",
-            id: undefined,
-            is_mention: "",
-            pub_date: "",
-            site_domain:"test",
-            site_type:"claim",
-            title:"",
-            to_user_id:"",
-            to_user_screen_name:"",
-            tweet_created_at:"",
-            tweet_id:"",
-            tweet_type:"",
-            url_id: undefined,
-            url_raw:"www.test.com"
-          };
+          function TwitterEdge() {
+            this.canonical_url="";
+            this.date_published="";
+            this.domain="";
+            this.from_user_id="";
+            this.from_user_screen_name="";
+            this.id=undefined;
+            this.is_mention= "";
+            this.pub_date= "";
+            this.site_domain="test";
+            this.site_type="claim";
+            this.title="";
+            this.to_user_id="";
+            this.to_user_screen_name="";
+            this.tweet_created_at="";
+            this.tweet_id="";
+            this.tweet_type="";
+            this.url_id= undefined;
+            this.url_raw="www.test.com";
+          }
 
           // Timeline stuff
           var timeline = {
@@ -287,6 +287,7 @@ var app = new Vue({
               if (twitterEntities[key].entities.user_mentions.length > 0) {
                 // Mentions found, creating edges for each one
                 for (var mention = 0; mention < twitterEntities[key].entities.user_mentions.length; mention++) {
+                  var twitterEdge = new TwitterEdge();
                   var nonNullFrom = false;
                   var nonNullTo = false;
 
@@ -383,13 +384,16 @@ var app = new Vue({
           v.spinStart("generateNetwork");
 
           v.show_graphs = true;
-          var edge_list = [];
+          // var edge_list = [];
           Vue.nextTick(function(){
-              edge_list = twitterEdges.map(function(x){
-                  y = x;
-                  return y;
-              });
-              v.graph.updateEdges(edge_list);
+              // edge_list = twitterEdges.map(function(x){
+              //     y = x;
+              //     return y;
+              // });
+              console.log("POST EDGES:");
+              console.log(twitterEdges);
+              console.log(typeof(twitterEdges));
+              v.graph.updateEdges(twitterEdges);
               v.updateGraph();
               // v.timeline.redraw();
               v.spinStop("generateNetwork");
