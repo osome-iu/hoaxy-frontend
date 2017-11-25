@@ -242,23 +242,23 @@ var app = new Vue({
           var twitterEdges = [];
           // Edge object
           function TwitterEdge() {
-            this.canonical_url="";
+            this.canonical_url="www.testtest.com";
             this.date_published="";
-            this.domain="";
+            this.domain="test.com";
             this.from_user_id="";
             this.from_user_screen_name="";
-            this.id=undefined;
-            this.is_mention= "";
+            this.id=678857;
+            this.is_mention= false;
             this.pub_date= "";
             this.site_domain="test";
             this.site_type="claim";
-            this.title="";
+            this.title="test";
             this.to_user_id="";
             this.to_user_screen_name="";
             this.tweet_created_at="";
-            this.tweet_id="";
+            this.tweet_id="915311028266729475";
             this.tweet_type="";
-            this.url_id= undefined;
+            this.url_id= 8376291;
             this.url_raw="www.test.com";
           }
 
@@ -288,6 +288,7 @@ var app = new Vue({
                 // Mentions found, creating edges for each one
                 for (var mention = 0; mention < twitterEntities[key].entities.user_mentions.length; mention++) {
                   var twitterEdge = new TwitterEdge();
+                  twitterEdge.is_mention = true;
                   var nonNullFrom = false;
                   var nonNullTo = false;
 
@@ -384,50 +385,19 @@ var app = new Vue({
           v.spinStart("generateNetwork");
 
           v.show_graphs = true;
-          // var edge_list = [];
+
           Vue.nextTick(function(){
-              // edge_list = twitterEdges.map(function(x){
-              //     y = x;
-              //     return y;
-              // });
               console.log("POST EDGES:");
               console.log(twitterEdges);
               console.log(typeof(twitterEdges));
               v.graph.updateEdges(twitterEdges);
               v.updateGraph();
-              // v.timeline.redraw();
               v.spinStop("generateNetwork");
               v.scrollToElement("graphs");
           });
 
           this.spinStop("buildGraph");
           return "ok";
-          //HOLD off
-          // this.spinStop("buildGraph");
-          // console.log("TWITTER EDGES:");
-          // console.log(twitterEdges);
-          // // Updating the graph with new edges
-          // this.show_graphs = false;
-          // this.graph.updateEdges([]);
-          // this.graph.updateEdges(twitterEdges);
-          // // Timeline stuff
-          // this.show_graphs = true;
-          // this.timeline.update(timeline);
-          // this.scrollToElement("graphs");
-          // this.timeline.redraw();
-          //
-          // // Graph stuff
-          // this.show_graphs = true;
-          // var v = this;
-          // Vue.nextTick(function(){
-          //     console.log("test");
-          //
-          //     });
-          //     v.graph.updateEdges(twitterEdges);
-          //     v.updateGraph();
-          //     v.timeline.redraw();
-          //
-          // this.scrollToElement("graphs");
         },
         getTwitterSearchResults: function(query){
             this.spinStart("getTwitterSearchResults");
@@ -604,6 +574,8 @@ var app = new Vue({
                             y.url_raw = x.canonical_url;
                             return y;
                         });
+                        console.log("HOAXY PRE STUFF:");
+                        console.log(edge_list);
                         v.graph.updateEdges(edge_list);
                         v.updateGraph();
                         // v.timeline.redraw();
