@@ -518,3 +518,8 @@ input:not(:checked) + .check_icons > .fa-square-o
 {
     color: black;
 }
+
+.nvtooltip table tr:nth-child(3)
+{
+    display: none;
+}
