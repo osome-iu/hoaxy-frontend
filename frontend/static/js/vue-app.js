@@ -293,28 +293,28 @@ var app = new Vue({
                   var nonNullTo = false;
 
                   try {
-                    twitterEdge.from_user_id = twitterEntities[key].entities.user_mentions[mention].id_str;
+                    twitterEdge.from_user_id = twitterEntities[key].user.id_str;
                     nonNullFrom = true;
                   } catch(err) {
                     twitterEdge.from_user_id = "";
                   }
 
                   try {
-                    twitterEdge.from_user_screen_name = twitterEntities[key].entities.user_mentions[mention].screen_name;
+                    twitterEdge.from_user_screen_name = twitterEntities[key].user.screen_name;
                     nonNullFrom = true;
                   } catch(err) {
                     twitterEdge.from_user_screen_name = "";
                   }
 
                   try {
-                    twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                    twitterEdge.to_user_id = twitterEntities[key].entities.user_mentions[mention].id_str;
                     nonNullTo = true;
                   } catch(err) {
                     twitterEdge.to_user_id = "";
                   }
 
                   try {
-                    twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
+                    twitterEdge.to_user_screen_name = twitterEntities[key].entities.user_mentions[mention].screen_name;
                     nonNullTo = true;
                   } catch(err) {
                       twitterEdge.to_user_screen_name = "";
