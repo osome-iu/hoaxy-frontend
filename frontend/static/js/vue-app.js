@@ -234,6 +234,20 @@ var app = new Vue({
                 v.spinStop();
             }, 90000);
         },
+        formatDate: function(unFormattedDate) {
+          // Changing to the YYYY-MM-DDT00:00:00Z date format
+          var createdAtArray = unFormattedDate.split(" ");
+          // Invoking the moment.js package to yield us the number months
+          var month = moment.monthsShort().indexOf(createdAtArray[1]) + 1;
+          var monthStr = month.toString();
+          // Padding the month with an extra prefix 0 in case it is just length of one i.e. 8 -> 08
+          if (monthStr.length == 1) {
+            monthStr = "0" + monthStr;
+          }
+          // Creating final formatted date
+          var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
+          return(formattedDate);
+        },
         buildTwitterSearchEdgeList: function(tweetsResponse){
           this.spinStart("buildGraph");
           this.spinner_notices.timeline = "Building Graph and Timeline...";
@@ -282,15 +296,87 @@ var app = new Vue({
           console.log(twitterEntities);
           var totalTwitterEntities = twitterEntities.length;
           var previousDate = "";
+          // Used to maintain data integrity
+          var nonNullFrom = false;
+          var nonNullTo = false;
           for (var key = totalTwitterEntities-1; key>=0; key--) {
+              // Checking for retweets
+              nonNullFrom = false;
+              nonNullTo = false;
+              // Checking for quotes
+              if (twitterEntities[key].is_quote_status) {
+                var twitterEdge = new TwitterEdge();
+
+                try {
+                  twitterEdge.from_user_id = twitterEntities[key].quoted_status.user.id_str;
+                  nonNullFrom = true;
+                } catch(err) {
+                  twitterEdge.from_user_id = "";
+                }
+
+                try {
+                  twitterEdge.from_user_screen_name = twitterEntities[key].quoted_status.user.screen_name;
+                  nonNullFrom = true;
+                } catch(err) {
+                  twitterEdge.from_user_screen_name = "";
+                }
+
+                try {
+                  twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                  nonNullTo = true;
+                } catch(err) {
+                  twitterEdge.to_user_id = "";
+                }
+
+                try {
+                  twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
+                  nonNullTo = true;
+                } catch(err) {
+                  twitterEdge.to_user_screen_name = "";
+                }
+
+                if (nonNullFrom && nonNullTo) {
+                  // Populate the rest of the edge entities
+
+                  // Attempting to retrieve tweet id
+                  try {
+                    twitterEdge.tweet_id = twitterEntities[key].id_str;
+                  } catch(err) {
+                      twitterEdge.tweet_id = "";
+                  }
+                  var formattedDate = this.formatDate(twitterEntities[key].created_at);
+                  // Updating edges
+                  twitterEdge.date_published = formattedDate;
+                  twitterEdge.pub_date = formattedDate;
+                  twitterEdge.tweet_created_at = formattedDate;
+                  twitterEdge.tweet_type = "quote";
+                  twitterEdges.push(twitterEdge);
+
+                  // Updating the timeline
+                  total_claims+=1;
+                  if (previousDate != formattedDate) {
+                    total_dates+=1;
+                    timeline.claim.timestamp.push(formattedDate);
+                    timeline.claim.volume.push(total_claims);
+                    previousDate = formattedDate;
+                  } else {
+                    timeline.claim.volume[total_dates-1] = total_claims;
+                  }
+
+                  timeline.fact_checking.timestamp.push(formattedDate);
+                  timeline.fact_checking.volume.push(0);
+                }
+
+              }
+
               // Checking for mentions
               if (twitterEntities[key].entities.user_mentions.length > 0) {
+                nonNullFrom = false;
+                nonNullTo = false;
                 // Mentions found, creating edges for each one
                 for (var mention = 0; mention < twitterEntities[key].entities.user_mentions.length; mention++) {
                   var twitterEdge = new TwitterEdge();
                   twitterEdge.is_mention = true;
-                  var nonNullFrom = false;
-                  var nonNullTo = false;
 
                   try {
                     twitterEdge.from_user_id = twitterEntities[key].user.id_str;
@@ -329,19 +415,7 @@ var app = new Vue({
                     } catch(err) {
                         twitterEdge.tweet_id = "";
                     }
-                    var createdAt = twitterEntities[key].created_at;
-                    // Changing to the YYYY-MM-DDT00:00:00Z date format
-                    var createdAtArray = createdAt.split(" ");
-                    // Invoking the moment.js package to yield us the number months
-                    var month = moment.monthsShort().indexOf(createdAtArray[1]) + 1;
-                    var monthStr = month.toString();
-                    // Padding the month with an extra prefix 0 in case it is just length of one i.e. 8 -> 08
-                    if (monthStr.length == 1) {
-                      monthStr = "0" + monthStr;
-                    }
-                    // Creating final formatted date
-                    var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
-
+                    var formattedDate = this.formatDate(twitterEntities[key].created_at);
                     // Updating edges
                     twitterEdge.date_published = formattedDate;
                     twitterEdge.pub_date = formattedDate;
