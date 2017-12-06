@@ -248,7 +248,7 @@ var app = new Vue({
           var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
           return(formattedDate);
         },
-        buildTwitterSearchEdgeList: function(tweetsResponse){
+        buildTwitterSearchTimelineAndGraph: function(tweetsResponse){
           this.spinStart("buildGraph");
           this.spinner_notices.timeline = "Building Graph and Timeline...";
 
@@ -299,11 +299,82 @@ var app = new Vue({
           // Used to maintain data integrity
           var nonNullFrom = false;
           var nonNullTo = false;
+
+          // Function used for updating the edges and timeline from retweets, quotes, and mentions
+          function updateEdgesAndTimeline(typeOfTweet) {
+            try {
+              twitterEdge.tweet_id = twitterEntities[key].id_str;
+            } catch(err) {
+                twitterEdge.tweet_id = "";
+            }
+            var formattedDate = v.formatDate(twitterEntities[key].created_at);
+            // Updating edges
+            twitterEdge.date_published = formattedDate;
+            twitterEdge.pub_date = formattedDate;
+            twitterEdge.tweet_created_at = formattedDate;
+            twitterEdge.tweet_type = typeOfTweet;
+            twitterEdges.push(twitterEdge);
+
+            // Updating the timeline
+            total_claims+=1;
+            if (previousDate != formattedDate) {
+              total_dates+=1;
+              timeline.claim.timestamp.push(formattedDate);
+              timeline.claim.volume.push(total_claims);
+              previousDate = formattedDate;
+            } else {
+              timeline.claim.volume[total_dates-1] = total_claims;
+            }
+
+            timeline.fact_checking.timestamp.push(formattedDate);
+            timeline.fact_checking.volume.push(0);
+          }
+
           for (var key = totalTwitterEntities-1; key>=0; key--) {
               // Checking for retweets
               nonNullFrom = false;
               nonNullTo = false;
+              if (twitterEntities[key].retweeted_status) {
+                var twitterEdge = new TwitterEdge();
+
+                try {
+                  twitterEdge.from_user_id = twitterEntities[key].retweeted_status.user.id_str;
+                  nonNullFrom = true;
+                } catch(err) {
+                  twitterEdge.from_user_id = "";
+                }
+
+                try {
+                  twitterEdge.from_user_screen_name = twitterEntities[key].retweeted_status.user.screen_name;
+                  nonNullFrom = true;
+                } catch(err) {
+                  twitterEdge.from_user_screen_name = "";
+                }
+
+                try {
+                  twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                  nonNullTo = true;
+                } catch(err) {
+                  twitterEdge.to_user_id = "";
+                }
+
+                try {
+                  twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
+                  nonNullTo = true;
+                } catch(err) {
+                  twitterEdge.to_user_screen_name = "";
+                }
+
+                if (nonNullFrom && nonNullTo) {
+                  // Populate the rest of the edge entities
+                  // Attempting to retrieve tweet id
+                  updateEdgesAndTimeline("retweet");
+                }
+              }
+
               // Checking for quotes
+              nonNullFrom = false;
+              nonNullTo = false;
               if (twitterEntities[key].is_quote_status) {
                 var twitterEdge = new TwitterEdge();
 
@@ -337,34 +408,7 @@ var app = new Vue({
 
                 if (nonNullFrom && nonNullTo) {
                   // Populate the rest of the edge entities
-
-                  // Attempting to retrieve tweet id
-                  try {
-                    twitterEdge.tweet_id = twitterEntities[key].id_str;
-                  } catch(err) {
-                      twitterEdge.tweet_id = "";
-                  }
-                  var formattedDate = this.formatDate(twitterEntities[key].created_at);
-                  // Updating edges
-                  twitterEdge.date_published = formattedDate;
-                  twitterEdge.pub_date = formattedDate;
-                  twitterEdge.tweet_created_at = formattedDate;
-                  twitterEdge.tweet_type = "quote";
-                  twitterEdges.push(twitterEdge);
-
-                  // Updating the timeline
-                  total_claims+=1;
-                  if (previousDate != formattedDate) {
-                    total_dates+=1;
-                    timeline.claim.timestamp.push(formattedDate);
-                    timeline.claim.volume.push(total_claims);
-                    previousDate = formattedDate;
-                  } else {
-                    timeline.claim.volume[total_dates-1] = total_claims;
-                  }
-
-                  timeline.fact_checking.timestamp.push(formattedDate);
-                  timeline.fact_checking.volume.push(0);
+                  updateEdgesAndTimeline("quote");
                 }
 
               }
@@ -408,77 +452,72 @@ var app = new Vue({
 
                   if (nonNullFrom && nonNullTo) {
                     // Populate the rest of the edge entities
-
-                    // Attempting to retrieve tweet id
-                    try {
-                      twitterEdge.tweet_id = twitterEntities[key].id_str;
-                    } catch(err) {
-                        twitterEdge.tweet_id = "";
-                    }
-                    var formattedDate = this.formatDate(twitterEntities[key].created_at);
-                    // Updating edges
-                    twitterEdge.date_published = formattedDate;
-                    twitterEdge.pub_date = formattedDate;
-                    twitterEdge.tweet_created_at = formattedDate;
-                    twitterEdge.tweet_type = "mention";
-                    twitterEdges.push(twitterEdge);
-
-                    // Updating the timeline
-                    total_claims+=1;
-                    if (previousDate != formattedDate) {
-                      total_dates+=1;
-                      timeline.claim.timestamp.push(formattedDate);
-                      timeline.claim.volume.push(total_claims);
-                      previousDate = formattedDate;
-                    } else {
-                      timeline.claim.volume[total_dates-1] = total_claims;
-                    }
-
-                    timeline.fact_checking.timestamp.push(formattedDate);
-                    timeline.fact_checking.volume.push(0);
+                    updateEdgesAndTimeline("mention");
                   }
 
               }
 
             }
           }
-          v.spinner_notices.timeline = "";
-          v.spinStart("updateTimeline");
-          v.show_graphs = true;
-          //update the timeline on the next tick because at this point
-          // the graphs are still hidden. Graphs will be visible on the
-          // next tick
-          Vue.nextTick(function(){
-              v.timeline.update(timeline);
-              v.spinStop("updateTimeline");
-              v.scrollToElement("graphs");
-              v.timeline.redraw();
-          });
 
-          this.spinStart("getNetwork");
-          this.spinner_notices.graph = "Fetching graph...";
+          // Checking if any edges were found and if not, show message to user to try another query
+          if (twitterEdges.length == 0) {
+            console.log("no edges found");
+            v.spinStop("buildGraph");
+            v.show_zoom_buttons = false;
+            v.failed_to_get_network = true;
+            v.spinner_notices.graph = "";
+            v.show_graphs = true;
+            Vue.nextTick(function(){
+                v.graph.updateEdges(twitterEdges);
+                v.updateGraph();
+                v.spinStop("generateNetwork");
+                v.scrollToElement("graphs");
+            });
+            this.spinStop("buildGraph");
+            return "ok";
+          }
+          else {
+            // Edges found so create the graph
+            v.spinner_notices.timeline = "";
+            v.spinStart("updateTimeline");
+            v.show_graphs = true;
+            //update the timeline on the next tick because at this point
+            // the graphs are still hidden. Graphs will be visible on the
+            // next tick
+            Vue.nextTick(function(){
+                v.timeline.update(timeline);
+                v.spinStop("updateTimeline");
+                v.scrollToElement("graphs");
+                v.timeline.redraw();
+            });
 
-          this.timeline.removeUpdateDateRangeCallback();
-          this.failed_to_get_network = false;
+            this.spinStart("getNetwork");
+            this.spinner_notices.graph = "Fetching graph...";
 
-          v.spinStop("getNetwork");
-          v.spinner_notices.graph = "Drawing Graph...";
-          v.spinStart("generateNetwork");
+            this.timeline.removeUpdateDateRangeCallback();
+            this.failed_to_get_network = false;
 
-          v.show_graphs = true;
+            v.spinStop("getNetwork");
+            v.spinner_notices.graph = "Drawing Graph...";
+            v.spinStart("generateNetwork");
 
-          Vue.nextTick(function(){
-              console.log("POST EDGES:");
-              console.log(twitterEdges);
-              console.log(typeof(twitterEdges));
-              v.graph.updateEdges(twitterEdges);
-              v.updateGraph();
-              v.spinStop("generateNetwork");
-              v.scrollToElement("graphs");
-          });
+            v.show_graphs = true;
 
-          this.spinStop("buildGraph");
-          return "ok";
+            Vue.nextTick(function(){
+                console.log("POST EDGES:");
+                console.log(twitterEdges);
+                console.log(typeof(twitterEdges));
+                v.graph.updateEdges(twitterEdges);
+                v.updateGraph();
+                v.spinStop("generateNetwork");
+                v.scrollToElement("graphs");
+            });
+
+            this.spinStop("buildGraph");
+            return "ok";
+          }
+
         },
         getTwitterSearchResults: function(query){
             this.spinStart("getTwitterSearchResults");
@@ -495,7 +534,7 @@ var app = new Vue({
               console.log("TWEETS RESPONSE SUCCESSFUL:");
               console.log(response);
               v.spinStop("getTwitterSearchResults");
-              var testResponse = v.buildTwitterSearchEdgeList(response);
+              var testResponse = v.buildTwitterSearchTimelineAndGraph(response);
               return response;
             }, function(){})
             .catch(function(error){
