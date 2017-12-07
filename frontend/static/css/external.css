@@ -234,6 +234,7 @@ li
 #bot_legend_gradient
 {
     width: 30rem;
+    max-width: 40vh;
     height: 2rem;
     position: absolute;
     transform: rotate(90deg);
