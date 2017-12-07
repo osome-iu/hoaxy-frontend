@@ -541,6 +541,7 @@ var app = new Vue({
         },
         stopGraphAnimation: function(){
             this.graph.stopAnimation();
+            // this.graphAnimation.current_timestamp = 0;
         },
         pauseGraphAnimation: function(){
             this.graph.pauseAnimation();
@@ -725,6 +726,13 @@ var app = new Vue({
         }
     },
     watch: {
+        "graphAnimation.current_timestamp": function(){
+
+                // this.timeline.removeUpdateDateRangeCallback();
+                // this.timeline.update(this.timeline.getLastData());
+                // this.timeline.redraw();
+                this.timeline.updateTimestamp();
+        }
         // "twitter.me": function(){
         //     console.info("twitter");
         //     this.twitter_authorized = !!this.twitter.me();
@@ -820,7 +828,21 @@ var app = new Vue({
 
         //create the chart that is used to visualize the timeline
         // the updateGraph function is a callback when the timeline interval is adjusted
-        this.timeline = new HoaxyTimeline(this.updateGraph);
+        this.timeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+
+
+        this.timeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+
+            v.pauseGraphAnimation();
+            v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+            v.graphAnimation.increment = 0;
+    		v.graphAnimation.playing  = true;
+    		v.graphAnimation.paused = true;
+            v.unpauseGraphAnimation();
+            v.pauseGraphAnimation();
+
+            // console.debug(new Date(e.pointXValue))
+        });
 
         // this.displayError("Test Error");
 

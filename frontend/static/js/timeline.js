@@ -1,7 +1,11 @@
-function HoaxyTimeline(updateDateRangeCallback){
+function HoaxyTimeline(settings){
+	var updateDateRangeCallback = settings.updateDateRangeCallback;
+	var graphAnimation = settings.graphAnimation;
 
 	var returnObj = {};
 	var chart = null;
+	var lastData = null;
+
 	chart = nv.models.lineWithFocusChart()
 		.showLegend(false)
 		.useInteractiveGuideline(true);
@@ -15,7 +19,7 @@ function HoaxyTimeline(updateDateRangeCallback){
 	chart.forceY([0])
 	chart.yAxis.axisLabel("Tweets");
 
-	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking]); //color match with those of nodes
+	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking, "#00ff00"]); //color match with those of nodes
 	var chartData = [];
 
 	function redraw(){
@@ -25,6 +29,7 @@ function HoaxyTimeline(updateDateRangeCallback){
 			d3.select('#chart svg')
 			.call(chart);
 			chart.dispatch.on("brush", updateDateRange);
+			// chart.interactiveLayer.dispatch.on("elementClick", function(e){ console.debug(new Date(e.pointXValue)) });
 		}
 	}
 	function removeUpdateDateRangeCallback(){
@@ -82,7 +87,11 @@ function HoaxyTimeline(updateDateRangeCallback){
 
 	}
 
+	var max = 0;
 	var Update = function(data){
+		lastData = data;
+		// var min_time = new Date().getTime();
+		var max_time = 0;
 		if(!data)
 		{
 			return {"time": null, "factChecking_values": [], "fake_values": []};
@@ -94,11 +103,31 @@ function HoaxyTimeline(updateDateRangeCallback){
 
 		for (var i in volume_fake)
 		{
+			var ts = new Date(time[i]).getTime();
+			if(volume_factchecking[i] > max)
+			{
+				max = volume_factchecking[i];
+			}
+			if(volume_fake[i] > max)
+			{
+				max = volume_fake[i];
+			}
+			// if(ts < min_time)
+			// {
+			// 	min_time = ts;
+			// }
+			if(ts > max_time)
+			{
+				max_time = ts;
+			}
+			// console.debug(time[i], max_time);
+
 			factChecking_values.push({x: new Date(time[i]), y: volume_factchecking[i]});
 			fake_values.push({x: new Date(time[i]), y: volume_fake[i]});
 		}
 
-
+// console.debug("Max:", max);
+// console.debug("Time:", min_time, min_time + Math.floor((max_time - min_time)/2), max_time);
 
 		chartData.length = 0;
 		if(!!chart.update){
@@ -120,6 +149,17 @@ function HoaxyTimeline(updateDateRangeCallback){
 
 		chartData.push(fake_series);
 		chartData.push(factChecking_series);
+		// console.debug(factChecking_series);
+
+		// chartData.push({
+		// 	key: 'Time',
+		// 	values: [
+		// 		{ x: new Date(max_time), y: 0},
+		// 		{ x: new Date(max_time), y: max}
+		// 	],
+		// 	// c: "#00ff00"
+        //
+		// });
 
 		// This adds an event handler to the focus chart
 		try {
@@ -131,6 +171,8 @@ function HoaxyTimeline(updateDateRangeCallback){
 		catch(e){
 			console.debug(e);
 		}
+
+		// console.log(chart);
 	}
 
 	function triggerUpdateRange(){
@@ -144,10 +186,46 @@ function HoaxyTimeline(updateDateRangeCallback){
 		}
 	}
 
+	function UpdateTimestamp(){
+		if(graphAnimation.current_timestamp)
+		{
+
+			chartData[2] = {
+				key: 'Time',
+				values: [
+					{ x: new Date(graphAnimation.current_timestamp), y: 0},
+					{ x: new Date(graphAnimation.current_timestamp), y: max}
+				],
+				disableTooltip: true
+				// disabled: true
+				// c: "#00ff00"
+
+			};
+
+			// chartData[2].values = [
+			// 		{ x: new Date(graphAnimation.current_timestamp), y: 0},
+			// 		{ x: new Date(graphAnimation.current_timestamp), y: max}
+			// 	];
+		}
+		else
+		{
+			delete chartData[2];
+		}
+		// console.debug(chartData);
+		chart.dispatch.on("brush", null);
+		d3.select('#chart svg')
+		.datum(chartData)
+		.call(chart);
+		chart.dispatch.on("brush", updateDateRange);
+
+	}
+
 	returnObj.removeUpdateDateRangeCallback = removeUpdateDateRangeCallback;
 	returnObj.update = Update;
 	returnObj.chart = chart;
 	returnObj.redraw = redraw;
 	returnObj.updateDateRange = triggerUpdateRange;
+	returnObj.updateTimestamp = UpdateTimestamp;
+	// returnObj.getLastData = function(){ return lastData };
 	return returnObj;
 }
