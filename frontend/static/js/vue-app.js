@@ -808,6 +808,20 @@ var app = new Vue({
         // the updateGraph function is a callback when the timeline interval is adjusted
         this.timeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
 
+
+        this.timeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+
+            v.pauseGraphAnimation();
+            v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+            v.graphAnimation.increment = 0;
+    		v.graphAnimation.playing  = true;
+    		v.graphAnimation.paused = true;
+            v.unpauseGraphAnimation();
+            v.pauseGraphAnimation();
+
+            // console.debug(new Date(e.pointXValue))
+        });
+
         // this.displayError("Test Error");
 
         this.spinStop("initialLoad");

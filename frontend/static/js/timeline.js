@@ -29,6 +29,7 @@ function HoaxyTimeline(settings){
 			d3.select('#chart svg')
 			.call(chart);
 			chart.dispatch.on("brush", updateDateRange);
+			// chart.interactiveLayer.dispatch.on("elementClick", function(e){ console.debug(new Date(e.pointXValue)) });
 		}
 	}
 	function removeUpdateDateRangeCallback(){
