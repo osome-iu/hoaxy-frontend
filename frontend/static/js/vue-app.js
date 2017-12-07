@@ -425,8 +425,18 @@ var app = new Vue({
 
                 },
                 function (error) {
-                    v.displayError("Get Graph Request failed: " + error.response.statusText);
-                    console.log('Network Graph Request Error', error.response.statusText);
+                    var error_message = "";
+                    if(error.response)
+                    {
+                        error_message = error.response.statusText;
+                    }
+                    else
+                    {
+                        error_message = "Unknown error, likely a problem connecting to API server.";
+                    }
+
+                    v.displayError("Get Graph Request failed: " + error_message);
+                    console.log('Network Graph Request Error', error_message);
                     v.spinStop("getNetwork");
                     v.spinner_notices.graph = "";
                 }
