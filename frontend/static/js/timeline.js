@@ -89,6 +89,7 @@ function HoaxyTimeline(settings){
 
 	var max = 0;
 	var Update = function(data){
+		max = 0;
 		lastData = data;
 		// var min_time = new Date().getTime();
 		var max_time = 0;
