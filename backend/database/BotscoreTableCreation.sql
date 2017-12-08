@@ -19,6 +19,7 @@ CREATE TABLE public.botscore
 WITH (
   OIDS=FALSE
 );
+
 ALTER TABLE public.botscore
   OWNER TO botometer;
 
