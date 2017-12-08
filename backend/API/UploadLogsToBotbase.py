@@ -2,16 +2,17 @@
 
 #Author: Mihai Avram, e-mail: mihai.v.avram@gmail.com
 
+#TODO BEFORE RUNNING SCRIPT - CHANGE LOG PATHS, LOG NAMES, AND DB CONNECTION STRING
+
 #ALL IMPORTS
 #for parsing the data in the logs
 import json
 #for connecting to the database
 import psycopg2
 #for error logging
-import sys
+import sys, traceback
 #for timing purposes
 import time
-
 
 #ALL FUNCTIONS
 #function for deciding on a score value to use for bot_score_english and bot_score_universal depending on what's available in the log
@@ -35,27 +36,20 @@ def score_decider(potential_score_keys, line_json):
 
     return None
 
-
-#lookps up previous num_requests value
-def num_requests_lookup(user_id):
-    botbase_cursor.execute("""SELECT num_requests FROM public.botscore WHERE user_id=%s ORDER BY time_stamp DESC LIMIT 1;""", (user_id,))
-    return botbase_cursor.fetchone()
-
-
 #inserts log to database
 def log_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, \
-                bot_score_universal, requester_ip, tweets_per_day, num_tweets, \
-                num_mentions, latest_tweet_timestamp, num_requests, user_profile):
+                bot_score_universal, requester_ip, tweets_per_day, num_submitted_timeline_tweets, \
+                num_submitted_mention_tweets, num_requests):
 
     botbase_cursor.execute("""INSERT INTO public.botscore(
                 user_id, screen_name, time_stamp, all_bot_scores, bot_score_english,
-                bot_score_universal, requester_ip, tweets_per_day, num_tweets,
-                num_mentions, latest_tweet_timestamp, num_requests, user_profile)
+                bot_score_universal, requester_ip, tweets_per_day, num_submitted_timeline_tweets,
+                num_submitted_mention_tweets, num_requests)
                               VALUES
-                (%s, %s, to_timestamp(%s), %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);""", \
+                (%s, %s, to_timestamp(%s), %s, %s, %s, %s, %s, %s, %s, %s);""", \
                 (user_id, screen_name, time_stamp, json.dumps(all_bot_scores), bot_score_english, \
-                bot_score_universal, requester_ip, tweets_per_day, num_tweets, \
-                num_mentions, latest_tweet_timestamp, num_requests, user_profile))
+                bot_score_universal, requester_ip, tweets_per_day, num_submitted_timeline_tweets, \
+                num_submitted_mention_tweets, num_requests))
 
     #commiting changes
     pgsqlconn.commit()
@@ -70,12 +64,10 @@ json_with_no_type_count = 0
 failed_to_retrieve_proper_fields_count = 0
 failed_to_commit_to_db_count = 0
 
-non_existing_user = 0
-
 #MAIN CODE
 if __name__ == '__main__':
     #connecting to the database
-    pgsqlconn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='botbase')
+    pgsqlconn = psycopg2.connect(host='localhost', user='postgres', password='password', dbname='botometer')
     #cursor needed to execute db operations
     botbase_cursor = pgsqlconn.cursor()
     #starting timer
@@ -83,21 +75,31 @@ if __name__ == '__main__':
 
     #log name and location information
     #log_path = '/home/mavram/Research/HoaxyBotometer/ImportBackuplogsTask/logs/backups/unzipstage/'
+    #log_path = '/media/marvram/OS/Research/HoaxyBotometer/ImportBackuplogsTask/logs/'
     log_path = "/Users/kevinyoung/working/hoaxy-botometer/backend/API/"
     log_file_list = ['botornot.log']
-
+    #log_file_list = ['botornot.log.2017-09-03','botornot.log.2017-09-10']
+                    #'botornot.log201506',
+                     #, 'botornot.log201510', 'botornot.log201605', 'botornot.log201701', \
+                     #'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', \
+                     #'botornot.log.2017-05-28', 'botornot.log.2017-06-04', 'botornot.log.2017-06-11', 'botornot.log.2017-06-18', \
+                     #'botornot.log.2017-06-25', 'botornot.log.2017-07-02', 'botornot.log.2017-07-09', 'botornot.log.2017-07-16', \
+                     #'botornot.log.2017-07-23', 'botornot.log.2017-07-30', 'botornot.log.2017-08-06', 'botornot.log.2017-08-13']
+                    #recent
+                    #botornot.log.2017-08-20  botornot.log.2017-08-27
     #log to store any errors due to the logs not containing the proper data (i.e. other logging information such as errors or other requests)
-    error_log_file = open("botscoreloginsertion.err", "w")
+    error_log_file = open("botscoreloginsertion.err", "a")
 
     #iterating through all log files
     for log in log_file_list:
         print("Starting to import log: ", log)
+        sys.stdout.flush()
         file_location = log_path + log
 
         #parsing logs and uploading the entries to the botometer database
-        log_file = open(file_location, "r")
+        log_file = open(file_location,"r")
 
-        for line_num, line in enumerate(log_file, start=1):
+        for line_num, line in enumerate(log_file, start = 1):
             total_number_of_lines_parsed = total_number_of_lines_parsed + 1
 
             #checking if the current line is json, if not then this line should not be parsed because we are only looking for json log lines
@@ -113,15 +115,15 @@ if __name__ == '__main__':
                     continue
             except:
                 json_with_no_type_count = json_with_no_type_count + 1
-                error_log_file.write("NO-TYPE-JSON INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                error_log_file.write("NO-LOG-TYPE-JSON INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                 continue
 
             #parsing json line and retrieving the proper fields regarding the user i.e. user id, screen name, tweets, etc...
             try:
                 user_id = line_json["search"]["user_id"]
                 screen_name = str(line_json["search"]["sn"])
-                if str(user_id) == screen_name:
-                    #user does not have a screen-name so the id was used instead, we don't want to add this as it is redundant and may cause more problems
+                if len(screen_name) > 15:
+                    #user may have a screen-name logged as longer than 15 characters which is not proper in Twitter and could be instead the userid or some other error so we make it none
                     screen_name = None
                 time_stamp = line_json["timestamp"]
                 #some timestamps are stored in milliseconds so for those we divide by 1000
@@ -149,15 +151,25 @@ if __name__ == '__main__':
                         content_score = round(botscore_representation['content'], 2)
                         all_bot_scores = {"friend": friend_score, "sentiment": sentiment_score, "temporal": temporal_score, "user": user_score, "network": network_score, "content": content_score}
                     except:
-                        #score schema does not include the needed scores so will insert as null
-                        unmatched_botscore_category_schema_count = unmatched_botscore_category_schema_count + 1
-                        error_log_file.write("NON-MATCHED-CATEGORY-SCHEMA INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
-                        all_bot_scores = None
+                        #parsing a list schema instead of json schema i.e. [["network",0.5], ["sentiment",0.2], ...]
+                        try:
+                            friend_score = round(botscore_representation[5][1], 2)
+                            sentiment_score = round(botscore_representation[1][1], 2)
+                            temporal_score = round(botscore_representation[2][1], 2)
+                            user_score = round(botscore_representation[4][1], 2)
+                            network_score = round(botscore_representation[0][1], 2)
+                            content_score = round(botscore_representation[3][1], 2)
+                            all_bot_scores = {"friend": friend_score, "sentiment": sentiment_score, "temporal": temporal_score, "user": user_score, "network": network_score, "content": content_score}
+                        except:
+                             #score schema does not include the needed scores so will insert as null
+                            unmatched_botscore_category_schema_count = unmatched_botscore_category_schema_count + 1
+                            error_log_file.write("NON-MATCHED-CATEGORY-SCHEMA INFO---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
+                            all_bot_scores = None
                 #english bot score which is either found in line_json["score"], line_json["classification"], line_json["score"]["english"]
-                keys = [["score", "english"], ["score"], ["classification"]]
+                keys = [["score","english"],["score"],["classification"]]
                 bot_score_english = score_decider(keys, line_json)
                 #universal bot score which is either found in line_json["score"]["universal"] or line_json["categories"]["languageagnostic_classification"] otherwise null
-                keys = [["score", "universal"], ["categories", "languageagnostic_classification"]]
+                keys = [["score","universal"],["categories","languageagnostic_classification"]]
                 bot_score_universal = score_decider(keys, line_json)
                 #storing a comma delimited string of ips
                 requester_ip = line_json["remote_ip"]
@@ -166,18 +178,9 @@ if __name__ == '__main__':
                 if type(requester_ip) == list:
                     requester_ip = ','.join(line_json["remote_ip"])
                 tweets_per_day = None
-                num_tweets = line_json["num_tweets"]
-                num_mentions = None
-                latest_tweet_timestamp = None
-                num_requests = 1
-                user_profile = None
-                try:
-                    #retrieving previous number of requests for user, so that we can increment it by one
-                    num_requests = num_requests_lookup(int(user_id))[0]
-                    num_requests = num_requests + 1
-                except:
-                    #user does not exist yet in the database
-                    non_existing_user = non_existing_user + 1
+                num_submitted_timeline_tweets = None
+                num_submitted_mention_tweets = None
+                num_requests = 0
             except:
                 error_log_file.write("NON-PROPER-FIELDS ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                 failed_to_retrieve_proper_fields_count = failed_to_retrieve_proper_fields_count + 1
@@ -186,7 +189,7 @@ if __name__ == '__main__':
             try:
                 #inserting data to the database
                 log_insertion_script(user_id, screen_name, time_stamp, all_bot_scores, bot_score_english, bot_score_universal, \
-                            str(requester_ip), tweets_per_day, num_tweets, num_mentions, latest_tweet_timestamp, num_requests, user_profile)
+                            str(requester_ip), tweets_per_day, num_submitted_timeline_tweets, num_submitted_mention_tweets, num_requests)
                 records_committed = records_committed + 1
             except:
                 error_log_file.write("DB INSERTION ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
@@ -194,6 +197,7 @@ if __name__ == '__main__':
                 continue
 
         print("Finished importing log: ", log)
+        sys.stdout.flush()
 
     #closing access to database
     botbase_cursor.close()
@@ -211,7 +215,7 @@ if __name__ == '__main__':
     print("LOG IMPORT PROCESS INFORMATION:")
     print("total-lines-parsed: ", total_number_of_lines_parsed)
     print("records-committed: ", records_committed)
-    print("non-json-lines: ", errors_and_informational_count)
+    print("non-json-lines: ",errors_and_informational_count)
     print("non-log-json-type: ", json_not_proper_log_count)
     print("json-with-no-type: ", json_with_no_type_count)
     print("non-matched-proper-score-category-schema: ", unmatched_botscore_category_schema_count)

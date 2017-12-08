@@ -161,8 +161,9 @@ var app = new Vue({
         },
 
         source_dropdown_open: false,
+        colors: colors,
+        searchBy: 'hoaxy'
 
-        colors: colors
     },
     computed: {
         all_selected: function(){
@@ -269,6 +270,318 @@ var app = new Vue({
                 v.spinStop();
 
             }, 90000);
+        },
+        formatDate: function(unFormattedDate) {
+          // Changing to the YYYY-MM-DDT00:00:00Z date format
+          var createdAtArray = unFormattedDate.split(" ");
+          // Invoking the moment.js package to yield us the number months
+          var month = moment.monthsShort().indexOf(createdAtArray[1]) + 1;
+          var monthStr = month.toString();
+          // Padding the month with an extra prefix 0 in case it is just length of one i.e. 8 -> 08
+          if (monthStr.length == 1) {
+            monthStr = "0" + monthStr;
+          }
+          // Creating final formatted date
+          var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
+          return(formattedDate);
+        },
+        buildTwitterSearchTimelineAndGraph: function(tweetsResponse){
+          this.spinStart("buildGraph");
+          this.spinner_notices.timeline = "Building Graph and Timeline...";
+
+          // Edge list
+          var twitterEdges = [];
+          // Edge object
+          function TwitterEdge() {
+            this.canonical_url="";
+            this.date_published="";
+            this.domain="";
+            this.from_user_id="";
+            this.from_user_screen_name="";
+            this.id=undefined;
+            this.is_mention= false;
+            this.pub_date= "";
+            this.site_domain="";
+            this.site_type="claim";
+            this.title="";
+            this.to_user_id="";
+            this.to_user_screen_name="";
+            this.tweet_created_at="";
+            this.tweet_id="";
+            this.tweet_type="";
+            this.url_id= undefined;
+            this.url_raw="";
+          }
+
+          // Timeline stuff
+          var timeline = {
+            claim: {
+              timestamp: [],
+              volume: []
+            },
+            fact_checking: {
+              timestamp: [],
+              volume: []
+            }
+          };
+          var v = this;
+          var total_claims = 0;
+          var total_dates = 0;
+          // Looping over twitter results and adding the articles that we need to further get timelines and graphs of
+          var twitterEntities = tweetsResponse.statuses;
+          console.log("twitter entities");
+          console.log(twitterEntities);
+          var totalTwitterEntities = twitterEntities.length;
+          var previousDate = "";
+          // Used to maintain data integrity
+          var nonNullFrom = false;
+          var nonNullTo = false;
+
+          // Function used for updating the edges and timeline from retweets, quotes, and mentions
+          function updateEdgesAndTimeline(typeOfTweet) {
+            try {
+              twitterEdge.tweet_id = twitterEntities[key].id_str;
+            } catch(err) {
+                twitterEdge.tweet_id = "";
+            }
+            var formattedDate = v.formatDate(twitterEntities[key].created_at);
+            // Updating edges
+            twitterEdge.date_published = formattedDate;
+            twitterEdge.pub_date = formattedDate;
+            twitterEdge.tweet_created_at = formattedDate;
+            twitterEdge.tweet_type = typeOfTweet;
+            twitterEdges.push(twitterEdge);
+
+            // Updating the timeline
+            total_claims+=1;
+            if (previousDate != formattedDate) {
+              total_dates+=1;
+              timeline.claim.timestamp.push(formattedDate);
+              timeline.claim.volume.push(total_claims);
+              previousDate = formattedDate;
+            } else {
+              timeline.claim.volume[total_dates-1] = total_claims;
+            }
+
+            timeline.fact_checking.timestamp.push(formattedDate);
+            timeline.fact_checking.volume.push(0);
+          }
+
+          for (var key = totalTwitterEntities-1; key>=0; key--) {
+              // Checking for retweets
+              nonNullFrom = false;
+              nonNullTo = false;
+              if (twitterEntities[key].retweeted_status) {
+                var twitterEdge = new TwitterEdge();
+
+                try {
+                  twitterEdge.from_user_id = twitterEntities[key].retweeted_status.user.id_str;
+                  nonNullFrom = true;
+                } catch(err) {
+                  twitterEdge.from_user_id = "";
+                }
+
+                try {
+                  twitterEdge.from_user_screen_name = twitterEntities[key].retweeted_status.user.screen_name;
+                  nonNullFrom = true;
+                } catch(err) {
+                  twitterEdge.from_user_screen_name = "";
+                }
+
+                try {
+                  twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                  nonNullTo = true;
+                } catch(err) {
+                  twitterEdge.to_user_id = "";
+                }
+
+                try {
+                  twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
+                  nonNullTo = true;
+                } catch(err) {
+                  twitterEdge.to_user_screen_name = "";
+                }
+
+                if (nonNullFrom && nonNullTo) {
+                  // Populate the rest of the edge entities
+                  // Attempting to retrieve tweet id
+                  updateEdgesAndTimeline("retweet");
+                }
+              }
+
+              // Checking for quotes
+              nonNullFrom = false;
+              nonNullTo = false;
+              if (twitterEntities[key].is_quote_status) {
+                var twitterEdge = new TwitterEdge();
+
+                try {
+                  twitterEdge.from_user_id = twitterEntities[key].quoted_status.user.id_str;
+                  nonNullFrom = true;
+                } catch(err) {
+                  twitterEdge.from_user_id = "";
+                }
+
+                try {
+                  twitterEdge.from_user_screen_name = twitterEntities[key].quoted_status.user.screen_name;
+                  nonNullFrom = true;
+                } catch(err) {
+                  twitterEdge.from_user_screen_name = "";
+                }
+
+                try {
+                  twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                  nonNullTo = true;
+                } catch(err) {
+                  twitterEdge.to_user_id = "";
+                }
+
+                try {
+                  twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
+                  nonNullTo = true;
+                } catch(err) {
+                  twitterEdge.to_user_screen_name = "";
+                }
+
+                if (nonNullFrom && nonNullTo) {
+                  // Populate the rest of the edge entities
+                  updateEdgesAndTimeline("quote");
+                }
+
+              }
+
+              // Checking for mentions
+              if (twitterEntities[key].entities.user_mentions.length > 0) {
+                nonNullFrom = false;
+                nonNullTo = false;
+                // Mentions found, creating edges for each one
+                for (var mention = 0; mention < twitterEntities[key].entities.user_mentions.length; mention++) {
+                  var twitterEdge = new TwitterEdge();
+                  twitterEdge.is_mention = true;
+
+                  try {
+                    twitterEdge.from_user_id = twitterEntities[key].user.id_str;
+                    nonNullFrom = true;
+                  } catch(err) {
+                    twitterEdge.from_user_id = "";
+                  }
+
+                  try {
+                    twitterEdge.from_user_screen_name = twitterEntities[key].user.screen_name;
+                    nonNullFrom = true;
+                  } catch(err) {
+                    twitterEdge.from_user_screen_name = "";
+                  }
+
+                  try {
+                    twitterEdge.to_user_id = twitterEntities[key].entities.user_mentions[mention].id_str;
+                    nonNullTo = true;
+                  } catch(err) {
+                    twitterEdge.to_user_id = "";
+                  }
+
+                  try {
+                    twitterEdge.to_user_screen_name = twitterEntities[key].entities.user_mentions[mention].screen_name;
+                    nonNullTo = true;
+                  } catch(err) {
+                      twitterEdge.to_user_screen_name = "";
+                  }
+
+                  if (nonNullFrom && nonNullTo) {
+                    // Populate the rest of the edge entities
+                    updateEdgesAndTimeline("mention");
+                  }
+
+              }
+
+            }
+          }
+
+          // Checking if any edges were found and if not, show message to user to try another query
+          if (twitterEdges.length == 0) {
+            console.log("no edges found");
+            v.spinStop("buildGraph");
+            v.show_zoom_buttons = false;
+            v.failed_to_get_network = true;
+            v.spinner_notices.graph = "";
+            v.show_graphs = true;
+            Vue.nextTick(function(){
+                v.graph.updateEdges(twitterEdges);
+                v.updateGraph();
+                v.spinStop("generateNetwork");
+                v.scrollToElement("graphs");
+            });
+            this.spinStop("buildGraph");
+            return "ok";
+          }
+          else {
+            // Edges found so create the graph
+            v.spinner_notices.timeline = "";
+            v.spinStart("updateTimeline");
+            v.show_graphs = true;
+            //update the timeline on the next tick because at this point
+            // the graphs are still hidden. Graphs will be visible on the
+            // next tick
+            Vue.nextTick(function(){
+                v.timeline.update(timeline);
+                v.spinStop("updateTimeline");
+                v.scrollToElement("graphs");
+                v.timeline.redraw();
+            });
+
+            this.spinStart("getNetwork");
+            this.spinner_notices.graph = "Fetching graph...";
+
+            this.timeline.removeUpdateDateRangeCallback();
+            this.failed_to_get_network = false;
+
+            v.spinStop("getNetwork");
+            v.spinner_notices.graph = "Drawing Graph...";
+            v.spinStart("generateNetwork");
+
+            v.show_graphs = true;
+
+            Vue.nextTick(function(){
+                console.log("POST EDGES:");
+                console.log(twitterEdges);
+                console.log(typeof(twitterEdges));
+                v.graph.updateEdges(twitterEdges);
+                v.updateGraph();
+                v.spinStop("generateNetwork");
+                v.scrollToElement("graphs");
+            });
+
+            this.spinStop("buildGraph");
+            return "ok";
+          }
+
+        },
+        getTwitterSearchResults: function(query){
+            this.spinStart("getTwitterSearchResults");
+            this.spinner_notices.timeline = "Searching Twitter...";
+            var v = this;
+            var response = undefined;
+            // In this particular case we are obtaining the query as a string, i.e. "cute kitties" and not "cute" and "kitties" separately
+            // Hence we need to convert the query into a quote-string URI i.e. cute%23kitties
+            var query_string = query.replace(" ","%23");
+            // Sending request to getTweets endpoint in tweets.js code-file
+            tweetsReponse = this.twitter.getTweets(query_string);
+            // Handling the get Tweets response
+            tweetsReponse.then(function(response){
+              console.log("TWEETS RESPONSE SUCCESSFUL:");
+              console.log(response);
+              v.spinStop("getTwitterSearchResults");
+              var testResponse = v.buildTwitterSearchTimelineAndGraph(response);
+              return response;
+            }, function(){})
+            .catch(function(error){
+              console.log("TWEETS RESPONSE ERROR:");
+              console.log(error);
+              v.spinStop("getTwitterSearchResults");
+              return response;
+              return "Request failed";
+            });
+            return response;
         },
 
         //   ##        #   ##   #    #    ###### #    # #    #  ####  ##### #  ####  #    #  ####
@@ -429,6 +742,8 @@ var app = new Vue({
                             y.url_raw = x.canonical_url;
                             return y;
                         });
+                        console.log("HOAXY PRE STUFF:");
+                        console.log(edge_list);
                         v.graph.updateEdges(edge_list);
                         v.updateGraph();
                         // v.timeline.redraw();
@@ -634,21 +949,38 @@ var app = new Vue({
             var p = this.twitter.logOut();
             this.twitter_account_info = {};
         },
-
         submitForm: function(dontScroll){
+    	    if(this.searchBy == 'hoaxy') {
+        		this.show_articles = false;
+        		this.show_graphs = false;
+        		this.checked_articles = [];
+        		// $("#select_all").prop("checked", false);
+        		if(!this.query_text)
+        		{
+              this.displayError("You must input a claim.");
+              this.spinStop(true);
+              return false;
+        		}
+        		this.changeURLParams();
+        		this.getArticles(dontScroll);
+        		this.spinStop();
+      	  }
+      	  else {
             this.show_articles = false;
-            this.show_graphs = false;
-            this.checked_articles = [];
-            // $("#select_all").prop("checked", false);
-            if(!this.query_text)
-            {
-                this.displayError("You must input a claim.");
-                this.spinStop(true);
-                return false;
-            }
-            this.changeURLParams();
-            this.getArticles(dontScroll);
-            this.spinStop();
+        		this.show_graphs = false;
+        		this.checked_articles = [];
+        		// $("#select_all").prop("checked", false);
+        		if(!this.query_text)
+        		{
+              this.displayError("You must input a valid search query.");
+              this.spinStop(true);
+              return false;
+        		}
+            var tweetsResponse = this.getTwitterSearchResults(this.query_text);
+        		//this.changeURLParams();
+        		//this.getArticles(dontScroll);
+        		this.spinStop();
+      	  }
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;

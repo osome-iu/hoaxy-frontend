@@ -14,13 +14,23 @@ CREATE TABLE public.botscore
   tweets_per_day real,
   num_submitted_timeline_tweets integer,
   num_submitted_mention_tweets integer,
-  num_requests integer,
+  num_requests integer
 )
 WITH (
   OIDS=FALSE
 );
+
 ALTER TABLE public.botscore
   OWNER TO botometer;
+
+-- Constraint: botscore_user_id_time_stamp_requester_ip_key
+
+-- DROP CONSTRAINT botscore_user_id_time_stamp_requester_ip_key
+
+ALTER TABLE public.botscore
+  ADD CONSTRAINT botscore_user_id_time_stamp_requester_ip_key
+  UNIQUE (user_id, time_stamp, requester_ip);
+
 -- Index: public.botscore_ix_botscoreenglish
 
 -- DROP INDEX public.botscore_ix_botscoreenglish;

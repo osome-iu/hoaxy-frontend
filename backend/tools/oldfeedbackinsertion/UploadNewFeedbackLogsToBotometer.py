@@ -30,7 +30,7 @@ def feedback_insertion_script(source_user_id, target_user_id, target_screen_name
                               VALUES 
                 (%s, %s, %s, to_timestamp(%s), %s, %s, %s, %s, %s);""", \
                 (source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label, \
-                feedback_text, json.dumps(target_profile), target_timeline_tweets, target_mention_tweets))
+                feedback_text, json.dumps(target_profile), json.dumps(target_timeline_tweets), json.dumps(target_mention_tweets)))
 
     #commiting changes
     pgsqlconn.commit()
@@ -55,10 +55,9 @@ if __name__ == '__main__':
     timer_start = time.time()
     
     #log name and location information
-    log_path = ''
-    
-    log_file_list = ['botornot.log201506', 'botornot.log201510', 'botornot.log201605', 'botornot.log201701' ,'botornot.log201702', 'botornot.log201705', 'botornot.log.2017-05-14', 'botornot.log.2017-05-21', 'botornot.log.2017-05-28', 'botornot.log.2017-06-04', 'botornot.log.2017-06-11', 'botornot.log.2017-06-18', 'botornot.log.2017-06-25', 'botornot.log.2017-07-02', 'botornot.log.2017-07-09', 'botornot.log.2017-07-16','botornot.log.2017-07-23', 'botornot.log.2017-07-30', 'botornot.log.2017-08-06', 'botornot.log.2017-08-13', 'botornot.log.2017-09-03', 'botornot.log.2017-09-10']
-    
+    log_path = '/l/cnets/research/BotOrNot/logs/loguploadstage/'
+    log_file_list = ['']
+   
     #log to store any errors due to the logs not containing the proper data (i.e. other logging information such as errors or other requests)
     error_log_file = open("feedbackinsertionlog.err", "a")
   
@@ -125,8 +124,16 @@ if __name__ == '__main__':
                 if len(str(time_stamp)) >= 12:
                     time_stamp = time_stamp/1000
                 target_profile = line_json["target"]
-                target_timeline_tweets = None
-                target_mention_tweets = None
+                if target_profile == "":
+                    target_profile = {}
+                    target_profile['no-profile-found'] = 'No profile was available at the time when this user was reported'
+      
+                #Timeline Tweets and Mention Tweets are null in the logs so we must update the database accordingly
+                target_timeline_tweets = {}
+                target_timeline_tweets['no-timeline-tweets-found'] = 'There were no timeline tweets available at the time when this user was reported'
+                target_mention_tweets = {}
+                target_mention_tweets['no-mention-tweets-found'] = 'There were no mention tweets available at the time when this user was reported'
+            
             except:
                 error_log_file.write("NON-PROPER-FIELDS ERROR---File: " + log + " LineNumber: " + str(line_num) + " Error: " + str(sys.exc_info()[0]) + "\n")
                 failed_to_retrieve_proper_fields_count = failed_to_retrieve_proper_fields_count + 1

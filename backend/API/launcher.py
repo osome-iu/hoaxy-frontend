@@ -1,9 +1,12 @@
 # -*- coding: utf8 -*-
 import sqlalchemy
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
+from flask_basicauth import BasicAuth
 from flask_cors import CORS
 import configparser
 from datetime import datetime
+import time
+from collections import Counter
 
 api = Flask(__name__)
 CORS(api)
@@ -11,60 +14,75 @@ connection_string = open('.db.connection').read()
 botscore_engine = sqlalchemy.create_engine(connection_string)
 botscore_connection = botscore_engine.connect()
 
+api.config['BASIC_AUTH_USERNAME'] = 'nan'
+api.config['BASIC_AUTH_PASSWORD'] = 'nanisawesome'
+basic_auth = BasicAuth(api)
 
-def dbQueryUserID(user_ids):
+
+def dbQueryUserIDIn(user_ids):
     result = botscore_connection.execute(
         sqlalchemy.text(
             """
-            WITH temptable AS (
-                SELECT id, ids.user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
-                FROM botscore
-                JOIN UNNEST(:user_ids) AS ids(user_id) ON botscore.user_id = ids.user_id
-            )
-            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
-            FROM temptable
-            JOIN (
-                SELECT temptable.user_id AS latest_user_id, max(time_stamp) AS latesttimestamp
-                FROM temptable
-                GROUP BY temptable.user_id
-            ) AS latesttable
-            ON temptable.user_id = latesttable.latest_user_id AND temptable.time_stamp = latesttable.latesttimestamp
+            SELECT DISTINCT ON (user_id) id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
+            FROM botscore
+            WHERE user_id IN :user_ids
+            ORDER BY user_id, time_stamp DESC
             """
         ),
         {
-            "user_ids": user_ids
+            "user_ids": tuple(user_ids)
         }
     )
     return result
 
 
-def dbQueryUserScreenName(user_names):
+def dbQueryUserScreenNameIn(user_names):
     result = botscore_connection.execute(
         sqlalchemy.text(
             """
-            WITH temptable AS (
-                SELECT id, user_id, names.screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
-                FROM botscore
-                JOIN UNNEST(:screen_names) AS names(screen_name) ON botscore.screen_name = names.screen_name
-            )
-            SELECT id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
-            from temptable
-            JOIN (
-                SELECT temptable.screen_name AS latest_user_screen_name, max(time_stamp) AS latesttimestamp
-                FROM temptable
-                GROUP BY temptable.screen_name
-            ) AS latesttable
-            ON temptable.screen_name = latesttable.latest_user_screen_name AND temptable.time_stamp = latesttable.latesttimestamp
+            SELECT DISTINCT ON (screen_name) id, user_id, screen_name, all_bot_scores, bot_score_english, bot_score_universal, time_stamp, tweets_per_day, num_submitted_timeline_tweets, num_requests
+            from botscore
+            where screen_name IN :screen_names
+            ORDER BY screen_name, time_stamp DESC
             """
         ),
         {
-            "screen_names": user_names
+            "screen_names": tuple(user_names)
         }
     )
     return result
 
 
-def increaseNumRequests(id):
+def dbQueryFeedback():
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            SELECT id, target_screen_name, feedback_label, feedback_text, time_stamp
+            from feedback
+            """
+        )
+    )
+    return result
+
+
+def dbQueryFeedbackWithScore():
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            SELECT target_screen_name, feedback_label, feedback_text, feedback.time_stamp, feedbackscore.bot_score_english, feedbackscore.bot_score_universal, feedbackscore.time_stamp FROM feedback
+            LEFT JOIN
+            (SELECT DISTINCT ON (user_id) id, user_id, screen_name, bot_score_english, bot_score_universal, botscore.time_stamp
+            FROM botscore
+            WHERE user_id IN (SELECT target_user_id FROM feedback)
+            ORDER BY user_id, botscore.time_stamp DESC) AS feedbackscore
+            ON target_user_id = user_id;
+            """
+        )
+    )
+    return result
+
+
+def dbIncreaseNumRequest(id):
     botscore_connection.execute(
         sqlalchemy.text(
             """
@@ -75,6 +93,34 @@ def increaseNumRequests(id):
         ),
         {"id": id}
     )
+
+
+def dbIncreaseNumRequests(id_list):
+    botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            UPDATE botscore
+            SET num_requests = num_requests + 1
+            WHERE id in :ids
+            """
+        ),
+        {"ids": tuple(id_list)}
+    )
+
+
+def dbInsertFeedback(feedback):
+    result = botscore_connection.execute(
+        sqlalchemy.text(
+            """
+            INSERT INTO public.feedback(source_user_id, target_user_id, target_screen_name, time_stamp, feedback_label,
+                feedback_text, target_profile, target_timeline_tweets, target_mention_tweets)
+            VALUES (:source_user_id, :target_user_id, :target_screen_name, :time_stamp, :feedback_label,
+                :feedback_text, :target_profile, :target_timeline_tweets, :target_mention_tweets)
+            """
+        ),
+        feedback
+    )
+    return result
 
 
 def getUserRecordStatus(user_entry, tweets_per_day, num_requests, config_file):
@@ -100,6 +146,14 @@ def getUserRecordStatus(user_entry, tweets_per_day, num_requests, config_file):
         return None
 
 
+@api.template_filter('strftime')
+def _jinja2_filter_datetime(date, fmt=None):
+    if date:
+        return date.strftime("%y-%m-%d %H:%M")
+    else:
+        return None
+
+
 @api.route("/")
 def hello():
     return """Welcome to the Hoaxy-Botometer API.\n
@@ -114,16 +168,22 @@ def getScores():
     The scorese retrival endpoint.
     Parse the query string, get user scores according to user_ids then return as json.
     """
+    print("Start to processing ...")
+    t1 = time.time()
     # get the query string according to different HTTP methods
     if request.method == "GET":
         user_ids_query = request.args.get("user_id")
         user_names_query = request.args.get("screen_name")
+        if (not user_ids_query) and (not user_names_query):
+            return jsonify({'success': False}), 400
     elif request.method == "POST":
         query_file = request.get_json()
         user_ids_query = query_file.get("user_id")
         user_names_query = query_file.get("screen_name")
+        if (not user_ids_query) and (not user_names_query):
+            return jsonify({'success': False}), 400
     else:
-        return jsonify(None)
+        return jsonify({'success': False}), 405
 
     # load the config file
     config_file = configparser.ConfigParser()
@@ -138,17 +198,23 @@ def getScores():
         elif isinstance(user_ids_query, str):
             user_ids = list(map(int, user_ids_query.split(",")))
         total_request_number += len(user_ids)
-        db_results += dbQueryUserID(user_ids)
+        db_results += dbQueryUserIDIn(user_ids)
 
+    t2 = time.time()
+    print("Done parsing the query, start to SQL, %.4f" % (t2-t1))
     if user_names_query:
         if isinstance(user_names_query, list):
             user_names = user_names_query
         elif isinstance(user_names_query, str):
             user_names = user_names_query.split(",")
-        db_results += dbQueryUserScreenName(user_names)
+        db_results += dbQueryUserScreenNameIn(user_names)
         total_request_number += len(user_names)
 
+    t3 = time.time()
+    print("Done SQL, start to return, %.4f" % (t3-t2))
+
     user_scores = []
+    user_to_update = []
 
     for row in db_results:
         all_bot_scores = row[3] if row[3] else dict()
@@ -178,7 +244,7 @@ def getScores():
             user_record, user_tweet_per_day, num_requests, config_file
         )
         user_scores.append(user_record)
-        increaseNumRequests(row[0])
+        user_to_update.append(row[0])
 
     hits = len(db_results)
     response = {
@@ -188,7 +254,80 @@ def getScores():
         },
         "result": user_scores
     }
+
+    t4 = time.time()
+    print("Done return, %.4f" % (t4-t3))
+
+    dbIncreaseNumRequests(user_to_update)
+
+    t5 = time.time()
+
+    print("Done increase, %.4f" % (t5-t4))
+
     return jsonify(response)
+
+
+@api.route("/api/feedback", methods=["POST"])
+def insertFeedback():
+    """
+    The feedback insertion endpoint.
+    """
+    if request.method == "POST":
+        try:
+            feedback = request.get_json()
+
+            dbInsertFeedback(feedback)
+            # process the feedback
+            return jsonify({'success': True}), 201
+        except Exception as e:
+            print(e)
+            return jsonify({'success': False}), 400
+
+    return jsonify({'success': False}), 405
+
+
+@api.route("/api/showfeedback", methods=["GET"])
+@basic_auth.required
+def showFeedback():
+    if request.method != "GET":
+        return jsonify({'success': False}), 405
+
+    feedbacks = []
+    labels = []
+    db_results = dbQueryFeedback()
+    for db_result in db_results:
+        labels.append(db_result[2])
+        if db_result[2] != "block" and db_result[2] != "unfollow":
+            feedbacks.append(db_result)
+
+    return render_template(
+        "showfeedback.html",
+        feedbacks=feedbacks,
+        total_num = len(labels),
+        label_counter = Counter(labels)
+    )
+
+
+@api.route("/api/showfeedbackwithscore", methods=["GET"])
+@basic_auth.required
+def showFeedbackwithScore():
+    if request.method != "GET":
+        return jsonify({'success': False}), 405
+
+    feedbacks = []
+    labels = []
+    db_results = dbQueryFeedbackWithScore()
+    for db_result in db_results:
+        labels.append(db_result[1])
+        if db_result[1] != "block" and db_result[1] != "unfollow":
+            feedbacks.append(db_result)
+
+    return render_template(
+        "showfeedbackwithscore.html",
+        feedbacks=feedbacks,
+        total_num = len(labels),
+        label_counter = Counter(labels)
+    )
 
 
 if __name__ == "__main__":

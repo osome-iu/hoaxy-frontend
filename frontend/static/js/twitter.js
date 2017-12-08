@@ -176,6 +176,11 @@ var Twitter = function(initialize_key){
         return getNeighbors('friends', screenName, count);
     }
 
+    obj.getTweets = function(query){
+        return apiCall('GET', '/1.1/search/tweets.json', {q: query, count:100},
+        "Twitter was unable to retrieve mentions of this user, is there a typo?")
+    }
+
     obj.blockUser = function(userId){
         return apiCall('POST', '/1.1/blocks/create.json', {
             user_id: userId
