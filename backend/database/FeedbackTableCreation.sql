@@ -7,6 +7,7 @@ CREATE TABLE public.feedback
   source_user_id bigint,
   target_user_id bigint NOT NULL,
   target_screen_name character varying(15),
+  target_reported_botscores jsonb,
   time_stamp timestamp with time zone DEFAULT now(),
   feedback_label character varying(20),
   feedback_text text,
