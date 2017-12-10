@@ -348,89 +348,90 @@ var app = new Vue({
           }
 
           for (var key = totalTwitterEntities-1; key>=0; key--) {
-              // Checking for retweets
-              nonNullFrom = false;
-              nonNullTo = false;
-              if (twitterEntities[key].retweeted_status) {
-                var twitterEdge = new TwitterEdge();
+            // Checking for quotes
+            nonNullFrom = false;
+            nonNullTo = false;
+            if (twitterEntities[key].quoted_status) {
+              var twitterEdge = new TwitterEdge();
 
-                try {
-                  twitterEdge.from_user_id = twitterEntities[key].retweeted_status.user.id_str;
-                  nonNullFrom = true;
-                } catch(err) {
-                  twitterEdge.from_user_id = "";
-                }
-
-                try {
-                  twitterEdge.from_user_screen_name = twitterEntities[key].retweeted_status.user.screen_name;
-                  nonNullFrom = true;
-                } catch(err) {
-                  twitterEdge.from_user_screen_name = "";
-                }
-
-                try {
-                  twitterEdge.to_user_id = twitterEntities[key].user.id_str;
-                  nonNullTo = true;
-                } catch(err) {
-                  twitterEdge.to_user_id = "";
-                }
-
-                try {
-                  twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
-                  nonNullTo = true;
-                } catch(err) {
-                  twitterEdge.to_user_screen_name = "";
-                }
-
-                if (nonNullFrom && nonNullTo) {
-                  // Populate the rest of the edge entities
-                  // Attempting to retrieve tweet id
-                  updateEdgesAndTimeline("retweet");
-                }
+              try {
+                twitterEdge.from_user_id = twitterEntities[key].quoted_status.user.id_str;
+                nonNullFrom = true;
+              } catch(err) {
+                twitterEdge.from_user_id = "";
               }
 
-              // Checking for quotes
-              nonNullFrom = false;
-              nonNullTo = false;
-              if (twitterEntities[key].is_quote_status) {
-                var twitterEdge = new TwitterEdge();
-
-                try {
-                  twitterEdge.from_user_id = twitterEntities[key].quoted_status.user.id_str;
-                  nonNullFrom = true;
-                } catch(err) {
-                  twitterEdge.from_user_id = "";
-                }
-
-                try {
-                  twitterEdge.from_user_screen_name = twitterEntities[key].quoted_status.user.screen_name;
-                  nonNullFrom = true;
-                } catch(err) {
-                  twitterEdge.from_user_screen_name = "";
-                }
-
-                try {
-                  twitterEdge.to_user_id = twitterEntities[key].user.id_str;
-                  nonNullTo = true;
-                } catch(err) {
-                  twitterEdge.to_user_id = "";
-                }
-
-                try {
-                  twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
-                  nonNullTo = true;
-                } catch(err) {
-                  twitterEdge.to_user_screen_name = "";
-                }
-
-                if (nonNullFrom && nonNullTo) {
-                  // Populate the rest of the edge entities
-                  updateEdgesAndTimeline("quote");
-                }
-
+              try {
+                twitterEdge.from_user_screen_name = twitterEntities[key].quoted_status.user.screen_name;
+                nonNullFrom = true;
+              } catch(err) {
+                twitterEdge.from_user_screen_name = "";
               }
 
+              try {
+                twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                nonNullTo = true;
+              } catch(err) {
+                twitterEdge.to_user_id = "";
+              }
+
+              try {
+                twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
+                nonNullTo = true;
+              } catch(err) {
+                twitterEdge.to_user_screen_name = "";
+              }
+
+              if (nonNullFrom && nonNullTo) {
+                // Populate the rest of the edge entities
+                updateEdgesAndTimeline("quote");
+              }
+
+            }
+
+            // Checking for retweets
+            nonNullFrom = false;
+            nonNullTo = false;
+            if (twitterEntities[key].retweeted_status) {
+
+              var twitterEdge = new TwitterEdge();
+
+              try {
+                twitterEdge.from_user_id = twitterEntities[key].retweeted_status.user.id_str;
+                nonNullFrom = true;
+              } catch(err) {
+                twitterEdge.from_user_id = "";
+              }
+
+              try {
+                twitterEdge.from_user_screen_name = twitterEntities[key].retweeted_status.user.screen_name;
+                nonNullFrom = true;
+              } catch(err) {
+                twitterEdge.from_user_screen_name = "";
+              }
+
+              try {
+                twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                nonNullTo = true;
+              } catch(err) {
+                twitterEdge.to_user_id = "";
+              }
+
+              try {
+                twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
+                nonNullTo = true;
+              } catch(err) {
+                twitterEdge.to_user_screen_name = "";
+              }
+
+              if (nonNullFrom && nonNullTo) {
+                // Populate the rest of the edge entities
+                // Attempting to retrieve tweet id
+                updateEdgesAndTimeline("retweet");
+              }
+            } else {
               // Checking for mentions
+              // Mentions will only occur if the Tweet entity is not a retweet so also doing this check here
               if (twitterEntities[key].entities.user_mentions.length > 0) {
                 nonNullFrom = false;
                 nonNullTo = false;
@@ -464,17 +465,19 @@ var app = new Vue({
                     twitterEdge.to_user_screen_name = twitterEntities[key].entities.user_mentions[mention].screen_name;
                     nonNullTo = true;
                   } catch(err) {
-                      twitterEdge.to_user_screen_name = "";
+                    twitterEdge.to_user_screen_name = "";
                   }
 
                   if (nonNullFrom && nonNullTo) {
                     // Populate the rest of the edge entities
                     updateEdgesAndTimeline("mention");
                   }
-
+                }
               }
-
             }
+
+
+
           }
 
           // Checking if any edges were found and if not, show message to user to try another query
