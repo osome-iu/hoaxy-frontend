@@ -104,6 +104,9 @@ var app = new Vue({
         twitter_account_info: {},
         twitter: {},
 
+        globalHoaxyTimeline: null,
+        globalTwitterSearchTimeline: null,
+
         timeline: null,
         graph: null,
         getting_bot_scores: {running: false},
@@ -561,10 +564,8 @@ var app = new Vue({
               console.log("TWEETS RESPONSE ERROR:");
               console.log(error);
               v.spinStop("getTwitterSearchResults");
-              return response;
-              return "Request failed";
+              return error;
             });
-            return response;
         },
 
         //   ##        #   ##   #    #    ###### #    # #    #  ####  ##### #  ####  #    #  ####
@@ -1054,7 +1055,7 @@ var app = new Vue({
                 // this.timeline.update(this.timeline.getLastData());
                 // this.timeline.redraw();
                 this.timeline.updateTimestamp();
-        }
+        },
         // "twitter.me": function(){
         //     console.info("twitter");
         //     this.twitter_authorized = !!this.twitter.me();
@@ -1071,7 +1072,22 @@ var app = new Vue({
         //         this.animationPlaying = false;
         //     }
         // }
+        searchBy: function() {
+          this.show_articles = false;
+          this.show_graphs = false;
+          
+
+          if (this.searchBy == 'hoaxy') {
+            this.timeline = this.globalHoaxyTimeline;
+            console.log("changed to hoaxy timeline");
+          }
+          else {
+            this.timeline = this.globalTwitterSearchTimeline;
+            console.log("changed to twitter search timeline");
+          }
+        }
     },
+
 
     //  #     #
     //  ##   ##  ####  #    # #    # ##### ###### #####
@@ -1150,16 +1166,44 @@ var app = new Vue({
 
         //create the chart that is used to visualize the timeline
         // the updateGraph function is a callback when the timeline interval is adjusted
-        this.timeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+        this.globalHoaxyTimeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+        this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+        this.timeline = this.globalHoaxyTimeline
 
 
-        this.timeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+        // this.timeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+        //
+        //     v.pauseGraphAnimation();
+        //     v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+        //     v.graphAnimation.increment = 0;
+    		// v.graphAnimation.playing  = true;
+    		// v.graphAnimation.paused = true;
+        //     v.unpauseGraphAnimation();
+        //     v.pauseGraphAnimation();
+        //
+        //     // console.debug(new Date(e.pointXValue))
+        // });
+
+        this.globalHoaxyTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
 
             v.pauseGraphAnimation();
             v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
             v.graphAnimation.increment = 0;
-    		v.graphAnimation.playing  = true;
-    		v.graphAnimation.paused = true;
+        v.graphAnimation.playing  = true;
+        v.graphAnimation.paused = true;
+            v.unpauseGraphAnimation();
+            v.pauseGraphAnimation();
+
+            // console.debug(new Date(e.pointXValue))
+        });
+
+        this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+
+            v.pauseGraphAnimation();
+            v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+            v.graphAnimation.increment = 0;
+        v.graphAnimation.playing  = true;
+        v.graphAnimation.paused = true;
             v.unpauseGraphAnimation();
             v.pauseGraphAnimation();
 
