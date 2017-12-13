@@ -1,7 +1,7 @@
 var max_articles = 20;
 
 var TWEET_URL = "https://twitter.com/%0/status/%1";
-var debug = true;
+var debug = false;
 var colors = {
     node_colors : {
         "fact_checking" : 'darkblue',
@@ -103,6 +103,7 @@ var app = new Vue({
 
         twitter_account_info: {},
         twitter: {},
+        twitter_result_type: 'mixed',
 
         globalHoaxyTimeline: null,
         globalTwitterSearchTimeline: null,
@@ -268,7 +269,7 @@ var app = new Vue({
           var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
           return(formattedDate);
         },
-        buildTwitterSearchTimelineAndGraph: function(tweetsResponse){
+        buildTwitterSearchTimelineAndGraph: function(twitterEntities){
           this.spinStart("buildGraph");
           this.spinner_notices.timeline = "Building Graph and Timeline...";
 
@@ -311,7 +312,7 @@ var app = new Vue({
           var total_claims = 0;
           var total_dates = 0;
           // Looping over twitter results and adding the articles that we need to further get timelines and graphs of
-          var twitterEntities = tweetsResponse.statuses;
+          // var twitterEntities = tweetsResponse.statuses;
           console.log("twitter entities");
           console.log(twitterEntities);
           var totalTwitterEntities = twitterEntities.length;
@@ -538,7 +539,7 @@ var app = new Vue({
             });
 
             this.spinStop("buildGraph");
-            return "ok";
+            return true;
           }
 
         },
@@ -550,22 +551,48 @@ var app = new Vue({
             // In this particular case we are obtaining the query as a string, i.e. "cute kitties" and not "cute" and "kitties" separately
             // Hence we need to convert the query into a quote-string URI i.e. cute%23kitties
             var query_string = query.replace(" ","%23");
-            // Sending request to getTweets endpoint in tweets.js code-file
-            tweetsReponse = this.twitter.getTweets(query_string);
-            // Handling the get Tweets response
-            tweetsReponse.then(function(response){
-              console.log("TWEETS RESPONSE SUCCESSFUL:");
-              console.log(response);
-              v.spinStop("getTwitterSearchResults");
-              var testResponse = v.buildTwitterSearchTimelineAndGraph(response);
-              return response;
-            }, function(){})
-            .catch(function(error){
-              console.log("TWEETS RESPONSE ERROR:");
-              console.log(error);
-              v.spinStop("getTwitterSearchResults");
-              return error;
-            });
+            // Will later be used for pagination
+            var max_id = "";
+            // Array of all paginated tweets that we will first send requests for and then return to the part to build graph/timeline
+            var twitterEntities = []
+            // Used as a maximum pagination requests limit to avoid user being rate-limited
+            var paginationMaxDepth = 10;
+            var paginationStep = 1;
+            // This function will paginate tweet search requests and is recursive
+            function paginateTwitterRequests() {
+              tweetsReponse = v.twitter.getTweets(query_string, max_id, v.twitter_result_type);
+              paginationStep+=1;
+              // Handling the get Tweets response
+              tweetsReponse.then(function(response){
+                if (response.search_metadata.next_results) {
+                  // Retrieving the maximum id for which the next result we must return tweets smaller than, hence older than this tweet
+                  max_id = response.statuses[response.statuses.length-1].id_str;
+                } else {
+                  // No need to make another request as we are done (there are no more responses left)
+                  query_string = "";
+                }
+                twitterEntities.push.apply(twitterEntities, response.statuses);
+                // Check if pagination must continue
+                if (paginationStep < paginationMaxDepth && query_string != "") {
+                  // Continue pagination
+                  paginateTwitterRequests()
+                } else {
+                  // Stop pagination
+                  v.spinStop("getTwitterSearchResults");
+                  // Create timeline and graph given the Twitter results
+                  var twitterBuiltGraphTimeline = v.buildTwitterSearchTimelineAndGraph(twitterEntities);
+                  return twitterBuiltGraphTimeline;
+                }
+              }, function(){})
+              .catch(function(error){
+                console.log("Twitter Search Pagination Error:");
+                console.log(error);
+                v.spinStop("getTwitterSearchResults");
+                return false;
+              });
+            }
+            // Function will paginate Twitter Search tweets, then build the timeline/graph
+            paginateTwitterRequests();
         },
 
         //   ##        #   ##   #    #    ###### #    # #    #  ####  ##### #  ####  #    #  ####
@@ -1075,7 +1102,7 @@ var app = new Vue({
         searchBy: function() {
           this.show_articles = false;
           this.show_graphs = false;
-          
+
 
           if (this.searchBy == 'hoaxy') {
             this.timeline = this.globalHoaxyTimeline;
