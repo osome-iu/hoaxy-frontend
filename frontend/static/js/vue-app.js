@@ -162,7 +162,23 @@ var app = new Vue({
             }
         },
         colors: colors,
-        searchBy: 'hoaxy'
+        searchBy: 'hoaxy',
+
+        // Edge list
+        twitterEdges: [],
+        // Twitter timeline
+        twitterTimeline: {
+          claim: {
+            timestamp: [],
+            volume: []
+          },
+          fact_checking: {
+            timestamp: [],
+            volume: []
+          }
+        },
+        // Used to only paginate up to 1000 nodes
+        twitterUserSet: new Set()
     },
     computed: {
         // : function(){
@@ -269,12 +285,12 @@ var app = new Vue({
           var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
           return(formattedDate);
         },
-        buildTwitterSearchTimelineAndGraph: function(twitterEntities){
+        buildTwitterEdgesTimeline: function(twitterEntities){
           this.spinStart("buildGraph");
           this.spinner_notices.timeline = "Building Graph and Timeline...";
 
-          // Edge list
-          var twitterEdges = [];
+          totalTwitterClaims = 0;
+          totalTwitterDates = 0;
           // Edge object
           function TwitterEdge() {
             this.canonical_url="";
@@ -297,20 +313,8 @@ var app = new Vue({
             this.url_raw="";
           }
 
-          // Timeline stuff
-          var timeline = {
-            claim: {
-              timestamp: [],
-              volume: []
-            },
-            fact_checking: {
-              timestamp: [],
-              volume: []
-            }
-          };
           var v = this;
-          var total_claims = 0;
-          var total_dates = 0;
+
           // Looping over twitter results and adding the articles that we need to further get timelines and graphs of
           // var twitterEntities = tweetsResponse.statuses;
           console.log("twitter entities");
@@ -334,21 +338,21 @@ var app = new Vue({
             twitterEdge.pub_date = formattedDate;
             twitterEdge.tweet_created_at = formattedDate;
             twitterEdge.tweet_type = typeOfTweet;
-            twitterEdges.push(twitterEdge);
+            v.twitterEdges.push(twitterEdge);
 
             // Updating the timeline
-            total_claims+=1;
+            totalTwitterClaims+=1;
             if (previousDate != formattedDate) {
-              total_dates+=1;
-              timeline.claim.timestamp.push(formattedDate);
-              timeline.claim.volume.push(total_claims);
+              totalTwitterDates+=1;
+              v.twitterTimeline.claim.timestamp.push(formattedDate);
+              v.twitterTimeline.claim.volume.push(totalTwitterClaims);
               previousDate = formattedDate;
             } else {
-              timeline.claim.volume[total_dates-1] = total_claims;
+              v.twitterTimeline.claim.volume[totalTwitterDates-1] = totalTwitterClaims;
             }
 
-            timeline.fact_checking.timestamp.push(formattedDate);
-            timeline.fact_checking.volume.push(0);
+            v.twitterTimeline.fact_checking.timestamp.push(formattedDate);
+            v.twitterTimeline.fact_checking.volume.push(0);
           }
 
           for (var key = totalTwitterEntities-1; key>=0; key--) {
@@ -356,10 +360,12 @@ var app = new Vue({
             nonNullFrom = false;
             nonNullTo = false;
             if (twitterEntities[key].quoted_status) {
+
               var twitterEdge = new TwitterEdge();
 
               try {
                 twitterEdge.from_user_id = twitterEntities[key].quoted_status.user.id_str;
+                v.twitterUserSet.add(twitterEdge.from_user_id);
                 nonNullFrom = true;
               } catch(err) {
                 twitterEdge.from_user_id = "";
@@ -374,6 +380,7 @@ var app = new Vue({
 
               try {
                 twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                v.twitterUserSet.add(twitterEdge.to_user_id);
                 nonNullTo = true;
               } catch(err) {
                 twitterEdge.to_user_id = "";
@@ -402,6 +409,7 @@ var app = new Vue({
 
               try {
                 twitterEdge.from_user_id = twitterEntities[key].retweeted_status.user.id_str;
+                v.twitterUserSet.add(twitterEdge.from_user_id);
                 nonNullFrom = true;
               } catch(err) {
                 twitterEdge.from_user_id = "";
@@ -416,6 +424,7 @@ var app = new Vue({
 
               try {
                 twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                v.twitterUserSet.add(twitterEdge.to_user_id);
                 nonNullTo = true;
               } catch(err) {
                 twitterEdge.to_user_id = "";
@@ -446,6 +455,7 @@ var app = new Vue({
 
                   try {
                     twitterEdge.from_user_id = twitterEntities[key].user.id_str;
+                    v.twitterUserSet.add(twitterEdge.from_user_id);
                     nonNullFrom = true;
                   } catch(err) {
                     twitterEdge.from_user_id = "";
@@ -460,6 +470,7 @@ var app = new Vue({
 
                   try {
                     twitterEdge.to_user_id = twitterEntities[key].entities.user_mentions[mention].id_str;
+                    v.twitterUserSet.add(twitterEdge.to_user_id);
                     nonNullTo = true;
                   } catch(err) {
                     twitterEdge.to_user_id = "";
@@ -483,22 +494,25 @@ var app = new Vue({
 
 
           }
-
+          v.spinStop("buildGraph");
+        },
+        buildTwitterGraph: function() {
+          var v = this;
           // Checking if any edges were found and if not, show message to user to try another query
-          if (twitterEdges.length == 0) {
+          if (v.twitterEdges.length == 0) {
             console.log("no edges found");
-            v.spinStop("buildGraph");
+
             v.show_zoom_buttons = false;
             v.failed_to_get_network = true;
             v.spinner_notices.graph = "";
             v.show_graphs = true;
             Vue.nextTick(function(){
-                v.graph.updateEdges(twitterEdges);
+                v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("graphs");
             });
-            this.spinStop("buildGraph");
+            v.spinStop("buildGraph");
             return "ok";
           }
           else {
@@ -510,7 +524,7 @@ var app = new Vue({
             // the graphs are still hidden. Graphs will be visible on the
             // next tick
             Vue.nextTick(function(){
-                v.timeline.update(timeline);
+                v.timeline.update(v.twitterTimeline);
                 v.spinStop("updateTimeline");
                 v.scrollToElement("graphs");
                 v.timeline.redraw();
@@ -530,18 +544,17 @@ var app = new Vue({
 
             Vue.nextTick(function(){
                 console.log("POST EDGES:");
-                console.log(twitterEdges);
-                console.log(typeof(twitterEdges));
-                v.graph.updateEdges(twitterEdges);
+                console.log(v.twitterEdges);
+                console.log(typeof(v.twitterEdges));
+                v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("graphs");
             });
 
-            this.spinStop("buildGraph");
+            v.spinStop("buildGraph");
             return true;
           }
-
         },
         getTwitterSearchResults: function(query){
             this.spinStart("getTwitterSearchResults");
@@ -553,15 +566,9 @@ var app = new Vue({
             var query_string = query.replace(" ","%23");
             // Will later be used for pagination
             var max_id = "";
-            // Array of all paginated tweets that we will first send requests for and then return to the part to build graph/timeline
-            var twitterEntities = []
-            // Used as a maximum pagination requests limit to avoid user being rate-limited
-            var paginationMaxDepth = 10;
-            var paginationStep = 1;
             // This function will paginate tweet search requests and is recursive
             function paginateTwitterRequests() {
               tweetsReponse = v.twitter.getTweets(query_string, max_id, v.twitter_result_type);
-              paginationStep+=1;
               // Handling the get Tweets response
               tweetsReponse.then(function(response){
                 if (response.search_metadata.next_results) {
@@ -571,17 +578,19 @@ var app = new Vue({
                   // No need to make another request as we are done (there are no more responses left)
                   query_string = "";
                 }
-                twitterEntities.push.apply(twitterEntities, response.statuses);
-                // Check if pagination must continue
-                if (paginationStep < paginationMaxDepth && query_string != "") {
+                // twitterEntities.push.apply(twitterEntities, response.statuses);
+                v.buildTwitterEdgesTimeline(response.statuses);
+                // Check if pagination must continue, if the number of nodes on the graph exceeds 1000 we don't send additional requests
+                if (v.twitterUserSet.size < 1000 && query_string != "") {
                   // Continue pagination
                   paginateTwitterRequests()
                 } else {
                   // Stop pagination
                   v.spinStop("getTwitterSearchResults");
                   // Create timeline and graph given the Twitter results
-                  var twitterBuiltGraphTimeline = v.buildTwitterSearchTimelineAndGraph(twitterEntities);
-                  return twitterBuiltGraphTimeline;
+                  v.buildTwitterGraph();
+                  // var twitterBuiltGraphTimeline = v.buildTwitterSearchTimelineAndGraph(twitterEntities);
+                  return true;
                 }
               }, function(){})
               .catch(function(error){
