@@ -210,6 +210,11 @@ var app = new Vue({
             var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
         },
+        getUrlHostPath: function(url){
+          var urlLink = document.createElement("a");
+          urlLink.href = url;
+          return(urlLink.hostname + urlLink.pathname);
+        },
         getOffset: function(element){
             if(!element)
             {
@@ -490,9 +495,6 @@ var app = new Vue({
                 }
               }
             }
-
-
-
           }
           v.spinStop("buildGraph");
         },
@@ -557,6 +559,7 @@ var app = new Vue({
           }
         },
         getTwitterSearchResults: function(query){
+            var test = this.getUrlHostPath();
             this.spinStart("getTwitterSearchResults");
             this.spinner_notices.timeline = "Searching Twitter...";
             var v = this;
@@ -974,7 +977,6 @@ var app = new Vue({
         		this.show_articles = false;
         		this.show_graphs = false;
         		this.checked_articles = [];
-        		// $("#select_all").prop("checked", false);
         		if(!this.query_text)
         		{
               this.displayError("You must input a claim.");
@@ -985,11 +987,10 @@ var app = new Vue({
         		this.getArticles(dontScroll);
         		this.spinStop();
       	  }
-      	  else {
+      	  else if(this.searchBy == 'twitter') {
             this.show_articles = false;
         		this.show_graphs = false;
         		this.checked_articles = [];
-        		// $("#select_all").prop("checked", false);
         		if(!this.query_text)
         		{
               this.displayError("You must input a valid search query.");
@@ -997,10 +998,23 @@ var app = new Vue({
               return false;
         		}
             var tweetsResponse = this.getTwitterSearchResults(this.query_text);
-        		//this.changeURLParams();
-        		//this.getArticles(dontScroll);
         		this.spinStop();
       	  }
+          else if(this.searchBy == 'twitter-url') {
+            this.show_articles = false;
+        		this.show_graphs = false;
+        		this.checked_articles = [];
+        		if(!this.query_text)
+        		{
+              this.displayError("You must input a valid search query.");
+              this.spinStop(true);
+              return false;
+        		}
+            // Retrieving the host and path from url
+            this.query_text = this.getUrlHostPath(this.query_text);
+            var tweetsResponse = this.getTwitterSearchResults(this.query_text);
+        		this.spinStop();
+          }
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
