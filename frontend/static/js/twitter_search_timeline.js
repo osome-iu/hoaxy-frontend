@@ -36,7 +36,7 @@ function TwitterSearchTimeline(settings){
 	}
 
 	function dateFormatter(d) {
-		return d3.time.format('%x')(new Date(d))
+		return d3.time.format('%m/%d/%Y %H:%M %p')(new Date(d))
 	}
 
 	var debounce_timer = 0;

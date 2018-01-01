@@ -178,7 +178,8 @@ var app = new Vue({
           }
         },
         // Used to only paginate up to 1000 nodes
-        twitterUserSet: new Set()
+        twitterUserSet: new Set(),
+        twitterDates: []
     },
     computed: {
         // : function(){
@@ -276,7 +277,7 @@ var app = new Vue({
 
             }, 90000);
         },
-        formatDate: function(unFormattedDate) {
+        formatDate2: function(unFormattedDate) {
           // Changing to the YYYY-MM-DDT00:00:00Z date format
           var createdAtArray = unFormattedDate.split(" ");
           // Invoking the moment.js package to yield us the number months
@@ -290,12 +291,105 @@ var app = new Vue({
           var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
           return(formattedDate);
         },
+        formatDate: function(unFormattedDate) {
+          // UnFormatted date should come as 'Day Mo DD HH:MM:SS +0000 YYYY' which must be parsed and changed
+          // Changing to the YYYY-MM-DDTHH:MM:SSZ date format
+          var createdAtArray = unFormattedDate.split(" ");
+          // Invoking the moment.js package to yield us the number months
+          var month = moment.monthsShort().indexOf(createdAtArray[1]) + 1;
+          var monthStr = month.toString();
+          // Padding the month with an extra prefix 0 in case it is just length of one i.e. 8 -> 08
+          if (monthStr.length == 1) {
+            monthStr = "0" + monthStr;
+          }
+          // Parsing HH:MM:SS part
+          var hourMinSec = createdAtArray[3].split(":");
+          // Creating final formatted date
+          var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T" + hourMinSec[0] + ":" + hourMinSec[1] + ":" + hourMinSec[2] + "Z";
+          return(formattedDate);
+        },
+        sortDates: function(dateOne, dateTwo) {
+          if (dateOne > dateTwo) {
+            return 1;
+          }
+          if (dateOne < dateTwo) {
+            return -1;
+          }
+          // Dates Equal
+          return 0;
+        },
+        createTwitterDateBins: function(dates, bins) {
+          var v = this;
+          var dateBins = [];
+          // Finding least date
+          var leastDate = dates[0].getTime();
+          // console.log("least date");
+          // console.log(leastDate);
+          var latestDate = dates[dates.length-1].getTime();
+          // console.log("latest date");
+          // console.log(latestDate);
+          // Difference between greatest date and least date in milliseconds
+          var offsetMil = Math.abs(latestDate - leastDate);
+          // console.log("offset mil");
+          // console.log(offsetMil);
+          // Creating bins from the difference
+          var offsetBin = Math.ceil(offsetMil/bins);
+          // console.log("offset bin");
+          // console.log(offsetBin);
+          // Creating binned Dates
+          for (var bin = 1; bin <= bins; bin++) {
+            dateBins.push(leastDate + bin*offsetBin);
+          }
+          // console.log("date bins");
+          // console.log(dateBins);
+          // Adding a 0 tweet initial bin
+          var initialDate = new Date(dates[0].getFullYear(), dates[0].getMonth(), dates[0].getDate());
+          v.twitterTimeline.claim.timestamp.push(initialDate);
+          v.twitterTimeline.claim.volume.push(0);
+          v.twitterTimeline.fact_checking.timestamp.push(initialDate);
+          v.twitterTimeline.fact_checking.volume.push(0);
+          // Populating the date bins with number of tweets in each bin
+          var bin = 0;
+          var numTweets = 0;
+          for (var theDate = 0; theDate < dates.length; theDate++){
+            // console.log("the date");
+            // console.log(dates[theDate]);
+            // console.log("mill");
+            // console.log(dates[theDate].getTime());
+            if (dates[theDate].getTime() < dateBins[bin]) {
+              numTweets+=1;
+            }
+            else {
+              // next date exceeded current bin, so must move on to next bin(s)
+              while (dates[theDate].getTime() > dateBins[bin]) {
+                var offsetDate = new Date(dateBins[bin]);
+                // console.log("offset date");
+                // console.log(offsetDate);
+                v.twitterTimeline.claim.timestamp.push(offsetDate);
+                v.twitterTimeline.claim.volume.push(numTweets);
+                v.twitterTimeline.fact_checking.timestamp.push(offsetDate);
+                v.twitterTimeline.fact_checking.volume.push(0);
+                bin+=1;
+              }
+              numTweets+=1;
+            }
+            // adding the last date
+            if (theDate == dates.length-1) {
+              var offsetDate = new Date(dateBins[bin]);
+              // console.log("offset date");
+              // console.log(offsetDate);
+              v.twitterTimeline.claim.timestamp.push(offsetDate);
+              v.twitterTimeline.claim.volume.push(numTweets);
+
+              v.twitterTimeline.fact_checking.timestamp.push(offsetDate);
+              v.twitterTimeline.fact_checking.volume.push(0);
+            }
+          }
+        },
         buildTwitterEdgesTimeline: function(twitterEntities){
           this.spinStart("buildGraph");
           this.spinner_notices.timeline = "Building Graph and Timeline...";
 
-          totalTwitterClaims = 0;
-          totalTwitterDates = 0;
           // Edge object
           function TwitterEdge() {
             this.canonical_url="";
@@ -325,7 +419,7 @@ var app = new Vue({
           console.log("twitter entities");
           console.log(twitterEntities);
           var totalTwitterEntities = twitterEntities.length;
-          var previousDate = "";
+          var key = totalTwitterEntities;
           // Used to maintain data integrity
           var nonNullFrom = false;
           var nonNullTo = false;
@@ -338,29 +432,18 @@ var app = new Vue({
                 twitterEdge.tweet_id = "";
             }
             var formattedDate = v.formatDate(twitterEntities[key].created_at);
+            v.twitterDates.push(new Date(formattedDate));
+
             // Updating edges
             twitterEdge.date_published = formattedDate;
             twitterEdge.pub_date = formattedDate;
             twitterEdge.tweet_created_at = formattedDate;
             twitterEdge.tweet_type = typeOfTweet;
             v.twitterEdges.push(twitterEdge);
-
-            // Updating the timeline
-            totalTwitterClaims+=1;
-            if (previousDate != formattedDate) {
-              totalTwitterDates+=1;
-              v.twitterTimeline.claim.timestamp.push(formattedDate);
-              v.twitterTimeline.claim.volume.push(totalTwitterClaims);
-              previousDate = formattedDate;
-            } else {
-              v.twitterTimeline.claim.volume[totalTwitterDates-1] = totalTwitterClaims;
-            }
-
-            v.twitterTimeline.fact_checking.timestamp.push(formattedDate);
-            v.twitterTimeline.fact_checking.volume.push(0);
           }
 
-          for (var key = totalTwitterEntities-1; key>=0; key--) {
+          while (key > 0) {
+            key = key - 1;
             // Checking for quotes
             nonNullFrom = false;
             nonNullTo = false;
@@ -518,7 +601,17 @@ var app = new Vue({
             return "ok";
           }
           else {
+            console.log("twitter edges");
+            console.log(v.twitterEdges);
+            console.log("twitter dates");
+            console.log(v.twitterDates);
             // Edges found so create the graph
+
+            // Starting with the TimeLine
+            //sorting timeline in ascending order
+            v.twitterDates.sort(v.sortDates);
+            //creating date bins
+            v.createTwitterDateBins(v.twitterDates, 100);
             v.spinner_notices.timeline = "";
             v.spinStart("updateTimeline");
             v.show_graphs = true;
