@@ -162,7 +162,7 @@ var app = new Vue({
             }
         },
         colors: colors,
-        searchBy: 'hoaxy',
+        searchBy: 'Hoaxy',
 
         // Edge list
         twitterEdges: [],
@@ -277,20 +277,6 @@ var app = new Vue({
 
             }, 90000);
         },
-        formatDate2: function(unFormattedDate) {
-          // Changing to the YYYY-MM-DDT00:00:00Z date format
-          var createdAtArray = unFormattedDate.split(" ");
-          // Invoking the moment.js package to yield us the number months
-          var month = moment.monthsShort().indexOf(createdAtArray[1]) + 1;
-          var monthStr = month.toString();
-          // Padding the month with an extra prefix 0 in case it is just length of one i.e. 8 -> 08
-          if (monthStr.length == 1) {
-            monthStr = "0" + monthStr;
-          }
-          // Creating final formatted date
-          var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
-          return(formattedDate);
-        },
         formatDate: function(unFormattedDate) {
           // UnFormatted date should come as 'Day Mo DD HH:MM:SS +0000 YYYY' which must be parsed and changed
           // Changing to the YYYY-MM-DDTHH:MM:SSZ date format
@@ -385,6 +371,24 @@ var app = new Vue({
               v.twitterTimeline.fact_checking.volume.push(0);
             }
           }
+        },
+        resetTwitterSearchResults: function() {
+          // Reset Twitter Edge list
+          this.twitterEdges = [];
+          // Reset Twitter timeline
+          this.twitterTimeline = {
+            claim: {
+              timestamp: [],
+              volume: []
+            },
+            fact_checking: {
+              timestamp: [],
+              volume: []
+            }
+          };
+          // Used to only paginate up to 1000 nodes
+          this.twitterUserSet = new Set();
+          this.twitterDates = [];
         },
         buildTwitterEdgesTimeline: function(twitterEntities){
           this.spinStart("buildGraph");
@@ -606,6 +610,9 @@ var app = new Vue({
             console.log("twitter dates");
             console.log(v.twitterDates);
             // Edges found so create the graph
+
+            // Re-initialize the edges/timeline if there was a query before
+            v.graph.updateEdges([]);
 
             // Starting with the TimeLine
             //sorting timeline in ascending order
@@ -1066,7 +1073,9 @@ var app = new Vue({
             this.twitter_account_info = {};
         },
         submitForm: function(dontScroll){
-    	    if(this.searchBy == 'hoaxy') {
+          // Resets any results from any previous queries
+          this.resetTwitterSearchResults();
+    	    if(this.searchBy == 'Hoaxy') {
         		this.show_articles = false;
         		this.show_graphs = false;
         		this.checked_articles = [];
@@ -1080,7 +1089,7 @@ var app = new Vue({
         		this.getArticles(dontScroll);
         		this.spinStop();
       	  }
-      	  else if(this.searchBy == 'twitter') {
+      	  else if(this.searchBy == 'Twitter') {
             this.show_articles = false;
         		this.show_graphs = false;
         		this.checked_articles = [];
@@ -1093,7 +1102,7 @@ var app = new Vue({
             var tweetsResponse = this.getTwitterSearchResults(this.query_text);
         		this.spinStop();
       	  }
-          else if(this.searchBy == 'twitter-url') {
+          else if(this.searchBy == 'Twitter URL') {
             this.show_articles = false;
         		this.show_graphs = false;
         		this.checked_articles = [];
@@ -1220,7 +1229,7 @@ var app = new Vue({
           this.show_graphs = false;
 
 
-          if (this.searchBy == 'hoaxy') {
+          if (this.searchBy == 'Hoaxy') {
             this.timeline = this.globalHoaxyTimeline;
             console.log("changed to hoaxy timeline");
           }

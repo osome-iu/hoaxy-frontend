@@ -35,28 +35,17 @@
 			<form @submit.stop.prevent="submitForm()">
 				<div class="container">
 					<div class="col-12 form-group text-center">
-						<div class="col-12 text-center form-group">
-							<span class="radio-container">
-								<label class="">Search Using:
-									<input v-model="searchBy" type="radio" name="search_type" id='search_type_phrase' value="hoaxy" /> Hoaxy
-								</label>
-							</span>
-							<span class="radio-container">
-								<label class="">
-									<input v-model="searchBy" type="radio" name="search_type" id="search_type_url" value="twitter" /> Twitter Search
-								</label>
-							</span>
-							<span class="radio-container">
-								<label class="">
-									<input v-model="searchBy" type="radio" name="search_type" id="search_type_url" value="twitter-url" /> Twitter URL Search
-								</label>
-							</span>
+						<div class="col-12 text-center form-inline">
+								<select class="col-2 form-control bg-primary text-light" v-model="searchBy">
+								  <option disabled value="">Search By:</option>
+								  <option>Hoaxy</option>
+								  <option>Twitter</option>
+								  <option>Twitter URL</option>
+								</select>
+							  <input id="query" class="col-10 form-control" type="text " v-model="query_text"  :disabled="input_disabled" />
 						</div>
-					  <input id="query" class="form-control" type="text " v-model="query_text"  :disabled="input_disabled" />
-
 					</div>
-
-					<div v-if="searchBy == 'hoaxy'" class="col-12 text-center form-group">
+					<div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
 						<span class="radio-container">
 							<label class="">Show:
 								<input v-model="query_sort" type="radio" name="sort_by" id='sort_by_relevant' checked value="relevant"  :disabled="input_disabled" /> Relevant
@@ -88,7 +77,7 @@
 
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-						<button class="btn btn-primary btn-blue" id="submit" :disabled="input_disabled" >{{ searchBy == 'hoaxy' ? 'Search' : 'Visualize' }} </button>
+						<button class="btn btn-primary btn-blue" id="submit" :disabled="input_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Visualize' }} </button>
 					</div>
 					<div class="clearfix"></div>
 				</form>
@@ -185,7 +174,7 @@
 						<i class="fa fa-rotate-180 fa-share-alt" style="height: 1rem; width: .7rem" aria-hidden="true"></i></span></button>
 			</div>
 			<div class="mt-3 text-center" id="legend">
-				<template v-if="searchBy == 'hoaxy'">
+				<template v-if="searchBy == 'Hoaxy'">
 					<label class="d-inline-block d-md-block"><span class=" line claim_label">&nbsp;</span><br /> Claims</label>
 					<label class="d-inline-block d-md-block"><span class=" line fact_checking_label">&nbsp;</span><br /> Fact-Checks</label>
 				</template>
@@ -391,7 +380,7 @@
 						<template v-for="(id, index) in edge_modal_content.edge.outgoing_ids">
 							{{edge_modal_content.edge.titles[index]}}
 
-							<div class="modal_links">See <a target="_blank" :href="edge_modal_content.tweet_urls[id]">tweet</a><template v-if="searchBy == 'hoaxy'">  or  <a target="_blank" :href="edge_modal_content.edge.url_raws[index]">article</a></template></div>
+							<div class="modal_links">See <a target="_blank" :href="edge_modal_content.tweet_urls[id]">tweet</a><template v-if="searchBy == 'Hoaxy'">  or  <a target="_blank" :href="edge_modal_content.edge.url_raws[index]">article</a></template></div>
 
 						</template>
 					</div>
@@ -450,7 +439,7 @@
 							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a> </h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 
@@ -460,7 +449,7 @@
 							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 						<h2>has mentioned: <span v-if="node_modal_content.has_mentioned_count == 0">nobody</span></h2>
@@ -468,7 +457,7 @@
 							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 						<h2>was mentioned by: <span v-if="node_modal_content.is_mentioned_by_count == 0">nobody</span></h2>
@@ -476,7 +465,7 @@
 							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 						<h2>has retweeted: <span v-if="node_modal_content.has_retweeted_count == 0">nobody</span></h2>
@@ -484,7 +473,7 @@
 							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 						<h2>was retweeted by: <span v-if="node_modal_content.is_retweeted_by_count == 0">nobody</span></h2>
@@ -492,7 +481,7 @@
 							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 
