@@ -207,6 +207,7 @@ var app = new Vue({
             return this.articles.slice(0, this.articles_to_show);
         },
         getDateline: function(url_pub_date){
+            // console.debug(url_pub_date);
             var pub_date = moment(url_pub_date);
             var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
