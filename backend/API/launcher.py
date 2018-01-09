@@ -168,6 +168,9 @@ def getScores():
     The scorese retrival endpoint.
     Parse the query string, get user scores according to user_ids then return as json.
     """
+    if request.headers.get("origin") != "http://iuni.iu.edu":
+        return jsonify({'success': False}), 405
+
     print("Start to processing ...")
     t1 = time.time()
     # get the query string according to different HTTP methods
@@ -272,6 +275,9 @@ def insertFeedback():
     """
     The feedback insertion endpoint.
     """
+    if request.headers.get("origin") != "http://iuni.iu.edu":
+        return jsonify({'success': False}), 405
+
     if request.method == "POST":
         try:
             feedback = request.get_json()

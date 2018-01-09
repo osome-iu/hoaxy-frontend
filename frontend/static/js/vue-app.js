@@ -1,7 +1,7 @@
 var max_articles = 20;
 
 var TWEET_URL = "https://twitter.com/%0/status/%1";
-var debug = false; //true;
+var debug = false;
 var colors = {
     node_colors : {
         "fact_checking" : 'darkblue',
@@ -103,6 +103,10 @@ var app = new Vue({
 
         twitter_account_info: {},
         twitter: {},
+        twitter_result_type: 'mixed',
+
+        globalHoaxyTimeline: null,
+        globalTwitterSearchTimeline: null,
 
         timeline: null,
         graph: null,
@@ -162,8 +166,24 @@ var app = new Vue({
 
         source_dropdown_open: false,
         colors: colors,
-        searchBy: 'hoaxy'
+        searchBy: 'Hoaxy',
 
+        // Edge list
+        twitterEdges: [],
+        // Twitter timeline
+        twitterTimeline: {
+          claim: {
+            timestamp: [],
+            volume: []
+          },
+          fact_checking: {
+            timestamp: [],
+            volume: []
+          }
+        },
+        // Used to only paginate up to 1000 nodes
+        twitterUserSet: new Set(),
+        twitterDates: []
     },
     computed: {
         all_selected: function(){
@@ -209,6 +229,11 @@ var app = new Vue({
             var pub_date = moment(url_pub_date);
             var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
+        },
+        getUrlHostPath: function(url){
+          var urlLink = document.createElement("a");
+          urlLink.href = url;
+          return(urlLink.hostname + urlLink.pathname);
         },
         getOffset: function(element){
             if(!element)
@@ -272,7 +297,8 @@ var app = new Vue({
             }, 90000);
         },
         formatDate: function(unFormattedDate) {
-          // Changing to the YYYY-MM-DDT00:00:00Z date format
+          // UnFormatted date should come as 'Day Mo DD HH:MM:SS +0000 YYYY' which must be parsed and changed
+          // Changing to the YYYY-MM-DDTHH:MM:SSZ date format
           var createdAtArray = unFormattedDate.split(" ");
           // Invoking the moment.js package to yield us the number months
           var month = moment.monthsShort().indexOf(createdAtArray[1]) + 1;
@@ -281,16 +307,112 @@ var app = new Vue({
           if (monthStr.length == 1) {
             monthStr = "0" + monthStr;
           }
+          // Parsing HH:MM:SS part
+          var hourMinSec = createdAtArray[3].split(":");
           // Creating final formatted date
-          var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T00:00:00Z";
+          var formattedDate = createdAtArray[5] + "-" + monthStr + "-" + createdAtArray[2] + "T" + hourMinSec[0] + ":" + hourMinSec[1] + ":" + hourMinSec[2] + "Z";
           return(formattedDate);
         },
-        buildTwitterSearchTimelineAndGraph: function(tweetsResponse){
+        sortDates: function(dateOne, dateTwo) {
+          if (dateOne > dateTwo) {
+            return 1;
+          }
+          if (dateOne < dateTwo) {
+            return -1;
+          }
+          // Dates Equal
+          return 0;
+        },
+        createTwitterDateBins: function(dates, bins) {
+          var v = this;
+          var dateBins = [];
+          // Finding least date
+          var leastDate = dates[0].getTime();
+          // console.log("least date");
+          // console.log(leastDate);
+          var latestDate = dates[dates.length-1].getTime();
+          // console.log("latest date");
+          // console.log(latestDate);
+          // Difference between greatest date and least date in milliseconds
+          var offsetMil = Math.abs(latestDate - leastDate);
+          // console.log("offset mil");
+          // console.log(offsetMil);
+          // Creating bins from the difference
+          var offsetBin = Math.ceil(offsetMil/bins);
+          // console.log("offset bin");
+          // console.log(offsetBin);
+          // Creating binned Dates
+          for (var bin = 1; bin <= bins; bin++) {
+            dateBins.push(leastDate + bin*offsetBin);
+          }
+          // console.log("date bins");
+          // console.log(dateBins);
+          // Adding a 0 tweet initial bin
+          var initialDate = new Date(dates[0].getFullYear(), dates[0].getMonth(), dates[0].getDate());
+          v.twitterTimeline.claim.timestamp.push(initialDate);
+          v.twitterTimeline.claim.volume.push(0);
+          v.twitterTimeline.fact_checking.timestamp.push(initialDate);
+          v.twitterTimeline.fact_checking.volume.push(0);
+          // Populating the date bins with number of tweets in each bin
+          var bin = 0;
+          var numTweets = 0;
+          for (var theDate = 0; theDate < dates.length; theDate++){
+            // console.log("the date");
+            // console.log(dates[theDate]);
+            // console.log("mill");
+            // console.log(dates[theDate].getTime());
+            if (dates[theDate].getTime() < dateBins[bin]) {
+              numTweets+=1;
+            }
+            else {
+              // next date exceeded current bin, so must move on to next bin(s)
+              while (dates[theDate].getTime() > dateBins[bin]) {
+                var offsetDate = new Date(dateBins[bin]);
+                // console.log("offset date");
+                // console.log(offsetDate);
+                v.twitterTimeline.claim.timestamp.push(offsetDate);
+                v.twitterTimeline.claim.volume.push(numTweets);
+                v.twitterTimeline.fact_checking.timestamp.push(offsetDate);
+                v.twitterTimeline.fact_checking.volume.push(0);
+                bin+=1;
+              }
+              numTweets+=1;
+            }
+            // adding the last date
+            if (theDate == dates.length-1) {
+              var offsetDate = new Date(dateBins[bin]);
+              // console.log("offset date");
+              // console.log(offsetDate);
+              v.twitterTimeline.claim.timestamp.push(offsetDate);
+              v.twitterTimeline.claim.volume.push(numTweets);
+
+              v.twitterTimeline.fact_checking.timestamp.push(offsetDate);
+              v.twitterTimeline.fact_checking.volume.push(0);
+            }
+          }
+        },
+        resetTwitterSearchResults: function() {
+          // Reset Twitter Edge list
+          this.twitterEdges = [];
+          // Reset Twitter timeline
+          this.twitterTimeline = {
+            claim: {
+              timestamp: [],
+              volume: []
+            },
+            fact_checking: {
+              timestamp: [],
+              volume: []
+            }
+          };
+          // Used to only paginate up to 1000 nodes
+          this.twitterUserSet = new Set();
+          this.twitterDates = [];
+        },
+        buildTwitterEdgesTimeline: function(twitterEntities){
           this.spinStart("buildGraph");
           this.spinner_notices.timeline = "Building Graph and Timeline...";
 
-          // Edge list
-          var twitterEdges = [];
           // Edge object
           function TwitterEdge() {
             this.canonical_url="";
@@ -313,26 +435,14 @@ var app = new Vue({
             this.url_raw="";
           }
 
-          // Timeline stuff
-          var timeline = {
-            claim: {
-              timestamp: [],
-              volume: []
-            },
-            fact_checking: {
-              timestamp: [],
-              volume: []
-            }
-          };
           var v = this;
-          var total_claims = 0;
-          var total_dates = 0;
+
           // Looping over twitter results and adding the articles that we need to further get timelines and graphs of
-          var twitterEntities = tweetsResponse.statuses;
+          // var twitterEntities = tweetsResponse.statuses;
           console.log("twitter entities");
           console.log(twitterEntities);
           var totalTwitterEntities = twitterEntities.length;
-          var previousDate = "";
+          var key = totalTwitterEntities;
           // Used to maintain data integrity
           var nonNullFrom = false;
           var nonNullTo = false;
@@ -345,112 +455,107 @@ var app = new Vue({
                 twitterEdge.tweet_id = "";
             }
             var formattedDate = v.formatDate(twitterEntities[key].created_at);
+            v.twitterDates.push(new Date(formattedDate));
+
             // Updating edges
             twitterEdge.date_published = formattedDate;
             twitterEdge.pub_date = formattedDate;
             twitterEdge.tweet_created_at = formattedDate;
             twitterEdge.tweet_type = typeOfTweet;
-            twitterEdges.push(twitterEdge);
-
-            // Updating the timeline
-            total_claims+=1;
-            if (previousDate != formattedDate) {
-              total_dates+=1;
-              timeline.claim.timestamp.push(formattedDate);
-              timeline.claim.volume.push(total_claims);
-              previousDate = formattedDate;
-            } else {
-              timeline.claim.volume[total_dates-1] = total_claims;
-            }
-
-            timeline.fact_checking.timestamp.push(formattedDate);
-            timeline.fact_checking.volume.push(0);
+            v.twitterEdges.push(twitterEdge);
           }
 
-          for (var key = totalTwitterEntities-1; key>=0; key--) {
-              // Checking for retweets
-              nonNullFrom = false;
-              nonNullTo = false;
-              if (twitterEntities[key].retweeted_status) {
-                var twitterEdge = new TwitterEdge();
+          while (key > 0) {
+            key = key - 1;
+            // Checking for quotes
+            nonNullFrom = false;
+            nonNullTo = false;
+            if (twitterEntities[key].quoted_status) {
 
-                try {
-                  twitterEdge.from_user_id = twitterEntities[key].retweeted_status.user.id_str;
-                  nonNullFrom = true;
-                } catch(err) {
-                  twitterEdge.from_user_id = "";
-                }
+              var twitterEdge = new TwitterEdge();
 
-                try {
-                  twitterEdge.from_user_screen_name = twitterEntities[key].retweeted_status.user.screen_name;
-                  nonNullFrom = true;
-                } catch(err) {
-                  twitterEdge.from_user_screen_name = "";
-                }
-
-                try {
-                  twitterEdge.to_user_id = twitterEntities[key].user.id_str;
-                  nonNullTo = true;
-                } catch(err) {
-                  twitterEdge.to_user_id = "";
-                }
-
-                try {
-                  twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
-                  nonNullTo = true;
-                } catch(err) {
-                  twitterEdge.to_user_screen_name = "";
-                }
-
-                if (nonNullFrom && nonNullTo) {
-                  // Populate the rest of the edge entities
-                  // Attempting to retrieve tweet id
-                  updateEdgesAndTimeline("retweet");
-                }
+              try {
+                twitterEdge.from_user_id = twitterEntities[key].quoted_status.user.id_str;
+                v.twitterUserSet.add(twitterEdge.from_user_id);
+                nonNullFrom = true;
+              } catch(err) {
+                twitterEdge.from_user_id = "";
               }
 
-              // Checking for quotes
-              nonNullFrom = false;
-              nonNullTo = false;
-              if (twitterEntities[key].is_quote_status) {
-                var twitterEdge = new TwitterEdge();
-
-                try {
-                  twitterEdge.from_user_id = twitterEntities[key].quoted_status.user.id_str;
-                  nonNullFrom = true;
-                } catch(err) {
-                  twitterEdge.from_user_id = "";
-                }
-
-                try {
-                  twitterEdge.from_user_screen_name = twitterEntities[key].quoted_status.user.screen_name;
-                  nonNullFrom = true;
-                } catch(err) {
-                  twitterEdge.from_user_screen_name = "";
-                }
-
-                try {
-                  twitterEdge.to_user_id = twitterEntities[key].user.id_str;
-                  nonNullTo = true;
-                } catch(err) {
-                  twitterEdge.to_user_id = "";
-                }
-
-                try {
-                  twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
-                  nonNullTo = true;
-                } catch(err) {
-                  twitterEdge.to_user_screen_name = "";
-                }
-
-                if (nonNullFrom && nonNullTo) {
-                  // Populate the rest of the edge entities
-                  updateEdgesAndTimeline("quote");
-                }
-
+              try {
+                twitterEdge.from_user_screen_name = twitterEntities[key].quoted_status.user.screen_name;
+                nonNullFrom = true;
+              } catch(err) {
+                twitterEdge.from_user_screen_name = "";
               }
 
+              try {
+                twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                v.twitterUserSet.add(twitterEdge.to_user_id);
+                nonNullTo = true;
+              } catch(err) {
+                twitterEdge.to_user_id = "";
+              }
+
+              try {
+                twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
+                nonNullTo = true;
+              } catch(err) {
+                twitterEdge.to_user_screen_name = "";
+              }
+
+              if (nonNullFrom && nonNullTo) {
+                // Populate the rest of the edge entities
+                updateEdgesAndTimeline("quote");
+              }
+
+            }
+
+            // Checking for retweets
+            nonNullFrom = false;
+            nonNullTo = false;
+            if (twitterEntities[key].retweeted_status) {
+
+              var twitterEdge = new TwitterEdge();
+
+              try {
+                twitterEdge.from_user_id = twitterEntities[key].retweeted_status.user.id_str;
+                v.twitterUserSet.add(twitterEdge.from_user_id);
+                nonNullFrom = true;
+              } catch(err) {
+                twitterEdge.from_user_id = "";
+              }
+
+              try {
+                twitterEdge.from_user_screen_name = twitterEntities[key].retweeted_status.user.screen_name;
+                nonNullFrom = true;
+              } catch(err) {
+                twitterEdge.from_user_screen_name = "";
+              }
+
+              try {
+                twitterEdge.to_user_id = twitterEntities[key].user.id_str;
+                v.twitterUserSet.add(twitterEdge.to_user_id);
+                nonNullTo = true;
+              } catch(err) {
+                twitterEdge.to_user_id = "";
+              }
+
+              try {
+                twitterEdge.to_user_screen_name = twitterEntities[key].user.screen_name;
+                nonNullTo = true;
+              } catch(err) {
+                twitterEdge.to_user_screen_name = "";
+              }
+
+              if (nonNullFrom && nonNullTo) {
+                // Populate the rest of the edge entities
+                // Attempting to retrieve tweet id
+                updateEdgesAndTimeline("retweet");
+              }
+            } else {
               // Checking for mentions
+              // Mentions will only occur if the Tweet entity is not a retweet so also doing this check here
               if (twitterEntities[key].entities.user_mentions.length > 0) {
                 nonNullFrom = false;
                 nonNullTo = false;
@@ -461,6 +566,7 @@ var app = new Vue({
 
                   try {
                     twitterEdge.from_user_id = twitterEntities[key].user.id_str;
+                    v.twitterUserSet.add(twitterEdge.from_user_id);
                     nonNullFrom = true;
                   } catch(err) {
                     twitterEdge.from_user_id = "";
@@ -475,6 +581,7 @@ var app = new Vue({
 
                   try {
                     twitterEdge.to_user_id = twitterEntities[key].entities.user_mentions[mention].id_str;
+                    v.twitterUserSet.add(twitterEdge.to_user_id);
                     nonNullTo = true;
                   } catch(err) {
                     twitterEdge.to_user_id = "";
@@ -484,38 +591,53 @@ var app = new Vue({
                     twitterEdge.to_user_screen_name = twitterEntities[key].entities.user_mentions[mention].screen_name;
                     nonNullTo = true;
                   } catch(err) {
-                      twitterEdge.to_user_screen_name = "";
+                    twitterEdge.to_user_screen_name = "";
                   }
 
                   if (nonNullFrom && nonNullTo) {
                     // Populate the rest of the edge entities
                     updateEdgesAndTimeline("mention");
                   }
-
+                }
               }
-
             }
           }
-
+          v.spinStop("buildGraph");
+        },
+        buildTwitterGraph: function() {
+          var v = this;
           // Checking if any edges were found and if not, show message to user to try another query
-          if (twitterEdges.length == 0) {
+          if (v.twitterEdges.length == 0) {
             console.log("no edges found");
-            v.spinStop("buildGraph");
+
             v.show_zoom_buttons = false;
             v.failed_to_get_network = true;
             v.spinner_notices.graph = "";
             v.show_graphs = true;
             Vue.nextTick(function(){
-                v.graph.updateEdges(twitterEdges);
+                v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("graphs");
             });
-            this.spinStop("buildGraph");
+            v.spinStop("buildGraph");
             return "ok";
           }
           else {
+            console.log("twitter edges");
+            console.log(v.twitterEdges);
+            console.log("twitter dates");
+            console.log(v.twitterDates);
             // Edges found so create the graph
+
+            // Re-initialize the edges/timeline if there was a query before
+            v.graph.updateEdges([]);
+
+            // Starting with the TimeLine
+            //sorting timeline in ascending order
+            v.twitterDates.sort(v.sortDates);
+            //creating date bins
+            v.createTwitterDateBins(v.twitterDates, 100);
             v.spinner_notices.timeline = "";
             v.spinStart("updateTimeline");
             v.show_graphs = true;
@@ -523,7 +645,7 @@ var app = new Vue({
             // the graphs are still hidden. Graphs will be visible on the
             // next tick
             Vue.nextTick(function(){
-                v.timeline.update(timeline);
+                v.timeline.update(v.twitterTimeline);
                 v.spinStop("updateTimeline");
                 v.scrollToElement("graphs");
                 v.timeline.redraw();
@@ -543,20 +665,20 @@ var app = new Vue({
 
             Vue.nextTick(function(){
                 console.log("POST EDGES:");
-                console.log(twitterEdges);
-                console.log(typeof(twitterEdges));
-                v.graph.updateEdges(twitterEdges);
+                console.log(v.twitterEdges);
+                console.log(typeof(v.twitterEdges));
+                v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("graphs");
             });
 
-            this.spinStop("buildGraph");
-            return "ok";
+            v.spinStop("buildGraph");
+            return true;
           }
-
         },
         getTwitterSearchResults: function(query){
+            var test = this.getUrlHostPath();
             this.spinStart("getTwitterSearchResults");
             this.spinner_notices.timeline = "Searching Twitter...";
             var v = this;
@@ -564,24 +686,44 @@ var app = new Vue({
             // In this particular case we are obtaining the query as a string, i.e. "cute kitties" and not "cute" and "kitties" separately
             // Hence we need to convert the query into a quote-string URI i.e. cute%23kitties
             var query_string = query.replace(" ","%23");
-            // Sending request to getTweets endpoint in tweets.js code-file
-            tweetsReponse = this.twitter.getTweets(query_string);
-            // Handling the get Tweets response
-            tweetsReponse.then(function(response){
-              console.log("TWEETS RESPONSE SUCCESSFUL:");
-              console.log(response);
-              v.spinStop("getTwitterSearchResults");
-              var testResponse = v.buildTwitterSearchTimelineAndGraph(response);
-              return response;
-            }, function(){})
-            .catch(function(error){
-              console.log("TWEETS RESPONSE ERROR:");
-              console.log(error);
-              v.spinStop("getTwitterSearchResults");
-              return response;
-              return "Request failed";
-            });
-            return response;
+            // Will later be used for pagination
+            var max_id = "";
+            // This function will paginate tweet search requests and is recursive
+            function paginateTwitterRequests() {
+              tweetsReponse = v.twitter.getTweets(query_string, max_id, v.twitter_result_type);
+              // Handling the get Tweets response
+              tweetsReponse.then(function(response){
+                if (response.search_metadata.next_results) {
+                  // Retrieving the maximum id for which the next result we must return tweets smaller than, hence older than this tweet
+                  max_id = response.statuses[response.statuses.length-1].id_str;
+                } else {
+                  // No need to make another request as we are done (there are no more responses left)
+                  query_string = "";
+                }
+                // twitterEntities.push.apply(twitterEntities, response.statuses);
+                v.buildTwitterEdgesTimeline(response.statuses);
+                // Check if pagination must continue, if the number of nodes on the graph exceeds 1000 we don't send additional requests
+                if (v.twitterUserSet.size < 1000 && query_string != "") {
+                  // Continue pagination
+                  paginateTwitterRequests()
+                } else {
+                  // Stop pagination
+                  v.spinStop("getTwitterSearchResults");
+                  // Create timeline and graph given the Twitter results
+                  v.buildTwitterGraph();
+                  // var twitterBuiltGraphTimeline = v.buildTwitterSearchTimelineAndGraph(twitterEntities);
+                  return true;
+                }
+              }, function(){})
+              .catch(function(error){
+                console.log("Twitter Search Pagination Error:");
+                console.log(error);
+                v.spinStop("getTwitterSearchResults");
+                return false;
+              });
+            }
+            // Function will paginate Twitter Search tweets, then build the timeline/graph
+            paginateTwitterRequests();
         },
 
         //   ##        #   ##   #    #    ###### #    # #    #  ####  ##### #  ####  #    #  ####
@@ -950,11 +1092,12 @@ var app = new Vue({
             this.twitter_account_info = {};
         },
         submitForm: function(dontScroll){
-    	    if(this.searchBy == 'hoaxy') {
+          // Resets any results from any previous queries
+          this.resetTwitterSearchResults();
+    	    if(this.searchBy == 'Hoaxy') {
         		this.show_articles = false;
         		this.show_graphs = false;
         		this.checked_articles = [];
-        		// $("#select_all").prop("checked", false);
         		if(!this.query_text)
         		{
               this.displayError("You must input a claim.");
@@ -965,11 +1108,10 @@ var app = new Vue({
         		this.getArticles(dontScroll);
         		this.spinStop();
       	  }
-      	  else {
+      	  else if(this.searchBy == 'Twitter') {
             this.show_articles = false;
         		this.show_graphs = false;
         		this.checked_articles = [];
-        		// $("#select_all").prop("checked", false);
         		if(!this.query_text)
         		{
               this.displayError("You must input a valid search query.");
@@ -977,10 +1119,23 @@ var app = new Vue({
               return false;
         		}
             var tweetsResponse = this.getTwitterSearchResults(this.query_text);
-        		//this.changeURLParams();
-        		//this.getArticles(dontScroll);
         		this.spinStop();
       	  }
+          else if(this.searchBy == 'Twitter URL') {
+            this.show_articles = false;
+        		this.show_graphs = false;
+        		this.checked_articles = [];
+        		if(!this.query_text)
+        		{
+              this.displayError("You must input a valid search query.");
+              this.spinStop(true);
+              return false;
+        		}
+            // Retrieving the host and path from url
+            this.query_text = this.getUrlHostPath(this.query_text);
+            var tweetsResponse = this.getTwitterSearchResults(this.query_text);
+        		this.spinStop();
+          }
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
@@ -1074,7 +1229,7 @@ var app = new Vue({
                 // this.timeline.update(this.timeline.getLastData());
                 // this.timeline.redraw();
                 this.timeline.updateTimestamp();
-        }
+        },
         // "twitter.me": function(){
         //     console.info("twitter");
         //     this.twitter_authorized = !!this.twitter.me();
@@ -1091,7 +1246,22 @@ var app = new Vue({
         //         this.animationPlaying = false;
         //     }
         // }
+        searchBy: function() {
+          this.show_articles = false;
+          this.show_graphs = false;
+
+
+          if (this.searchBy == 'Hoaxy') {
+            this.timeline = this.globalHoaxyTimeline;
+            console.log("changed to hoaxy timeline");
+          }
+          else {
+            this.timeline = this.globalTwitterSearchTimeline;
+            console.log("changed to twitter search timeline");
+          }
+        }
     },
+
 
     //  #     #
     //  ##   ##  ####  #    # #    # ##### ###### #####
@@ -1170,16 +1340,44 @@ var app = new Vue({
 
         //create the chart that is used to visualize the timeline
         // the updateGraph function is a callback when the timeline interval is adjusted
-        this.timeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+        this.globalHoaxyTimeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+        this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+        this.timeline = this.globalHoaxyTimeline
 
 
-        this.timeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+        // this.timeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+        //
+        //     v.pauseGraphAnimation();
+        //     v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+        //     v.graphAnimation.increment = 0;
+    		// v.graphAnimation.playing  = true;
+    		// v.graphAnimation.paused = true;
+        //     v.unpauseGraphAnimation();
+        //     v.pauseGraphAnimation();
+        //
+        //     // console.debug(new Date(e.pointXValue))
+        // });
+
+        this.globalHoaxyTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
 
             v.pauseGraphAnimation();
             v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
             v.graphAnimation.increment = 0;
-    		v.graphAnimation.playing  = true;
-    		v.graphAnimation.paused = true;
+        v.graphAnimation.playing  = true;
+        v.graphAnimation.paused = true;
+            v.unpauseGraphAnimation();
+            v.pauseGraphAnimation();
+
+            // console.debug(new Date(e.pointXValue))
+        });
+
+        this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+
+            v.pauseGraphAnimation();
+            v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+            v.graphAnimation.increment = 0;
+        v.graphAnimation.playing  = true;
+        v.graphAnimation.paused = true;
             v.unpauseGraphAnimation();
             v.pauseGraphAnimation();
 
