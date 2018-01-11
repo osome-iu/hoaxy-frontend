@@ -330,7 +330,8 @@ var app = new Vue({
           // console.log("date bins");
           // console.log(dateBins);
           // Adding a 0 tweet initial bin
-          var initialDate = new Date(dates[0].getFullYear(), dates[0].getMonth(), dates[0].getDate());
+          // var initialDate = new Date(dates[0].getFullYear(), dates[0].getMonth(), dates[0].getDate());
+          var initialDate = new Date(dates[0].getTime());
           v.twitterTimeline.claim.timestamp.push(initialDate);
           v.twitterTimeline.claim.volume.push(0);
           v.twitterTimeline.fact_checking.timestamp.push(initialDate);
@@ -372,6 +373,7 @@ var app = new Vue({
               v.twitterTimeline.fact_checking.volume.push(0);
             }
           }
+          console.debug(v.twitterTimeline.claim);
         },
         resetTwitterSearchResults: function() {
           // Reset Twitter Edge list
