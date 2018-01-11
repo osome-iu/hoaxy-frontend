@@ -609,7 +609,9 @@ function HoaxyGraph(options)
 					tweet_id = edge.tweet_id,
 					tweet_type = edge.tweet_type,
 					is_mention = edge.is_mention,
-					tweet_created_at = (new Date(edge.tweet_created_at.substring(0, 10))).getTime();
+					// tweet_created_at = (new Date(edge.tweet_created_at.substring(0, 10))).getTime();
+					tweet_created_at = (new Date(edge.tweet_created_at)).getTime();
+
 
 					//filter edges not fall into [start_time, end_time]
 					// if (tweet_created_at < start_time || tweet_created_at > end_time)
