@@ -163,7 +163,8 @@ var app = new Vue({
         },
         colors: colors,
         searchBy: 'Hoaxy',
-
+        hoaxySearchSelected: true,
+        twitterSearchSelected: false,
         // Edge list
         twitterEdges: [],
         // Twitter timeline
@@ -200,6 +201,16 @@ var app = new Vue({
     // #     # ######   #   #    #  ####  #####   ####
 
     methods: {
+        twitterSearch: function() {
+          this.searchBy = "Twitter"
+          this.twitterSearchSelected = true
+          this.hoaxySearchSelected = false
+        },
+        hoaxySearch: function() {
+          this.searchBy = "Hoaxy"
+          this.hoaxySearchSelected = true
+          this.twitterSearchSelected = false
+        },
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
         },
@@ -212,10 +223,29 @@ var app = new Vue({
             var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
         },
-        getUrlHostPath: function(url){
+        attemptToGetUrlHostPath: function(url){
           var urlLink = document.createElement("a");
           urlLink.href = url;
-          return(urlLink.hostname + urlLink.pathname);
+
+          // TESTS DEBUGGING
+          // console.log('DEBUGGING URL HOST PATH');
+          // console.log(window.location.hostname);
+          // console.log(urlLink.protocol); // => "http:"
+          // console.log(urlLink.hostname); // => "example.com"
+          // console.log(urlLink.port);     // => "3000"
+          // console.log(urlLink.pathname); // => "/pathname/"
+          // console.log(urlLink.search);   // => "?search=test"
+          // console.log(urlLink.hash);     // => "#hash"
+          // console.log(urlLink.host);     // => "example.com:3000"
+
+          if (window.location.hostname == urlLink.hostname) {
+            // Element was not a link so we return null
+            return null;
+          } else {
+            // Return hostname and pathname of url to re-construct principal components of an url e.g. <hostname><pathname> or www.host-stuff.com/pathstuff
+            return(urlLink.hostname + urlLink.pathname);
+          }
+
         },
         getOffset: function(element){
             if(!element)
@@ -422,15 +452,14 @@ var app = new Vue({
           var v = this;
 
           // Looping over twitter results and adding the articles that we need to further get timelines and graphs of
-          // var twitterEntities = tweetsResponse.statuses;
-          console.log("twitter entities");
-          console.log(twitterEntities);
+          // USED FOR DEBUGGING
+          // console.log("twitter entities:");
+          // console.log(twitterEntities);
           var totalTwitterEntities = twitterEntities.length;
           var key = totalTwitterEntities;
           // Used to maintain data integrity
           var nonNullFrom = false;
           var nonNullTo = false;
-
           // Function used for updating the edges and timeline from retweets, quotes, and mentions
           function updateEdgesAndTimeline(typeOfTweet) {
             try {
@@ -592,8 +621,6 @@ var app = new Vue({
           var v = this;
           // Checking if any edges were found and if not, show message to user to try another query
           if (v.twitterEdges.length == 0) {
-            console.log("no edges found");
-
             v.show_zoom_buttons = false;
             v.failed_to_get_network = true;
             v.spinner_notices.graph = "";
@@ -605,18 +632,17 @@ var app = new Vue({
                 v.scrollToElement("graphs");
             });
             v.spinStop("buildGraph");
-            return "ok";
           }
           else {
-            console.log("twitter edges");
-            console.log(v.twitterEdges);
-            console.log("twitter dates");
-            console.log(v.twitterDates);
-            // Edges found so create the graph
+            // USED FOR DEBUGGING
+            // console.log("twitter edges:");
+            // console.log(v.twitterEdges);
+            // console.log("twitter dates:");
+            // console.log(v.twitterDates);
 
+            // Edges found so create the graph
             // Re-initialize the edges/timeline if there was a query before
             v.graph.updateEdges([]);
-
             // Starting with the TimeLine
             //sorting timeline in ascending order
             v.twitterDates.sort(v.sortDates);
@@ -648,9 +674,10 @@ var app = new Vue({
             v.show_graphs = true;
 
             Vue.nextTick(function(){
-                console.log("POST EDGES:");
-                console.log(v.twitterEdges);
-                console.log(typeof(v.twitterEdges));
+                // USED FOR DEBUGGING
+                // console.log("POST EDGES:");
+                // console.log(v.twitterEdges);
+                // console.log(typeof(v.twitterEdges));
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.spinStop("generateNetwork");
@@ -658,11 +685,9 @@ var app = new Vue({
             });
 
             v.spinStop("buildGraph");
-            return true;
           }
         },
         getTwitterSearchResults: function(query){
-            var test = this.getUrlHostPath();
             this.spinStart("getTwitterSearchResults");
             this.spinner_notices.timeline = "Searching Twitter...";
             var v = this;
@@ -684,7 +709,6 @@ var app = new Vue({
                   // No need to make another request as we are done (there are no more responses left)
                   query_string = "";
                 }
-                // twitterEntities.push.apply(twitterEntities, response.statuses);
                 v.buildTwitterEdgesTimeline(response.statuses);
                 // Check if pagination must continue, if the number of nodes on the graph exceeds 1000 we don't send additional requests
                 if (v.twitterUserSet.size < 1000 && query_string != "") {
@@ -695,15 +719,14 @@ var app = new Vue({
                   v.spinStop("getTwitterSearchResults");
                   // Create timeline and graph given the Twitter results
                   v.buildTwitterGraph();
-                  // var twitterBuiltGraphTimeline = v.buildTwitterSearchTimelineAndGraph(twitterEntities);
-                  return true;
                 }
               }, function(){})
               .catch(function(error){
-                console.log("Twitter Search Pagination Error:");
-                console.log(error);
+                // USED FOR DEBUGGING
+                // console.log("Twitter Search Pagination Error:");
+                // console.log(error);
                 v.spinStop("getTwitterSearchResults");
-                return false;
+                v.displayError("Twitter Search Pagination Error: " + error);
               });
             }
             // Function will paginate Twitter Search tweets, then build the timeline/graph
@@ -1102,24 +1125,16 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
-            var tweetsResponse = this.getTwitterSearchResults(this.query_text);
+            var searchUrl = this.attemptToGetUrlHostPath(this.query_text);
+            if (searchUrl != null) {
+              // If the search query was a URL, run the query through a URL search
+              this.getTwitterSearchResults(searchUrl);
+            } else {
+              // Otherwise, search query was basic text
+              this.getTwitterSearchResults(this.query_text);
+            }
         		this.spinStop();
       	  }
-          else if(this.searchBy == 'Twitter URL') {
-            this.show_articles = false;
-        		this.show_graphs = false;
-        		this.checked_articles = [];
-        		if(!this.query_text)
-        		{
-              this.displayError("You must input a valid search query.");
-              this.spinStop(true);
-              return false;
-        		}
-            // Retrieving the host and path from url
-            this.query_text = this.getUrlHostPath(this.query_text);
-            var tweetsResponse = this.getTwitterSearchResults(this.query_text);
-        		this.spinStop();
-          }
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
