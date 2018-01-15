@@ -36,7 +36,7 @@ function TwitterSearchTimeline(settings){
 	}
 
 	function dateFormatter(d) {
-		return d3.time.format('%m/%d/%Y %H:%M %p')(new Date(d))
+		return d3.time.format('%m/%d/%Y %H:%M:%S %p')(new Date(d))
 	}
 
 	var debounce_timer = 0;
@@ -87,6 +87,7 @@ function TwitterSearchTimeline(settings){
 
 	var max = 0;
 	var Update = function(data){
+
 		max = 0;
 		lastData = data;
 		var max_time = 0;
@@ -154,26 +155,30 @@ function TwitterSearchTimeline(settings){
 		if(graphAnimation.current_timestamp)
 		{
 
-			chartData[2] = {
+			chartData[1] = {
 				key: 'Time',
 				values: [
 					{ x: new Date(graphAnimation.current_timestamp), y: 0},
 					{ x: new Date(graphAnimation.current_timestamp), y: max}
 				],
 				disableTooltip: true
-
 			};
 
 		}
 		else
 		{
-			delete chartData[2];
+			delete chartData[1];
 		}
 		chart.dispatch.on("brush", null);
 		d3.select('#chart svg')
 		.datum(chartData)
 		.call(chart);
 		chart.dispatch.on("brush", updateDateRange);
+
+		// The twitter tooltip only contains tweets and time, so we must hide the second element (time) from the tooltip
+		// This is set up here (adding class twitter_tooltip) and executed in the external.css file
+		var twitter_tooltip = document.querySelector('[id^="nvtooltip-"]');
+		twitter_tooltip.className += " twitter_tooltip";
 
 	}
 

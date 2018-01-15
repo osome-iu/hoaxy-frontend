@@ -524,3 +524,8 @@ input:not(:checked) + .check_icons > .fa-square-o
 {
     display: none;
 }
+
+.twitter_tooltip table tr:nth-child(2)
+{
+    display: none;
+}
