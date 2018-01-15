@@ -226,18 +226,6 @@ var app = new Vue({
         attemptToGetUrlHostPath: function(url){
           var urlLink = document.createElement("a");
           urlLink.href = url;
-
-          // TESTS DEBUGGING
-          // console.log('DEBUGGING URL HOST PATH');
-          // console.log(window.location.hostname);
-          // console.log(urlLink.protocol); // => "http:"
-          // console.log(urlLink.hostname); // => "example.com"
-          // console.log(urlLink.port);     // => "3000"
-          // console.log(urlLink.pathname); // => "/pathname/"
-          // console.log(urlLink.search);   // => "?search=test"
-          // console.log(urlLink.hash);     // => "#hash"
-          // console.log(urlLink.host);     // => "example.com:3000"
-
           if (window.location.hostname == urlLink.hostname) {
             // Element was not a link so we return null
             return null;
@@ -361,7 +349,7 @@ var app = new Vue({
           // console.log(dateBins);
           // Adding a 0 tweet initial bin
           // var initialDate = new Date(dates[0].getFullYear(), dates[0].getMonth(), dates[0].getDate());
-          var initialDate = new Date(dates[0].getTime());
+          var initialDate = new Date(leastDate);
           v.twitterTimeline.claim.timestamp.push(initialDate);
           v.twitterTimeline.claim.volume.push(0);
           v.twitterTimeline.fact_checking.timestamp.push(initialDate);
@@ -374,7 +362,7 @@ var app = new Vue({
             // console.log(dates[theDate]);
             // console.log("mill");
             // console.log(dates[theDate].getTime());
-            if (dates[theDate].getTime() < dateBins[bin]) {
+            if (dates[theDate].getTime() <= dateBins[bin]) {
               numTweets+=1;
             }
             else {
