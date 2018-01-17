@@ -260,8 +260,13 @@ var app = new Vue({
                 window.scroll(0,this.getOffset(id).top);
             }
         },
-        changeURLParams: function(){
-            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort;
+        changeURLParamsHoaxy: function(){
+            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort + "&type=" + this.searchBy;
+            location.hash = query_string;
+            return query_string;
+        },
+        changeURLParamsTwitter: function(){
+            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.twitter_result_type + "&type=" + this.searchBy;
             location.hash = query_string;
             return query_string;
         },
@@ -680,9 +685,9 @@ var app = new Vue({
             this.spinner_notices.timeline = "Searching Twitter...";
             var v = this;
             var response = undefined;
-            // In this particular case we are obtaining the query as a string, i.e. "cute kitties" and not "cute" and "kitties" separately
-            // Hence we need to convert the query into a quote-string URI i.e. cute%23kitties
-            var query_string = query.replace(" ","%23");
+            // Ensuring that the search encoding follows Twitter search standards: https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
+            // Query string is already being URI encoded so we don't explicitly encode it
+            var query_string = query;
             // Will later be used for pagination
             var max_id = "";
             // This function will paginate tweet search requests and is recursive
@@ -1099,7 +1104,8 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
-        		this.changeURLParams();
+            // Adding a url querystring so that user can replicate a query by copy/pasting the url
+        		this.changeURLParamsHoaxy();
         		this.getArticles(dontScroll);
         		this.spinStop();
       	  }
@@ -1113,6 +1119,8 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
+            // Adding a url querystring so that user can replicate a query by copy/pasting the url
+            this.changeURLParamsTwitter();
             var searchUrl = this.attemptToGetUrlHostPath(this.query_text);
             if (searchUrl != null) {
               // If the search query was a URL, run the query through a URL search
@@ -1278,33 +1286,46 @@ var app = new Vue({
         }();
 
 
-        //If there's a hash querystring, populate the form with that data by default
-        var params = location.hash.replace("#", "").split("&");
-        for( var i in params)
+        // If there's a hash querystring, populate the form with that data by default
+        // First character is a #, so we must remove this in order to properly parse the query string
+        var params = location.hash.substring(1, location.hash.length).split("&");
+
+        // Note that this logic currently requires the query, sort, and type parameters to come in that exact order.
+        // If this order is changed, the code will no longer work
+        var discerningSortBasedOnHoaxyOrTwitter = "";
+        for (var i in params)
         {
             var param = params[i].split("=");
             var key = param[0];
             var value = param[1];
             if(key == "query")
             {
-                this.query_text = decodeURIComponent(value);
+              this.query_text = decodeURIComponent(value);
             }
             if(key == "sort")
             {
-                this.query_sort = value;
+              discerningSortBasedOnHoaxyOrTwitter = value;
+            }
+            if(key == "type")
+            {
+              this.searchBy = value;
+              if (this.searchBy == 'Hoaxy')
+              {
+                this.hoaxySearchSelected = true;
+                this.twitterSearchSelected = false;
+                this.query_sort = discerningSortBasedOnHoaxyOrTwitter;
+              }
+              else if (this.searchBy == 'Twitter')
+              {
+                this.twitterSearchSelected = true;
+                this.hoaxySearchSelected = false;
+                this.twitter_result_type = discerningSortBasedOnHoaxyOrTwitter;
+              }
             }
         }
 
-        //if we prepopulated the form with query string data, submit the form right away
-        if(this.query_text)
-        {
-            this.submitForm(true);
-        }
-
-
         this.twitter = new Twitter(configuration.twitter_key);
         this.me = this.twitter.me();
-
 
         //callbacks allow for modal manipulation and loading spinner to be handled
         //  by vue.
@@ -1347,8 +1368,8 @@ var app = new Vue({
             v.pauseGraphAnimation();
             v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
             v.graphAnimation.increment = 0;
-        v.graphAnimation.playing  = true;
-        v.graphAnimation.paused = true;
+            v.graphAnimation.playing  = true;
+            v.graphAnimation.paused = true;
             v.unpauseGraphAnimation();
             v.pauseGraphAnimation();
 
@@ -1360,8 +1381,8 @@ var app = new Vue({
             v.pauseGraphAnimation();
             v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
             v.graphAnimation.increment = 0;
-        v.graphAnimation.playing  = true;
-        v.graphAnimation.paused = true;
+            v.graphAnimation.playing  = true;
+            v.graphAnimation.paused = true;
             v.unpauseGraphAnimation();
             v.pauseGraphAnimation();
 
@@ -1372,5 +1393,12 @@ var app = new Vue({
 
         this.spinStop("initialLoad");
         console.debug("Vue Mounted.");
+
+        //if we prepopulated the form with query string data, submit the form right away
+        if(this.query_text)
+        {
+            this.submitForm(true);
+        }
+
     }
 });
