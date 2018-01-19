@@ -1268,11 +1268,9 @@ var app = new Vue({
 
           if (this.searchBy == 'Hoaxy') {
             this.timeline = this.globalHoaxyTimeline;
-            console.log("changed to hoaxy timeline");
           }
           else {
             this.timeline = this.globalTwitterSearchTimeline;
-            console.log("changed to twitter search timeline");
           }
         }
     },

@@ -10,12 +10,15 @@ function TwitterSearchTimeline(settings){
 		.showLegend(false)
 		.useInteractiveGuideline(true);
 
-	chart.margin({right: 50, bottom: 50});
+	chart.margin({right: 70, bottom: 50})
 
 	chart.xAxis
+		.staggerLabels(true)
 		.tickFormat(dateFormatter);
 	chart.x2Axis
+		.staggerLabels(true)
 		.tickFormat(dateFormatter);
+
 	chart.forceY([0])
 	chart.yAxis.axisLabel("Tweets");
 
