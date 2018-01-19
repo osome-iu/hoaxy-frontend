@@ -328,45 +328,62 @@ var app = new Vue({
           // Dates Equal
           return 0;
         },
-        createTwitterDateBins: function(dates, bins) {
+        createTwitterDateBins: function(dates) {
+          // USED FOR DEBUGGING THE DATES
+          // console.log('NUMBER OF DATES');
+          // console.log(dates.length);
+          //
+          // console.log('DATES');
+          // for (var date in dates) {
+          //   console.log(dates[date]);
+          // }
+
           var v = this;
+          var numBins = 0;
+          var offsetBin = 0;
           var dateBins = [];
           // Finding least date
           var leastDate = dates[0].getTime();
-          // console.log("least date");
-          // console.log(leastDate);
+          // Finding latest date
           var latestDate = dates[dates.length-1].getTime();
-          // console.log("latest date");
-          // console.log(latestDate);
-          // Difference between greatest date and least date in milliseconds
-          var offsetMil = Math.abs(latestDate - leastDate);
-          // console.log("offset mil");
-          // console.log(offsetMil);
-          // Creating bins from the difference
-          var offsetBin = Math.ceil(offsetMil/bins);
-          // console.log("offset bin");
-          // console.log(offsetBin);
-          // Creating binned Dates
-          for (var bin = 1; bin <= bins; bin++) {
+          // Finding the offset between the latest date and least date in seconds
+          var offsetSec = Math.ceil(Math.abs(latestDate - leastDate)/1000);
+
+          // Dynamically creating the number of bins based on the difference between the least and latest date
+          if (offsetSec < 600) {
+            // Bins should be divided in seconds because the difference is between 0 and 10 minutes
+            numBins = offsetSec + 1;
+            // Seconds offset
+            offsetBin = 1000;
+          }
+          else if (offsetSec < 36000) {
+            // Bins should be divided in minutes because the difference is between 10 minutes and 10 hours
+            numBins = Math.ceil(offsetSec/60) + 1;
+            // Minutes offset
+            offsetBin = 60*1000;
+          }
+          else if (offsetSec < 864000) {
+            // Bins should be divided in hours because the difference is between 10 hours and 10 days
+            numBins = Math.ceil(offsetSec/(60*60)) + 1;
+            // Hours offset
+            offsetBin = 60*60*1000;
+          }
+          else {
+            // Bins should be divided in days because the difference is more than 10 days
+            numBins = Math.ceil(offsetSec/(24*60*60)) + 1;
+            // Days offset
+            offsetBin = 24*60*60*1000;
+          }
+
+          // Creating bins
+          for (var bin = 0; bin <= numBins; bin++) {
             dateBins.push(leastDate + bin*offsetBin);
           }
-          // console.log("date bins");
-          // console.log(dateBins);
-          // Adding a 0 tweet initial bin
-          // var initialDate = new Date(dates[0].getFullYear(), dates[0].getMonth(), dates[0].getDate());
-          var initialDate = new Date(leastDate);
-          v.twitterTimeline.claim.timestamp.push(initialDate);
-          v.twitterTimeline.claim.volume.push(0);
-          v.twitterTimeline.fact_checking.timestamp.push(initialDate);
-          v.twitterTimeline.fact_checking.volume.push(0);
+
           // Populating the date bins with number of tweets in each bin
           var bin = 0;
           var numTweets = 0;
           for (var theDate = 0; theDate < dates.length; theDate++){
-            // console.log("the date");
-            // console.log(dates[theDate]);
-            // console.log("mill");
-            // console.log(dates[theDate].getTime());
             if (dates[theDate].getTime() <= dateBins[bin]) {
               numTweets+=1;
             }
@@ -374,8 +391,6 @@ var app = new Vue({
               // next date exceeded current bin, so must move on to next bin(s)
               while (dates[theDate].getTime() > dateBins[bin]) {
                 var offsetDate = new Date(dateBins[bin]);
-                // console.log("offset date");
-                // console.log(offsetDate);
                 v.twitterTimeline.claim.timestamp.push(offsetDate);
                 v.twitterTimeline.claim.volume.push(numTweets);
                 v.twitterTimeline.fact_checking.timestamp.push(offsetDate);
@@ -387,8 +402,6 @@ var app = new Vue({
             // adding the last date
             if (theDate == dates.length-1) {
               var offsetDate = new Date(dateBins[bin]);
-              // console.log("offset date");
-              // console.log(offsetDate);
               v.twitterTimeline.claim.timestamp.push(offsetDate);
               v.twitterTimeline.claim.volume.push(numTweets);
 
@@ -396,6 +409,16 @@ var app = new Vue({
               v.twitterTimeline.fact_checking.volume.push(0);
             }
           }
+
+          // If there is only one timestamp then we create another helpful time tick to visualize a full bin
+          // if (numBins == 1) {
+          //   var offsetDate = new Date(dateBins[bin+1]);
+          //   v.twitterTimeline.claim.timestamp.push(offsetDate);
+          //   v.twitterTimeline.claim.volume.push(numTweets);
+          //   v.twitterTimeline.fact_checking.timestamp.push(offsetDate);
+          //   v.twitterTimeline.fact_checking.volume.push(0);
+          // }
+
           console.debug(v.twitterTimeline.claim);
         },
         resetTwitterSearchResults: function() {
@@ -640,7 +663,7 @@ var app = new Vue({
             //sorting timeline in ascending order
             v.twitterDates.sort(v.sortDates);
             //creating date bins
-            v.createTwitterDateBins(v.twitterDates, 100);
+            v.createTwitterDateBins(v.twitterDates);
             v.spinner_notices.timeline = "";
             v.spinStart("updateTimeline");
             v.show_graphs = true;
