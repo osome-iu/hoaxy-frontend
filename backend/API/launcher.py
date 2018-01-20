@@ -14,8 +14,8 @@ connection_string = open('.db.connection').read()
 botscore_engine = sqlalchemy.create_engine(connection_string)
 botscore_connection = botscore_engine.connect()
 
-api.config['BASIC_AUTH_USERNAME'] = 'nan'
-api.config['BASIC_AUTH_PASSWORD'] = 'nanisawesome'
+with open(".pass") as f:
+    api.config['BASIC_AUTH_USERNAME'], api.config['BASIC_AUTH_PASSWORD'] = f.readline().strip().split(",")
 basic_auth = BasicAuth(api)
 
 
