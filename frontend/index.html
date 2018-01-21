@@ -37,15 +37,10 @@
 					<div class="col-12 form-group text-center">
 
 						<div class="col-12 text-center form-inline">
-						<div class="p-2 float-left bg-secondary text-white rounded-left">Search by:</div>
-							<button type="button" v-on:click="twitterSearch()" v-bind:class="{ 'btn': true, 'btn-primary': twitterSearchSelected, 'btn-outline-primary': hoaxySearchSelected }">Twitter</button>
-							<button type="button" v-on:click="hoaxySearch()" v-bind:class="{ 'btn': true, 'btn-primary': hoaxySearchSelected, 'btn-outline-primary': twitterSearchSelected }">Hoaxy</button>
-								<!-- <select class="col-2 form-control bg-primary text-light" v-model="searchBy">
-								  <option disabled value="">Search By:</option>
-								  <option>Hoaxy</option>
-								  <option>Twitter</option>
-								  <option>Twitter URL</option>
-								</select> -->
+						<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
+						<div class="p-2 float-left bg-secondary text-white rounded-right">Search by:</div>
+							<button id="searchByTwitter" type="button" v-on:click="twitterSearch()" v-bind:class="{ 'btn': true, 'btn-primary': twitterSearchSelected, 'btn-outline-primary': hoaxySearchSelected }">Twitter</button>
+							<button id="searchByHoaxy" type="button" v-on:click="hoaxySearch()" v-bind:class="{ 'btn': true, 'btn-primary': hoaxySearchSelected, 'btn-outline-primary': twitterSearchSelected }">Hoaxy</button>
 							  <input id="query" class="col-9 form-control" type="text " v-model="query_text" placeholder="Examples: vaccines, https://www.nytimes.com/2017/06/22/us/pizzagate-attack-sentence.html" :disabled="input_disabled" />
 						</div>
 					</div>
