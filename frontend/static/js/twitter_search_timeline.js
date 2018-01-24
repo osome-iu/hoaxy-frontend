@@ -180,8 +180,15 @@ function TwitterSearchTimeline(settings){
 
 		// The twitter tooltip only contains tweets and time, so we must hide the second element (time) from the tooltip
 		// This is set up here (adding class twitter_tooltip) and executed in the external.css file
-		var twitter_tooltip = document.querySelector('[id^="nvtooltip-"]');
-		twitter_tooltip.className += " twitter_tooltip";
+		try {
+			var twitter_tooltip = document.querySelector('[id^="nvtooltip-"]');
+			twitter_tooltip.className += " twitter_tooltip";
+		}
+		catch(err) {
+	    // In the current design, the chart keeps getting re-drawn so we must keep having to hide this tooltip. However,
+			// Sometimes the nvtooltip element is not found so we have a catch block for this. When time allows, a better
+			// Design for hiding this tooltip can be implemented.
+		}
 
 	}
 

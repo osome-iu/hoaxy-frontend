@@ -185,13 +185,11 @@
 				<p class="m-0 text-center" >Animate</p>
 				<div class="mt-1 d-inline-block d-md-block">
 					<button @click="startGraphAnimation" v-if="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
-					<button @click="unpauseGraphAnimation" :disabled="!graphAnimation.paused" v-if="graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
+					<button @click="unpauseGraphAnimation" v-if="graphAnimation.playing && graphAnimation.paused" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
+					<button @click="pauseGraphAnimation" v-if="!graphAnimation.paused && graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-pause" aria-hidden="true"></i></button>
 				</div>
 				<div class="mt-1 d-inline-block d-md-block">
 					<button @click="stopGraphAnimation" :disabled="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-stop" aria-hidden="true"></i></button>
-				</div>
-				<div class="mt-1 mb-3 d-inline-block d-md-block">
-					<button @click="pauseGraphAnimation" :disabled="!graphAnimation.playing || graphAnimation.paused" class="animation-control btn btn-primary"><i class="fa fa-pause" aria-hidden="true"></i></button>
 				</div>
 			</div>
 		</div>
