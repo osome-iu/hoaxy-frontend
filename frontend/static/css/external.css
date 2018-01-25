@@ -17,7 +17,7 @@ section
 }
 
 /* Overriding bootstrap styling for Hoaxy/Twitter landing page search */
-#searchByHoaxy {
+/* #searchByHoaxy {
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   border-top-right-radius: 0px;
@@ -27,7 +27,7 @@ section
 #searchByTwitter {
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
-}
+} */
 
 /*#searchByLabel {
   border-color: gray;
@@ -35,11 +35,11 @@ section
   border-width: thin;
 }*/
 
-#query {
+/* #query {
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   border-left-color: white;
-}
+} */
 
 .loader {
     border: 16px solid #f3f3f3;

@@ -34,14 +34,29 @@
 		<section id="form" class="container">
 			<form @submit.stop.prevent="submitForm()">
 				<div class="container">
-					<div class="col-12 form-group text-center">
+					<div class="col-12 text-center">
 
-						<div class="col-12 text-center form-inline">
+						<div class="col-12 text-center d-flex align-items-center">
 						<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
-						<div class="p-2 float-left bg-secondary text-white rounded-right">Search by:</div>
-							<button id="searchByTwitter" type="button" v-on:click="twitterSearch()" v-bind:class="{ 'btn': true, 'btn-primary': twitterSearchSelected, 'btn-outline-primary': hoaxySearchSelected }">Twitter</button>
-							<button id="searchByHoaxy" type="button" v-on:click="hoaxySearch()" v-bind:class="{ 'btn': true, 'btn-primary': hoaxySearchSelected, 'btn-outline-primary': twitterSearchSelected }">Hoaxy</button>
-							  <input id="query" class="col-9 form-control" type="text " v-model="query_text" placeholder="Examples: vaccines, https://www.nytimes.com/2017/06/22/us/pizzagate-attack-sentence.html" :disabled="input_disabled" />
+                        <div class="pr-2 text-nowrap">Search by:</div>
+                            <div class="">
+
+                                <div class="btn-group btn-group-toggle pr-2">
+                                    <button id="searchByTwitter" type="button"
+                                    class="btn btn-primary"
+                                    v-on:click="twitterSearch()"
+                                    v-bind:class="{ 'active': twitterSearchSelected}">Twitter</button>
+
+                                    <button id="searchByHoaxy" type="button"
+                                    class="btn btn-primary"
+                                    v-on:click="hoaxySearch()"
+                                    v-bind:class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
+                                </div>
+                            </div>
+                            <input id="query" class="form-control" type="text"
+                                v-model="query_text"
+                                placeholder="Examples: vaccines, https://www.nytimes.com/2017/06/22/us/pizzagate-attack-sentence.html"
+                                :disabled="input_disabled" />
 						</div>
 					</div>
 					<div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
