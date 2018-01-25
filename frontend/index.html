@@ -51,16 +51,16 @@
                         <div class="pr-2 text-nowrap">Search by:</div>
                             <div class="">
 
-                                <div class="btn-group btn-group-toggle pr-2">
+                                <div class="btn-group btn-group-toggle mr-2 rounded">
                                     <button id="searchByTwitter" type="button"
                                     class="btn btn-primary"
                                     v-on:click="twitterSearch()"
-                                    v-bind:class="{ 'active': twitterSearchSelected}">Twitter</button>
+                                    v-bind:class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">Twitter</button>
 
                                     <button id="searchByHoaxy" type="button"
                                     class="btn btn-primary"
                                     v-on:click="hoaxySearch()"
-                                    v-bind:class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
+                                    v-bind:class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">Hoaxy</button>
                                 </div>
                             </div>
                             <input id="query" class="form-control" type="text"
