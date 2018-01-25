@@ -167,7 +167,8 @@ var app = new Vue({
         source_dropdown_open: false,
         colors: colors,
         searchBy: 'Hoaxy',
-
+        hoaxySearchSelected: true,
+        twitterSearchSelected: false,
         // Edge list
         twitterEdges: [],
         // Twitter timeline
@@ -219,6 +220,16 @@ var app = new Vue({
             }
         },
 
+        twitterSearch: function() {
+          this.searchBy = "Twitter"
+          this.twitterSearchSelected = true
+          this.hoaxySearchSelected = false
+        },
+        hoaxySearch: function() {
+          this.searchBy = "Hoaxy"
+          this.hoaxySearchSelected = true
+          this.twitterSearchSelected = false
+        },
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
         },
@@ -231,10 +242,17 @@ var app = new Vue({
             var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
         },
-        getUrlHostPath: function(url){
+        attemptToGetUrlHostPath: function(url){
           var urlLink = document.createElement("a");
           urlLink.href = url;
-          return(urlLink.hostname + urlLink.pathname);
+          if (window.location.hostname == urlLink.hostname) {
+            // Element was not a link so we return null
+            return null;
+          } else {
+            // Return hostname and pathname of url to re-construct principal components of an url e.g. <hostname><pathname> or www.host-stuff.com/pathstuff
+            return(urlLink.hostname + urlLink.pathname);
+          }
+
         },
         getOffset: function(element){
             if(!element)
@@ -261,8 +279,13 @@ var app = new Vue({
                 window.scroll(0,this.getOffset(id).top);
             }
         },
-        changeURLParams: function(){
-            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort;
+        changeURLParamsHoaxy: function(){
+            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort + "&type=" + this.searchBy;
+            location.hash = query_string;
+            return query_string;
+        },
+        changeURLParamsTwitter: function(){
+            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.twitter_result_type + "&type=" + this.searchBy;
             location.hash = query_string;
             return query_string;
         },
@@ -324,54 +347,69 @@ var app = new Vue({
           // Dates Equal
           return 0;
         },
-        createTwitterDateBins: function(dates, bins) {
+        createTwitterDateBins: function(dates) {
+          // USED FOR DEBUGGING THE DATES
+          // console.log('NUMBER OF DATES');
+          // console.log(dates.length);
+          //
+          // console.log('DATES');
+          // for (var date in dates) {
+          //   console.log(dates[date]);
+          // }
+
           var v = this;
+          var numBins = 0;
+          var offsetBin = 0;
           var dateBins = [];
           // Finding least date
           var leastDate = dates[0].getTime();
-          // console.log("least date");
-          // console.log(leastDate);
+          // Finding latest date
           var latestDate = dates[dates.length-1].getTime();
-          // console.log("latest date");
-          // console.log(latestDate);
-          // Difference between greatest date and least date in milliseconds
-          var offsetMil = Math.abs(latestDate - leastDate);
-          // console.log("offset mil");
-          // console.log(offsetMil);
-          // Creating bins from the difference
-          var offsetBin = Math.ceil(offsetMil/bins);
-          // console.log("offset bin");
-          // console.log(offsetBin);
-          // Creating binned Dates
-          for (var bin = 1; bin <= bins; bin++) {
+          // Finding the offset between the latest date and least date in seconds
+          var offsetSec = Math.ceil(Math.abs(latestDate - leastDate)/1000);
+
+          // Dynamically creating the number of bins based on the difference between the least and latest date
+          if (offsetSec < 600) {
+            // Bins should be divided in seconds because the difference is between 0 and 10 minutes
+            numBins = offsetSec + 1;
+            // Seconds offset
+            offsetBin = 1000;
+          }
+          else if (offsetSec < 36000) {
+            // Bins should be divided in minutes because the difference is between 10 minutes and 10 hours
+            numBins = Math.ceil(offsetSec/60) + 1;
+            // Minutes offset
+            offsetBin = 60*1000;
+          }
+          else if (offsetSec < 864000) {
+            // Bins should be divided in hours because the difference is between 10 hours and 10 days
+            numBins = Math.ceil(offsetSec/(60*60)) + 1;
+            // Hours offset
+            offsetBin = 60*60*1000;
+          }
+          else {
+            // Bins should be divided in days because the difference is more than 10 days
+            numBins = Math.ceil(offsetSec/(24*60*60)) + 1;
+            // Days offset
+            offsetBin = 24*60*60*1000;
+          }
+
+          // Creating bins
+          for (var bin = 0; bin <= numBins; bin++) {
             dateBins.push(leastDate + bin*offsetBin);
           }
-          // console.log("date bins");
-          // console.log(dateBins);
-          // Adding a 0 tweet initial bin
-          // var initialDate = new Date(dates[0].getFullYear(), dates[0].getMonth(), dates[0].getDate());
-          var initialDate = new Date(dates[0].getTime());
-          v.twitterTimeline.claim.timestamp.push(initialDate);
-          v.twitterTimeline.claim.volume.push(0);
-          v.twitterTimeline.fact_checking.timestamp.push(initialDate);
-          v.twitterTimeline.fact_checking.volume.push(0);
+
           // Populating the date bins with number of tweets in each bin
           var bin = 0;
           var numTweets = 0;
           for (var theDate = 0; theDate < dates.length; theDate++){
-            // console.log("the date");
-            // console.log(dates[theDate]);
-            // console.log("mill");
-            // console.log(dates[theDate].getTime());
-            if (dates[theDate].getTime() < dateBins[bin]) {
+            if (dates[theDate].getTime() <= dateBins[bin]) {
               numTweets+=1;
             }
             else {
               // next date exceeded current bin, so must move on to next bin(s)
               while (dates[theDate].getTime() > dateBins[bin]) {
                 var offsetDate = new Date(dateBins[bin]);
-                // console.log("offset date");
-                // console.log(offsetDate);
                 v.twitterTimeline.claim.timestamp.push(offsetDate);
                 v.twitterTimeline.claim.volume.push(numTweets);
                 v.twitterTimeline.fact_checking.timestamp.push(offsetDate);
@@ -383,8 +421,6 @@ var app = new Vue({
             // adding the last date
             if (theDate == dates.length-1) {
               var offsetDate = new Date(dateBins[bin]);
-              // console.log("offset date");
-              // console.log(offsetDate);
               v.twitterTimeline.claim.timestamp.push(offsetDate);
               v.twitterTimeline.claim.volume.push(numTweets);
 
@@ -392,6 +428,16 @@ var app = new Vue({
               v.twitterTimeline.fact_checking.volume.push(0);
             }
           }
+
+          // If there is only one timestamp then we create another helpful time tick to visualize a full bin
+          // if (numBins == 1) {
+          //   var offsetDate = new Date(dateBins[bin+1]);
+          //   v.twitterTimeline.claim.timestamp.push(offsetDate);
+          //   v.twitterTimeline.claim.volume.push(numTweets);
+          //   v.twitterTimeline.fact_checking.timestamp.push(offsetDate);
+          //   v.twitterTimeline.fact_checking.volume.push(0);
+          // }
+
           console.debug(v.twitterTimeline.claim);
         },
         resetTwitterSearchResults: function() {
@@ -441,15 +487,14 @@ var app = new Vue({
           var v = this;
 
           // Looping over twitter results and adding the articles that we need to further get timelines and graphs of
-          // var twitterEntities = tweetsResponse.statuses;
-          console.log("twitter entities");
-          console.log(twitterEntities);
+          // USED FOR DEBUGGING
+          // console.log("twitter entities:");
+          // console.log(twitterEntities);
           var totalTwitterEntities = twitterEntities.length;
           var key = totalTwitterEntities;
           // Used to maintain data integrity
           var nonNullFrom = false;
           var nonNullTo = false;
-
           // Function used for updating the edges and timeline from retweets, quotes, and mentions
           function updateEdgesAndTimeline(typeOfTweet) {
             try {
@@ -611,8 +656,6 @@ var app = new Vue({
           var v = this;
           // Checking if any edges were found and if not, show message to user to try another query
           if (v.twitterEdges.length == 0) {
-            console.log("no edges found");
-
             v.show_zoom_buttons = false;
             v.failed_to_get_network = true;
             v.spinner_notices.graph = "";
@@ -624,23 +667,22 @@ var app = new Vue({
                 v.scrollToElement("graphs");
             });
             v.spinStop("buildGraph");
-            return "ok";
           }
           else {
-            console.log("twitter edges");
-            console.log(v.twitterEdges);
-            console.log("twitter dates");
-            console.log(v.twitterDates);
-            // Edges found so create the graph
+            // USED FOR DEBUGGING
+            // console.log("twitter edges:");
+            // console.log(v.twitterEdges);
+            // console.log("twitter dates:");
+            // console.log(v.twitterDates);
 
+            // Edges found so create the graph
             // Re-initialize the edges/timeline if there was a query before
             v.graph.updateEdges([]);
-
             // Starting with the TimeLine
             //sorting timeline in ascending order
             v.twitterDates.sort(v.sortDates);
             //creating date bins
-            v.createTwitterDateBins(v.twitterDates, 100);
+            v.createTwitterDateBins(v.twitterDates);
             v.spinner_notices.timeline = "";
             v.spinStart("updateTimeline");
             v.show_graphs = true;
@@ -667,9 +709,10 @@ var app = new Vue({
             v.show_graphs = true;
 
             Vue.nextTick(function(){
-                console.log("POST EDGES:");
-                console.log(v.twitterEdges);
-                console.log(typeof(v.twitterEdges));
+                // USED FOR DEBUGGING
+                // console.log("POST EDGES:");
+                // console.log(v.twitterEdges);
+                // console.log(typeof(v.twitterEdges));
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.spinStop("generateNetwork");
@@ -677,18 +720,16 @@ var app = new Vue({
             });
 
             v.spinStop("buildGraph");
-            return true;
           }
         },
         getTwitterSearchResults: function(query){
-            var test = this.getUrlHostPath();
             this.spinStart("getTwitterSearchResults");
             this.spinner_notices.timeline = "Searching Twitter...";
             var v = this;
             var response = undefined;
-            // In this particular case we are obtaining the query as a string, i.e. "cute kitties" and not "cute" and "kitties" separately
-            // Hence we need to convert the query into a quote-string URI i.e. cute%23kitties
-            var query_string = query.replace(" ","%23");
+            // Ensuring that the search encoding follows Twitter search standards: https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
+            // Query string is already being URI encoded so we don't explicitly encode it
+            var query_string = query;
             // Will later be used for pagination
             var max_id = "";
             // This function will paginate tweet search requests and is recursive
@@ -703,7 +744,6 @@ var app = new Vue({
                   // No need to make another request as we are done (there are no more responses left)
                   query_string = "";
                 }
-                // twitterEntities.push.apply(twitterEntities, response.statuses);
                 v.buildTwitterEdgesTimeline(response.statuses);
                 // Check if pagination must continue, if the number of nodes on the graph exceeds 1000 we don't send additional requests
                 if (v.twitterUserSet.size < 1000 && query_string != "") {
@@ -714,15 +754,14 @@ var app = new Vue({
                   v.spinStop("getTwitterSearchResults");
                   // Create timeline and graph given the Twitter results
                   v.buildTwitterGraph();
-                  // var twitterBuiltGraphTimeline = v.buildTwitterSearchTimelineAndGraph(twitterEntities);
-                  return true;
                 }
               }, function(){})
               .catch(function(error){
-                console.log("Twitter Search Pagination Error:");
-                console.log(error);
+                // USED FOR DEBUGGING
+                // console.log("Twitter Search Pagination Error:");
+                // console.log(error);
                 v.spinStop("getTwitterSearchResults");
-                return false;
+                v.displayError("Twitter Search Pagination Error: " + error);
               });
             }
             // Function will paginate Twitter Search tweets, then build the timeline/graph
@@ -1107,7 +1146,8 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
-        		this.changeURLParams();
+            // Adding a url querystring so that user can replicate a query by copy/pasting the url
+        		this.changeURLParamsHoaxy();
         		this.getArticles(dontScroll);
         		this.spinStop();
       	  }
@@ -1121,24 +1161,18 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
-            var tweetsResponse = this.getTwitterSearchResults(this.query_text);
+            // Adding a url querystring so that user can replicate a query by copy/pasting the url
+            this.changeURLParamsTwitter();
+            var searchUrl = this.attemptToGetUrlHostPath(this.query_text);
+            if (searchUrl != null) {
+              // If the search query was a URL, run the query through a URL search
+              this.getTwitterSearchResults(searchUrl);
+            } else {
+              // Otherwise, search query was basic text
+              this.getTwitterSearchResults(encodeURIComponent(this.query_text));
+            }
         		this.spinStop();
       	  }
-          else if(this.searchBy == 'Twitter URL') {
-            this.show_articles = false;
-        		this.show_graphs = false;
-        		this.checked_articles = [];
-        		if(!this.query_text)
-        		{
-              this.displayError("You must input a valid search query.");
-              this.spinStop(true);
-              return false;
-        		}
-            // Retrieving the host and path from url
-            this.query_text = this.getUrlHostPath(this.query_text);
-            var tweetsResponse = this.getTwitterSearchResults(this.query_text);
-        		this.spinStop();
-          }
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
@@ -1256,11 +1290,9 @@ var app = new Vue({
 
           if (this.searchBy == 'Hoaxy') {
             this.timeline = this.globalHoaxyTimeline;
-            console.log("changed to hoaxy timeline");
           }
           else {
             this.timeline = this.globalTwitterSearchTimeline;
-            console.log("changed to twitter search timeline");
           }
         }
     },
@@ -1297,33 +1329,46 @@ var app = new Vue({
         }();
 
 
-        //If there's a hash querystring, populate the form with that data by default
-        var params = location.hash.replace("#", "").split("&");
-        for( var i in params)
+        // If there's a hash querystring, populate the form with that data by default
+        // First character is a #, so we must remove this in order to properly parse the query string
+        var params = location.hash.substring(1, location.hash.length).split("&");
+
+        // Note that this logic currently requires the query, sort, and type parameters to come in that exact order.
+        // If this order is changed, the code will no longer work
+        var discerningSortBasedOnHoaxyOrTwitter = "";
+        for (var i in params)
         {
             var param = params[i].split("=");
             var key = param[0];
             var value = param[1];
             if(key == "query")
             {
-                this.query_text = decodeURIComponent(value);
+              this.query_text = decodeURIComponent(value);
             }
             if(key == "sort")
             {
-                this.query_sort = value;
+              discerningSortBasedOnHoaxyOrTwitter = value;
+            }
+            if(key == "type")
+            {
+              this.searchBy = value;
+              if (this.searchBy == 'Hoaxy')
+              {
+                this.hoaxySearchSelected = true;
+                this.twitterSearchSelected = false;
+                this.query_sort = discerningSortBasedOnHoaxyOrTwitter;
+              }
+              else if (this.searchBy == 'Twitter')
+              {
+                this.twitterSearchSelected = true;
+                this.hoaxySearchSelected = false;
+                this.twitter_result_type = discerningSortBasedOnHoaxyOrTwitter;
+              }
             }
         }
 
-        //if we prepopulated the form with query string data, submit the form right away
-        if(this.query_text)
-        {
-            this.submitForm(true);
-        }
-
-
         this.twitter = new Twitter(configuration.twitter_key);
         this.me = this.twitter.me();
-
 
         //callbacks allow for modal manipulation and loading spinner to be handled
         //  by vue.
@@ -1366,8 +1411,8 @@ var app = new Vue({
             v.pauseGraphAnimation();
             v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
             v.graphAnimation.increment = 0;
-        v.graphAnimation.playing  = true;
-        v.graphAnimation.paused = true;
+            v.graphAnimation.playing  = true;
+            v.graphAnimation.paused = true;
             v.unpauseGraphAnimation();
             v.pauseGraphAnimation();
 
@@ -1379,8 +1424,8 @@ var app = new Vue({
             v.pauseGraphAnimation();
             v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
             v.graphAnimation.increment = 0;
-        v.graphAnimation.playing  = true;
-        v.graphAnimation.paused = true;
+            v.graphAnimation.playing  = true;
+            v.graphAnimation.paused = true;
             v.unpauseGraphAnimation();
             v.pauseGraphAnimation();
 
@@ -1391,5 +1436,12 @@ var app = new Vue({
 
         this.spinStop("initialLoad");
         console.debug("Vue Mounted.");
+
+        //if we prepopulated the form with query string data, submit the form right away
+        if(this.query_text)
+        {
+            this.submitForm(true);
+        }
+
     }
 });

@@ -10,12 +10,15 @@ function TwitterSearchTimeline(settings){
 		.showLegend(false)
 		.useInteractiveGuideline(true);
 
-	chart.margin({right: 50, bottom: 50});
+	chart.margin({right: 70, bottom: 50})
 
 	chart.xAxis
-		.tickFormat(dateFormatter);
+		.tickFormat(dateFormatter)
+		.ticks(5);
 	chart.x2Axis
-		.tickFormat(dateFormatter);
+		.tickFormat(dateFormatter)
+		.ticks(5);
+
 	chart.forceY([0])
 	chart.yAxis.axisLabel("Tweets");
 
@@ -36,7 +39,7 @@ function TwitterSearchTimeline(settings){
 	}
 
 	function dateFormatter(d) {
-		return d3.time.format('%m/%d/%Y %H:%M %p')(new Date(d))
+		return d3.time.format('%m/%d/%Y %H:%M:%S %p')(new Date(d))
 	}
 
 	var debounce_timer = 0;
@@ -87,6 +90,7 @@ function TwitterSearchTimeline(settings){
 
 	var max = 0;
 	var Update = function(data){
+
 		max = 0;
 		lastData = data;
 		var max_time = 0;
@@ -154,26 +158,37 @@ function TwitterSearchTimeline(settings){
 		if(graphAnimation.current_timestamp)
 		{
 
-			chartData[2] = {
+			chartData[1] = {
 				key: 'Time',
 				values: [
 					{ x: new Date(graphAnimation.current_timestamp), y: 0},
 					{ x: new Date(graphAnimation.current_timestamp), y: max}
 				],
 				disableTooltip: true
-
 			};
 
 		}
 		else
 		{
-			delete chartData[2];
+			delete chartData[1];
 		}
 		chart.dispatch.on("brush", null);
 		d3.select('#chart svg')
 		.datum(chartData)
 		.call(chart);
 		chart.dispatch.on("brush", updateDateRange);
+
+		// The twitter tooltip only contains tweets and time, so we must hide the second element (time) from the tooltip
+		// This is set up here (adding class twitter_tooltip) and executed in the external.css file
+		try {
+			var twitter_tooltip = document.querySelector('[id^="nvtooltip-"]');
+			twitter_tooltip.className += " twitter_tooltip";
+		}
+		catch(err) {
+	    // In the current design, the chart keeps getting re-drawn so we must keep having to hide this tooltip. However,
+			// Sometimes the nvtooltip element is not found so we have a catch block for this. When time allows, a better
+			// Design for hiding this tooltip can be implemented.
+		}
 
 	}
 

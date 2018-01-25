@@ -44,15 +44,29 @@
 		<section id="form" class="container-fluid">
 			<form @submit.stop.prevent="submitForm()">
 				<div class="container">
-					<div class="col-12 form-group text-center">
-						<div class="col-12 text-center form-inline">
-								<select class="col-2 form-control bg-primary text-light" v-model="searchBy">
-								  <option disabled value="">Search By:</option>
-								  <option>Hoaxy</option>
-								  <option>Twitter</option>
-								  <option>Twitter URL</option>
-								</select>
-							  <input id="query" class="col-10 form-control" type="text " v-model="query_text"  :disabled="input_disabled" />
+					<div class="col-12 text-center">
+
+						<div class="col-12 text-center d-flex align-items-center">
+						<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
+                        <div class="pr-2 text-nowrap">Search by:</div>
+                            <div class="">
+
+                                <div class="btn-group btn-group-toggle pr-2">
+                                    <button id="searchByTwitter" type="button"
+                                    class="btn btn-primary"
+                                    v-on:click="twitterSearch()"
+                                    v-bind:class="{ 'active': twitterSearchSelected}">Twitter</button>
+
+                                    <button id="searchByHoaxy" type="button"
+                                    class="btn btn-primary"
+                                    v-on:click="hoaxySearch()"
+                                    v-bind:class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
+                                </div>
+                            </div>
+                            <input id="query" class="form-control" type="text"
+                                v-model="query_text"
+                                placeholder="Examples: vaccines, https://www.nytimes.com/2017/06/22/us/pizzagate-attack-sentence.html"
+                                :disabled="input_disabled" />
 						</div>
 					</div>
 					<div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
@@ -240,13 +254,11 @@
 				<p class="m-0 text-center" >Animate</p>
 				<div class="mt-1 d-inline-block d-md-block">
 					<button @click="startGraphAnimation" v-if="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
-					<button @click="unpauseGraphAnimation" :disabled="!graphAnimation.paused" v-if="graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
+					<button @click="unpauseGraphAnimation" v-if="graphAnimation.playing && graphAnimation.paused" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
+					<button @click="pauseGraphAnimation" v-if="!graphAnimation.paused && graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-pause" aria-hidden="true"></i></button>
 				</div>
 				<div class="mt-1 d-inline-block d-md-block">
 					<button @click="stopGraphAnimation" :disabled="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-stop" aria-hidden="true"></i></button>
-				</div>
-				<div class="mt-1 mb-3 d-inline-block d-md-block">
-					<button @click="pauseGraphAnimation" :disabled="!graphAnimation.playing || graphAnimation.paused" class="animation-control btn btn-primary"><i class="fa fa-pause" aria-hidden="true"></i></button>
 				</div>
 			</div>
 		</div>
@@ -256,7 +268,7 @@
             :style="graph_column_size >= 12 ? 'display: none' : ''"
             :class="'col-md-' + (12-graph_column_size-1)">
 
-            <p class="text-center">Network</p>
+            <p class="text-center"><b>Network of:</b> {{ this.query_text }}</p>
             <div id="graph_error" class="p-5 d-flex flex-column justify-content-center" v-if="failed_to_get_network">
                 There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
             </div>
