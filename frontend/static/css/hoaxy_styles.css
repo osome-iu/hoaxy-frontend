@@ -494,7 +494,8 @@ footer
 {
 	background: #144073;
 	color: white;
-	padding: 2rem 0;
+	padding: 1rem 0;
+    margin-top: 0;
 }
 footer a
 {
