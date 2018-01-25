@@ -1150,7 +1150,7 @@ var app = new Vue({
               this.getTwitterSearchResults(searchUrl);
             } else {
               // Otherwise, search query was basic text
-              this.getTwitterSearchResults(encodeURIComponent(his.query_text));
+              this.getTwitterSearchResults(encodeURIComponent(this.query_text));
             }
         		this.spinStop();
       	  }

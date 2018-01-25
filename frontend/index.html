@@ -199,7 +199,7 @@
             :style="graph_column_size >= 12 ? 'display: none' : ''"
             :class="'col-md-' + (12-graph_column_size-1)">
 
-            <p class="text-center">Network of: {{ this.query_text }}</p>
+            <p class="text-center"><b>Network of:</b> {{ this.query_text }}</p>
             <div id="graph_error" class="p-5 d-flex flex-column justify-content-center" v-if="failed_to_get_network">
                 There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
             </div>

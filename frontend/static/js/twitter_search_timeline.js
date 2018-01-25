@@ -13,11 +13,11 @@ function TwitterSearchTimeline(settings){
 	chart.margin({right: 70, bottom: 50})
 
 	chart.xAxis
-		.staggerLabels(true)
-		.tickFormat(dateFormatter);
+		.tickFormat(dateFormatter)
+		.ticks(5);
 	chart.x2Axis
-		.staggerLabels(true)
-		.tickFormat(dateFormatter);
+		.tickFormat(dateFormatter)
+		.ticks(5);
 
 	chart.forceY([0])
 	chart.yAxis.axisLabel("Tweets");
