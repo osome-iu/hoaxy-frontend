@@ -163,6 +163,7 @@ var app = new Vue({
         },
         colors: colors,
         searchBy: 'Hoaxy',
+        searchPlaceholder: 'Example: vaccines',
         hoaxySearchSelected: true,
         twitterSearchSelected: false,
         // Edge list
@@ -211,6 +212,9 @@ var app = new Vue({
           this.hoaxySearchSelected = true
           this.twitterSearchSelected = false
         },
+        // hoaxyExpandSearch: function() {
+        //   v.scrollToElement("graphs");
+        // },
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
         },
@@ -807,6 +811,11 @@ var app = new Vue({
                         v.getNetwork(v.checked_articles);
                     }
 
+                    // Visualizing only the first claim by default
+                    v.checked_articles.push(v.articles[0].url_id);
+                    v.getTimeline(v.checked_articles);
+                    v.getNetwork(v.checked_articles);
+
                     v.spinStop("getArticles");
                 },
                 function (error) {
@@ -1268,9 +1277,13 @@ var app = new Vue({
 
           if (this.searchBy == 'Hoaxy') {
             this.timeline = this.globalHoaxyTimeline;
+            // Search bar example
+            this.searchPlaceholder = 'Example: vaccines';
           }
           else {
             this.timeline = this.globalTwitterSearchTimeline;
+            // Search bar example
+            this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
           }
         }
     },

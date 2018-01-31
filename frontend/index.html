@@ -55,7 +55,7 @@
                             </div>
                             <input id="query" class="form-control" type="text"
                                 v-model="query_text"
-                                placeholder="Examples: vaccines, https://www.nytimes.com/2017/06/22/us/pizzagate-attack-sentence.html"
+                                v-bind:placeholder="searchPlaceholder"
                                 :disabled="input_disabled" />
 						</div>
 					</div>
@@ -221,9 +221,14 @@
             <div id="graph-container" style="width: 100%; height: 80vh; margin: 0 auto;">
 
             </div>
-            <div  v-if="show_zoom_buttons" id="graph_help_text">
-                Click on network nodes and edges for details.
-            </div>
+						<div>
+	            <div class="d-block p-2" v-if="show_zoom_buttons" id="graph_help_text">
+	                Click on network nodes and edges for details.
+	            </div>
+							<div class="d-block p-2" v-if="searchBy == 'Hoaxy'">
+								<button class="btn btn-primary ml-1 mr-1" type="button" id="expandHoaxySearch" @click="scrollToElement('articles')">Expand Search</button>
+							</div>
+						</div>
 
 	        <div class="d-flex-inline flex-column align-items-end " id="zoom_buttons" v-if="show_zoom_buttons">
 
@@ -268,8 +273,7 @@
                                 Tweets
                             </div>
                         </div>
-
-                    </div>
+										</div>
                 </div>
 
                 <div style="cursor: pointer"
@@ -297,6 +301,7 @@
 							<div class="likely_bot">Likely Bot</div>
 							<div class="likely_human">Likely Human</div>
 						</div>
+
 				</div>
 	        </div>
     <!-- <button id="shrink_right_button"  :disabled="graph_column_size >= 12"  class="btn btn-primary" @click="shrinkGraph">&gt;</button> -->
