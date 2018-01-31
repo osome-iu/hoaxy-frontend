@@ -263,6 +263,7 @@ var app = new Vue({
             {
                 window.scroll(0,this.getOffset(id).top);
             }
+            this.loadShareButtons();
         },
         changeURLParamsHoaxy: function(){
             var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort + "&type=" + this.searchBy;
@@ -1247,9 +1248,17 @@ var app = new Vue({
             this.graph.updateGraph(starting_time, ending_time);
             this.show_zoom_buttons = true;
             this.scrollToElement("graphs");
+        },
+        loadShareButtons: function(){
+            twttr.widgets.load();
+			FB.XFBML.parse();
         }
     },
     watch: {
+        "show_graphs": function(){
+
+
+        },
         "graphAnimation.current_timestamp": function(){
 
                 // this.timeline.removeUpdateDateRangeCallback();
