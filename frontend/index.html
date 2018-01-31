@@ -135,6 +135,25 @@
         </div>
 
         <div class="col-md-1 col-12 text-center ">
+            <div id="sharing_buttons" class="mt-1 mb-4 d-flex flex-column justify-content-center align-items-center" v-if="show_graphs">
+				<p class="m-0 text-center mb-1">Share</p>
+                <span id="twitter-button">
+                    <a class="twitter-share-button"
+                    href="https://twitter.com/share"
+                    data-text="Hoaxy: How claims spread online"
+                    data-size="large">
+                    Tweet</a>
+                </span>
+
+                <span id="fb-button">
+                    <span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
+                        <a class="fb-xfbml-parse-ignore" target="_blank"
+                        href="">Share</a>
+                    </span>
+                </span>
+
+            </div>
+
             <div class="d-none d-md-block d-md-flex flex-column justify-content-center align-items-center">
 				<p class="m-0 text-center ">Layout</p>
 	            <button id=""  :disabled="graph_column_size >= 12"  class=" layout-button layout-button-timeline btn btn-primary" @click="resizeGraphs(12)">
