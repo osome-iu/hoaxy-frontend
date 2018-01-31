@@ -165,8 +165,8 @@
 					<button @click="stopGraphAnimation" :disabled="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-stop" aria-hidden="true"></i></button>
 				</div>
 			</div>
-			<div class="d-block p-2 mt-5" v-if="searchBy == 'Hoaxy'">
-				<button class="btn btn-primary ml-1 mr-1" type="button" id="expandHoaxySearch" @click="scrollToElement('articles_bookmark')">Expand<br />Search</button>
+			<div class="d-block p-2 mt-5 text-center d-md-flex flex-column justify-content-center align-items-center" v-if="searchBy == 'Hoaxy'">
+				<button class="btn btn-primary ml-1 mr-1" style="z-index: -1; font-size: .75rem" type="button" id="expandHoaxySearch" @click="scrollToElement('articles_bookmark')">Expand<br />Search</button>
 			</div>
 		</div>
 
@@ -279,10 +279,10 @@
      #     # #    #   #   #  ####  ###### ######  ####
       -->
     		<section id="articles" v-bind:class="{'hidden': !show_articles}" class="container-fluid">
-				<div id="articles_bookmark" style="position: absolute; margin-left: -20rem; visibility: hidden; margin-top: -6rem">Visualize Bookmark</div>
+				<div id="articles_bookmark" style="position: absolute; margin-left: -20rem; visibility: hidden; margin-top: -15rem">Visualize Bookmark</div>
     			<div class="container">
 					<div class="col-12">
-						<span class="number" title="Select articles to visualize.">2</span>
+						<!-- <span class="number" title="Select articles to visualize.">2</span> -->
 						<h2>Select more <span class="claim_label rounded">claims</span> and <span class="rounded fact_checking_label">fact checking</span> articles to visualize.</h2>
 					</div>
 					<div class="row">
@@ -301,7 +301,7 @@
 
 						<div class="col-md-4 col-6 text-md-center text-left">
 							<div style="position: relative">
-								<span class="number" title="Visualize the articles into a timeline and graph.">3</span>
+								<!-- <span class="number" title="Visualize the articles into a timeline and graph.">3</span> -->
 								<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary" id="visualize_top"> Visualize </button>
 							</div>
 						</div>
