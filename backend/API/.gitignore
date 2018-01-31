@@ -5,3 +5,4 @@
 *.err
 *.dat
 .db.connection
+.pass

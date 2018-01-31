@@ -65,7 +65,7 @@
                             </div>
                             <input id="query" class="form-control" type="text"
                                 v-model="query_text"
-                                placeholder="Examples: vaccines, https://www.nytimes.com/2017/06/22/us/pizzagate-attack-sentence.html"
+                                v-bind:placeholder="searchPlaceholder"
                                 :disabled="input_disabled" />
 						</div>
 					</div>
@@ -101,9 +101,7 @@
 
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-
-						<span class="number" title="Search for claims.">1</span>
-						<button class="btn btn-primary btn-blue" id="submit" :disabled="input_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Visualize' }} </button>
+						<button class="btn btn-primary btn-blue" id="submit" :disabled="input_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
 					</div>
 					<div class="clearfix"></div>
 				</form>
@@ -111,101 +109,7 @@
 
 			</div>
 		</section>
-<!--
-    #
-   # #   #####  ##### #  ####  #      ######  ####
-  #   #  #    #   #   # #    # #      #      #
- #     # #    #   #   # #      #      #####   ####
- ####### #####    #   # #      #      #           #
- #     # #   #    #   # #    # #      #      #    #
- #     # #    #   #   #  ####  ###### ######  ####
-  -->
-		<section id="articles" v-bind:class="{'hidden': !show_articles}" class="container-fluid">
-			<div class="container">
-				<div class="col-12">
-					<span class="number" title="Select articles to visualize.">2</span>
-					<h2>Select <span class="claim_label rounded">claims</span> and <span class="rounded fact_checking_label">fact checking</span> articles to visualize.</h2>
-				</div>
-				<div class="row">
-					<div class="col-md-4 col-12">
 
-						<div id="select_all_section">
-							<label>
-								<input type="checkbox" id="select_all" @change="selectTop20" :checked="all_selected" /><i class="fa fa-square-o" aria-hidden="true"></i><i class="fa fa-check-square-o" aria-hidden="true"></i>
-								<div class="rounded">
-									<span class="article_title">Select Top 20</span>
-								</div>
-							</label>
-						</div>
-
-					</div>
-
-					<div class="col-md-4 col-6 text-md-center text-left">
-						<div style="position: relative">
-							<span class="number" title="Visualize the articles into a timeline and graph.">3</span>
-							<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary" id="visualize_top"> Visualize </button>
-						</div>
-					</div>
-
-					<div id="sharing_buttons" class="col-md-4 col-6 text-right">
-						<span id="twitter-button">
-							<a class="twitter-share-button"
-							href="https://twitter.com/share"
-							data-text="Hoaxy: How claims spread online"
-							data-url="http://hoaxy.iuni.iu.edu/"
-							data-size="large">
-							Tweet</a>
-						</span>
-
-						<span id="fb-button">
-							<span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
-								<a class="fb-xfbml-parse-ignore" target="_blank"
-								href="">Share</a>
-							</span>
-						</span>
-
-					</div>
-				</div>
-
-
-
-				<ul class="list-unstyled" id="article_list">
-					<li v-for="article, index in getSubsetOfArticles()" :style="'background-color: '+colors.edge_colors[article.site_type]" :class="article.site_type" class="rounded">
-						<label class="row p-3">
-							<input type="checkbox" :id="article.url_id" :value="article.url_id" v-model="checked_articles" />
-							<div class="check_icons col-1 text-center d-flex align-items-center">
-								<i class="fa fa-square-o fw" aria-hidden="true"></i>
-								<i class="fa fa-check-square-o fw" aria-hidden="true"></i>
-							</div>
-
-							<div class="col-11">
-								<span class="article_title"><a :href="article.url_raw" target="_blank">{{article.title}}</a></span>
-								<span class=""><span class="article_domain">From <a :href="'http://' + article.site_domain" target="_blank">{{article.site_domain}}</a></span>
-								<span class="article_date">on {{getDateline(article.date_published)}}</span></span>
-								<span class="article_stats">
-									<span><b>{{article.number_of_tweets}}</b> Tweets</span>
-									<!-- <span><b></b> Facebook Shares</span> -->
-								</span>
-								<div class="clearfix"></div>
-							</div>
-						</label>
-					</li>
-				</ul>
-
-				<div class="clearfix"></div>
-				<div class="text-center">
-					<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary" id="visualize"> Visualize </button>
-
-					<span class="text-center" id="load_more">
-						<button class="btn btn-warning" :disabled="articles_to_show >= articles.length" @click="loadMore()"> Load More </button>
-						<div v-if="articles_to_show >= 100 && articles.length >= 100" class="text-muted">Your query has found too many matches for us to load. Please narrow down your query and try again to get more articles.</div>
-						<div v-if="articles_to_show >= articles.length && articles.length < 100" class="text-muted">We couldn't find any more articles for this query.</div>
-					</span>
-				</div>
-
-				<div class="clearfix"></div>
-			</div>
-		</section>
 <!--
   #####
  #     # #####    ##   #####  #    #  ####
@@ -215,7 +119,7 @@
  #     # #   #  #    # #      #    # #    #
   #####  #    # #    # #      #    #  ####
 -->
-    <section id="graphs" v-bind:class="{'hidden': !show_graphs}" class="container-fluid row no-gutters">
+    <section id="graphs" v-bind:class="{'hidden': !show_graphs}" style="padding-top: 4rem;" class="container-fluid row no-gutters">
 
 
 
@@ -261,6 +165,9 @@
 					<button @click="stopGraphAnimation" :disabled="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-stop" aria-hidden="true"></i></button>
 				</div>
 			</div>
+			<div class="d-block p-2 mt-5" v-if="searchBy == 'Hoaxy'">
+				<button class="btn btn-primary ml-1 mr-1" type="button" id="expandHoaxySearch" @click="scrollToElement('articles_bookmark')">Expand<br />Search</button>
+			</div>
 		</div>
 
         <div id="sigmagraph"
@@ -275,9 +182,12 @@
             <div id="graph-container" style="width: 100%; height: 80vh; margin: 0 auto;">
 
             </div>
-            <div  v-if="show_zoom_buttons" id="graph_help_text">
-                Click on network nodes and edges for details.
-            </div>
+						<div>
+	            <div class="d-block p-2" v-if="show_zoom_buttons" id="graph_help_text">
+	                Click on network nodes and edges for details.
+	            </div>
+
+						</div>
 
 	        <div class="d-flex-inline flex-column align-items-end " id="zoom_buttons" v-if="show_zoom_buttons">
 
@@ -322,8 +232,7 @@
                                 Tweets
                             </div>
                         </div>
-
-                    </div>
+										</div>
                 </div>
 
                 <div style="cursor: pointer"
@@ -351,6 +260,7 @@
 							<div class="likely_bot">Likely Bot</div>
 							<div class="likely_human">Likely Human</div>
 						</div>
+
 				</div>
 	        </div>
     <!-- <button id="shrink_right_button"  :disabled="graph_column_size >= 12"  class="btn btn-primary" @click="shrinkGraph">&gt;</button> -->
@@ -358,6 +268,98 @@
 
 
     </section>
+
+    <!--
+        #
+       # #   #####  ##### #  ####  #      ######  ####
+      #   #  #    #   #   # #    # #      #      #
+     #     # #    #   #   # #      #      #####   ####
+     ####### #####    #   # #      #      #           #
+     #     # #   #    #   # #    # #      #      #    #
+     #     # #    #   #   #  ####  ###### ######  ####
+      -->
+    		<section id="articles" v-bind:class="{'hidden': !show_articles}" class="container-fluid">
+				<div id="articles_bookmark" style="position: absolute; margin-left: -20rem; visibility: hidden; margin-top: -6rem">Visualize Bookmark</div>
+    			<div class="container">
+					<div class="col-12">
+						<span class="number" title="Select articles to visualize.">2</span>
+						<h2>Select more <span class="claim_label rounded">claims</span> and <span class="rounded fact_checking_label">fact checking</span> articles to visualize.</h2>
+					</div>
+					<div class="row">
+						<div class="col-md-4 col-12">
+
+							<div id="select_all_section">
+								<label>
+									<input type="checkbox" id="select_all" @change="selectTop20" :checked="all_selected" /><i class="fa fa-square-o" aria-hidden="true"></i><i class="fa fa-check-square-o" aria-hidden="true"></i>
+									<div class="rounded">
+										<span class="article_title">Select Top 20</span>
+									</div>
+								</label>
+							</div>
+
+						</div>
+
+						<div class="col-md-4 col-6 text-md-center text-left">
+							<div style="position: relative">
+								<span class="number" title="Visualize the articles into a timeline and graph.">3</span>
+								<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary" id="visualize_top"> Visualize </button>
+							</div>
+						</div>
+
+						<!-- <div id="sharing_buttons" class="col-md-4 col-6 text-right">
+							<span id="twitter-button">
+								<a class="twitter-share-button"
+								href="https://twitter.com/share"
+								data-text="Hoaxy: How claims spread online"
+								data-url="http://hoaxy.iuni.iu.edu/"
+								data-size="large">
+								Tweet</a>
+							</span>
+
+							<span id="fb-button">
+								<span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
+									<a class="fb-xfbml-parse-ignore" target="_blank"
+									href="">Share</a>
+								</span>
+							</span>
+
+						</div> -->
+					</div>
+
+    				<ul class="list-unstyled" id="article_list">
+    					<li v-for="article, index in getSubsetOfArticles()" :class="article.site_type" class="rounded">
+    						<label class="row p-3">
+    							<input type="checkbox" :id="article.url_id" :value="article.url_id" v-model="checked_articles" />
+    							<div class="check_icons col-1 text-center d-flex align-items-center">
+    								<i class="fa fa-square-o fw" aria-hidden="true"></i>
+    								<i class="fa fa-check-square-o fw" aria-hidden="true"></i>
+    							</div>
+
+    							<div class="col-11">
+    								<span class="article_title"><a :href="article.url_raw" target="_blank">{{article.title}}</a></span>
+    								<span class=""><span class="article_domain">From <a :href="'http://' + article.site_domain" target="_blank">{{article.site_domain}}</a></span>
+    								<span class="article_date">on {{getDateline(article.date_published)}}</span></span>
+    								<span class="article_stats"><span><b>{{article.number_of_tweets}}</b> Tweets</span></span>
+    								<div class="clearfix"></div>
+    							</div>
+    						</label>
+    					</li>
+    				</ul>
+
+    				<div class="clearfix"></div>
+    				<div class="text-center">
+    					<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary btn-blue" id="visualize">Visualize</button>
+
+    					<span class="text-center" id="load_more">
+    						<button class="btn btn-warning" :disabled="articles_to_show >= articles.length" @click="loadMore()"> Load More Articles </button>
+    						<div v-if="articles_to_show >= 100 && articles.length >= 100" class="text-muted">Your query has found too many matches for us to load. Please narrow down your query and try again to get more articles.</div>
+    						<div v-if="articles_to_show >= articles.length && articles.length < 100" class="text-muted">We couldn't find any more articles for this query.</div>
+    					</span>
+    				</div>
+
+    				<div class="clearfix"></div>
+    			</div>
+    		</section>
 
 
 
