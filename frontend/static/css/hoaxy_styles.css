@@ -396,10 +396,10 @@ li.fact_checking .article_domain a:hover
 {
     margin-top: .75rem;
 }
-#sharing_buttons
+/* #sharing_buttons
 {
     padding-top: 1.25rem;
-}
+} */
 #select_all_section > label > div
 {
     /*background: lightgray;*/
@@ -606,11 +606,11 @@ footer
     margin-left: 3rem;
 }
 
-#sharing_buttons iframe
+/* #sharing_buttons iframe
 {
     display: inline-block;
     vertical-align: bottom;
-}
+} */
 
 
 header h1

@@ -135,9 +135,9 @@
         </div>
 
         <div class="col-md-1 col-12 text-center ">
-            <div id="sharing_buttons" class="mt-1 mb-4 d-flex flex-column justify-content-center align-items-center" v-if="show_graphs">
+            <div id="sharing_buttons" class="mb-4 d-flex flex-column justify-content-center align-items-center" v-if="show_graphs">
 				<p class="m-0 text-center mb-1">Share</p>
-                <span id="twitter-button">
+                <span id="twitter-button" class="mb-1">
                     <a class="twitter-share-button"
                     href="https://twitter.com/share"
                     data-text="Hoaxy: How claims spread online"
@@ -145,7 +145,7 @@
                     Tweet</a>
                 </span>
 
-                <span id="fb-button">
+                <span id="fb-button" class="mb-1">
                     <span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
                         <a class="fb-xfbml-parse-ignore" target="_blank"
                         href="">Share</a>
@@ -185,11 +185,7 @@
 				</div>
 			</div>
 			<div class="d-block p-2 mt-5 text-center d-md-flex flex-column justify-content-center align-items-center" v-if="searchBy == 'Hoaxy'">
-<<<<<<< HEAD
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: -1; font-size: .75rem" type="button" id="expandHoaxySearch" @click="scrollToElement('articles_bookmark')">Expand<br />Search</button>
-=======
 				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" id="expandHoaxySearch" @click="scrollToElement('articles_bookmark')">Expand<br />Search</button>
->>>>>>> vue
 			</div>
 		</div>
 
