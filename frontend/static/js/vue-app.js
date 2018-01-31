@@ -816,7 +816,7 @@ var app = new Vue({
                     // v.show_articles = true;
                     if(!dontScroll)
                     {
-                        v.scrollToElement("articles");
+                        // v.scrollToElement("articles");
                     }
 
                     // if(debug)
