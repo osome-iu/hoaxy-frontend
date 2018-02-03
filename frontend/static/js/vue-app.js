@@ -181,7 +181,15 @@ var app = new Vue({
         },
         // Used to only paginate up to 1000 nodes
         twitterUserSet: new Set(),
-        twitterDates: []
+        twitterDates: [],
+        // Used for rendering top articles
+        popular_articles: {
+          claim: [],
+          fact_checking: [],
+        },
+        top_claim_articles: [],
+        top_fact_checking_articles: [],
+        top_usa_articles: []
     },
     computed: {
         // : function(){
@@ -218,6 +226,94 @@ var app = new Vue({
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
         },
+        formatArticleType: function(type){
+          if(type == "claim")
+            return "claims";
+          if(type == "fact_checking")
+            return "fact checking articles"
+          return "";
+        },
+        getTopUsaArticles: function(){
+          this.spinStart();
+
+          var newsArticlesLocation = window.location + '/news_sources/top-news-usa.json';
+
+          var request = axios.get(newsArticlesLocation, {
+            dataType: 'json'
+          });
+          var v = this;
+          request.then(
+            function(response){
+              var topArticles = response.data;
+              for (var i = 0; i < 3; i++)
+              {
+                topArticles[i].source = v.attemptToGetUrlHostName(topArticles[i].url);
+                v.top_usa_articles.push(topArticles[i]);
+              }
+              v.spinStop();
+            },
+            function (error) {
+              alert("Get Top Articles Request failed: " + error.response.statusText);
+              v.spinStop();
+            }
+          );
+
+
+        },
+        getPopularArticles: function(){
+          this.spinStart();
+          var request = axios.get(configuration.top_articles_url, {
+            headers: configuration.top_articles_headers,
+            dataType: 'json'
+          });
+          var v = this;
+          request.then(
+            function(response){
+              response = response.data;
+              var articles = response.articles;
+              // var local_popular_articles = {
+              //   claim: [],
+              //   fact_checking: [],
+              // };
+              var claimNum = 0;
+              var factCheckNum = 0;
+              for(var i in articles)
+              {
+                // Talying up claims and fact-checking articles acquired
+                var a = articles[i];
+                if (a.site_type == 'claim') {
+                  claimNum++;
+                  // If more than 3 claims are acquired, we continue to the next iteration of the loop
+                  if (claimNum > 3) {
+                    continue;
+                  }
+                  a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  v.top_claim_articles.push(a);
+                } else {
+                  factCheckNum++;
+                  // If more than 3 fact checks are acquired, we continue to the next iteration of the loop
+                  if (factCheckNum > 3) {
+                    continue;
+                  }
+                  a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  v.top_fact_checking_articles.push(a);
+                }
+
+                // a.capture_date = a.date_captured.split('T')[0];
+                // local_popular_articles[a.site_type].push(a);
+              }
+
+              // v.popular_articles = local_popular_articles;
+              // console.log("POP ARTICLES");
+              // console.log(v.popular_articles);
+              v.spinStop();
+            },
+            function (error) {
+              alert("Get Articles Request failed: " + error.response.statusText);
+              v.spinStop();
+            }
+          );
+        },
         getSubsetOfArticles: function(){
             return this.articles.slice(0, this.articles_to_show);
         },
@@ -226,6 +322,17 @@ var app = new Vue({
             var pub_date = moment(url_pub_date);
             var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
+        },
+        attemptToGetUrlHostName: function(url){
+          var urlLink = document.createElement("a");
+          urlLink.href = url;
+          if (window.location.hostname == urlLink.hostname) {
+            // Element was not a link so we return "Not Avalable"
+            return "Not Available";
+          } else {
+            // Return hostname e.g. www.host-stuff.com
+            return(urlLink.hostname);
+          }
         },
         attemptToGetUrlHostPath: function(url){
           var urlLink = document.createElement("a");
@@ -237,7 +344,6 @@ var app = new Vue({
             // Return hostname and pathname of url to re-construct principal components of an url e.g. <hostname><pathname> or www.host-stuff.com/pathstuff
             return(urlLink.hostname + urlLink.pathname);
           }
-
         },
         getOffset: function(element){
             if(!element)
@@ -1319,6 +1425,10 @@ var app = new Vue({
             }, 100);
         }();
 
+        // Retrieving popular articles to show them in the dashboard
+        this.getPopularArticles();
+        // Retrieving top trending articles to show them in the dashboard
+        this.getTopUsaArticles();
 
         // If there's a hash querystring, populate the form with that data by default
         // First character is a #, so we must remove this in order to properly parse the query string
