@@ -11,3 +11,4 @@ frontend/config.js
 frontend/.htaccess
 frontend/sampledata
 frontend/package-lock.json
+frontend/news_sources/top-news-usa.json
