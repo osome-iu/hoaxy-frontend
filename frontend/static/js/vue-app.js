@@ -83,6 +83,7 @@ var app = new Vue({
 
         articles: [],
         articles_to_show: max_articles,
+        search_disabled: true,
         input_disabled: false,
         spin_key_table: ["initialLoad"], //each set of spin start/stops should have the same key
         spinner_state: 1,
@@ -214,17 +215,26 @@ var app = new Vue({
           this.searchBy = "Twitter"
           this.twitterSearchSelected = true
           this.hoaxySearchSelected = false
+          // Focus back on the search box
+          this.$refs.searchBox.focus()
         },
         hoaxySearch: function() {
           this.searchBy = "Hoaxy"
           this.hoaxySearchSelected = true
           this.twitterSearchSelected = false
+          // Focus back on the search box
+          this.$refs.searchBox.focus()
         },
         // hoaxyExpandSearch: function() {
         //   v.scrollToElement("graphs");
         // },
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
+        },
+        focusSearchBox: function() {
+          this.search_disabled = false;
+          this.show_articles = false;
+          this.show_graphs = false;
         },
         formatArticleType: function(type){
           if(type == "claim")
@@ -371,6 +381,12 @@ var app = new Vue({
             }
             this.loadShareButtons();
         },
+        changeAndFocusSearchQuery: function(article) {
+          // change article query
+          this.query_text = article;
+          // focus on the search box
+          this.$refs.searchBox.focus();
+        },
         changeURLParamsHoaxy: function(){
             var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort + "&type=" + this.searchBy;
             location.hash = query_string;
@@ -392,6 +408,7 @@ var app = new Vue({
             {
                 this.loading = false;
                 this.input_disabled = false;
+                this.search_disabled = true;
                 clearTimeout(this.spin_timer);
             }
             // console.debug(key, this.spin_key_table);
@@ -401,6 +418,7 @@ var app = new Vue({
             this.spin_key_table.push(key);
             this.loading = true;
             this.input_disabled = true;
+            this.search_disabled = true;
             //timeout after 90 seconds so we're not stuck in an endless spinning loop.
             var v = this;
             clearTimeout(this.spin_timer);
@@ -1361,8 +1379,15 @@ var app = new Vue({
         }
     },
     watch: {
+        query_sort: function() {
+          // Checking if value is changed and refocusing on the search box
+          this.$refs.searchBox.focus();
+        },
+        twitter_result_type: function () {
+          // Checking if value is changed and refocusing on the search box
+          this.$refs.searchBox.focus();
+        },
         "show_graphs": function(){
-
 
         },
         "graphAnimation.current_timestamp": function(){
@@ -1389,8 +1414,8 @@ var app = new Vue({
         //     }
         // }
         searchBy: function() {
-          this.show_articles = false;
-          this.show_graphs = false;
+          // this.show_articles = false;
+          // this.show_graphs = false;
 
 
           if (this.searchBy == 'Hoaxy') {
