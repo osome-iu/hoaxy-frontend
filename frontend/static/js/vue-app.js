@@ -369,6 +369,7 @@ var app = new Vue({
             {
                 window.scroll(0,this.getOffset(id).top);
             }
+            this.loadShareButtons();
         },
         changeURLParamsHoaxy: function(){
             var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort + "&type=" + this.searchBy;
@@ -900,22 +901,22 @@ var app = new Vue({
                     });
                     v.articles = urls_model.urls;
                     v.articles_to_show = max_articles;
-                    v.show_articles = true;
+                    // v.show_articles = true;
                     if(!dontScroll)
                     {
                         v.scrollToElement("articles");
                     }
 
-                    if(debug)
-                    {
-                        console.log("DEBUG");
-                        v.checked_articles.push(v.articles[0].url_id);
-                        v.checked_articles.push(v.articles[1].url_id);
-                        v.checked_articles.push(v.articles[2].url_id);
-                        v.checked_articles.push(v.articles[3].url_id);
-                        v.getTimeline(v.checked_articles);
-                        v.getNetwork(v.checked_articles);
-                    }
+                    // if(debug)
+                    // {
+                    //     console.log("DEBUG");
+                    //     v.checked_articles.push(v.articles[0].url_id);
+                    //     v.checked_articles.push(v.articles[1].url_id);
+                    //     v.checked_articles.push(v.articles[2].url_id);
+                    //     v.checked_articles.push(v.articles[3].url_id);
+                    //     v.getTimeline(v.checked_articles);
+                    //     v.getNetwork(v.checked_articles);
+                    // }
 
                     // Visualizing only the first claim by default
                     v.checked_articles.push(v.articles[0].url_id);
@@ -955,6 +956,7 @@ var app = new Vue({
                     var msg = response.data;
                     v.spinStart("updateTimeline");
                     v.show_graphs = true;
+                    v.show_articles = true;
                     //update the timeline on the next tick because at this point
                     // the graphs are still hidden. Graphs will be visible on the
                     // next tick
@@ -1014,6 +1016,8 @@ var app = new Vue({
                     }
 
                     v.show_graphs = true;
+                    v.show_articles = true;
+
                     Vue.nextTick(function(){
                         edge_list = msg.edges.map(function(x){
                             y = x;
@@ -1350,9 +1354,17 @@ var app = new Vue({
             this.graph.updateGraph(starting_time, ending_time);
             this.show_zoom_buttons = true;
             this.scrollToElement("graphs");
+        },
+        loadShareButtons: function(){
+            twttr.widgets.load();
+			FB.XFBML.parse();
         }
     },
     watch: {
+        "show_graphs": function(){
+
+
+        },
         "graphAnimation.current_timestamp": function(){
 
                 // this.timeline.removeUpdateDateRangeCallback();
