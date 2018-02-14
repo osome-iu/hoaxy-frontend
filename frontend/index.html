@@ -31,6 +31,74 @@
 		<!--#include virtual="./includes/header.html" -->
 
 
+		<!-- TOP ARTICLES DASHBOARD -->
+
+		<div class="text-center">
+			<div class="col-md-3 d-inline-block align-top">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<tr>
+							<th><p>Top trending articles in the last 6 hours</p></th>
+						</tr>
+						<tr v-for="article in top_usa_articles">
+							<td class="text-left">
+								<a v-on:click.prevent="changeAndFocusSearchQuery(article.headline);" rel="noreferrer noopener" :href="article.url" target="_blank">{{article.headline}}</a>
+								<br>
+								<a class="text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(article.url);" rel="noreferrer noopener" :href="article.url" target="_blank">Source:</a>
+								{{article.source}}
+							</td>
+						</tr>
+						<tr v-if="top_usa_articles.length == 0">
+							<td colspan="3">Could not find any articles</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="col-md-3 d-inline-block align-top">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<tr>
+							<th><p>Most popular claims in the last month</p></th>
+						</tr>
+						<tr v-for="claim in top_claim_articles">
+							<td class="text-left">
+								<a v-on:click.prevent="changeAndFocusSearchQuery(claim.title);" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank">{{claim.title}}</a>
+								<br>
+								<a class="text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url);" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank">Source:</a>
+								{{ claim.source }}
+							</td>
+						</tr>
+						<tr v-if="top_claim_articles.length == 0">
+							<td colspan="3">Could not find any articles</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="col-md-3 d-inline-block align-top">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<tr>
+							<th><p>Most popular fact checking articles in the last month</p></th>
+						</tr>
+						<tr v-for="fact in top_fact_checking_articles">
+							<td class="text-left">
+								<a v-on:click.prevent="changeAndFocusSearchQuery(fact.title);" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank">{{fact.title}}</a>
+								<br>
+								<a class="text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url);" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank">Source:</a>
+								{{ fact.source }}
+							</td>
+							</td>
+						</tr>
+						<tr v-if="top_fact_checking_articles.length == 0">
+							<td colspan="3">Could not find any articles</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+
+
+
 		<!--
 		#######
 		#        ####  #####  #    #
@@ -63,8 +131,9 @@
                                     v-bind:class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">Hoaxy</button>
                                 </div>
                             </div>
-                            <input id="query" class="form-control" type="text"
-                                v-model="query_text"
+                            <input id="query" class="form-control" type="text" ref="searchBox"
+																@focus="focusSearchBox();"
+																v-model="query_text"
                                 v-bind:placeholder="searchPlaceholder"
                                 :disabled="input_disabled" />
 						</div>
@@ -101,7 +170,7 @@
 
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-						<button class="btn btn-primary btn-blue" id="submit" :disabled="input_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
+						<button class="btn btn-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
 					</div>
 					<div class="clearfix"></div>
 				</form>
@@ -131,7 +200,7 @@
             <div id="chart" style="width: 100%; height: 80vh; margin: 0 auto;" >
                 <svg></svg>
             </div>
-            <!-- <div id="focus_label" class="text-center">Click and drag below to select time interval</div> -->
+            <div id="focus_label" class="text-center small">Select and drag a time frame of interest below:</div>
         </div>
 
         <div class="col-md-1 col-12 text-center ">
