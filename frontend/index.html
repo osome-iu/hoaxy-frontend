@@ -38,14 +38,14 @@
 				<div class="table-responsive">
 					<table class="table table-striped">
 						<tr>
-							<th><p>Top trending articles in the last 6 hours</p></th>
+							<th>Top trending articles in the last 6 hours</th>
 						</tr>
 						<tr v-for="article in top_usa_articles">
 							<td class="text-left">
 								<a v-on:click.prevent="changeAndFocusSearchQuery(article.headline);" rel="noreferrer noopener" :href="article.url" target="_blank">{{article.headline}}</a>
 								<br>
-								<a class="text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(article.url);" rel="noreferrer noopener" :href="article.url" target="_blank">Source:</a>
-								{{article.source}}
+								<span class="small"><a class="text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(article.url);" rel="noreferrer noopener" :href="article.url" target="_blank">Source:</a>
+								{{article.source}}</span>
 							</td>
 						</tr>
 						<tr v-if="top_usa_articles.length == 0">
@@ -58,14 +58,14 @@
 				<div class="table-responsive">
 					<table class="table table-striped">
 						<tr>
-							<th><p>Most popular claims in the last month</p></th>
+							<th>Most popular claims in the last month</th>
 						</tr>
 						<tr v-for="claim in top_claim_articles">
 							<td class="text-left">
 								<a v-on:click.prevent="changeAndFocusSearchQuery(claim.title);" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank">{{claim.title}}</a>
 								<br>
-								<a class="text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url);" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank">Source:</a>
-								{{ claim.source }}
+								<span class="small"><a class="text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url);" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank">Source:</a>
+								{{ claim.source }}</span>
 							</td>
 						</tr>
 						<tr v-if="top_claim_articles.length == 0">
@@ -78,14 +78,14 @@
 				<div class="table-responsive">
 					<table class="table table-striped">
 						<tr>
-							<th><p>Most popular fact checking articles in the last month</p></th>
+							<th>Most popular fact checking articles in the last month</th>
 						</tr>
 						<tr v-for="fact in top_fact_checking_articles">
 							<td class="text-left">
 								<a v-on:click.prevent="changeAndFocusSearchQuery(fact.title);" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank">{{fact.title}}</a>
 								<br>
-								<a class="text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url);" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank">Source:</a>
-								{{ fact.source }}
+								<span class="small"><a class="text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url);" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank">Source:</a>
+								{{ fact.source }}</span>
 							</td>
 							</td>
 						</tr>
