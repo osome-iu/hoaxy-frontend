@@ -243,6 +243,14 @@ var app = new Vue({
             return "fact checking articles"
           return "";
         },
+        shortenArticleText: function(text) {
+          if (text.length > 50) {
+            shortened_text = text.substr(0,49) + "..."
+            return(shortened_text)
+          } else {
+            return(text)
+          }
+        },
         getTopUsaArticles: function(){
           this.spinStart();
 
@@ -258,6 +266,7 @@ var app = new Vue({
               for (var i = 0; i < 3; i++)
               {
                 topArticles[i].source = v.attemptToGetUrlHostName(topArticles[i].url);
+                topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline);
                 v.top_usa_articles.push(topArticles[i]);
               }
               v.spinStop();
@@ -281,10 +290,7 @@ var app = new Vue({
             function(response){
               response = response.data;
               var articles = response.articles;
-              // var local_popular_articles = {
-              //   claim: [],
-              //   fact_checking: [],
-              // };
+
               var claimNum = 0;
               var factCheckNum = 0;
               for(var i in articles)
@@ -298,6 +304,7 @@ var app = new Vue({
                     continue;
                   }
                   a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  a['shortened_title'] = v.shortenArticleText(a.title);
                   v.top_claim_articles.push(a);
                 } else {
                   factCheckNum++;
@@ -306,16 +313,10 @@ var app = new Vue({
                     continue;
                   }
                   a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  a['shortened_title'] = v.shortenArticleText(a.title)
                   v.top_fact_checking_articles.push(a);
                 }
-
-                // a.capture_date = a.date_captured.split('T')[0];
-                // local_popular_articles[a.site_type].push(a);
               }
-
-              // v.popular_articles = local_popular_articles;
-              // console.log("POP ARTICLES");
-              // console.log(v.popular_articles);
               v.spinStop();
             },
             function (error) {
@@ -381,7 +382,17 @@ var app = new Vue({
             }
             this.loadShareButtons();
         },
-        changeAndFocusSearchQuery: function(article) {
+        changeAndFocusSearchQuery: function(article, dashSource) {
+          // If news is mainstream (comes from the News API) then we automatically toggle Twitter search, if not, we use Hoaxy
+          if (dashSource == 'mainstream') {
+            this.searchBy = 'Twitter'
+            this.twitterSearchSelected = true
+            this.hoaxySearchSelected = false
+          } else {
+            this.searchBy = 'Hoaxy'
+            this.twitterSearchSelected = false
+            this.hoaxySearchSelected = true
+          }
           // change article query
           this.query_text = article;
           // focus on the search box
