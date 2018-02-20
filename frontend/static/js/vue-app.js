@@ -167,8 +167,9 @@ var app = new Vue({
         searchPlaceholder: 'Example: vaccines',
         hoaxySearchSelected: true,
         twitterSearchSelected: false,
-        // Edge list
+        // Edge lists
         twitterEdges: [],
+        hoaxyEdges: [],
         // Twitter timeline
         twitterTimeline: {
           claim: {
@@ -578,6 +579,9 @@ var app = new Vue({
           // Used to only paginate up to 1000 nodes
           this.twitterUserSet = new Set();
           this.twitterDates = [];
+        },
+        resetHoaxySearchResults: function() {
+          this.hoaxyEdges = [];
         },
         buildTwitterEdgesTimeline: function(twitterEntities){
           this.spinStart("buildGraph");
@@ -1055,8 +1059,10 @@ var app = new Vue({
                             y.url_raw = x.canonical_url;
                             return y;
                         });
-                        console.log("HOAXY PRE STUFF:");
-                        console.log(edge_list);
+                        // console.log("HOAXY PRE STUFF:");
+                        // console.log(edge_list);
+                        // Adding hoaxy edges to memory in case user wants to download the restuls as csv
+                        v.hoaxyEdges = edge_list;
                         v.graph.updateEdges(edge_list);
                         v.updateGraph();
                         // v.timeline.redraw();
@@ -1262,9 +1268,63 @@ var app = new Vue({
             var p = this.twitter.logOut();
             this.twitter_account_info = {};
         },
+        buildCSVContent: function(edgeList) {
+          this.spinStart("createCSV");
+          var csvFile = "data:text/csv;charset=utf-8,";
+          var csvData = [];
+          //Constructing and pushing header row to csv data
+          var headerRow = [];
+          //Finding all relevant keys and creating the header row
+          var firstEdge = edgeList[0];
+          Object.keys(firstEdge)
+                .sort()
+                .forEach(function(key, ix) {
+                    headerRow.push(key);
+                 });
+          csvData.push(headerRow)
+          //Iterating through edge list and building data rows where each row is an edge
+          var numEdges = edgeList.length;
+          if (numEdges > 0) {
+              for (var edgeNum = 0; edgeNum < numEdges; edgeNum++) {
+                var dataRow = [];
+                for (var keyIx = 0; keyIx < headerRow.length; keyIx++) {
+                  if (edgeList[edgeNum].hasOwnProperty(headerRow[keyIx])) {
+                     dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
+                  }
+                }
+                // Finishing and adding one row of data
+                csvData.push(dataRow);
+              }
+          }
+          // Constructing csv file from data
+          csvData.forEach(function(dataRow){
+            var literalRow = dataRow.join(",");
+            csvFile += literalRow + "\r\n";
+          });
+          // Preparing csv file for download
+          var encodedCSVUri = encodeURI(csvFile);
+          var downloadLink = document.createElement("a");
+          downloadLink.setAttribute("href", encodedCSVUri);
+          downloadLink.setAttribute("download", "hoaxy_visualization.csv");
+          document.body.appendChild(downloadLink);
+          this.spinStop("createCSV");
+          // File will be downloaded now
+          downloadLink.click();
+        },
+        createAsCSV: function() {
+          if (this.hoaxyEdges.length > 0) {
+            // Creating Hoaxy CSV
+            this.buildCSVContent(this.hoaxyEdges);
+          }
+          else if (this.twitterEdges.length > 0) {
+            // Creating Twitter CSV
+            this.buildCSVContent(this.twitterEdges);
+          }
+        },
         submitForm: function(dontScroll){
           // Resets any results from any previous queries
           this.resetTwitterSearchResults();
+          this.resetHoaxySearchResults();
     	    if(this.searchBy == 'Hoaxy') {
         		this.show_articles = false;
         		this.show_graphs = false;
