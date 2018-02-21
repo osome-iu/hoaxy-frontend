@@ -96,6 +96,7 @@ var app = new Vue({
         },
 
         query_text: "",
+        searched_query_text: "",
         query_sort: "relevant",
         query_include_mentions: true,
 
@@ -164,6 +165,7 @@ var app = new Vue({
         },
         colors: colors,
         searchBy: 'Hoaxy',
+        searchedBy: '',
         searchPlaceholder: 'Example: vaccines',
         hoaxySearchSelected: true,
         twitterSearchSelected: false,
@@ -214,6 +216,7 @@ var app = new Vue({
     methods: {
         twitterSearch: function() {
           this.searchBy = "Twitter"
+          this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
           this.twitterSearchSelected = true
           this.hoaxySearchSelected = false
           // Focus back on the search box
@@ -221,6 +224,7 @@ var app = new Vue({
         },
         hoaxySearch: function() {
           this.searchBy = "Hoaxy"
+          this.searchPlaceholder = 'Example: vaccines';
           this.hoaxySearchSelected = true
           this.twitterSearchSelected = false
           // Focus back on the search box
@@ -234,8 +238,8 @@ var app = new Vue({
         },
         focusSearchBox: function() {
           this.search_disabled = false;
-          this.show_articles = false;
-          this.show_graphs = false;
+          // this.show_articles = false;
+          // this.show_graphs = false;
         },
         formatArticleType: function(type){
           if(type == "claim")
@@ -255,7 +259,7 @@ var app = new Vue({
         getTopUsaArticles: function(){
           this.spinStart();
 
-          var newsArticlesLocation = window.location + '/news_sources/top-news-usa.json';
+          var newsArticlesLocation = window.location.origin + '/news_sources/top-news-usa.json';
 
           var request = axios.get(newsArticlesLocation, {
             dataType: 'json'
@@ -273,7 +277,7 @@ var app = new Vue({
               v.spinStop();
             },
             function (error) {
-              alert("Get Top Articles Request failed: " + error.response.statusText);
+              console.log("Get Top Articles Request failed: " + error.response.statusText);
               v.spinStop();
             }
           );
@@ -1335,6 +1339,8 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
+            // Preparing the proper timeline to show
+            this.timeline = this.globalHoaxyTimeline;
             // Adding a url querystring so that user can replicate a query by copy/pasting the url
         		this.changeURLParamsHoaxy();
         		this.getArticles(dontScroll);
@@ -1350,6 +1356,8 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
+            // Preparing the proper timeline to show
+            this.timeline = this.globalTwitterSearchTimeline;
             // Adding a url querystring so that user can replicate a query by copy/pasting the url
             this.changeURLParamsTwitter();
             var searchUrl = this.attemptToGetUrlHostPath(this.query_text);
@@ -1362,6 +1370,10 @@ var app = new Vue({
             }
         		this.spinStop();
       	  }
+          // Populating the network title as the query text
+          this.searched_query_text = this.query_text;
+          // Rendering styling of the timeline and graph depending on the search
+          this.searchedBy = this.searchBy;
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
@@ -1462,44 +1474,8 @@ var app = new Vue({
 
         },
         "graphAnimation.current_timestamp": function(){
-
-                // this.timeline.removeUpdateDateRangeCallback();
-                // this.timeline.update(this.timeline.getLastData());
-                // this.timeline.redraw();
-                this.timeline.updateTimestamp();
+          this.timeline.updateTimestamp();
         },
-        // "twitter.me": function(){
-        //     console.info("twitter");
-        //     this.twitter_authorized = !!this.twitter.me();
-        //     console.debug(this.twitter.me());
-        //     console.debug(this.twitter_authorized);
-        // }
-        // "graph.playing": function(){
-        //     if(this.graph.playing === true)
-        //     {
-        //         this.animationPlaying = true;
-        //     }
-        //     else
-        //     {
-        //         this.animationPlaying = false;
-        //     }
-        // }
-        searchBy: function() {
-          // this.show_articles = false;
-          // this.show_graphs = false;
-
-
-          if (this.searchBy == 'Hoaxy') {
-            this.timeline = this.globalHoaxyTimeline;
-            // Search bar example
-            this.searchPlaceholder = 'Example: vaccines';
-          }
-          else {
-            this.timeline = this.globalTwitterSearchTimeline;
-            // Search bar example
-            this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
-          }
-        }
     },
 
 
@@ -1510,7 +1486,12 @@ var app = new Vue({
     //  #     # #    # #    # #  # #   #   #      #    #
     //  #     # #    # #    # #   ##   #   #      #    #
     //  #     #  ####   ####  #    #   #   ###### #####
-
+    beforeMount: function() {
+      // Retrieving popular articles to show them in the dashboard
+      this.getPopularArticles();
+      // Retrieving top trending articles to show them in the dashboard
+      this.getTopUsaArticles();
+    },
     mounted: function(){
         this.mounted = true;
         this.show_articles = false;
@@ -1532,12 +1513,6 @@ var app = new Vue({
                 }
             }, 100);
         }();
-
-        // Retrieving popular articles to show them in the dashboard
-        this.getPopularArticles();
-        // Retrieving top trending articles to show them in the dashboard
-        this.getTopUsaArticles();
-
         // If there's a hash querystring, populate the form with that data by default
         // First character is a #, so we must remove this in order to properly parse the query string
         var params = location.hash.substring(1, location.hash.length).split("&");
