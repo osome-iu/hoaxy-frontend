@@ -75,6 +75,7 @@ var app = new Vue({
         loading: true,
         mounted: false,
         show_articles: false,
+        show_full_articles_list: false,
         show_graphs: false,
         show_zoom_buttons: false,
         graph_column_size: 3,
@@ -190,9 +191,46 @@ var app = new Vue({
         },
         top_claim_articles: [],
         top_fact_checking_articles: [],
-        top_usa_articles: []
+        top_usa_articles: [],
+
+        scrollTop: 0,
+
     },
     computed: {
+        controls_margin_top: function(){
+            var h = document.getElementById('articles_controls') && document.getElementById('articles_controls').offsetHeight;
+            var lh = document.getElementById('article_list') && document.getElementById('article_list').offsetHeight;
+            try{
+                // console.debug(h, this.scrollTop,this.getOffset('articles').top, this.getOffset('article_list').bottom);
+
+                if( this.getOffset('articles').top + lh - h <= this.scrollTop  )
+                {
+                    var r = lh - h;
+                    return r + 'px';
+                }
+                else if ( this.scrollTop > this.getOffset('articles').top)
+                {
+                    return (this.scrollTop - this.getOffset('articles').top) + 'px';
+                }
+                else
+                {
+                    return 0;
+                }
+            }catch(er){
+                return 0;
+            }
+            // return this.show_full_articles_list ? (
+            //          ? (
+            //             (this.scrollTop - this.getOffset('articles').top) + 'px'
+            //         ): (
+            //             this.scrollTop + h > this.getOffset('articles_list').bottom ? (
+            //                 (this.getOffset('articles_list').bottom - h) + 'px'
+            //             ):(
+            //                 0
+            //             )
+            //         )
+            //     ) : (0);
+        }
         // : function(){
         //     if(!this.graph)
         //     {
@@ -200,6 +238,7 @@ var app = new Vue({
         //     }
         //     return this.graph.playing();
         // }
+
     },
 
     // #     #
@@ -366,14 +405,16 @@ var app = new Vue({
             }
             var x = element.offsetLeft;
             var y = element.offsetTop;
+            var h = element.offsetHeight;
 
             while (element = element.offsetParent) {
                 x += element.offsetLeft;
                 y += element.offsetTop;
             }
 
-            return { left: x, top: y };
+            return { left: x, top: y, bottom: y + h};
         },
+
         scrollToElement: function(id){
             if(document.getElementById(id))
             {
@@ -1580,6 +1621,15 @@ var app = new Vue({
         {
             this.submitForm(true);
         }
+
+        var debounce_timer = 0;
+        window.addEventListener('scroll', function(){
+            clearTimeout(debounce_timer);
+            debounce_timer = 0;
+            debounce_timer = setTimeout( function(){
+                v.scrollTop = window.pageYOffset;
+            }, 50);
+        });
 
     }
 });
