@@ -203,14 +203,14 @@ var app = new Vue({
             try{
                 // console.debug(h, this.scrollTop,this.getOffset('articles').top, this.getOffset('article_list').bottom);
 
-                if( this.getOffset('articles').top + lh - h <= this.scrollTop  )
+                if( this.getOffset('articles').top + lh - h <= this.scrollTop  + 20)
                 {
                     var r = lh - h;
                     return r + 'px';
                 }
-                else if ( this.scrollTop > this.getOffset('articles').top)
+                else if ( this.scrollTop > this.getOffset('articles').top - 20)
                 {
-                    return (this.scrollTop - this.getOffset('articles').top) + 'px';
+                    return (this.scrollTop - this.getOffset('articles').top  + 20) + 'px';
                 }
                 else
                 {
@@ -416,9 +416,25 @@ var app = new Vue({
         },
 
         scrollToElement: function(id){
-            if(document.getElementById(id))
+            var adjustment = 0;
+            if(this.searchBy === "Hoaxy" && id === "graphs")
             {
-                window.scroll(0,this.getOffset(id).top);
+                //if we're in hoaxy mode, we never want to go directly to the graph... we want to go
+                // slightly above so that we can see the article list
+                adjustment = document.getElementById("article_list").children[0].offsetHeight * 1.5;
+                var o = this.getOffset("article_list").bottom - adjustment;
+                if(document.getElementById(id))
+                {
+                    window.scroll(0,o);
+                }
+            }
+            else
+            {
+                if(document.getElementById(id))
+                {
+                    var o = this.getOffset(id).top - adjustment;
+                    window.scroll(0,o);
+                }
             }
             this.loadShareButtons();
         },
@@ -1335,22 +1351,26 @@ var app = new Vue({
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
-            if(this.checked_articles.length > 20)
-            {
-                this.displayError("You can visualize a maximum of 20 articles.");
-                this.spinStop(true);
-                return false;
-            }
-            if(this.checked_articles.length <= 0)
-            {
-                this.displayError("Select at least one article to visualize.");
-                this.spinStop(true);
-                return false;
-            }
-            this.graph.updateEdges([]);
-            this.getTimeline(this.checked_articles);
-            this.getNetwork(this.checked_articles);
-            this.spinStop();
+            this.show_full_articles_list = false;
+            this.$nextTick(function(){
+                this.scrollToElement("article_list");
+                if(this.checked_articles.length > 20)
+                {
+                    this.displayError("You can visualize a maximum of 20 articles.");
+                    this.spinStop(true);
+                    return false;
+                }
+                if(this.checked_articles.length <= 0)
+                {
+                    this.displayError("Select at least one article to visualize.");
+                    this.spinStop(true);
+                    return false;
+                }
+                this.graph.updateEdges([]);
+                this.getTimeline(this.checked_articles);
+                this.getNetwork(this.checked_articles);
+                this.spinStop();
+            });
         },
         toggleEdgeModal: function(force){
             this.toggleModal("edge", force);
