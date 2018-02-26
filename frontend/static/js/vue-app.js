@@ -183,6 +183,8 @@ var app = new Vue({
             volume: []
           }
         },
+        // Used to disable animation if there is nothing to animate
+        animationAvailable: true,
         // Used to only paginate up to 1000 nodes
         twitterUserSet: new Set(),
         twitterDates: [],
@@ -216,6 +218,7 @@ var app = new Vue({
     methods: {
         twitterSearch: function() {
           this.searchBy = "Twitter"
+          this.twitter_result_type = 'mixed'
           this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
           this.twitterSearchSelected = true
           this.hoaxySearchSelected = false
@@ -224,6 +227,7 @@ var app = new Vue({
         },
         hoaxySearch: function() {
           this.searchBy = "Hoaxy"
+          this.query_sort = "relevant";
           this.searchPlaceholder = 'Example: vaccines';
           this.hoaxySearchSelected = true
           this.twitterSearchSelected = false
@@ -567,6 +571,8 @@ var app = new Vue({
           console.debug(v.twitterTimeline.claim);
         },
         resetTwitterSearchResults: function() {
+          // Re-enabling animation
+          this.animationAvailable =  true;
           // Reset Twitter Edge list
           this.twitterEdges = [];
           // Reset Twitter timeline
@@ -585,6 +591,8 @@ var app = new Vue({
           this.twitterDates = [];
         },
         resetHoaxySearchResults: function() {
+          // Re-enabling animation
+          this.animationAvailable =  true;
           this.hoaxyEdges = [];
         },
         buildTwitterEdgesTimeline: function(twitterEntities){
@@ -883,6 +891,8 @@ var app = new Vue({
                   v.spinStop("getTwitterSearchResults");
                   // Create timeline and graph given the Twitter results
                   v.buildTwitterGraph();
+                  // Check if animation should be disabled or not
+                  v.checkIfShouldDisableAnimation(v.twitterEdges);
                 }
               }, function(){})
               .catch(function(error){
@@ -1070,9 +1080,11 @@ var app = new Vue({
                         v.graph.updateEdges(edge_list);
                         v.updateGraph();
                         // v.timeline.redraw();
-
+                        //Check if the animation should be disabled or not
+                        v.checkIfShouldDisableAnimation(v.hoaxyEdges);
                         v.scrollToElement("graphs");
                     });
+
 
 
                     //after the botcache request is complete,
@@ -1386,6 +1398,19 @@ var app = new Vue({
           this.searched_query_text = this.query_text;
           // Rendering styling of the timeline and graph depending on the search
           this.searchedBy = this.searchBy;
+        },
+        checkIfShouldDisableAnimation: function(edges) {
+          var localAnimationAvailable = false;
+          var pubDate = edges[0]['tweet_created_at'];
+          for (var edgeIx = 0; edgeIx < edges.length; edgeIx++) {
+            var newPubDate = edges[edgeIx]['tweet_created_at'];
+            // There are at least two different dates so we can animate this edge list
+            if (newPubDate != pubDate) {
+              localAnimationAvailable = true;
+              break;
+            }
+          }
+          this.animationAvailable = localAnimationAvailable;
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
