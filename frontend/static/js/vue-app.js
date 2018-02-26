@@ -1281,10 +1281,13 @@ var app = new Vue({
           //Finding all relevant keys and creating the header row
           var firstEdge = edgeList[0];
           Object.keys(firstEdge)
-                .sort()
                 .forEach(function(key, ix) {
                     headerRow.push(key);
                  });
+          //Adding final computed column called tweet_url
+          headerRow.push("tweet_url")
+          //Sorting results for cleanliness
+          headerRow.sort()
           csvData.push(headerRow)
           //Iterating through edge list and building data rows where each row is an edge
           var numEdges = edgeList.length;
@@ -1293,7 +1296,16 @@ var app = new Vue({
                 var dataRow = [];
                 for (var keyIx = 0; keyIx < headerRow.length; keyIx++) {
                   if (edgeList[edgeNum].hasOwnProperty(headerRow[keyIx])) {
-                     dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
+                    if (headerRow[keyIx] == "title") {
+                      // Quote delimiting the article title to deal with comma delimitation problems (e.g. "hello, world" will now be treated as one column in a csv and not two)
+                      dataRow.push("\"" + edgeList[edgeNum][headerRow[keyIx]] + "\"");
+                    } else {
+                      dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
+                    }
+                  } else {
+                    if (headerRow[keyIx] == "tweet_url") {
+                      dataRow.push("https://twitter.com/" + String(edgeList[edgeNum]['from_user_screen_name']) + "/status/" + String(edgeList[edgeNum]['tweet_id']));
+                    }
                   }
                 }
                 // Finishing and adding one row of data
