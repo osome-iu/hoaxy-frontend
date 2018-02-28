@@ -558,3 +558,14 @@ input:not(:checked) + .check_icons > .fa-square-o
 {
     display: none;
 }
+
+/* LANDING PAGE DASHBOARD STYLING BELOW*/
+.table-borderless td,
+.table-borderless th {
+    border: 0;
+}
+
+.tight-span {
+    position: relative;
+    top: -4px;
+}
