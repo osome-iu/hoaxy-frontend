@@ -432,13 +432,13 @@ section, nav.tab_container
     margin-bottom: 0;
 
 }
-section#form, section#articles, section#graphs, section#dashboard
+section#form, section#graphs, section#dashboard
 {
     padding-top: 5rem;
     /*margin-top: 3rem;*/
 	padding-bottom: 2rem;
 }
-section#form, section#articles, section#graphs, .btn:not(#searchByTwitter):not(#searchByHoaxy), section#dashboard
+section#form, section#graphs, .btn:not(#searchByTwitter):not(#searchByHoaxy), section#dashboard
 , .btn-group-toggle
 {
 	-webkit-box-shadow: 0px 2px 2px 2px rgba(50, 50, 50, 0.2);
