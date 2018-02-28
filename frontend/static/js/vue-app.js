@@ -75,6 +75,7 @@ var app = new Vue({
         loading: true,
         mounted: false,
         show_articles: false,
+        show_full_articles_list: false,
         show_graphs: false,
         show_zoom_buttons: false,
         graph_column_size: 3,
@@ -96,6 +97,7 @@ var app = new Vue({
         },
 
         query_text: "",
+        searched_query_text: "",
         query_sort: "relevant",
         query_include_mentions: true,
 
@@ -168,11 +170,13 @@ var app = new Vue({
         source_dropdown_open: false,
         colors: colors,
         searchBy: 'Hoaxy',
+        searchedBy: '',
         searchPlaceholder: 'Example: vaccines',
         hoaxySearchSelected: true,
         twitterSearchSelected: false,
-        // Edge list
+        // Edge lists
         twitterEdges: [],
+        hoaxyEdges: [],
         // Twitter timeline
         twitterTimeline: {
           claim: {
@@ -184,6 +188,8 @@ var app = new Vue({
             volume: []
           }
         },
+        // Used to disable animation if there is nothing to animate
+        animationAvailable: true,
         // Used to only paginate up to 1000 nodes
         twitterUserSet: new Set(),
         twitterDates: [],
@@ -194,12 +200,57 @@ var app = new Vue({
         },
         top_claim_articles: [],
         top_fact_checking_articles: [],
-        top_usa_articles: []
+        top_usa_articles: [],
+
+        scrollTop: 0,
+
     },
     computed: {
         all_selected: function(){
             return this.checked_articles.length === 20;
+        },
+        controls_margin_top: function(){
+            var h = document.getElementById('articles_controls') && document.getElementById('articles_controls').offsetHeight;
+            var lh = document.getElementById('article_list') && document.getElementById('article_list').offsetHeight;
+            try{
+                // console.debug(h, this.scrollTop,this.getOffset('articles').top, this.getOffset('article_list').bottom);
+
+                if( this.getOffset('articles').top + lh - h <= this.scrollTop  + 20)
+                {
+                    var r = lh - h;
+                    return r + 'px';
+                }
+                else if ( this.scrollTop > this.getOffset('articles').top - 20)
+                {
+                    return (this.scrollTop - this.getOffset('articles').top  + 20) + 'px';
+                }
+                else
+                {
+                    return 0;
+                }
+            }catch(er){
+                return 0;
+            }
+            // return this.show_full_articles_list ? (
+            //          ? (
+            //             (this.scrollTop - this.getOffset('articles').top) + 'px'
+            //         ): (
+            //             this.scrollTop + h > this.getOffset('articles_list').bottom ? (
+            //                 (this.getOffset('articles_list').bottom - h) + 'px'
+            //             ):(
+            //                 0
+            //             )
+            //         )
+            //     ) : (0);
         }
+        // : function(){
+        //     if(!this.graph)
+        //     {
+        //         return false;
+        //     }
+        //     return this.graph.playing();
+        // }
+
     },
 
     // #     #
@@ -232,6 +283,8 @@ var app = new Vue({
 
         twitterSearch: function() {
           this.searchBy = "Twitter"
+          this.twitter_result_type = 'mixed'
+          this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
           this.twitterSearchSelected = true
           this.hoaxySearchSelected = false
           // Focus back on the search box
@@ -239,6 +292,8 @@ var app = new Vue({
         },
         hoaxySearch: function() {
           this.searchBy = "Hoaxy"
+          this.query_sort = "relevant";
+          this.searchPlaceholder = 'Example: vaccines';
           this.hoaxySearchSelected = true
           this.twitterSearchSelected = false
           // Focus back on the search box
@@ -252,8 +307,8 @@ var app = new Vue({
         },
         focusSearchBox: function() {
           this.search_disabled = false;
-          this.show_articles = false;
-          this.show_graphs = false;
+          // this.show_articles = false;
+          // this.show_graphs = false;
         },
         formatArticleType: function(type){
           if(type == "claim")
@@ -262,10 +317,18 @@ var app = new Vue({
             return "fact checking articles"
           return "";
         },
+        shortenArticleText: function(text) {
+          if (text.length > 50) {
+            shortened_text = text.substr(0,49) + "..."
+            return(shortened_text)
+          } else {
+            return(text)
+          }
+        },
         getTopUsaArticles: function(){
           this.spinStart();
 
-          var newsArticlesLocation = window.location + '/news_sources/top-news-usa.json';
+          var newsArticlesLocation = window.location.origin + '/news_sources/top-news-usa.json';
 
           var request = axios.get(newsArticlesLocation, {
             dataType: 'json'
@@ -277,12 +340,13 @@ var app = new Vue({
               for (var i = 0; i < 3; i++)
               {
                 topArticles[i].source = v.attemptToGetUrlHostName(topArticles[i].url);
+                topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline);
                 v.top_usa_articles.push(topArticles[i]);
               }
               v.spinStop();
             },
             function (error) {
-              alert("Get Top Articles Request failed: " + error.response.statusText);
+              console.log("Get Top Articles Request failed: " + error.response.statusText);
               v.spinStop();
             }
           );
@@ -300,10 +364,7 @@ var app = new Vue({
             function(response){
               response = response.data;
               var articles = response.articles;
-              // var local_popular_articles = {
-              //   claim: [],
-              //   fact_checking: [],
-              // };
+
               var claimNum = 0;
               var factCheckNum = 0;
               for(var i in articles)
@@ -317,6 +378,7 @@ var app = new Vue({
                     continue;
                   }
                   a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  a['shortened_title'] = v.shortenArticleText(a.title);
                   v.top_claim_articles.push(a);
                 } else {
                   factCheckNum++;
@@ -325,16 +387,10 @@ var app = new Vue({
                     continue;
                   }
                   a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  a['shortened_title'] = v.shortenArticleText(a.title)
                   v.top_fact_checking_articles.push(a);
                 }
-
-                // a.capture_date = a.date_captured.split('T')[0];
-                // local_popular_articles[a.site_type].push(a);
               }
-
-              // v.popular_articles = local_popular_articles;
-              // console.log("POP ARTICLES");
-              // console.log(v.popular_articles);
               v.spinStop();
             },
             function (error) {
@@ -385,22 +441,50 @@ var app = new Vue({
             }
             var x = element.offsetLeft;
             var y = element.offsetTop;
+            var h = element.offsetHeight;
 
             while (element = element.offsetParent) {
                 x += element.offsetLeft;
                 y += element.offsetTop;
             }
 
-            return { left: x, top: y };
+            return { left: x, top: y, bottom: y + h};
         },
+
         scrollToElement: function(id){
-            if(document.getElementById(id))
+            var adjustment = 0;
+            if(this.searchBy === "Hoaxy" && id === "graphs")
             {
-                window.scroll(0,this.getOffset(id).top);
+                //if we're in hoaxy mode, we never want to go directly to the graph... we want to go
+                // slightly above so that we can see the article list
+                adjustment = document.getElementById("article_list").children[0].offsetHeight * 1.5;
+                var o = this.getOffset("article_list").bottom - adjustment;
+                if(document.getElementById(id))
+                {
+                    window.scroll(0,o);
+                }
+            }
+            else
+            {
+                if(document.getElementById(id))
+                {
+                    var o = this.getOffset(id).top - adjustment;
+                    window.scroll(0,o);
+                }
             }
             this.loadShareButtons();
         },
-        changeAndFocusSearchQuery: function(article) {
+        changeAndFocusSearchQuery: function(article, dashSource) {
+          // If news is mainstream (comes from the News API) then we automatically toggle Twitter search, if not, we use Hoaxy
+          if (dashSource == 'mainstream') {
+            this.searchBy = 'Twitter'
+            this.twitterSearchSelected = true
+            this.hoaxySearchSelected = false
+          } else {
+            this.searchBy = 'Hoaxy'
+            this.twitterSearchSelected = false
+            this.hoaxySearchSelected = true
+          }
           // change article query
           this.query_text = article;
           // focus on the search box
@@ -570,6 +654,8 @@ var app = new Vue({
           console.debug(v.twitterTimeline.claim);
         },
         resetTwitterSearchResults: function() {
+          // Re-enabling animation
+          this.animationAvailable =  true;
           // Reset Twitter Edge list
           this.twitterEdges = [];
           // Reset Twitter timeline
@@ -586,6 +672,11 @@ var app = new Vue({
           // Used to only paginate up to 1000 nodes
           this.twitterUserSet = new Set();
           this.twitterDates = [];
+        },
+        resetHoaxySearchResults: function() {
+          // Re-enabling animation
+          this.animationAvailable =  true;
+          this.hoaxyEdges = [];
         },
         buildTwitterEdgesTimeline: function(twitterEntities){
           this.spinStart("buildGraph");
@@ -883,6 +974,8 @@ var app = new Vue({
                   v.spinStop("getTwitterSearchResults");
                   // Create timeline and graph given the Twitter results
                   v.buildTwitterGraph();
+                  // Check if animation should be disabled or not
+                  v.checkIfShouldDisableAnimation(v.twitterEdges);
                 }
               }, function(){})
               .catch(function(error){
@@ -1063,14 +1156,18 @@ var app = new Vue({
                             y.url_raw = x.canonical_url;
                             return y;
                         });
-                        console.log("HOAXY PRE STUFF:");
-                        console.log(edge_list);
+                        // console.log("HOAXY PRE STUFF:");
+                        // console.log(edge_list);
+                        // Adding hoaxy edges to memory in case user wants to download the restuls as csv
+                        v.hoaxyEdges = edge_list;
                         v.graph.updateEdges(edge_list);
                         v.updateGraph();
                         // v.timeline.redraw();
-
+                        //Check if the animation should be disabled or not
+                        v.checkIfShouldDisableAnimation(v.hoaxyEdges);
                         v.scrollToElement("graphs");
                     });
+
 
 
                     //after the botcache request is complete,
@@ -1270,9 +1367,75 @@ var app = new Vue({
             var p = this.twitter.logOut();
             this.twitter_account_info = {};
         },
+        buildCSVContent: function(edgeList) {
+          this.spinStart("createCSV");
+          var csvFile = "data:text/csv;charset=utf-8,";
+          var csvData = [];
+          //Constructing and pushing header row to csv data
+          var headerRow = [];
+          //Finding all relevant keys and creating the header row
+          var firstEdge = edgeList[0];
+          Object.keys(firstEdge)
+                .forEach(function(key, ix) {
+                    headerRow.push(key);
+                 });
+          //Adding final computed column called tweet_url
+          headerRow.push("tweet_url")
+          //Sorting results for cleanliness
+          headerRow.sort()
+          csvData.push(headerRow)
+          //Iterating through edge list and building data rows where each row is an edge
+          var numEdges = edgeList.length;
+          if (numEdges > 0) {
+              for (var edgeNum = 0; edgeNum < numEdges; edgeNum++) {
+                var dataRow = [];
+                for (var keyIx = 0; keyIx < headerRow.length; keyIx++) {
+                  if (edgeList[edgeNum].hasOwnProperty(headerRow[keyIx])) {
+                    if (headerRow[keyIx] == "title") {
+                      // Quote delimiting the article title to deal with comma delimitation problems (e.g. "hello, world" will now be treated as one column in a csv and not two)
+                      dataRow.push("\"" + edgeList[edgeNum][headerRow[keyIx]] + "\"");
+                    } else {
+                      dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
+                    }
+                  } else {
+                    if (headerRow[keyIx] == "tweet_url") {
+                      dataRow.push("https://twitter.com/" + String(edgeList[edgeNum]['from_user_screen_name']) + "/status/" + String(edgeList[edgeNum]['tweet_id']));
+                    }
+                  }
+                }
+                // Finishing and adding one row of data
+                csvData.push(dataRow);
+              }
+          }
+          // Constructing csv file from data
+          csvData.forEach(function(dataRow){
+            var literalRow = dataRow.join(",");
+            csvFile += literalRow + "\r\n";
+          });
+          // Preparing csv file for download
+          var encodedCSVUri = encodeURI(csvFile);
+          var downloadLink = document.createElement("a");
+          downloadLink.setAttribute("href", encodedCSVUri);
+          downloadLink.setAttribute("download", "hoaxy_visualization.csv");
+          document.body.appendChild(downloadLink);
+          this.spinStop("createCSV");
+          // File will be downloaded now
+          downloadLink.click();
+        },
+        createAsCSV: function() {
+          if (this.hoaxyEdges.length > 0) {
+            // Creating Hoaxy CSV
+            this.buildCSVContent(this.hoaxyEdges);
+          }
+          else if (this.twitterEdges.length > 0) {
+            // Creating Twitter CSV
+            this.buildCSVContent(this.twitterEdges);
+          }
+        },
         submitForm: function(dontScroll){
           // Resets any results from any previous queries
           this.resetTwitterSearchResults();
+          this.resetHoaxySearchResults();
     	    if(this.searchBy == 'Hoaxy') {
         		this.show_articles = false;
         		this.show_graphs = false;
@@ -1283,6 +1446,8 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
+            // Preparing the proper timeline to show
+            this.timeline = this.globalHoaxyTimeline;
             // Adding a url querystring so that user can replicate a query by copy/pasting the url
         		this.changeURLParamsHoaxy();
         		this.getArticles(dontScroll);
@@ -1298,6 +1463,8 @@ var app = new Vue({
               this.spinStop(true);
               return false;
         		}
+            // Preparing the proper timeline to show
+            this.timeline = this.globalTwitterSearchTimeline;
             // Adding a url querystring so that user can replicate a query by copy/pasting the url
             this.changeURLParamsTwitter();
             var searchUrl = this.attemptToGetUrlHostPath(this.query_text);
@@ -1310,25 +1477,46 @@ var app = new Vue({
             }
         		this.spinStop();
       	  }
+          // Populating the network title as the query text
+          this.searched_query_text = this.query_text;
+          // Rendering styling of the timeline and graph depending on the search
+          this.searchedBy = this.searchBy;
+        },
+        checkIfShouldDisableAnimation: function(edges) {
+          var localAnimationAvailable = false;
+          var pubDate = edges[0]['tweet_created_at'];
+          for (var edgeIx = 0; edgeIx < edges.length; edgeIx++) {
+            var newPubDate = edges[edgeIx]['tweet_created_at'];
+            // There are at least two different dates so we can animate this edge list
+            if (newPubDate != pubDate) {
+              localAnimationAvailable = true;
+              break;
+            }
+          }
+          this.animationAvailable = localAnimationAvailable;
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
-            if(this.checked_articles.length > 20)
-            {
-                this.displayError("You can visualize a maximum of 20 articles.");
-                this.spinStop(true);
-                return false;
-            }
-            if(this.checked_articles.length <= 0)
-            {
-                this.displayError("Select at least one article to visualize.");
-                this.spinStop(true);
-                return false;
-            }
-            this.graph.updateEdges([]);
-            this.getTimeline(this.checked_articles);
-            this.getNetwork(this.checked_articles);
-            this.spinStop();
+            this.show_full_articles_list = false;
+            this.$nextTick(function(){
+                this.scrollToElement("article_list");
+                if(this.checked_articles.length > 20)
+                {
+                    this.displayError("You can visualize a maximum of 20 articles.");
+                    this.spinStop(true);
+                    return false;
+                }
+                if(this.checked_articles.length <= 0)
+                {
+                    this.displayError("Select at least one article to visualize.");
+                    this.spinStop(true);
+                    return false;
+                }
+                this.graph.updateEdges([]);
+                this.getTimeline(this.checked_articles);
+                this.getNetwork(this.checked_articles);
+                this.spinStop();
+            });
         },
         toggleEdgeModal: function(force){
             this.toggleModal("edge", force);
@@ -1413,44 +1601,8 @@ var app = new Vue({
 
         },
         "graphAnimation.current_timestamp": function(){
-
-                // this.timeline.removeUpdateDateRangeCallback();
-                // this.timeline.update(this.timeline.getLastData());
-                // this.timeline.redraw();
-                this.timeline.updateTimestamp();
+          this.timeline.updateTimestamp();
         },
-        // "twitter.me": function(){
-        //     console.info("twitter");
-        //     this.twitter_authorized = !!this.twitter.me();
-        //     console.debug(this.twitter.me());
-        //     console.debug(this.twitter_authorized);
-        // }
-        // "graph.playing": function(){
-        //     if(this.graph.playing === true)
-        //     {
-        //         this.animationPlaying = true;
-        //     }
-        //     else
-        //     {
-        //         this.animationPlaying = false;
-        //     }
-        // }
-        searchBy: function() {
-          // this.show_articles = false;
-          // this.show_graphs = false;
-
-
-          if (this.searchBy == 'Hoaxy') {
-            this.timeline = this.globalHoaxyTimeline;
-            // Search bar example
-            this.searchPlaceholder = 'Example: vaccines';
-          }
-          else {
-            this.timeline = this.globalTwitterSearchTimeline;
-            // Search bar example
-            this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
-          }
-        }
     },
 
 
@@ -1461,7 +1613,12 @@ var app = new Vue({
     //  #     # #    # #    # #  # #   #   #      #    #
     //  #     # #    # #    # #   ##   #   #      #    #
     //  #     #  ####   ####  #    #   #   ###### #####
-
+    beforeMount: function() {
+      // Retrieving popular articles to show them in the dashboard
+      this.getPopularArticles();
+      // Retrieving top trending articles to show them in the dashboard
+      this.getTopUsaArticles();
+    },
     mounted: function(){
         this.mounted = true;
         this.show_articles = false;
@@ -1483,12 +1640,6 @@ var app = new Vue({
                 }
             }, 100);
         }();
-
-        // Retrieving popular articles to show them in the dashboard
-        this.getPopularArticles();
-        // Retrieving top trending articles to show them in the dashboard
-        this.getTopUsaArticles();
-
         // If there's a hash querystring, populate the form with that data by default
         // First character is a #, so we must remove this in order to properly parse the query string
         var params = location.hash.substring(1, location.hash.length).split("&");
@@ -1602,6 +1753,15 @@ var app = new Vue({
         {
             this.submitForm(true);
         }
+
+        var debounce_timer = 0;
+        window.addEventListener('scroll', function(){
+            clearTimeout(debounce_timer);
+            debounce_timer = 0;
+            debounce_timer = setTimeout( function(){
+                v.scrollTop = window.pageYOffset;
+            }, 50);
+        });
 
     }
 });
