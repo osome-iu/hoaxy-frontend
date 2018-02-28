@@ -31,76 +31,6 @@
 		<!--#include virtual="./includes/header.html" -->
 
 
-		<!-- TOP ARTICLES DASHBOARD -->
-
-		<div class="text-center mb-3">
-			<div class="col-md-3 d-inline-block align-top border border-secondary m-0 p-0">
-				<div class="table-responsive m-0 p-0">
-					<table class="table table-striped m-0 p-0">
-						<tr>
-							<th class="text-center">Top Trending Articles in the Last 6 Hours</th>
-						</tr>
-						<div>
-							<tr v-for="article in top_usa_articles">
-								<td class="text-left">
-									<a v-on:click.prevent="changeAndFocusSearchQuery(article.headline,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this text">{{article.shortened_headline}}</a>
-									<br>
-									<span class="small"><a v-on:click.prevent="changeAndFocusSearchQuery(article.url,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this url">Source:</a>
-									{{article.source}}</span>
-								</td>
-						</div>
-						</tr>
-						<tr v-if="top_usa_articles.length == 0">
-							<td colspan="3">Could not find any articles</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-			<div class="col-md-3 d-inline-block align-top border border-secondary m-0 p-0">
-				<div class="table-responsive m-0 p-0">
-					<table class="table table-striped m-0 p-0">
-						<tr>
-							<th class="text-center">Most Popular Claims in the Last Month</th>
-						</tr>
-						<tr v-for="claim in top_claim_articles">
-							<td class="text-left">
-								<a v-on:click.prevent="changeAndFocusSearchQuery(claim.title,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this text">{{claim.shortened_title}}</a>
-								<br>
-								<span class="small"><a v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this url">Source:</a>
-								{{ claim.source }}</span>
-							</td>
-						</tr>
-						<tr v-if="top_claim_articles.length == 0">
-							<td colspan="3">Could not find any articles</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-			<div class="col-md-3 d-inline-block align-top border border-secondary m-0 p-0">
-				<div class="table-responsive m-0 p-0">
-					<table class="table table-striped m-0 p-0">
-						<tr>
-							<th class="text-center">Most Popular Fact Checking Articles in the Last Month</th>
-						</tr>
-						<tr v-for="fact in top_fact_checking_articles">
-							<td class="text-left">
-								<a v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this text">{{fact.shortened_title}}</a>
-								<br>
-								<span class="small"><a v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this url">Source:</a>
-								{{ fact.source }}</span>
-							</td>
-							</td>
-						</tr>
-						<tr v-if="top_fact_checking_articles.length == 0">
-							<td colspan="3">Could not find any articles</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-		</div>
-</section>
-
-
 		<!--
 		#######
 		#        ####  #####  #    #
@@ -180,6 +110,71 @@
 
 			</div>
 		</section>
+
+        <!-- TOP ARTICLES DASHBOARD -->
+
+        <section class="text-center mb-3">
+            <div class="col-md-3 d-inline-block align-top m-0 p-0">
+                <div class="table-responsive m-0 p-0">
+                    <table class="table table-borderless m-0 p-0">
+                        <tr>
+                            <th class="text-left my-0 mx-2 py-0 px-2">Trending News</th>
+                        </tr>
+                            <tr v-for="article in top_usa_articles">
+                                <td class="text-left m-2 p-2">
+                                        <a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(article.headline,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this text">{{article.shortened_headline}}</a>
+                                        </br class="m-0 p-0">
+                                        <span class="small tight-span m-0 p-0"><a v-on:click.prevent="changeAndFocusSearchQuery(article.url,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this url">Source:</a>
+                                            {{article.source}}</span>
+                                </td>
+                            </tr>
+                        <tr v-if="top_usa_articles.length == 0">
+                            <td colspan="3">Could not find any articles</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-3 d-inline-block align-top m-0 p-0">
+                <div class="table-responsive m-0 p-0">
+                    <table class="table table-borderless m-0 p-0">
+                        <tr>
+                            <th class="text-left my-0 mx-2 py-0 px-2">Popular Claims</th>
+                        </tr>
+                        <tr v-for="claim in top_claim_articles">
+                            <td class="text-left m-2 p-2">
+                                <a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(claim.title,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this text">{{claim.shortened_title}}</a>
+                                <br class="m-0 p-0">
+                                <span class="small tight-span m-0 p-0"><a v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this url">Source:</a>
+                                {{ claim.source }}</span>
+                            </td>
+                        </tr>
+                        <tr v-if="top_claim_articles.length == 0">
+                            <td colspan="3">Could not find any articles</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-3 d-inline-block align-top m-0 p-0">
+                <div class="table-responsive m-0 p-0">
+                    <table class="table table-borderless m-0 p-0">
+                        <tr>
+                            <th class="text-left my-0 mx-2 py-0 px-2">Popular Fact-Checks</th>
+                        </tr>
+                        <tr v-for="fact in top_fact_checking_articles">
+                            <td class="text-left m-2 p-2">
+                                <a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this text">{{fact.shortened_title}}</a>
+                                <br class="m-0 p-0">
+                                <span class="small tight-span m-0 p-0"><a v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" data-toggle="tooltip" title="select to populate the search box with this url">Source:</a>
+                                {{ fact.source }}</span>
+                            </td>
+                        </tr>
+                        <tr v-if="top_fact_checking_articles.length == 0">
+                            <td colspan="3">Could not find any articles</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <!--
             #
