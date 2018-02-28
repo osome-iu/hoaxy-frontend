@@ -1400,17 +1400,19 @@ var app = new Vue({
           this.searchedBy = this.searchBy;
         },
         checkIfShouldDisableAnimation: function(edges) {
-          var localAnimationAvailable = false;
-          var pubDate = edges[0]['tweet_created_at'];
-          for (var edgeIx = 0; edgeIx < edges.length; edgeIx++) {
-            var newPubDate = edges[edgeIx]['tweet_created_at'];
-            // There are at least two different dates so we can animate this edge list
-            if (newPubDate != pubDate) {
-              localAnimationAvailable = true;
-              break;
+          if (edges.length > 0) {
+            var localAnimationAvailable = false;
+            var pubDate = edges[0]['tweet_created_at'];
+            for (var edgeIx = 0; edgeIx < edges.length; edgeIx++) {
+              var newPubDate = edges[edgeIx]['tweet_created_at'];
+              // There are at least two different dates so we can animate this edge list
+              if (newPubDate != pubDate) {
+                localAnimationAvailable = true;
+                break;
+              }
             }
+            this.animationAvailable = localAnimationAvailable;
           }
-          this.animationAvailable = localAnimationAvailable;
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
