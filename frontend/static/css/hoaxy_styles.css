@@ -2,7 +2,6 @@
  * Base structure
  */
 
-
 /* Move down content because we have a fixed navbar that is 50px tall */
 
 body {
@@ -11,6 +10,13 @@ body {
 
 }
 
+
+.reg:after
+{
+    content: "\ae";
+    vertical-align: sub;
+    font-size: .4em;
+}
 nav.navbar a, nav.navbar small
 {
     color: white;
