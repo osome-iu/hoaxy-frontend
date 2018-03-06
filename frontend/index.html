@@ -256,25 +256,6 @@
         </div>
 
         <div class="col-md-1 col-12 text-center ">
-            <div id="sharing_buttons" class="mt-1 mb-4 d-flex flex-column justify-content-center align-items-center" v-if="show_graphs">
-				<p class="m-0 text-center mb-1">Share</p>
-                <span id="twitter-button">
-                    <a class="twitter-share-button"
-                    href="https://twitter.com/share"
-                    data-text="Hoaxy: How claims spread online"
-                    data-size="large">
-                    Tweet</a>
-                </span>
-
-                <span id="fb-button">
-                    <span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
-                        <a class="fb-xfbml-parse-ignore" target="_blank"
-                        href="">Share</a>
-                    </span>
-                </span>
-
-            </div>
-
             <div class="d-none d-md-block d-md-flex flex-column justify-content-center align-items-center">
 				<p class="m-0 text-center ">Layout</p>
 	            <button id=""  :disabled="graph_column_size >= 12"  class=" layout-button layout-button-timeline btn btn-primary" @click="resizeGraphs(12)">
@@ -305,7 +286,27 @@
 					<button @click="stopGraphAnimation" :disabled="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-stop" aria-hidden="true"></i></button>
 				</div>
 			</div>
-			<div class="d-block p-2 mt-5 text-center d-md-flex flex-column justify-content-center align-items-center">
+			<div id="sharing_buttons" class="mt-4 mb-4 d-flex flex-column justify-content-center align-items-center" v-if="show_graphs">
+	<p class="m-0 text-center mb-1">Share</p>
+					<span id="twitter-button">
+							<a class="twitter-share-button"
+							href="https://twitter.com/share"
+							data-text="Hoaxy: How claims spread online"
+							data-size="large">
+							Tweet</a>
+					</span>
+
+					<span id="fb-button">
+							<span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
+									<a class="fb-xfbml-parse-ignore" target="_blank"
+									href="">Share</a>
+							</span>
+					</span>
+			</div>
+			<div class="d-block p-2 mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
+				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" v-on:click="prepareAndShowWidgetCode()">Embed<br/>Widget</button>
+			</div>
+			<div class="d-block p-2 mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
 				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='createAsCSV()'>Download<br/> as CSV</button>
 			</div>
 			<!-- <div class="d-block p-2 mt-5 text-center d-md-flex flex-column justify-content-center align-items-center" v-if="searchBy == 'Hoaxy'">
@@ -426,6 +427,32 @@
 		#     # #    # #    # #    # #      #    #
 		#     #  ####  #####  #    # ######  ####
 		-->
+
+			<!-- Widget Modal -->
+			<div id="widgetModal"
+		:class="{'modal-show': showWidgetModal}"
+		@click.stop="resetWidgetContent();"
+		class="modal " tabindex="-1"
+		role="dialog"
+		aria-labelledby="infoModalLabel"
+		style="opacity: 1"
+		aria-labelledby="nodeModalLabel">
+					<div class="modal-dialog" role="document">
+							<div @click.stop="" class="alert m-5 alert-info">
+									<div class="modal-body" id="infoModalBody" >
+										<div class="d-flex flex-column align-items-center">
+											<span class="pl-2">In order to embed the Hoaxy widget, please copy the below code to your site:</span>
+											<textarea rows="5" ref="widgetCodeTextArea" id="widgetCodeTextArea">{{ embeddedWidgetCode }}</textarea>
+										</div>
+									</div>
+									<div class="align-items-center text-center" v-show="copiedWidgetText">Copied text to clipboard.</div>
+									<div class="align-items-center text-center">
+											<button type="button" class="btn btn-secondary" @click="copyWidgetCodeToClipboard">Copy to Clipboard</button>
+											<button type="button" class="btn btn-secondary" @click="resetWidgetContent();">Close</button>
+									</div>
+							</div>
+					</div>
+			</div>
 
         <div id="infoModal"
 			:class="{'modal-show': info_text!==''}"

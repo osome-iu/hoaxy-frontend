@@ -115,6 +115,9 @@ var app = new Vue({
         graph: null,
         getting_bot_scores: {running: false},
 
+        copiedWidgetText: false,
+        widgetScreenshotDataUrl: "",
+        showWidgetModal: false,
         show_error_modal: false,
         error_message: "",
         show_edge_modal: false,
@@ -235,6 +238,9 @@ var app = new Vue({
             //             )
             //         )
             //     ) : (0);
+        },
+        embeddedWidgetCode: function () {
+          return "<div style=\"width:250px;padding:5px;border:solid;border-width:thin;border-color:gray;border-radius:10px;\"><div>Use Hoaxy to see how this spreads online: <a href=\"" + location.href + "\" target=\"_blank\">" + this.searched_query_text + "</div><div><hr style=\"position:relative;left:-5px;border-width:think;border-color:gray;color:gray;background-color:gray;height:1px;width:260px;border:none;\"><img style=\"width:250;height:250px;\" src=\"" + this.widgetScreenshotDataUrl + "\"></img></div></div>"
         }
         // : function(){
         //     if(!this.graph)
@@ -278,6 +284,24 @@ var app = new Vue({
         // },
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
+        },
+        prepareAndShowWidgetCode: function() {
+          var graphRenderer = this.graph.getRenderer();
+          this.widgetScreenshotDataUrl = graphRenderer.snapshot({
+            format: 'jpg',
+            background: 'white',
+            labels: true
+          });
+          this.showWidgetModal = true;
+        },
+        copyWidgetCodeToClipboard: function() {
+          this.$refs.widgetCodeTextArea.select();
+          document.execCommand('copy');
+          this.copiedWidgetText = true;
+        },
+        resetWidgetContent: function() {
+          this.showWidgetModal = false;
+          this.copiedWidgetText = false;
         },
         focusSearchBox: function() {
           this.search_disabled = false;
