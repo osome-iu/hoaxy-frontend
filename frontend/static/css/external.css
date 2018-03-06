@@ -115,7 +115,12 @@ li
 
 #visualize_top
 {
-    margin-top: .75rem;
+    /* margin-top: .75rem; */
+
+}
+#articles_controls
+{
+    /* position: sticky; */
 }
 
 #spinner
