@@ -262,8 +262,8 @@ var app = new Vue({
 
     methods: {
         twitterSearch: function() {
-          this.searchBy = "Twitter"
           this.twitter_result_type = 'mixed'
+          this.searchBy = "Twitter"
           this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
           this.twitterSearchSelected = true
           this.hoaxySearchSelected = false
@@ -271,8 +271,8 @@ var app = new Vue({
           this.$refs.searchBox.focus()
         },
         hoaxySearch: function() {
-          this.searchBy = "Hoaxy"
           this.query_sort = "relevant";
+          this.searchBy = "Hoaxy"
           this.searchPlaceholder = 'Example: vaccines';
           this.hoaxySearchSelected = true
           this.twitterSearchSelected = false
@@ -284,6 +284,13 @@ var app = new Vue({
         // },
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
+        },
+        stripWwwIfPresent: function(url) {
+          if (url.substring(0, 4) == "www.") {
+            return url.substring(4, );
+          } else {
+            return url;
+          }
         },
         prepareAndShowWidgetCode: function() {
           var graphRenderer = this.graph.getRenderer();
@@ -337,7 +344,7 @@ var app = new Vue({
               var topArticles = response.data;
               for (var i = 0; i < 3; i++)
               {
-                topArticles[i].source = v.attemptToGetUrlHostName(topArticles[i].url);
+                topArticles[i].source = v.stripWwwIfPresent(v.attemptToGetUrlHostName(topArticles[i].url));
                 topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline);
                 v.top_usa_articles.push(topArticles[i]);
               }
@@ -375,7 +382,7 @@ var app = new Vue({
                   if (claimNum > 3) {
                     continue;
                   }
-                  a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  a.source = v.stripWwwIfPresent(v.attemptToGetUrlHostName(a.canonical_url));
                   a['shortened_title'] = v.shortenArticleText(a.title);
                   v.top_claim_articles.push(a);
                 } else {
@@ -384,7 +391,7 @@ var app = new Vue({
                   if (factCheckNum > 3) {
                     continue;
                   }
-                  a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  a.source = v.stripWwwIfPresent(v.attemptToGetUrlHostName(a.canonical_url));
                   a['shortened_title'] = v.shortenArticleText(a.title)
                   v.top_fact_checking_articles.push(a);
                 }
@@ -472,16 +479,22 @@ var app = new Vue({
             }
             this.loadShareButtons();
         },
+        directSearchDashboard: function(article, dashSource) {
+          // Change query selection settings and populate the search box
+          this.changeAndFocusSearchQuery(article, dashSource);
+          // Submit the form
+          this.submitForm();
+        },
         changeAndFocusSearchQuery: function(article, dashSource) {
           // If news is mainstream (comes from the News API) then we automatically toggle Twitter search, if not, we use Hoaxy
           if (dashSource == 'mainstream') {
-            this.searchBy = 'Twitter'
-            this.twitterSearchSelected = true
-            this.hoaxySearchSelected = false
+            this.searchBy = 'Twitter';
+            this.twitterSearchSelected = true;
+            this.hoaxySearchSelected = false;
           } else {
-            this.searchBy = 'Hoaxy'
-            this.twitterSearchSelected = false
-            this.hoaxySearchSelected = true
+            this.searchBy = 'Hoaxy';
+            this.twitterSearchSelected = false;
+            this.hoaxySearchSelected = true;
           }
           // change article query
           this.query_text = article;
