@@ -453,18 +453,18 @@ var app = new Vue({
 
         scrollToElement: function(id){
             var adjustment = 0;
-            if(this.searchBy === "Hoaxy" && id === "graphs")
-            {
-                //if we're in hoaxy mode, we never want to go directly to the graph... we want to go
-                // slightly above so that we can see the article list
-                adjustment = document.getElementById("article_list").children[0].offsetHeight * 1.5;
-                var o = this.getOffset("article_list").bottom - adjustment;
-                if(document.getElementById(id))
-                {
-                    window.scroll(0,o);
-                }
-            }
-            else
+            // if(this.searchBy === "Hoaxy" && id === "graphs")
+            // {
+            //     //if we're in hoaxy mode, we never want to go directly to the graph... we want to go
+            //     // slightly above so that we can see the article list
+            //     adjustment = document.getElementById("article_list").children[0].offsetHeight * 1.5;
+            //     var o = this.getOffset("article_list").bottom - adjustment;
+            //     if(document.getElementById(id))
+            //     {
+            //         window.scroll(0,o);
+            //     }
+            // }
+            // else
             {
                 if(document.getElementById(id))
                 {
@@ -884,7 +884,7 @@ var app = new Vue({
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.spinStop("generateNetwork");
-                v.scrollToElement("graphs");
+                v.scrollToElement("secondary_form");
             });
             v.spinStop("buildGraph");
           }
@@ -912,7 +912,7 @@ var app = new Vue({
             Vue.nextTick(function(){
                 v.timeline.update(v.twitterTimeline);
                 v.spinStop("updateTimeline");
-                v.scrollToElement("graphs");
+                v.scrollToElement("secondary_form");
                 v.timeline.redraw();
             });
 
@@ -936,7 +936,7 @@ var app = new Vue({
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.spinStop("generateNetwork");
-                v.scrollToElement("graphs");
+                v.scrollToElement("secondary_form");
             });
 
             v.spinStop("buildGraph");
@@ -1093,7 +1093,7 @@ var app = new Vue({
                     Vue.nextTick(function(){
                         v.timeline.update(msg.timeline);
                         v.spinStop("updateTimeline");
-                        v.scrollToElement("graphs");
+                        v.scrollToElement("secondary_form");
                         v.timeline.redraw();
                     });
                     v.spinStop("getTimeline");
@@ -1165,7 +1165,7 @@ var app = new Vue({
                         // v.timeline.redraw();
                         //Check if the animation should be disabled or not
                         v.checkIfShouldDisableAnimation(v.hoaxyEdges);
-                        v.scrollToElement("graphs");
+                        v.scrollToElement("secondary_form");
                     });
 
 
@@ -1581,7 +1581,7 @@ var app = new Vue({
 
             this.graph.updateGraph(starting_time, ending_time);
             this.show_zoom_buttons = true;
-            this.scrollToElement("graphs");
+            this.scrollToElement("secondary_form");
         },
         loadShareButtons: function(){
             twttr.widgets.load();
