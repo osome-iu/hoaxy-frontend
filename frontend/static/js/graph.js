@@ -963,7 +963,8 @@ function HoaxyGraph(options)
 	            edgeHoverSizeRatio: 2,
 	            singleHover: true,
 				rescaleIgnoreSize: true,
-				defaultNodeType: 'border'
+				defaultNodeType: 'border',
+                zoomingRatio: 1.2
 	        }
 	    });
 		var jiggle_compensator = Math.floor(Math.sqrt(graph.edges.length)) *600;
