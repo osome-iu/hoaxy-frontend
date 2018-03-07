@@ -448,7 +448,7 @@ section#dashboard
 {
     padding-bottom: 2rem;
 }
- section#graphs, .btn:not(#searchByTwitter):not(#searchByHoaxy), section#dashboard, .btn-group-toggle
+ .btn:not(#searchByTwitter):not(#searchByHoaxy):not(#searchByTwitter2):not(#searchByHoaxy2), section#dashboard, .btn-group-toggle
 {
 	-webkit-box-shadow: 0px 2px 2px 2px rgba(50, 50, 50, 0.2);
 	-moz-box-shadow:    0px 2px 2px 2px rgba(50, 50, 50, 0.2);

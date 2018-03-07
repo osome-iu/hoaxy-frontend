@@ -189,26 +189,26 @@
 
         <section id="secondary_form" v-if="show_graphs">
 
-            <div class="container pt-5">
+            <div class="container pt-5 pb-3">
                 <form @submit.stop.prevent="show_full_articles_list = false; submitForm()">
                     <input v-model="query_sort" type="hidden" name="sort_by" :disabled="input_disabled" />
                     <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
                     <div class="d-flex align-items-start">
                         <!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
-                        <div class="btn-group btn-group-toggle mr-2">
-                            <button id="searchByTwitter"
+                        <div class="btn-group btn-group-toggle mr-2 rounded">
+                            <button id="searchByTwitter2"
                                 data-toggle="tooltip"
                                 title="select to search for chatter on twitter"
                                 class="btn btn-primary"
                                 v-on:click="twitterSearch()"
-                                v-bind:class="{ 'active': twitterSearchSelected}">Twitter</button>
+                                v-bind:class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">Twitter</button>
 
-                            <button id="searchByHoaxy"
+                            <button id="searchByHoaxy2"
                                 data-toggle="tooltip"
                                 title="select to search for claims and fact-checks"
                                 class="btn btn-primary"
                                 v-on:click="hoaxySearch()"
-                                v-bind:class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
+                                v-bind:class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">Hoaxy</button>
                         </div>
                         <input class="form-control mr-2"
                             type="text"
@@ -223,8 +223,8 @@
 
 
 
-                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-secondary ml-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
-                        <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-secondary ml-2" v-if="show_articles && show_full_articles_list">Cancel</button>
+                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-primary ml-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
+                        <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-primary ml-2" v-if="show_articles && show_full_articles_list">Cancel</button>
 
 
 
@@ -234,7 +234,7 @@
                     <div id="article_list_container" v-show="show_articles && show_full_articles_list">
                         <div class="card p-2">
                             <div class="text-right d-flex align-items-center" >
-								<label class="mt-3 d-block" style="whtiespace: nowrap">
+								<label class="mt-3 d-block" style="white-space: nowrap">
 									<input type="checkbox" id="select_all" @change="selectTop20" :checked="all_selected" style="display: none"/>
 									<span class="check_icons text-center">
 										<i class="fa fa-square-o fw" aria-hidden="true"></i>
