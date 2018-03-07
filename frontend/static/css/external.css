@@ -1,4 +1,24 @@
 
+/*article list transition*/
+.slide_in-enter-active, .slide_in-leave-active {
+  transition: transform .5s;
+  transition: max-height .5s, transform .5s;
+  max-height: 200rem;
+}
+.slide_in-enter, .slide_in-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  /* opacity: 0; */
+  transform: scaleY(0);
+  max-height: 0;
+}
+
+#article_list_container
+{
+    overflow: hidden;
+    transform-origin: center top;
+}
+
+
+
 
 /*Header*/
 header
