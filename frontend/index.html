@@ -165,6 +165,150 @@
             </div>
         </section>
 
+
+        <section id="secondary_form" v-if="show_graphs">
+
+            <div class="container pt-5">
+                <form @submit.stop.prevent="show_full_articles_list = false; submitForm()">
+                    <input v-model="query_sort" type="hidden" name="sort_by" :disabled="input_disabled" />
+                    <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
+                    <div class="d-flex align-items-start">
+                        <!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
+                        <div class="btn-group btn-group-toggle mr-2">
+                            <button id="searchByTwitter"
+                                data-toggle="tooltip"
+                                title="select to search for chatter on twitter"
+                                class="btn btn-primary"
+                                v-on:click="twitterSearch()"
+                                v-bind:class="{ 'active': twitterSearchSelected}">Twitter</button>
+
+                            <button id="searchByHoaxy"
+                                data-toggle="tooltip"
+                                title="select to search for claims and fact-checks"
+                                class="btn btn-primary"
+                                v-on:click="hoaxySearch()"
+                                v-bind:class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
+                        </div>
+                        <input class="form-control mr-2"
+                            type="text"
+                            ref="searchBox"
+                            data-toggle="tooltip"
+                            title="enter any phrase or url"
+                            @focus="focusSearchBox();"
+                            v-model="query_text"
+                            v-bind:placeholder="searchPlaceholder"
+                            :disabled="input_disabled || show_full_articles_list == true" />
+                        <button v-if="!show_articles || !show_full_articles_list" class="btn btn-primary btn-blue" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
+
+
+
+                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-secondary ml-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
+                        <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-secondary ml-2" v-if="show_articles && show_full_articles_list">Cancel</button>
+
+
+
+                    </div>
+
+                    <div v-if="show_articles && show_full_articles_list">
+                        <div class="card p-2">
+                            <div class="text-right d-flex align-items-center" >
+                                <p class="text-left mt-3">
+                                    Select up to 20 articles from the list and click "Visualize Articles" to generate a timeline and network graph based on your selection.
+                                </p>
+                                <!-- <button :disabled="checked_articles.length <= 0 || checked_articles.length > 20"  @click.stop.prevent="visualizeSelectedArticles()" class="mb-1 btn btn-primary d-block" id="visualize_top">Visualize Selected Articles</button> -->
+                                <!-- <button @click.stop.prevent="show_full_articles_list = true" v-if="!show_full_articles_list" class="btn btn-primary d-block" id="visualize_top">Show All {{getSubsetOfArticles().length}} Articles</button> -->
+                                <!-- <button @click.stop.prevent="show_full_articles_list = false" v-if="show_full_articles_list" class="btn btn-primary d-block" id="visualize_top">Show Only Selected Articles</button> -->
+                                <div>
+                                    <button @click.stop.prevent="visualizeSelectedArticles();" :disabled="checked_articles.length <= 0" class="btn btn-primary" v-if="show_articles && show_full_articles_list">Visualize {{checked_articles.length}} article{{checked_articles.length!=1?"s":""}}</button>
+                                </div>
+                            </div>
+
+                            <div class="d-flex row">
+                                <div class="col-12">
+                                    <ul class="list-unstyled d-block" id="article_list">
+                                        <li v-for="article, index in getSubsetOfArticles()" :class="article.site_type"
+                                        class="rounded d-block">
+                                        <label class="row p-3">
+                                            <input type="checkbox" :id="article.url_id" :value="article.url_id" v-model="checked_articles" />
+                                            <div class="check_icons col-1 text-center d-flex align-items-center">
+                                                <i class="fa fa-square-o fw" aria-hidden="true"></i>
+                                                <i class="fa fa-check-square-o fw" aria-hidden="true"></i>
+                                            </div>
+
+                                            <div class="col-11">
+                                                <span class="article_title"><a :href="article.url_raw" target="_blank">{{article.title}}</a></span>
+                                                <span class=""><span class="article_domain">From <a :href="'http://' + article.site_domain" target="_blank">{{article.site_domain}}</a></span>
+                                                <span class="article_date">on {{getDateline(article.date_published)}}</span></span>
+                                                <span class="article_stats"><span><b>{{article.number_of_tweets}}</b> Tweets</span></span>
+                                                <div class="clearfix"></div>
+                                            </div>
+                                        </label>
+                                    </li>
+                                </ul>
+                                <div>
+                                    <div class="text-center">
+                                        <button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary btn-blue" id="visualize">Visualize {{checked_articles.length}} article{{checked_articles.length!=1?"s":""}}</button>
+
+                                        <span class="text-center" id="load_more">
+                                            <button class="btn btn-warning" :disabled="articles_to_show >= articles.length" @click="loadMore()"> Load More Articles </button>
+                                            <div v-if="articles_to_show >= 100 && articles.length >= 100" class="text-muted">Your query has found too many matches for us to load. Please narrow down your query and try again to get more articles.</div>
+                                            <div v-if="articles_to_show >= articles.length && articles.length < 100" class="text-muted">We couldn't find any more articles for this query.</div>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                        </div>
+
+                    </div>
+
+
+
+                </form>
+            </div>
+
+                <!-- <div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
+                    <span class="radio-container">
+                        <label class="">Show:
+                            <input v-model="query_sort" type="radio" name="sort_by" id='sort_by_relevant' checked value="relevant"  :disabled="input_disabled" /> Relevant
+                        </label>
+                    </span>
+                    <span class="radio-container">    value="relevant"   :disabled="input_disabled"
+                <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
+                            <input v-model="query_sort" type="radio" name="sort_by" id="sort_by_recent" value="recent"  :disabled="input_disabled" /> Recent
+                        </label>
+                    </span>
+                </div>
+                <div v-else class="col-12 text-center form-group">
+                    <span class="radio-container">
+                        <label class="">Show:
+                            <input v-model="twitter_result_type" type="radio" name="result_type" id='search_by_recent' value="recent"  :disabled="input_disabled" /> Recent
+                        </label>
+                    </span>
+                    <span class="radio-container">
+                        <label class="">
+                            <input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_popular" value="popular"  :disabled="input_disabled" /> Popular
+                        </label>
+                    </span>
+                    <span class="radio-container">
+                        <label class="">
+                            <input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_mixed" checked value="mixed"  :disabled="input_disabled" /> Mixed
+                        </label>
+                    </span>
+                </div> -->
+
+                <!-- <div class="col-12 text-center">
+                    <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
+                    <button class="btn btn-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
+                </div>
+                <div class="clearfix"></div> -->
+
+    </section>
+
+
         <!--
             #
            # #   #####  ##### #  ####  #      ######  ####
@@ -174,16 +318,16 @@
          #     # #   #    #   # #    # #      #      #    #
          #     # #    #   #   #  ####  ###### ######  ####
           -->
-    <section id="articles" v-bind:class="{'hidden': !show_articles}" class="container-fluid mb-0">
+    <!-- <section id="articles" v-bind:class="{'hidden': !show_articles}" class="container-fluid mb-0">
 		<div>
 			<div id="articles_bookmark" style="position: absolute; margin-left: -20rem; visibility: hidden; margin-top: -6rem">Visualize Bookmark</div>
 			<div class="container">
 				<div class=" col-3 text-center d-flex flex-column align-items-center float-right"  style="position: relative" id="articles_controls" :style=" {'margin-top': controls_margin_top }">
 					<button v-if="show_full_articles_list" :disabled="checked_articles.length <= 0 || checked_articles.length > 20"  @click.stop.prevent="visualizeSelectedArticles()" class="mb-1 btn btn-primary d-block" id="visualize_top">Visualize Selected Articles</button>
-					<button @click.stop.prevent="show_full_articles_list = true" v-if="!show_full_articles_list" class="btn btn-primary d-block" id="visualize_top">Show All {{getSubsetOfArticles().length}} Articles</button>
+					<button @click.stop.prevent="show_full_articles_list = true" v-if="!show_full_articles_list" class="btn btn-primary d-block" id="visualize_top">Show All {{getSubsetOfArticles().length}} Articles</button> -->
 					<!-- <button @click.stop.prevent="show_full_articles_list = false" v-if="show_full_articles_list" class="btn btn-primary d-block" id="visualize_top">Show Only Selected Articles</button> -->
 
-					<div v-if="show_full_articles_list" class="text-left mt-3">
+					<!-- <div v-if="show_full_articles_list" class="text-left mt-3">
 						Select up to 20 articles from the list on the left and click "Visualize Selected Articles" to generate a timeline and network graph based on your selection.
 					</div>
 				</div>
@@ -227,7 +371,7 @@
 			</div>
 
 		</div>
-	</section>
+	</section> -->
 
 <!--
   #####
@@ -318,7 +462,7 @@
             :style="graph_column_size >= 12 ? 'display: none' : ''"
             :class="'col-md-' + (12-graph_column_size-1)">
 
-            <p class="text-center"><b>Network of:</b> {{ this.searched_query_text }}</p>
+            <p class="text-center">Diffusion Network</p>
             <div id="graph_error" class="p-5 d-flex flex-column justify-content-center" v-if="failed_to_get_network">
                 There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
             </div>
