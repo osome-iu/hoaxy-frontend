@@ -7,11 +7,12 @@
 </head>
 
 <body>
+
 	<div id="vue-app">
-		<!--#set var="subtitle" value="Frequently Asked Questions About Hoaxy®" -->
+		<!--#set var="subtitle" value="Frequently Asked Questions About Hoaxy" -->
 		<!--#include virtual="./includes/header.html" -->
 
-        <section id="faq" class="container-fluid"> 
+        <section id="faq" class="container-fluid">
         	<div class="container">
         		<dl>
         			<dt>Q: What is Hoaxy&reg;?</dt>
@@ -152,5 +153,21 @@
 
 	</script>
 	<!--#include virtual="./includes/footer.html" -->
+	<script>
+	var updateSubtitle = function(){
+		var subtitle = document.getElementById("hoaxy_subtitle");
+		var content = subtitle.innerHTML;
+		content = content.split(" ");
+		for(var i in content)
+		{
+			if(content[i] == "Hoaxy")
+			{
+				content[i] += "&reg;";
+			}
+		}
+		subtitle.innerHTML = content.join(" ");
+	}();
+
+	</script>
 </body>
 </html>
