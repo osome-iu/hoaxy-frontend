@@ -516,6 +516,11 @@ function HoaxyGraph(options)
 
 
 	}
+	//Used for taking snapshot of graph
+	function getRenderer()
+	{
+		return s.renderers[0];
+	}
 
 	function getNodeColor(score)
 	{
@@ -1408,6 +1413,8 @@ function HoaxyGraph(options)
 	returnObj.botscores = function(){ return botscores; };
 
 	returnObj.score_stats = score_stats;
+	//Used for taking snapshot of graph
+	returnObj.getRenderer = getRenderer;
 
 	return returnObj;
 

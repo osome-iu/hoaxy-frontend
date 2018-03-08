@@ -115,6 +115,9 @@ var app = new Vue({
         graph: null,
         getting_bot_scores: {running: false},
 
+        copiedWidgetText: false,
+        widgetScreenshotDataUrl: "",
+        showWidgetModal: false,
         show_error_modal: false,
         error_message: "",
         show_edge_modal: false,
@@ -242,6 +245,9 @@ var app = new Vue({
             //             )
             //         )
             //     ) : (0);
+        },
+        embeddedWidgetCode: function () {
+          return "<div style=\"width:250px;padding:5px;border:solid;border-width:thin;border-color:gray;border-radius:10px;\"><div>Use Hoaxy to see how this spreads online: <a href=\"" + location.href + "\" target=\"_blank\">" + this.searched_query_text + "</div><div><hr style=\"position:relative;left:-5px;border-width:think;border-color:gray;color:gray;background-color:gray;height:1px;width:260px;border:none;\"><img style=\"width:250;height:250px;\" src=\"" + this.widgetScreenshotDataUrl + "\"></img></div></div>"
         }
         // : function(){
         //     if(!this.graph)
@@ -282,8 +288,8 @@ var app = new Vue({
         },
 
         twitterSearch: function() {
-          this.searchBy = "Twitter"
           this.twitter_result_type = 'mixed'
+          this.searchBy = "Twitter"
           this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
           this.twitterSearchSelected = true
           this.hoaxySearchSelected = false
@@ -291,8 +297,8 @@ var app = new Vue({
           this.$refs.searchBox.focus()
         },
         hoaxySearch: function() {
-          this.searchBy = "Hoaxy"
           this.query_sort = "relevant";
+          this.searchBy = "Hoaxy"
           this.searchPlaceholder = 'Example: vaccines';
           this.hoaxySearchSelected = true
           this.twitterSearchSelected = false
@@ -304,6 +310,31 @@ var app = new Vue({
         // },
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
+        },
+        stripWwwIfPresent: function(url) {
+          if (url.substring(0, 4) == "www.") {
+            return url.substring(4, );
+          } else {
+            return url;
+          }
+        },
+        prepareAndShowWidgetCode: function() {
+          var graphRenderer = this.graph.getRenderer();
+          this.widgetScreenshotDataUrl = graphRenderer.snapshot({
+            format: 'jpg',
+            background: 'white',
+            labels: true
+          });
+          this.showWidgetModal = true;
+        },
+        copyWidgetCodeToClipboard: function() {
+          this.$refs.widgetCodeTextArea.select();
+          document.execCommand('copy');
+          this.copiedWidgetText = true;
+        },
+        resetWidgetContent: function() {
+          this.showWidgetModal = false;
+          this.copiedWidgetText = false;
         },
         focusSearchBox: function() {
           this.search_disabled = false;
@@ -339,7 +370,7 @@ var app = new Vue({
               var topArticles = response.data;
               for (var i = 0; i < 3; i++)
               {
-                topArticles[i].source = v.attemptToGetUrlHostName(topArticles[i].url);
+                topArticles[i].source = v.stripWwwIfPresent(v.attemptToGetUrlHostName(topArticles[i].url));
                 topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline);
                 v.top_usa_articles.push(topArticles[i]);
               }
@@ -377,7 +408,7 @@ var app = new Vue({
                   if (claimNum > 3) {
                     continue;
                   }
-                  a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  a.source = v.stripWwwIfPresent(v.attemptToGetUrlHostName(a.canonical_url));
                   a['shortened_title'] = v.shortenArticleText(a.title);
                   v.top_claim_articles.push(a);
                 } else {
@@ -386,7 +417,7 @@ var app = new Vue({
                   if (factCheckNum > 3) {
                     continue;
                   }
-                  a.source = v.attemptToGetUrlHostName(a.canonical_url);
+                  a.source = v.stripWwwIfPresent(v.attemptToGetUrlHostName(a.canonical_url));
                   a['shortened_title'] = v.shortenArticleText(a.title)
                   v.top_fact_checking_articles.push(a);
                 }
@@ -474,16 +505,22 @@ var app = new Vue({
             }
             this.loadShareButtons();
         },
+        directSearchDashboard: function(article, dashSource) {
+          // Change query selection settings and populate the search box
+          this.changeAndFocusSearchQuery(article, dashSource);
+          // Submit the form
+          this.submitForm();
+        },
         changeAndFocusSearchQuery: function(article, dashSource) {
           // If news is mainstream (comes from the News API) then we automatically toggle Twitter search, if not, we use Hoaxy
           if (dashSource == 'mainstream') {
-            this.searchBy = 'Twitter'
-            this.twitterSearchSelected = true
-            this.hoaxySearchSelected = false
+            this.searchBy = 'Twitter';
+            this.twitterSearchSelected = true;
+            this.hoaxySearchSelected = false;
           } else {
-            this.searchBy = 'Hoaxy'
-            this.twitterSearchSelected = false
-            this.hoaxySearchSelected = true
+            this.searchBy = 'Hoaxy';
+            this.twitterSearchSelected = false;
+            this.hoaxySearchSelected = true;
           }
           // change article query
           this.query_text = article;
@@ -1483,17 +1520,19 @@ var app = new Vue({
           this.searchedBy = this.searchBy;
         },
         checkIfShouldDisableAnimation: function(edges) {
-          var localAnimationAvailable = false;
-          var pubDate = edges[0]['tweet_created_at'];
-          for (var edgeIx = 0; edgeIx < edges.length; edgeIx++) {
-            var newPubDate = edges[edgeIx]['tweet_created_at'];
-            // There are at least two different dates so we can animate this edge list
-            if (newPubDate != pubDate) {
-              localAnimationAvailable = true;
-              break;
+          if (edges.length > 0) {
+            var localAnimationAvailable = false;
+            var pubDate = edges[0]['tweet_created_at'];
+            for (var edgeIx = 0; edgeIx < edges.length; edgeIx++) {
+              var newPubDate = edges[edgeIx]['tweet_created_at'];
+              // There are at least two different dates so we can animate this edge list
+              if (newPubDate != pubDate) {
+                localAnimationAvailable = true;
+                break;
+              }
             }
+            this.animationAvailable = localAnimationAvailable;
           }
-          this.animationAvailable = localAnimationAvailable;
         },
         visualizeSelectedArticles: function(){
             this.show_graphs = false;
