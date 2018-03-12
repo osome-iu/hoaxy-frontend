@@ -440,10 +440,10 @@
 					</span>
 			</div>
 			<div class="d-block p-2 mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" v-on:click="prepareAndShowWidgetCode()">Embed<br/>Widget</button>
+				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" v-on:click="prepareAndShowWidgetCode()" data-toggle="tooltip" title="Add this visualization to your site">Embed</button>
 			</div>
 			<div class="d-block p-2 mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='createAsCSV()'>Download<br/> as CSV</button>
+				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='createAsCSV()' data-toggle="tooltip" title="Download the searched contents to a CSV">Export</button>
 			</div>
 			<!-- <div class="d-block p-2 mt-5 text-center d-md-flex flex-column justify-content-center align-items-center" v-if="searchBy == 'Hoaxy'">
 				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" id="expandHoaxySearch" @click="scrollToElement('articles_bookmark')">Expand<br />Search</button>
