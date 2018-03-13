@@ -42,11 +42,15 @@
                                 <div class="btn-group btn-group-toggle pr-2">
                                     <button id="searchByTwitter" data-toggle="tooltip" data-delay="0" title="search Twitter content from the past 7 days" type="button"
                                     class="btn btn-primary"
-                                    v-on:click="twitterSearch()"
+									@mouseOver="hoverTooltip"
+									@mouseOut="hideTooltip"
+									v-on:click="twitterSearch()"
                                     v-bind:class="{ 'active': twitterSearchSelected}">Twitter</button>
 
                                     <button id="searchByHoaxy" data-toggle="tooltip" title="search articles from misinformation and fact-checking sources" type="button"
                                     class="btn btn-primary"
+									@mouseOver="hoverTooltip"
+									@mouseOut="hideTooltip"
                                     v-on:click="hoaxySearch()"
                                     v-bind:class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
                                 </div>
@@ -772,6 +776,18 @@
 						<button type="button" class="btn btn-default" @click.stop="toggleNodeModal()">Close</button>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div id="toolTipContainer"
+			class="tooltip bs-tooltip-bottom"
+			:style="{'top':tooltip.top + 'px', 'left':tooltip.left + 'px'}"
+			:class="{'show': tooltip.show}"
+			style="position: absolute;"
+			v-if="tooltip.show"
+		>
+		<div class="ml-4 arrow"></div>
+			<div class="p-2 tooltip-inner">
+				<div v-html="tooltip.title"></div>
 			</div>
 		</div>
 	</div>
