@@ -19,7 +19,7 @@
 
 
 		<!--#include virtual="./includes/header.html" -->
-
+		
 		<!--
 		#######
 		#        ####  #####  #    #
@@ -57,6 +57,8 @@
                             </div>
                             <input id="query" class="form-control" type="text" ref="searchBox" data-toggle="tooltip" title="enter a phrase or link"
 																@focus="focusSearchBox();"
+																@mouseOver="hoverTooltip"
+																@mouseOut="hideTooltip"
 																v-model="query_text"
                                 v-bind:placeholder="searchPlaceholder"
                                 :disabled="input_disabled" />
@@ -114,8 +116,8 @@
                         </tr>
                             <tr v-for="article in top_usa_articles">
                                 <td class="text-left m-2 p-2">
-																				<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(article.headline,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" data-toggle="tooltip" title="populate the search box with this text">{{article.shortened_headline}}</a>
-																				<div class="tight-span m-0 p-0">Search: <button data-toggle="tooltip" title="click to search the title on Twitter" v-on:click="directSearchDashboard(article.headline,'mainstream')" class="btn btn-xs btn-primary px-1 py-0 mr-1">Title</button><button data-toggle="tooltip" title="click to search the link on Twitter" v-on:click="directSearchDashboard(article.url,'mainstream')" class="btn btn-xs btn-primary px-1 py-0 mr-1">Link</button>(<a v-on:click.prevent="changeAndFocusSearchQuery(article.url,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" data-toggle="tooltip" title="populate the search box with the link">{{ article.source }}</a>)</div>
+																				<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(article.headline,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="populate the search box with this text">{{article.shortened_headline}}</a>
+																				<div class="tight-span m-0 p-0">Search: <button @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to search the title on Twitter" v-on:click="directSearchDashboard(article.headline,'mainstream')" class="btn btn-xs btn-primary px-1 py-0 mr-1">Title</button><button @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to search the link on Twitter" v-on:click="directSearchDashboard(article.url,'mainstream')" class="btn btn-xs btn-primary px-1 py-0 mr-1">Link</button>(<a v-on:click.prevent="changeAndFocusSearchQuery(article.url,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="populate the search box with the link">{{ article.source }}</a>)</div>
                                 </td>
                             </tr>
                         <tr v-if="top_usa_articles.length == 0">
@@ -132,9 +134,9 @@
                         </tr>
                         <tr v-for="claim in top_claim_articles">
                             <td class="text-left m-2 p-2">
-															<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(claim.title,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" data-toggle="tooltip" title="populate the search box with this text">{{claim.shortened_title}}</a>
-															<div class="tight-span m-0 p-0">Source: <a v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" data-toggle="tooltip" title="populate the search box with the link">{{ claim.source }}</a></div>
-															<div class="tight-span m-0 p-0">Search: <button data-toggle="tooltip" title="click to search the title using Hoaxy" v-on:click="directSearchDashboard(claim.title,'hoaxy')" class="btn btn-xs btn-primary px-1 py-0 mr-1">Title</button><button data-toggle="tooltip" title="click to search the link using Hoaxy" v-on:click="directSearchDashboard(claim.canonical_url,'hoaxy')" class="btn btn-xs btn-primary px-1 py-0 mr-1">Link</button></div>
+															<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(claim.title,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="populate the search box with this text">{{claim.shortened_title}}</a>
+															<div class="tight-span m-0 p-0">Source: <a v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="populate the search box with the link">{{ claim.source }}</a></div>
+															<div class="tight-span m-0 p-0">Search: <button @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to search the title using Hoaxy" v-on:click="directSearchDashboard(claim.title,'hoaxy')" class="btn btn-xs btn-primary px-1 py-0 mr-1">Title</button><button @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to search the link using Hoaxy" v-on:click="directSearchDashboard(claim.canonical_url,'hoaxy')" class="btn btn-xs btn-primary px-1 py-0 mr-1">Link</button></div>
                             </td>
                         </tr>
                         <tr v-if="top_claim_articles.length == 0">
@@ -151,9 +153,9 @@
                         </tr>
                         <tr v-for="fact in top_fact_checking_articles">
                             <td class="text-left m-2 p-2">
-															<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" data-toggle="tooltip" title="populate the search box with this text">{{fact.shortened_title}}</a>
-															<div class="tight-span m-0 p-0">Source: <a v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" data-toggle="tooltip" title="populate the search box with the link">{{ fact.source }}</a></div>
-															<div class="tight-span m-0 p-0">Search: <a rel="noreferrer noopener" :href="fact.title" target="_blank" data-toggle="tooltip" title="click to search the title using Hoaxy" v-on:click.prevent="directSearchDashboard(fact.title,'hoaxy')">Title</a> <a rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" data-toggle="tooltip" title="click to search the link using Hoaxy" v-on:click.prevent="directSearchDashboard(fact.canonical_url,'hoaxy')">Link</a></div>
+															<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="populate the search box with this text">{{fact.shortened_title}}</a>
+															<div class="tight-span m-0 p-0">Source: <a v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="populate the search box with the link">{{ fact.source }}</a></div>
+															<div class="tight-span m-0 p-0">Search: <a rel="noreferrer noopener" :href="fact.title" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to search the title using Hoaxy" v-on:click.prevent="directSearchDashboard(fact.title,'hoaxy')">Title</a> <a rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to search the link using Hoaxy" v-on:click.prevent="directSearchDashboard(fact.canonical_url,'hoaxy')">Link</a></div>
                             </td>
                         </tr>
                         <tr v-if="top_fact_checking_articles.length == 0">
@@ -782,7 +784,7 @@
 			class="tooltip bs-tooltip-bottom"
 			:style="{'top':tooltip.top + 'px', 'left':tooltip.left + 'px'}"
 			:class="{'show': tooltip.show}"
-			style="position: absolute;"
+			style="position: absolute; font-weight:bold;"
 			v-if="tooltip.show"
 		>
 		<div class="ml-4 arrow"></div>

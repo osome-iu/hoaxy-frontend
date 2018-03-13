@@ -275,7 +275,6 @@ var app = new Vue({
             this.tooltip.top= element_offset.bottom;
             this.tooltip.left= element_offset.left;
             element.title = "";
-            console.debug(element.id);
 
         },
         hideTooltip: function(e){
@@ -285,7 +284,6 @@ var app = new Vue({
             this.tooltip.show= false;
             this.tooltip.top= 0;
             this.tooltip.left= 0;
-            console.debug("out");
         },
         twitterSearch: function() {
           this.twitter_result_type = 'mixed'
