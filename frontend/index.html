@@ -777,13 +777,15 @@
 			</div>
 		</div>
 		<div id="toolTipContainer"
-			class=""
+			class="tooltip bs-tooltip-bottom"
 			:style="{'top':tooltip.top + 'px', 'left':tooltip.left + 'px'}"
+			:class="{'show': tooltip.show}"
 			style="position: absolute;"
 			v-if="tooltip.show"
 		>
-			<div class="p-2 alert-info rounded">
-				<span v-html="tooltip.title"></span>
+		<div class="ml-4 arrow"></div>
+			<div class="p-2 tooltip-inner">
+				<div v-html="tooltip.title"></div>
 			</div>
 		</div>
 	</div>

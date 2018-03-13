@@ -204,7 +204,7 @@ var app = new Vue({
         scrollTop: 0,
         tooltip: {
             title: "",
-            show: true,
+            show: false,
             top: 0,
             left: 0,
         }
