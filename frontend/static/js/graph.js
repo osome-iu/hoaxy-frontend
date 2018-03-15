@@ -59,6 +59,7 @@ function HoaxyGraph(options)
 	var graph = {};
 	var edges = [];
 	var user_list = [];
+	var user_id_list = [];
 	var botscores = {};
 
 	function UpdateEdges(new_edges){
@@ -101,14 +102,17 @@ function HoaxyGraph(options)
 		getting_bot_scores.running = true;
 		// spinStart("getBotCacheScores");
 		user_list.length = 0;
-
+		user_id_list.length = 0;
 		// user_list = [];
 		//build list of users found in the edge list
+		// console.table(edges[0]);
 		for(var i in edges)
 		{
 			var edge = edges[i],
 				from_user_screen_name = edge.from_user_screen_name,
-				to_user_screen_name = edge.to_user_screen_name;
+				to_user_screen_name = edge.to_user_screen_name
+				from_user_id = edge.from_user_id,
+				to_user_id = edge.to_user_id;
 			if(user_list.indexOf(from_user_screen_name) < 0)
 			{
 				user_list.push(from_user_screen_name);
@@ -117,6 +121,14 @@ function HoaxyGraph(options)
 			{
 				user_list.push(to_user_screen_name);
 			}
+			if(user_id_list.indexOf(from_user_id) < 0)
+			{
+				user_id_list.push(from_user_id);
+			}
+			if(user_id_list.indexOf(to_user_id) < 0)
+			{
+				user_id_list.push(to_user_id);
+			}
 		}
 
 		var botcache_request = axios({
@@ -124,7 +136,7 @@ function HoaxyGraph(options)
 			url: configuration.botcache_url,
 			responseType: "json",
 			data: {
-				"screen_name": user_list.join(",")
+				"id": user_id_list.join(",")
 			}
 		});
 		botcache_request
