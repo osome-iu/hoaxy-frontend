@@ -206,6 +206,12 @@ var app = new Vue({
         top_usa_articles: [],
 
         scrollTop: 0,
+        tooltip: {
+            title: "",
+            show: false,
+            top: 0,
+            left: 0,
+        }
 
     },
     computed: {
@@ -287,6 +293,24 @@ var app = new Vue({
             }
         },
 
+        hoverTooltip: function(e){
+            var element = e.target;
+            var element_offset = this.getOffset(element);
+            this.tooltip.title= element.title;
+            this.tooltip.show= true;
+            this.tooltip.top= element_offset.bottom;
+            this.tooltip.left= element_offset.left;
+            element.title = "";
+
+        },
+        hideTooltip: function(e){
+            var target = e.target;
+            target.title = this.tooltip.title;
+            this.tooltip.title= "";
+            this.tooltip.show= false;
+            this.tooltip.top= 0;
+            this.tooltip.left= 0;
+        },
         twitterSearch: function() {
           this.twitter_result_type = 'mixed'
           this.searchBy = "Twitter"
