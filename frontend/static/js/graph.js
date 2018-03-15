@@ -136,7 +136,7 @@ function HoaxyGraph(options)
 			url: configuration.botcache_url,
 			responseType: "json",
 			data: {
-				"id": user_id_list.join(",")
+				"user_id": user_id_list.join(",")
 			}
 		});
 		botcache_request
