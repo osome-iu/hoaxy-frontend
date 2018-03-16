@@ -293,6 +293,7 @@ var app = new Vue({
         },
         tutorialHide: function(){
             this.tutorial.show = false;
+            document.cookie="HideHoaxyTutorial=true;max-age=31536000";
         },
 
 
@@ -1687,9 +1688,11 @@ var app = new Vue({
         this.show_articles = false;
         this.show_graphs = false;
 
-
-        this.tutorial.show = true;
-
+        var cookies = document.cookie.split("; ");
+        if(cookies.indexOf("HideHoaxyTutorial=true") == -1)
+        {
+            this.tutorial.show = true;
+        }
         //create hourglass loading spinner
         var v = this;
         var f = function(){

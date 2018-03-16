@@ -605,11 +605,11 @@
 			  </div>
 
 
-			  <a v-if="tutorial.active_slide > 0" @click="tutorialPreviousSlide()" class="carousel-control-prev" role="button" >
+			  <a v-if="tutorial.active_slide > 1" @click="tutorialPreviousSlide()" class="carousel-control-prev" role="button" >
 			    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
 			    <span class="sr-only">Previous</span>
 			  </a>
-			  <a v-if="tutorial.active_slide < 6" @click="tutorialNextSlide()" class="carousel-control-next" role="button" >
+			  <a v-if="tutorial.active_slide < 5" @click="tutorialNextSlide()" class="carousel-control-next" role="button" >
 			    <span class="carousel-control-next-icon" aria-hidden="true"></span>
 			    <span class="sr-only">Next</span>
 			  </a>
