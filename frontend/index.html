@@ -558,7 +558,6 @@
 <transition name="fade">
 	<div id="tutorial" class="d-flex align-items-center justify-content-center" v-if="tutorial.show">
 		<div id="tutorial-content" class="d-flex text-center align-items-center justify-content-center">
-
 			<div id="tutorial-carousel" class="carousel slide h-100 pt-5">
 			  <ol class="carousel-indicators">
 			    <li
@@ -567,43 +566,18 @@
 					:class="{'active':tutorial.active_slide == number}"
 				></li>
 			  </ol>
-			  <div class="text-center small btn-sm btn btn-link close-tutorial-button" @click="tutorialHide">
+			  <div class="text-center small btn-sm btn btn-link close-tutorial-button" @click="tutorialHideWithCookie">
 				  Click to close tutorial. We use a cookie so that this won’t pop up again the next time you use Hoaxy.
 			  </div>
 			  <div class="carousel-inner d-flex justify-content-center rounded">
-				  <!-- <div class="carousel-item first-slide"
-	  					:class="{'active':tutorial.active_slide == 0}"
-						>
-						<div class="first-slide-content ">
-							<div class="rounded p-5 mt-5">
-								<h1 class="">Welcome to Hoaxy</h1>
-								<p>This short tutorial will introduce you to Hoaxy</p>
-								<button class="btn btn-primary mt-5">Skip this turorial</button>
-							</div>
-							<img class="d-block rounded" src="./static/tutorial_slides/Slide1.PNG" alt="">
-						</div>
-					</div> -->
+
 				<div class="carousel-item"
 					v-for="number, index in [1, 2, 3, 4, 5]"
 					:class="{'active':tutorial.active_slide == number}"
 				>
 			      <img class="d-block rounded" :src="'./static/tutorial_slides/Slide'+(number)+'.PNG'" alt="Tutorial Slide">
 			    </div>
-
-				<!-- <div class="carousel-item last-slide"
-					:class="{'active':tutorial.active_slide == 6}"
-				>
-				<div class="last-slide-content rounded">
-					<div class="rounded p-5 mt-5">
-						<p>This short tutorial will introduce you to Hoaxy</p>
-						<button class="btn btn-primary mt-5">Continue to Hoaxy </button>
-					</div>
-
-					<img class="d-block rounded" src="./static/tutorial_slides/Slide1.PNG" alt="">
-				</div>
-			    </div> -->
 			  </div>
-
 
 			  <a v-if="tutorial.active_slide > 1" @click="tutorialPreviousSlide()" class="carousel-control-prev" role="button" >
 			    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -612,6 +586,10 @@
 			  <a v-if="tutorial.active_slide < 5" @click="tutorialNextSlide()" class="carousel-control-next" role="button" >
 			    <span class="carousel-control-next-icon" aria-hidden="true"></span>
 			    <span class="sr-only">Next</span>
+			  </a>
+			  <a v-if="tutorial.active_slide == 5" @click="tutorialHide()" class="carousel-control-next" role="button" >
+			    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+			    <span class="sr-only">Finish</span>
 			  </a>
 			</div>
 		</div>
