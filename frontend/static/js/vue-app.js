@@ -207,6 +207,12 @@ var app = new Vue({
             show: false,
             top: 0,
             left: 0,
+        },
+
+        tutorial: {
+            active_slide: 1,
+            show: false,
+            // hiddenByCookie: false
         }
 
     },
@@ -267,6 +273,29 @@ var app = new Vue({
     // #     # ######   #   #    #  ####  #####   ####
 
     methods: {
+
+        tutorialNextSlide: function(){
+            if(this.tutorial.active_slide < 5)
+            {
+                this.tutorial.active_slide += 1;
+            }
+        },
+        tutorialPreviousSlide: function(){
+            if(this.tutorial.active_slide > 1)
+            {
+                this.tutorial.active_slide -= 1;
+            }
+        },
+        tutorialGotoSlide: function(slide_number)
+        {
+            // console.debug(slide_number);
+            this.tutorial.active_slide = slide_number;
+        },
+        tutorialHide: function(){
+            this.tutorial.show = false;
+        },
+
+
         hoverTooltip: function(e){
             var element = e.target;
             var element_offset = this.getOffset(element);
@@ -1657,6 +1686,9 @@ var app = new Vue({
         this.mounted = true;
         this.show_articles = false;
         this.show_graphs = false;
+
+
+        this.tutorial.show = true;
 
         //create hourglass loading spinner
         var v = this;
