@@ -317,6 +317,10 @@ var app = new Vue({
         },
         tutorialHide: function(){
             this.tutorial.show = false;
+            // document.cookie="HideHoaxyTutorial=true;max-age=31536000";
+        },
+        tutorialHideWithCookie: function(){
+            this.tutorial.show = false;
             document.cookie="HideHoaxyTutorial=true;max-age=31536000";
         },
 
