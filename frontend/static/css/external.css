@@ -244,6 +244,7 @@ li
     text-align: center;
     font-weight: bold;
     font-size: 1.125rem;
+    white-space: nowrap;
 
 
     /*font-size: 6rem;*/
