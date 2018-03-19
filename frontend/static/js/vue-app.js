@@ -1845,6 +1845,8 @@ var app = new Vue({
         // this.displayError("Test Error");
 
         this.spinStop("initialLoad");
+        // this.spinStart("testing");
+        // this.spinner_notices.graph = "TESTING TEXT";
         console.debug("Vue Mounted.");
 
         //if we prepopulated the form with query string data, submit the form right away

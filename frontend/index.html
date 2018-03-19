@@ -18,8 +18,8 @@
 	</script> -->
 	<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
-			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
-			<div :style="'display: block'">
+			<span class="fa outline"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
+			<div class="outline" :style="'display: block'">
 				<div>{{spinner_notices.articles}}</div>
 				<div>{{spinner_notices.timeline}}</div>
 				<div>{{spinner_notices.graph}}</div>

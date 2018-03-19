@@ -242,6 +242,9 @@ li
     margin-top: -75px;
     vertical-align: middle;
     text-align: center;
+    font-weight: bold;
+    font-size: 1.125rem;
+
 
     /*font-size: 6rem;*/
     /*height: 6rem;
@@ -252,6 +255,20 @@ li
     /*line-height: 10rem;
     margin-top: -3rem;
     margin-left: -3rem;*/
+}
+.outline
+{
+    text-shadow:
+        1px 1px 1px rgba(255, 255, 255, 1),
+        1px -1px 1px rgba(255, 255, 255, 1),
+        -1px -1px 1px rgba(255, 255, 255, 1),
+        -1px 1px 1px rgba(255, 255, 255, 1),
+        0px 1px 1px rgba(255, 255, 255, 1),
+        0px -1px 1px rgba(255, 255, 255, 1),
+        -1px 0px 1px rgba(255, 255, 255, 1),
+        -1px 0px 1px rgba(255, 255, 255, 1)
+    ;
+
 }
 #spinner > div
 {
