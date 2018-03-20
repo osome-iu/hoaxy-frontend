@@ -571,7 +571,7 @@
 			<div id="widgetModal"
 		:class="{'modal-show': showWidgetModal}"
 		@click.stop="resetWidgetContent();"
-		class="modal " tabindex="-1"
+		class="modal" tabindex="-1"
 		role="dialog"
 		aria-labelledby="infoModalLabel"
 		style="opacity: 1"
@@ -579,16 +579,30 @@
 					<div class="modal-dialog" role="document">
 							<div @click.stop="" class="alert m-5 alert-info">
 									<div class="modal-body" id="infoModalBody" >
-										<div class="d-flex flex-column align-items-center">
-											<span class="pl-2">In order to embed the Hoaxy widget, please copy the below code to your site:</span>
-											<textarea rows="5" ref="widgetCodeTextArea" id="widgetCodeTextArea">{{ embeddedWidgetCode }}</textarea>
+										<div class="d-flex flex-column">
+											<span class="pl-1">Add the below code to your site</span>
+											<textarea class="w-100" rows="5" ref="widgetCodeTextArea" id="widgetCodeTextArea">{{ embeddedWidgetCode }}</textarea>
 										</div>
+										<div class="align-items-center text-center" v-show="copiedWidgetText">Copied text to clipboard</div>
+										<div class="align-items-center text-center mt-1">
+												<button type="button" class="btn btn-secondary" @click="copyWidgetCodeToClipboard">Copy to Clipboard</button>
+												<button type="button" class="btn btn-secondary" @click="resetWidgetContent();">Close</button>
+										</div>
+										<div class="mt-2">
+											<div class="pl-1">
+												What you will see
+											</div>
+												<!-- <div style="color:black;background-color:white;border:solid;border-width:thin;border-color:gray;border-radius:10px;width:302px;height:150px;"><div style="float:left;width:150px;height:150px;display:inline-block;margin-right:0px;"><div style="text-align:center;vertical-align:middle;color:blue;font-size:25px;font-weight:bold;height:70px;border-bottom:1px solid gray;padding-top:15px;padding-bottom:15px">HOAXY</div><div style="height:80px;padding:5px;font-size:10px">Use Hoaxy to see how this spreads online: <a href="" target="_blank">{{ this.shortenArticleText(this.searched_query_text) }}</div></div><div style="margin-left:0px;float:right;width:150px;height:150px;display:inline-block;border-left:1px solid gray;"><img style="width:150px;height:150px;padding-top:5px;padding-bottom:5px;padding-right:5px;" v-bind:src="this.widgetScreenshotDataUrl"></img></div></div>
+ -->
+
+													<!-- return "<div style=\"box-sizing:border-box;color:black;background-color:white;border:solid;border-width:thin;border-color:gray;border-radius:10px;width:300px;height:150px;\"><div style=\"box-sizing:inherit;float:left;width:150px;height:150px;display:inline-block;margin-right:0px;\"><div style=\"box-sizing:inherit;text-align:center;vertical-align:middle;color:blue;font-size:25px;font-weight:bold;height:70px;border-bottom:1px solid gray;padding-top:15px;padding-bottom:15px\">HOAXY</div><div style=\"box-sizing:inherit;height:80px;padding:5px;font-size:10px\">Use Hoaxy to see how this spreads online: <a href=\"" + location.href + "\" target=\"_blank\">" + this.shortenArticleText(this.searched_query_text) + "</div></div><div style=\"margin-left:0px;float:left;width:145px;height:150px;display:inline-block;border-left:1px solid gray;\"><img style=\"box-sizing:inherit;width:140px;height:140px;padding-top:5px;padding-bottom:5px;padding-right:5px;\" src=\"" + this.widgetScreenshotDataUrl + "\"></img></div></div>" -->
+
+													<div style="box-sizing:border-box;color:black;background-color:white;border:solid;border-width:thin;border-color:gray;border-radius:10px;width:300px;height:150px;"><div style="float:left;width:150px;height:150px;display:inline-block;margin-right:0px;"><div style="box-sizing:inherit;text-align:center;vertical-align:middle;color:blue;font-size:25px;font-weight:bold;height:70px;border-bottom:1px solid gray;padding-top:15px;padding-bottom:15px">HOAXY</div><div style="word-break:break-all;box-sizing:inherit;height:80px;padding:5px;font-size:10px">Use Hoaxy to see how this spreads online: <a href="" target="_blank">{{ this.shortenArticleText(this.searched_query_text) }}</div></div><div style="margin-left:0px;float:left;width:145px;height:150px;display:inline-block;border-left:1px solid gray;"><img style="box-sizing:inherit;width:140px;height:140px;padding-top:5px;padding-bottom:5px;padding-right:5px;" v-bind:src="this.widgetScreenshotDataUrl"></img></div></div>
+
 									</div>
-									<div class="align-items-center text-center" v-show="copiedWidgetText">Copied text to clipboard.</div>
-									<div class="align-items-center text-center">
-											<button type="button" class="btn btn-secondary" @click="copyWidgetCodeToClipboard">Copy to Clipboard</button>
-											<button type="button" class="btn btn-secondary" @click="resetWidgetContent();">Close</button>
-									</div>	
+									</div>
+
+
 							</div>
 					</div>
 			</div>
