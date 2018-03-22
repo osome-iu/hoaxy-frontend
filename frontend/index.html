@@ -116,7 +116,7 @@
                         </tr>
                             <tr v-for="article in top_usa_articles">
                                 <td class="text-left m-2 p-2">
-																				<a class="m-0 p-0 text-secondary" v-on:click.prevent="changeAndFocusSearchQuery(article.headline,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to fill the search box with this article title, then click search">{{article.shortened_headline}}</a>
+																				<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(article.headline,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to fill the search box with this article title, then click search">{{article.shortened_headline}}</a>
 																				<br>
 																				<span class="tight-span m-0 p-0 small"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(article.url,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ article.source }}</a></span>
 																				<!-- <div class="tight-span m-0 p-0"><a v-on:click.prevent="changeAndFocusSearchQuery(article.url,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ article.source }}</a></div> -->
@@ -157,7 +157,7 @@
                             <td class="text-left m-2 p-2">
 															<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to fill the search box with this article title, then click search">{{fact.shortened_title}}</a>
 															<br>
-															<span class="tight-span m-0 p-0 small"><a class="text-info" v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ fact.source }}</a></span>
+															<span class="tight-span m-0 p-0 small"><a v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ fact.source }}</a></span>
 															<!-- <div class="tight-span m-0 p-0"><a v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ fact.source }}</a></div> -->
                             </td>
                         </tr>
