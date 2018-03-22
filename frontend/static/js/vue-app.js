@@ -207,6 +207,12 @@ var app = new Vue({
             show: false,
             top: 0,
             left: 0,
+        },
+
+        tutorial: {
+            active_slide: 1,
+            show: false,
+            // hiddenByCookie: false
         }
 
     },
@@ -267,6 +273,34 @@ var app = new Vue({
     // #     # ######   #   #    #  ####  #####   ####
 
     methods: {
+
+        tutorialNextSlide: function(){
+            if(this.tutorial.active_slide < 5)
+            {
+                this.tutorial.active_slide += 1;
+            }
+        },
+        tutorialPreviousSlide: function(){
+            if(this.tutorial.active_slide > 1)
+            {
+                this.tutorial.active_slide -= 1;
+            }
+        },
+        tutorialGotoSlide: function(slide_number)
+        {
+            // console.debug(slide_number);
+            this.tutorial.active_slide = slide_number;
+        },
+        tutorialHide: function(){
+            this.tutorial.show = false;
+            // document.cookie="HideHoaxyTutorial=true;max-age=31536000";
+        },
+        tutorialHideWithCookie: function(){
+            this.tutorial.show = false;
+            document.cookie="HideHoaxyTutorial=true;max-age=31536000";
+        },
+
+
         hoverTooltip: function(e){
             var element = e.target;
             var element_offset = this.getOffset(element);
@@ -1658,6 +1692,11 @@ var app = new Vue({
         this.show_articles = false;
         this.show_graphs = false;
 
+        var cookies = document.cookie.split("; ");
+        if(cookies.indexOf("HideHoaxyTutorial=true") == -1)
+        {
+            this.tutorial.show = true;
+        }
         //create hourglass loading spinner
         var v = this;
         var f = function(){

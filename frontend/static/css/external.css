@@ -1,4 +1,69 @@
 
+#tutorial
+{
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10000;
+    background: rgba( 0,0,0,.7);
+}
+
+#tutorial-content
+{
+    height: 60%;
+    width: 100%;
+    background: rgba( 0,0,0,.5);
+    /* background: gray; */
+}
+#tutorial-content .carousel-item img
+{
+    max-width: 90%;
+    margin: 0 auto;
+}
+#tutorial-content .carousel-item
+{
+    text-align: center;
+}
+.carousel-control-prev,
+.carousel-control-next
+{
+    width: 5%;
+}
+.first-slide img, .last-slide img
+{
+    visibility: hidden;
+}
+.first-slide-content, .last-slide-content
+{
+    position: relative;
+}
+.first-slide-content > div, .last-slide-content > div
+{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0; right: 0;
+    margin: 0 auto;
+    width: 90%;
+    background: white;
+    /* background: green; */
+}
+.close-tutorial-button
+{
+    margin-top: -3rem;
+    margin-bottom: 0rem;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s, transform .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+
 /*article list transition*/
 .slide_in-enter-active, .slide_in-leave-active {
   transition: transform .5s;
@@ -10,6 +75,7 @@
   transform: scaleY(0);
   max-height: 0;
 }
+
 
 #article_list_container
 {
