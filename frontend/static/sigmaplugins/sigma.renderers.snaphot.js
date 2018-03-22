@@ -99,7 +99,7 @@
       doneContexts.push(context);
     });
 
-    var dataUrl = merged.toDataURL(TYPES[params.format || 'png'],0.3);
+    var dataUrl = merged.toDataURL(TYPES[params.format || 'png'],0.2);
 
     if (params.download)
       download(
