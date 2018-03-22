@@ -400,7 +400,10 @@ li
     margin-top: -80px;
 }
 
-
+/* Widget Dialog Box should be a little wider than the conventional dialog box */
+#modalDialogWidget {
+  max-width: 800px;
+}
 
 .modal-show
 {
@@ -411,6 +414,7 @@ li
     opacity: 0;
     transition: opacity .1s linear;
 }
+
 .modal-dialog
 {
     position: fixed;
