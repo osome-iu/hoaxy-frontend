@@ -252,7 +252,7 @@ var app = new Vue({
             //     ) : (0);
         },
         embeddedWidgetCode: function () {
-          return "<div style=\"box-sizing:border-box;color:black;background-color:white;border:solid;border-width:thin;border-color:gray;border-radius:10px;width:625px;height:250px;\"><div style=\"float:left;width:250px;height:250px;display:inline-block;margin-right:0px;\"><div style=\"box-sizing:inherit;text-align:center;vertical-align:middle;color:blue;font-size:35px;font-weight:bold;height:70px;border-bottom:1px solid gray;padding-top:30px;padding-bottom:30px\">HOAXY</div><div style=\"word-break:break-word;box-sizing:inherit;padding:5px;font-size:16px\">Use Hoaxy to see how this spreads online: <a href=\"" + location.href + "\" target=\"_blank\">" + this.shortenArticleText(this.searched_query_text) + "</div></div><div style=\"margin-left:0px;float:left;width:370px;height:250px;display:inline-block;border-left:1px solid gray;\"><img style=\"box-sizing:inherit;width:370px;height:240px;padding-top:5px;padding-right:5px;\" src=\"" + this.widgetScreenshotDataUrl + "\"></img></div></div>"
+          return "<div style=\"box-sizing:border-box;color:black;background-color:white;border:solid;border-width:thin;border-color:gray;border-radius:10px;width:625px;height:250px;\"><div style=\"float:left;width:250px;height:250px;display:inline-block;margin-right:0px;\"><div style=\"box-sizing:inherit;text-align:center;vertical-align:middle;color:blue;font-size:35px;font-weight:bold;height:60px;padding-top:30px;padding-bottom:30px\">HOAXY</div><div style=\"overflow:hidden;height:110px;word-break:break-word;box-sizing:inherit;padding:5px;font-size:16px\">Use Hoaxy to see how this spreads online: <a href=\"" + location.href + "\" target=\"_blank\">" + this.shortenArticleText(this.searched_query_text, 70) + "</a></div></div><div style=\"margin-left:0px;float:left;width:370px;height:250px;display:inline-block;border-left:1px solid;border-color:#DCDCDC;\"><img style=\"box-sizing:inherit;width:370px;height:240px;padding-top:5px;padding-right:5px;\" src=\"" + this.widgetScreenshotDataUrl + "\"></img></div></div>"
         },
         searchByDependencyTitle: function () {
           return (this.searchBy == "Hoaxy") ? "enter any phrase": "enter any phrase or link";
@@ -383,9 +383,9 @@ var app = new Vue({
             return "fact checking articles"
           return "";
         },
-        shortenArticleText: function(text) {
-          if (text.length > 47) {
-            shortened_text = text.substr(0,46) + "..."
+        shortenArticleText: function(text, text_length) {
+          if (text.length > parseInt(text_length)) {
+            shortened_text = text.substr(0, parseInt(text_length)-1) + "..."
             return(shortened_text)
           } else {
             return(text)
@@ -405,8 +405,8 @@ var app = new Vue({
               var topArticles = response.data;
               for (var i = 0; i < 3; i++)
               {
-                topArticles[i].source = v.shortenArticleText(topArticles[i].url);
-                topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline);
+                topArticles[i].source = v.shortenArticleText(topArticles[i].url, 47);
+                topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline, 47);
                 v.top_usa_articles.push(topArticles[i]);
               }
               v.spinStop();
@@ -443,8 +443,8 @@ var app = new Vue({
                   if (claimNum > 3) {
                     continue;
                   }
-                  a.source = v.shortenArticleText(a.canonical_url);
-                  a['shortened_title'] = v.shortenArticleText(a.title);
+                  a.source = v.shortenArticleText(a.canonical_url, 47);
+                  a['shortened_title'] = v.shortenArticleText(a.title, 47);
                   v.top_claim_articles.push(a);
                 } else {
                   factCheckNum++;
@@ -452,8 +452,8 @@ var app = new Vue({
                   if (factCheckNum > 3) {
                     continue;
                   }
-                  a.source = v.shortenArticleText(a.canonical_url);
-                  a['shortened_title'] = v.shortenArticleText(a.title)
+                  a.source = v.shortenArticleText(a.canonical_url, 47);
+                  a['shortened_title'] = v.shortenArticleText(a.title, 47)
                   v.top_fact_checking_articles.push(a);
                 }
               }
