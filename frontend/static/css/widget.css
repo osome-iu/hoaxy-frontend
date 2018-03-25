@@ -1,0 +1,91 @@
+.hoaxy-widget
+{
+  box-sizing:border-box !important;
+  color:black !important;
+  background-color:white !important;
+  border:solid !important;
+  border-width:thin !important;
+  border-color:gray !important;
+  border-radius:10px !important;
+  width:625px !important;
+  height:250px !important;
+
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif !important;
+  color: #212529 !important;
+  background:#FAFAFA !important;
+}
+
+.hoaxy-widget-leftdiv
+{
+  float:left !important;
+  width:250px !important;
+  height:250px !important;
+  display:inline-block !important;
+  margin-right:0px !important;
+
+  font-family:inherit !important;
+  color:inherit !important;
+}
+
+.hoaxy-widget-leftdiv-toplogo
+{
+  box-sizing:border-box !important;
+  text-align:center !important;
+  vertical-align:middle !important;
+  color:blue !important;
+  font-size:35px !important;
+  font-weight:bold !important;
+  height:90px !important;
+  padding-top:20px !important;
+  padding-bottom:20px !important;
+  padding-left:5px !important;
+  padding-right:5px !important;
+
+  font-family:inherit !important;
+  color:inherit !important;
+}
+
+.hoaxy-widget-leftdiv-toplogo img
+{
+  height: 60px !important;
+  width: 200px !important;
+}
+
+.hoaxy-widget-leftdiv-bottominfo
+{
+  overflow:hidden !important;
+  word-break:break-word !important;
+  box-sizing:border-box !important;
+  padding:5px !important;
+  font-size:16px !important;
+  height: 150px !important;
+
+  font-family:inherit !important;
+  color:inherit !important;
+}
+
+.hoaxy-widget-rightdiv
+{
+  margin-left:0px !important;
+  float:left !important;
+  width:370px !important;
+  height:250px !important;
+  display:inline-block !important;
+  border-left:1px solid !important;
+  border-color:#D3D3D3 !important;
+
+  font-family:inherit !important;
+  color:inherit !important;
+}
+
+.hoaxy-widget-rightdiv-imgvis
+{
+  box-sizing:border-box !important;
+  width:370px !important;
+  height:240px !important;
+  padding-top:5px !important;
+  padding-right:5px !important;
+
+  font-family:inherit !important;
+  color:inherit !important;
+}
