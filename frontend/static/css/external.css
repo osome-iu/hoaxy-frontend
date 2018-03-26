@@ -9,10 +9,13 @@
     z-index: 10000;
     background: rgba( 0,0,0,.7);
 }
-
+#tutorial-carousel
+{
+    width: 100%;
+}
 #tutorial-content
 {
-    height: 60%;
+    height: 70%;
     width: 100%;
     background: rgba( 0,0,0,.5);
     /* background: gray; */
@@ -21,10 +24,35 @@
 {
     max-width: 90%;
     margin: 0 auto;
+    max-height: 100%;
+}
+.carousel-inner
+{
+    position: absolute;
+    /* padding-top: 4em;
+    padding-bottom: 4em; */
+    top: 4em;
+    left: 0;
+    right: 0;
+    bottom: 4em;
+}
+.carousel-item > div
+{
+    height: 100%;
 }
 #tutorial-content .carousel-item
 {
     text-align: center;
+    height: 100%;
+    position: relative;
+}
+#tutorial-content .carousel-item
+{
+    display: none;
+}
+#tutorial-content .carousel-item.active
+{
+    display: block;
 }
 .carousel-control-prev,
 .carousel-control-next
