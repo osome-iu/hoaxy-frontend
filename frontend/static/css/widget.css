@@ -12,6 +12,7 @@
 
   font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif !important;
   color: #212529 !important;
+  line-height: 1.5 !important;
   background:#FAFAFA !important;
 }
 
@@ -64,6 +65,18 @@
   color:inherit !important;
 }
 
+.hoaxy-widget-leftdiv-bottominfo a
+{
+  color: #337ab7 !important;
+  text-decoration: none !important;
+}
+
+.hoaxy-widget-leftdiv-bottominfo a:hover
+{
+  color: #23527c !important;
+  text-decoration: underline !important;
+}
+
 .hoaxy-widget-rightdiv
 {
   margin-left:0px !important;
@@ -89,3 +102,4 @@
   font-family:inherit !important;
   color:inherit !important;
 }
+
