@@ -1721,11 +1721,7 @@ var app = new Vue({
         this.show_articles = false;
         this.show_graphs = false;
 
-        var cookies = document.cookie.split("; ");
-        if(cookies.indexOf("HideHoaxyTutorial=true") == -1)
-        {
-            this.tutorial.show = true;
-        }
+
         //create hourglass loading spinner
         var v = this;
         var f = function(){
@@ -1851,7 +1847,16 @@ var app = new Vue({
         // this.spinStart("testing");
         // this.spinner_notices.graph = "TESTING TEXT";
         console.debug("Vue Mounted.");
-
+        
+        console.debug(this.query_text);
+        if(!this.query_text)
+        {
+            var cookies = document.cookie.split("; ");
+            if(cookies.indexOf("HideHoaxyTutorial=true") == -1)
+            {
+                this.tutorial.show = true;
+            }
+        }
         //if we prepopulated the form with query string data, submit the form right away
         if(this.query_text)
         {

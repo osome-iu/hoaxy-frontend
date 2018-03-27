@@ -612,13 +612,15 @@
 			  <div class="text-center small btn-sm btn btn-link close-tutorial-button" @click="tutorialHideWithCookie">
 				  Click to close tutorial. We use a cookie so that this won’t pop up again the next time you use Hoaxy.
 			  </div>
-			  <div class="carousel-inner d-flex justify-content-center rounded">
+			  <div class="carousel-inner  rounded">
 
-				<div class="carousel-item"
+				<div class="carousel-item text-center"
 					v-for="number, index in [1, 2, 3, 4, 5]"
 					:class="{'active':tutorial.active_slide == number}"
 				>
-			      <img class="d-block rounded" :src="'./static/tutorial_slides/Slide'+(number)+'.PNG'" alt="Tutorial Slide">
+				<div class="d-flex">
+			      <img class="d-block rounded align-self-center" :src="'./static/tutorial_slides/Slide'+(number)+'.PNG'" alt="Tutorial Slide">
+			  </div>
 			    </div>
 			  </div>
 
