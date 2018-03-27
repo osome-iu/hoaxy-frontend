@@ -4,7 +4,7 @@
 		<div class="navbar-brand hoaxy-logo"><a class="" href="./"><i class="fa fa-retweet"></i> <span class="reg">HOAXY</span></a></div>
 		<div class="navbar-nav float-left float-sm-right" id="">
 			<span id="source_dropdown" class="nav-item">
-				<a class="nav-link" href="#" target="_blank">Help</a>
+				<a class="nav-link" href="#" @click.prevent="">Help</a>
 				<ul class="pb-0 list-unstyled" >
 					<li class=""><a href="./faq.html">FAQ</a></li>
 					<li v-if="tutorial" class=""><a href="./" @click.prevent.stop="tutorial.show = true; tutorial.active_slide = 1;" >Tutorial</a></li>

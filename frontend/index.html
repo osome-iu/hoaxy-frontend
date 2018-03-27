@@ -599,7 +599,11 @@
     </section>
 
 <transition name="fade">
-	<div id="tutorial" class="d-flex align-items-center justify-content-center" v-if="tutorial.show">
+	<div id="tutorial" class="d-flex align-items-center justify-content-center"
+		style="display: none; position: relative;"
+		:style="tutorial.show?'display: block; position: fixed;':''"
+		v-if="tutorial.show"
+		>
 		<div id="tutorial-content" class="d-flex text-center align-items-center justify-content-center">
 			<div id="tutorial-carousel" class="carousel slide h-100 pt-5">
 			  <ol class="carousel-indicators">
