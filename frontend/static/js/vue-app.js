@@ -1847,7 +1847,7 @@ var app = new Vue({
         // this.spinStart("testing");
         // this.spinner_notices.graph = "TESTING TEXT";
         console.debug("Vue Mounted.");
-        
+
         console.debug(this.query_text);
         if(!this.query_text)
         {
