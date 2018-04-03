@@ -34,28 +34,26 @@ function HoaxyGraph(options)
 		},
 		recompute: function(){
 			this.found = this.old = this.unavailable = 0;
-			console.log('botscore lengths:');
-			console.log(botscores);
-			console.log('user list:');
-			console.log(score_stats.user_list);
 			for(var i in botscores)
 			{
-				var score = botscores[i];
-				if(score.score === -1)
-				{
-					this.unavailable += 1;
-				}
-				else if(score.old === true)
-				{
-					this.old += 1;
-					this.found += 1;
-				}
-				else
-				{
-					this.found += 1;
+				if (this.user_list.indexOf(i) > -1) {
+					var score = botscores[i];
+					if(score.score === -1)
+					{
+						this.unavailable += 1;
+					}
+					else if(score.old === true)
+					{
+						this.old += 1;
+						this.found += 1;
+					}
+					else
+					{
+						this.found += 1;
+					}
 				}
 			}
-			this.total = this.total;
+			this.total = this.user_list.length;
 		}
 
 	};
@@ -67,7 +65,6 @@ function HoaxyGraph(options)
 	var edges = [];
 	var user_id_list = [];
 	var botscores = {};
-	var filteredBotscores = {};
 
 	function UpdateEdges(new_edges){
 		edges = new_edges;
@@ -197,20 +194,15 @@ function HoaxyGraph(options)
 
 	var counter = 0;
 
-    function getNewScores(){
+  function getNewScores(){
 		getting_bot_scores.running = true;
 		counter = 20;
 		console.debug(score_stats.current_index);
 		getBotScoreTimer(score_stats.current_index);
-    }
+  }
 
 	//space out the requests so that we don't hit the rate limit so quickly
 	function getBotScoreTimer(index){
-		console.log('getting new botscores:');
-		console.log(score_stats.user_list.length);
-		console.log(score_stats.user_list);
-		console.log('index');
-		console.log(index);
 		// if(index > 20)
 		// {
 		// 	console.debug(botscores);
@@ -218,7 +210,7 @@ function HoaxyGraph(options)
 		// }
 		if(counter <= 0)
 		{
-			current_index = index;
+			score_stats.current_index = index;
 			console.debug("got some botscores:", botscores);
 			getting_bot_scores.running = false;
 			return false;
@@ -246,7 +238,7 @@ function HoaxyGraph(options)
 
 		updateUserBotScore(user);
 		// console.debug(user);
-		index ++;
+		index++;
 		return setTimeout(function(){
 			// console.debug("get Another one");
 			getBotScoreTimer(index);
@@ -760,7 +752,6 @@ function HoaxyGraph(options)
 			already_computed_user_list = [];
 			user_list_to_compute = [];
 			score_stats.user_list = [];
-			console.log('filtering here');
 	        for (var i in nodes)// i is index
 	        {
                 var percent = Math.sqrt(nodes[i].size) / Math.sqrt(max_size);
@@ -775,20 +766,17 @@ function HoaxyGraph(options)
 				{
 					if(score.score === -1)
 					{
-						console.log('unavailable');
 						score_stats.unavailable += 1;
 					}
 					else if(score.old === true)
 					{
 						user_list_to_compute.push(nodes[i].screenName);
-						console.log('old and found');
 						score_stats.old += 1;
 						score_stats.found += 1;
 					}
 					else
 					{
 						already_computed_user_list.push(nodes[i].screenName);
-						console.log('found');
 						score_stats.found += 1;
 					}
 					score = score.score;
@@ -831,8 +819,6 @@ function HoaxyGraph(options)
 				score_stats.user_list.push(user_list_to_compute[i])
 			}
 
-			console.log('computed user list');
-			console.log(score_stats.user_list);
 			node_count = g.nodes.length;
 
 			score_stats.total = node_count;
