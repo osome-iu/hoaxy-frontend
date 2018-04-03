@@ -22,6 +22,8 @@ function HoaxyGraph(options)
 	};
 
 	var score_stats = {
+		user_list: [],
+		current_index: 0,
 		total: 0,
 		found: 0,
 		old: 0,
@@ -32,6 +34,10 @@ function HoaxyGraph(options)
 		},
 		recompute: function(){
 			this.found = this.old = this.unavailable = 0;
+			console.log('botscore lengths:');
+			console.log(botscores);
+			console.log('user list:');
+			console.log(score_stats.user_list);
 			for(var i in botscores)
 			{
 				var score = botscores[i];
@@ -51,6 +57,7 @@ function HoaxyGraph(options)
 			}
 			this.total = this.total;
 		}
+
 	};
 
 
@@ -58,9 +65,9 @@ function HoaxyGraph(options)
 	// getNodeColor(.25);
 	var graph = {};
 	var edges = [];
-	var user_list = [];
 	var user_id_list = [];
 	var botscores = {};
+	var filteredBotscores = {};
 
 	function UpdateEdges(new_edges){
 		edges = new_edges;
@@ -101,7 +108,7 @@ function HoaxyGraph(options)
     {
 		getting_bot_scores.running = true;
 		// spinStart("getBotCacheScores");
-		user_list.length = 0;
+		score_stats.user_list.length = 0;
 		user_id_list.length = 0;
 		// user_list = [];
 		//build list of users found in the edge list
@@ -113,13 +120,13 @@ function HoaxyGraph(options)
 				to_user_screen_name = edge.to_user_screen_name
 				from_user_id = edge.from_user_id,
 				to_user_id = edge.to_user_id;
-			if(user_list.indexOf(from_user_screen_name) < 0)
+			if(score_stats.user_list.indexOf(from_user_screen_name) < 0)
 			{
-				user_list.push(from_user_screen_name);
+				score_stats.user_list.push(from_user_screen_name);
 			}
-			if(user_list.indexOf(to_user_screen_name) < 0)
+			if(score_stats.user_list.indexOf(to_user_screen_name) < 0)
 			{
-				user_list.push(to_user_screen_name);
+				score_stats.user_list.push(to_user_screen_name);
 			}
 			if(user_id_list.indexOf(from_user_id) < 0)
 			{
@@ -189,16 +196,21 @@ function HoaxyGraph(options)
 	}
 
 	var counter = 0;
-	var current_index = 0;
+
     function getNewScores(){
 		getting_bot_scores.running = true;
 		counter = 20;
-		console.debug(current_index);
-		getBotScoreTimer(current_index);
+		console.debug(score_stats.current_index);
+		getBotScoreTimer(score_stats.current_index);
     }
 
 	//space out the requests so that we don't hit the rate limit so quickly
 	function getBotScoreTimer(index){
+		console.log('getting new botscores:');
+		console.log(score_stats.user_list.length);
+		console.log(score_stats.user_list);
+		console.log('index');
+		console.log(index);
 		// if(index > 20)
 		// {
 		// 	console.debug(botscores);
@@ -216,7 +228,7 @@ function HoaxyGraph(options)
 			counter -= 1;
 		}
 
-		if(index >= user_list.length)
+		if(index >= score_stats.user_list.length)
 		{
 			console.debug(botscores);
 			console.debug("end of list");
@@ -224,7 +236,7 @@ function HoaxyGraph(options)
 			return false;
 		}
 
-		var sn = user_list[index];
+		var sn = score_stats.user_list[index];
 		var user = {screen_name: sn};
 		if(botscores[sn])
 		{
@@ -741,6 +753,14 @@ function HoaxyGraph(options)
 
 			var nodes_id = {};
 			var cnt = 0;
+			score_stats.unavailable = 0;
+			score_stats.old = 0;
+			score_stats.found = 0;
+
+			already_computed_user_list = [];
+			user_list_to_compute = [];
+			score_stats.user_list = [];
+			console.log('filtering here');
 	        for (var i in nodes)// i is index
 	        {
                 var percent = Math.sqrt(nodes[i].size) / Math.sqrt(max_size);
@@ -750,12 +770,32 @@ function HoaxyGraph(options)
 					new_size = 300;
 				}
 				var score = botscores[nodes[i].screenName];
+
 				if(score && score.score)
 				{
+					if(score.score === -1)
+					{
+						console.log('unavailable');
+						score_stats.unavailable += 1;
+					}
+					else if(score.old === true)
+					{
+						user_list_to_compute.push(nodes[i].screenName);
+						console.log('old and found');
+						score_stats.old += 1;
+						score_stats.found += 1;
+					}
+					else
+					{
+						already_computed_user_list.push(nodes[i].screenName);
+						console.log('found');
+						score_stats.found += 1;
+					}
 					score = score.score;
 				}
 				else
 				{
+					user_list_to_compute.push(nodes[i].screenName);
 					score = false;
 				}
 				var color = getNodeColor(score);
@@ -781,6 +821,18 @@ function HoaxyGraph(options)
 				nodes_id[i] = cnt;
 				++cnt;
 	        }
+
+		  score_stats.current_index = already_computed_user_list.length;
+			for (var i = 0; i<score_stats.current_index; i++){
+				score_stats.user_list.push(already_computed_user_list[i])
+			}
+			toComputeLen = user_list_to_compute.length;
+			for (var i = 0; i<toComputeLen; i++){
+				score_stats.user_list.push(user_list_to_compute[i])
+			}
+
+			console.log('computed user list');
+			console.log(score_stats.user_list);
 			node_count = g.nodes.length;
 
 			score_stats.total = node_count;
