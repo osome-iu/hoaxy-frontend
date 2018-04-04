@@ -262,7 +262,23 @@ var app = new Vue({
           /*
           return "<div style=\"box-sizing:border-box;color:black;background-color:white;border:solid;border-width:thin;border-color:gray;border-radius:10px;width:625px;height:250px;\"><div style=\"float:left;width:250px;height:250px;display:inline-block;margin-right:0px;\"><div style=\"box-sizing:inherit;text-align:center;vertical-align:middle;color:blue;font-size:35px;font-weight:bold;height:60px;padding-top:30px;padding-bottom:30px\">HOAXY</div><div style=\"overflow:hidden;height:110px;word-break:break-word;box-sizing:inherit;padding:5px;font-size:16px\">Use Hoaxy to see how this spreads online: <a href=\"" + location.href + "\" target=\"_blank\">" + this.shortenArticleText(this.searched_query_text, 70) + "</a></div></div><div style=\"margin-left:0px;float:left;width:370px;height:250px;display:inline-block;border-left:1px solid;border-color:#DCDCDC;\"><img style=\"box-sizing:inherit;width:370px;height:240px;padding-top:5px;padding-right:5px;\" src=\"" + this.widgetScreenshotDataUrl + "\"></img></div></div>"
           */
-          return "<link rel=\"stylesheet\" href=\"widget.css\"></link><div class=\"hoaxy-widget\"><div class=\"hoaxy-widget-leftdiv\"><div class=\"hoaxy-widget-leftdiv-toplogo\"><img src=\"HoaxyLogo.png\"></img></div><div class=\"hoaxy-widget-leftdiv-bottominfo\">Use Hoaxy to see how this spreads online: <a href=" + location.href +" target=\"_blank\">" + this.shortenArticleText(this.searched_query_text, 100) + "</a></div></div><div class=\"hoaxy-widget-rightdiv\"><img class=\"hoaxy-widget-rightdiv-imgvis\" src=" + this.widgetScreenshotDataUrl + "></img></div></div>"
+          return ''
+            + '<link rel="stylesheet" href="' + location.origin + (location.pathname !== '/'?location.pathname:'') + '/static/css/widget.css" />'
+            + '<div class="hoaxy-widget">'
+            +   '<div class="hoaxy-widget-leftdiv">'
+            +       '<div class="hoaxy-widget-leftdiv-toplogo">'
+            +           '<img src="' + location.origin + (location.pathname !== '/'?location.pathname:'') + '/static/widget_images/HoaxyLogo.png" />'
+            +       '</div>'
+            +       '<div class="hoaxy-widget-leftdiv-bottominfo">'
+            +           'Use Hoaxy to see how this spreads online: '
+            +           '<a href="' + location.href + '" target="_blank">'
+            +           this.shortenArticleText(this.searched_query_text, 100) + '</a>'
+            +       '</div>'
+            +   '</div>'
+            +   '<div class="hoaxy-widget-rightdiv">'
+            +       '<img class="hoaxy-widget-rightdiv-imgvis" src="' + this.widgetScreenshotDataUrl + '"/>'
+            +   '</div>'
+            + '</div>';
 
         },
         searchByDependencyTitle: function () {
@@ -373,13 +389,13 @@ var app = new Vue({
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
         },
-        // stripWwwIfPresent: function(url) {
-        //   if (url.substring(0, 4) == "www.") {
-        //     return url.substring(4, );
-        //   } else {
-        //     return url;
-        //   }
-        // },
+        stripWwwIfPresent: function(url) {
+          if (url.substring(0, 4) == "www.") {
+            return url.substring(4, );
+          } else {
+            return url;
+          }
+        },
         prepareAndShowWidgetCode: function() {
           var graphRenderer = this.graph.getRenderer();
           this.widgetScreenshotDataUrl = graphRenderer.snapshot({
@@ -432,8 +448,9 @@ var app = new Vue({
               var topArticles = response.data;
               for (var i = 0; i < 3; i++)
               {
-                topArticles[i].source = v.shortenArticleText(topArticles[i].url, 47);
-                topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline, 47);
+                // topArticles[i].source = v.shortenArticleText(topArticles[i].url, 47);
+                topArticles[i]['shortened_source'] = v.stripWwwIfPresent(v.attemptToGetUrlHostName(topArticles[i].url)).toUpperCase();
+                topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline, 70);
                 v.top_usa_articles.push(topArticles[i]);
               }
               v.spinStop();
@@ -470,8 +487,9 @@ var app = new Vue({
                   if (claimNum > 3) {
                     continue;
                   }
-                  a.source = v.shortenArticleText(a.canonical_url, 47);
-                  a['shortened_title'] = v.shortenArticleText(a.title, 47);
+                  // a.source = v.shortenArticleText(a.canonical_url, 47);
+                  a['shortened_source'] = v.stripWwwIfPresent(v.attemptToGetUrlHostName(a.canonical_url)).toUpperCase();
+                  a['shortened_headline'] = v.shortenArticleText(a.title, 70);
                   v.top_claim_articles.push(a);
                 } else {
                   factCheckNum++;
@@ -479,8 +497,9 @@ var app = new Vue({
                   if (factCheckNum > 3) {
                     continue;
                   }
-                  a.source = v.shortenArticleText(a.canonical_url, 47);
-                  a['shortened_title'] = v.shortenArticleText(a.title, 47)
+                  // a.source = v.shortenArticleText(a.canonical_url, 47);
+                  a['shortened_source'] = v.stripWwwIfPresent(v.attemptToGetUrlHostName(a.canonical_url)).toUpperCase();
+                  a['shortened_headline'] = v.shortenArticleText(a.title, 70);
                   v.top_fact_checking_articles.push(a);
                 }
               }
@@ -501,17 +520,17 @@ var app = new Vue({
             var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
         },
-        // attemptToGetUrlHostName: function(url){
-        //   var urlLink = document.createElement("a");
-        //   urlLink.href = url;
-        //   if (window.location.hostname == urlLink.hostname) {
-        //     // Element was not a link so we return "Not Avalable"
-        //     return "Not Available";
-        //   } else {
-        //     // Return hostname e.g. www.host-stuff.com
-        //     return(urlLink.hostname);
-        //   }
-        // },
+        attemptToGetUrlHostName: function(url){
+          var urlLink = document.createElement("a");
+          urlLink.href = url;
+          if (window.location.hostname == urlLink.hostname) {
+            // Element was not a link so we return "Not Avalable"
+            return "Source Not Available";
+          } else {
+            // Return capitalized hostname e.g. www.host-stuff.com
+            return(urlLink.hostname);
+          }
+        },
         attemptToGetUrlHostPath: function(url){
           var urlLink = document.createElement("a");
           urlLink.href = url;

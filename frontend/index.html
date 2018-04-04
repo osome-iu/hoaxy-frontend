@@ -134,14 +134,14 @@
                         <tr>
                             <th class="text-left my-0 mx-2 py-0 px-2">Trending News</th>
                         </tr>
-                            <tr v-for="article in top_usa_articles">
-                                <td class="text-left m-2 p-2">
-																				<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(article.headline,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to fill the search box with this article title, then click search">{{article.shortened_headline}}</a>
-																				<br>
-																				<span class="tight-span m-0 p-0 small"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(article.url,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ article.source }}</a></span>
-																				<!-- <div class="tight-span m-0 p-0"><a v-on:click.prevent="changeAndFocusSearchQuery(article.url,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ article.source }}</a></div> -->
-                                </td>
-                            </tr>
+                        <tr v-for="article in top_usa_articles">
+                            <td class="text-left m-2 p-2">
+															<span>{{ article.shortened_source }} | {{ article.shortened_headline }} <a :href="article.url" target="_blank"><i @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to read the article in a new window" class="fa fa-external-link"></i></a></span>
+															<br>
+															<span class="tight-span my-0 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(article.headline,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article title, then click search">Search Title</a></span>
+															<span class="tight-span my-0 mx-2 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(article.url,'mainstream');" rel="noreferrer noopener" :href="article.url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article link, then click search">Search Link</a></span>
+                            </td>
+                        </tr>
                         <tr v-if="top_usa_articles.length == 0">
                             <td colspan="3">Could not find any articles</td>
                         </tr>
@@ -156,11 +156,12 @@
                         </tr>
                         <tr v-for="claim in top_claim_articles">
                             <td class="text-left m-2 p-2">
-															<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(claim.title,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to fill the search box with this article title, then click search">{{claim.shortened_title}}</a>
+															<span>{{ claim.shortened_source }} | {{ claim.shortened_headline }} <a :href="claim.canonical_url" target="_blank"><i @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to read the article in a new window" class="fa fa-external-link"></i></a></span>
 															<br>
-															<span class="tight-span m-0 p-0 small"><a v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ claim.source }}</a></span>
-															<!-- <div class="tight-span m-0 p-0"><a v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ claim.source }}</a></div> -->
-                        </tr>
+															<span class="tight-span my-0 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(claim.title,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article title, then click search">Search Title</a></span>
+															<span class="tight-span my-0 mx-2 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article link, then click search">Search Link</a></span>
+														</td>
+												</tr>
                         <tr v-if="top_claim_articles.length == 0">
                             <td colspan="3">Could not find any articles</td>
                         </tr>
@@ -175,10 +176,10 @@
                         </tr>
                         <tr v-for="fact in top_fact_checking_articles">
                             <td class="text-left m-2 p-2">
-															<a class="m-0 p-0" v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip" data-toggle="tooltip" title="click to fill the search box with this article title, then click search">{{fact.shortened_title}}</a>
+															<span>{{ fact.shortened_source }} | {{ fact.shortened_headline }} <a :href="fact.canonical_url" target="_blank"><i @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to read the article in a new window" class="fa fa-external-link"></i></a></span>
 															<br>
-															<span class="tight-span m-0 p-0 small"><a v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ fact.source }}</a></span>
-															<!-- <div class="tight-span m-0 p-0"><a v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with this article link, then click search">{{ fact.source }}</a></div> -->
+															<span class="tight-span my-0 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article title, then click search">Search Title</a></span>
+															<span class="tight-span my-0 mx-2 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article link, then click search">Search Link</a></span>
                             </td>
                         </tr>
                         <tr v-if="top_fact_checking_articles.length == 0">
@@ -196,10 +197,10 @@
                 <form @submit.stop.prevent="show_full_articles_list = false; submitForm()">
                     <input v-model="query_sort" type="hidden" name="sort_by" :disabled="input_disabled" />
                     <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-                    <div class="d-flex align-items-start">
+                    <div class="d-block d-md-flex justify-content-center align-items-center">
                         <!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
-                        <div class="btn-group btn-group-toggle mr-2 rounded">
-                            <button id="searchByTwitter2"
+                        <div class="btn-group btn-group-toggle mr-md-2 rounded mb-2 mb-md-0 d-md-flex justify-content-md-center d-inline-block">
+                            <button id="searchByTwitter"
                                 data-toggle="tooltip"
                                 title="select to search for chatter on twitter"
                                 class="btn btn-primary"
@@ -213,7 +214,7 @@
                                 v-on:click="hoaxySearch()"
                                 v-bind:class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">Hoaxy</button>
                         </div>
-                        <input class="form-control mr-2"
+                        <input class="form-control mr-md-2 mb-2 mb-md-0 "
                             type="text"
                             ref="searchBox"
                             data-toggle="tooltip"
@@ -226,10 +227,8 @@
 
 
 
-                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-primary ml-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
-                        <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-primary ml-2" v-if="show_articles && show_full_articles_list">Cancel</button>
-
-
+                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-primary ml-md-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
+                        <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-primary ml-md-2" v-if="show_articles && show_full_articles_list">Cancel</button>
 
                     </div>
 
@@ -441,7 +440,7 @@
         </div>
 
         <div class="col-md-1 col-12 text-center ">
-            <div class="d-none d-md-block d-md-flex flex-column justify-content-center align-items-center">
+            <div class="d-none d-md-block d-md-flex flex-md-column justify-content-center align-items-center">
 				<p class="m-0 text-center ">Layout</p>
 	            <button id=""  :disabled="graph_column_size >= 12"  class=" layout-button layout-button-timeline btn btn-primary" @click="resizeGraphs(12)">
 					<span><i class="fa fa-line-chart" aria-hidden="true"></i></span></button>
@@ -686,7 +685,21 @@
 											</div>
 
 											<!-- <div style="box-sizing:border-box;color:black;background-color:white;border:solid;border-width:thin;border-color:gray;border-radius:10px;width:625px;height:250px;"><div style="float:left;width:250px;height:250px;display:inline-block;margin-right:0px;"><div style="box-sizing:inherit;text-align:center;vertical-align:middle;color:blue;font-size:35px;font-weight:bold;height:120px;padding-top:30px;padding-bottom:30px">HOAXY</div><div style="overflow:hidden;word-break:break-word;box-sizing:inherit;padding:5px;font-size:16px">Use Hoaxy to see how this spreads online: <a href="" target="_blank">{{ this.shortenArticleText(this.searched_query_text, 70) }}</a></div></div><div style="margin-left:0px;float:left;width:370px;height:250px;display:inline-block;border-left:1px solid;border-color:#D3D3D3;"><img style="box-sizing:inherit;width:370px;height:240px;padding-top:5px;padding-right:5px;" v-bind:src="this.widgetScreenshotDataUrl"></img></div></div> -->
-											<div class="hoaxy-widget"><div class="hoaxy-widget-leftdiv"><div class="hoaxy-widget-leftdiv-toplogo"><img src="static/widget_images/HoaxyLogo.png"></img></div><div class="hoaxy-widget-leftdiv-bottominfo">Use Hoaxy to see how this spreads online: <a href="" target="_blank">{{ this.shortenArticleText(this.searched_query_text, 100) }}</a></div></div><div class="hoaxy-widget-rightdiv"><img class="hoaxy-widget-rightdiv-imgvis" v-bind:src="this.widgetScreenshotDataUrl"></img></div></div>
+<!-- <div class="hoaxy-widget">
+	<div class="hoaxy-widget-leftdiv">
+		<div class="hoaxy-widget-leftdiv-toplogo">
+			<img src="static/widget_images/HoaxyLogo.png">
+		</div>
+		<div class="hoaxy-widget-leftdiv-bottominfo">
+			Use Hoaxy to see how this spreads online:
+			<a href="" target="_blank">{{ this.shortenArticleText(this.searched_query_text, 100) }}</a>
+		</div>
+	</div>
+	<div class="hoaxy-widget-rightdiv">
+		<img class="hoaxy-widget-rightdiv-imgvis" v-bind:src="this.widgetScreenshotDataUrl">
+	</div>
+</div> -->
+											<div v-html="embeddedWidgetCode"></div>
 
 										</div>
 									</div>
