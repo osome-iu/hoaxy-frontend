@@ -176,9 +176,9 @@
                 <form @submit.stop.prevent="show_full_articles_list = false; submitForm()">
                     <input v-model="query_sort" type="hidden" name="sort_by" :disabled="input_disabled" />
                     <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-                    <div class="d-flex align-items-start">
+                    <div class="d-block d-md-flex justify-content-center align-items-center">
                         <!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
-                        <div class="btn-group btn-group-toggle mr-2">
+                        <div class="btn-group btn-group-toggle mr-md-2 mb-2 mb-md-0 d-md-flex justify-content-md-center d-inline-block">
                             <button id="searchByTwitter"
                                 data-toggle="tooltip"
                                 title="select to search for chatter on twitter"
@@ -193,7 +193,7 @@
                                 v-on:click="hoaxySearch()"
                                 v-bind:class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
                         </div>
-                        <input class="form-control mr-2"
+                        <input class="form-control mr-md-2 mb-2 mb-md-0 "
                             type="text"
                             ref="searchBox"
                             data-toggle="tooltip"
@@ -206,8 +206,8 @@
 
 
 
-                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-secondary ml-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
-                        <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-secondary ml-2" v-if="show_articles && show_full_articles_list">Cancel</button>
+                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-secondary ml-md-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
+                        <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-secondary ml-md-2" v-if="show_articles && show_full_articles_list">Cancel</button>
 
 
 
@@ -401,7 +401,7 @@
         </div>
 
         <div class="col-md-1 col-12 text-center ">
-            <div class="d-none d-md-block d-md-flex flex-column justify-content-center align-items-center">
+            <div class="d-none d-md-block d-md-flex flex-md-column justify-content-center align-items-center">
 				<p class="m-0 text-center ">Layout</p>
 	            <button id=""  :disabled="graph_column_size >= 12"  class=" layout-button layout-button-timeline btn btn-primary" @click="resizeGraphs(12)">
 					<span><i class="fa fa-line-chart" aria-hidden="true"></i></span></button>
