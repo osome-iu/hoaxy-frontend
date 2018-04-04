@@ -350,13 +350,13 @@ var app = new Vue({
         formatTime: function(time){
             return moment(time).format("MMM D YYYY h:mm a");
         },
-        // stripWwwIfPresent: function(url) {
-        //   if (url.substring(0, 4) == "www.") {
-        //     return url.substring(4, );
-        //   } else {
-        //     return url;
-        //   }
-        // },
+        stripWwwIfPresent: function(url) {
+          if (url.substring(0, 4) == "www.") {
+            return url.substring(4, );
+          } else {
+            return url;
+          }
+        },
         prepareAndShowWidgetCode: function() {
           var graphRenderer = this.graph.getRenderer();
           this.widgetScreenshotDataUrl = graphRenderer.snapshot({
@@ -409,8 +409,9 @@ var app = new Vue({
               var topArticles = response.data;
               for (var i = 0; i < 3; i++)
               {
-                topArticles[i].source = v.shortenArticleText(topArticles[i].url, 47);
-                topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline, 47);
+                // topArticles[i].source = v.shortenArticleText(topArticles[i].url, 47);
+                topArticles[i]['shortened_source'] = v.stripWwwIfPresent(v.attemptToGetUrlHostName(topArticles[i].url)).toUpperCase();
+                topArticles[i]['shortened_headline'] = v.shortenArticleText(topArticles[i].headline, 70);
                 v.top_usa_articles.push(topArticles[i]);
               }
               v.spinStop();
@@ -447,8 +448,9 @@ var app = new Vue({
                   if (claimNum > 3) {
                     continue;
                   }
-                  a.source = v.shortenArticleText(a.canonical_url, 47);
-                  a['shortened_title'] = v.shortenArticleText(a.title, 47);
+                  // a.source = v.shortenArticleText(a.canonical_url, 47);
+                  a['shortened_source'] = v.stripWwwIfPresent(v.attemptToGetUrlHostName(a.canonical_url)).toUpperCase();
+                  a['shortened_headline'] = v.shortenArticleText(a.title, 70);
                   v.top_claim_articles.push(a);
                 } else {
                   factCheckNum++;
@@ -456,8 +458,9 @@ var app = new Vue({
                   if (factCheckNum > 3) {
                     continue;
                   }
-                  a.source = v.shortenArticleText(a.canonical_url, 47);
-                  a['shortened_title'] = v.shortenArticleText(a.title, 47)
+                  // a.source = v.shortenArticleText(a.canonical_url, 47);
+                  a['shortened_source'] = v.stripWwwIfPresent(v.attemptToGetUrlHostName(a.canonical_url)).toUpperCase();
+                  a['shortened_headline'] = v.shortenArticleText(a.title, 70);
                   v.top_fact_checking_articles.push(a);
                 }
               }
@@ -478,17 +481,17 @@ var app = new Vue({
             var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
         },
-        // attemptToGetUrlHostName: function(url){
-        //   var urlLink = document.createElement("a");
-        //   urlLink.href = url;
-        //   if (window.location.hostname == urlLink.hostname) {
-        //     // Element was not a link so we return "Not Avalable"
-        //     return "Not Available";
-        //   } else {
-        //     // Return hostname e.g. www.host-stuff.com
-        //     return(urlLink.hostname);
-        //   }
-        // },
+        attemptToGetUrlHostName: function(url){
+          var urlLink = document.createElement("a");
+          urlLink.href = url;
+          if (window.location.hostname == urlLink.hostname) {
+            // Element was not a link so we return "Not Avalable"
+            return "Source Not Available";
+          } else {
+            // Return capitalized hostname e.g. www.host-stuff.com
+            return(urlLink.hostname);
+          }
+        },
         attemptToGetUrlHostPath: function(url){
           var urlLink = document.createElement("a");
           urlLink.href = url;
@@ -1823,7 +1826,7 @@ var app = new Vue({
 
         this.spinStop("initialLoad");
         console.debug("Vue Mounted.");
-        
+
         console.debug(this.query_text);
         if(!this.query_text)
         {
