@@ -35,9 +35,9 @@
 				<div class="container">
 					<div class="col-12 text-center">
 
-						<div class="col-12 text-center d-flex align-items-center">
+						<div class="col-12 text-center d-md-flex align-items-center">
 						<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
-                        <div class="pr-2 text-nowrap">Search by:</div>
+                            <div class="pr-2 text-nowrap">Search by:</div>
                             <div class="">
                                 <div class="btn-group btn-group-toggle pr-2">
                                     <button id="searchByTwitter" data-toggle="tooltip" data-delay="0" title="search Twitter content from the past 7 days" type="button"
@@ -55,7 +55,7 @@
                                     v-bind:class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
                                 </div>
                             </div>
-                            <input id="query" class="form-control" type="text" ref="searchBox" data-toggle="tooltip" v-bind:title="searchByDependencyTitle"
+                            <input id="query" class="form-control my-2 my-md-0" type="text" ref="searchBox" data-toggle="tooltip" v-bind:title="searchByDependencyTitle"
 																@focus="focusSearchBox();"
 																@mouseOver="hoverTooltip"
 																@mouseOut="hideTooltip"
