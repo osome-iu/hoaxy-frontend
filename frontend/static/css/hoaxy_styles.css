@@ -714,12 +714,13 @@ white-space: nowrap;
 	background: inherit;
 }
 
-#source_dropdown {
+#source_dropdown, #help_dropdown {
 	position: relative;
 	background: inherit;
 }
 
-#source_dropdown ul {
+#source_dropdown ul, #help_dropdown ul {
+    z-index: 20;
 	display: none;
 	position: absolute;
 	right: 0;
@@ -734,7 +735,7 @@ white-space: nowrap;
 	white-space: nowrap;
 }
 
-#source_dropdown:hover ul {
+#source_dropdown:hover ul, #help_dropdown:hover ul {
 	display: block;
 }
 
