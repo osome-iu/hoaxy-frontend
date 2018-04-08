@@ -591,6 +591,8 @@ function HoaxyGraph(options)
 
 	function UpdateGraph(start_time, end_time)
 	{
+		// First we disable any animation that is currently running
+		StopAnimation();
 
 		clearTimeout(animationTimeout);
 
@@ -654,6 +656,12 @@ function HoaxyGraph(options)
 					if(!timespan.end_time || tweet_created_at > timespan.end_time)
 					{
 						timespan.end_time = tweet_created_at;
+					}
+
+					if (start_time && end_time) {
+					       // console.log('BOTH TIMES EXIST');
+					       timespan.start_time = start_time;
+					       timespan.end_time = end_time;
 					}
 
 					var url_raw = edge.url_raw, title = edge.title;

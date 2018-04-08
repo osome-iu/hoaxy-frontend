@@ -360,6 +360,36 @@ var app = new Vue({
           // Focus back on the search box
           this.$refs.searchBox.focus()
         },
+        initializeHoaxyTimeline: function() {
+          var v = this;
+          this.globalHoaxyTimeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+          this.globalHoaxyTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+              v.pauseGraphAnimation();
+              v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+              v.graphAnimation.increment = 0;
+              v.graphAnimation.playing  = true;
+              v.graphAnimation.paused = true;
+              v.unpauseGraphAnimation();
+              v.pauseGraphAnimation();
+              // console.debug(new Date(e.pointXValue))
+          });
+          this.timeline = this.globalHoaxyTimeline;
+        },
+        initializeTwitterTimeline: function() {
+          var v = this;
+          this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+          this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+              v.pauseGraphAnimation();
+              v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+              v.graphAnimation.increment = 0;
+              v.graphAnimation.playing  = true;
+              v.graphAnimation.paused = true;
+              v.unpauseGraphAnimation();
+              v.pauseGraphAnimation();
+              // console.debug(new Date(e.pointXValue))
+          });
+          this.timeline = this.globalTwitterSearchTimeline;
+        },
         // hoaxyExpandSearch: function() {
         //   v.scrollToElement("graphs");
         // },
@@ -1529,6 +1559,7 @@ var app = new Vue({
         },
         submitForm: function(dontScroll){
           // Resets any results from any previous queries
+          this.stopGraphAnimation();
           this.resetTwitterSearchResults();
           this.resetHoaxySearchResults();
     	    if(this.searchBy == 'Hoaxy') {
@@ -1542,7 +1573,20 @@ var app = new Vue({
               return false;
         		}
             // Preparing the proper timeline to show
+            var v = this;
+            this.globalHoaxyTimeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+            this.globalHoaxyTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+                v.pauseGraphAnimation();
+                v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+                v.graphAnimation.increment = 0;
+                v.graphAnimation.playing  = true;
+                v.graphAnimation.paused = true;
+                v.unpauseGraphAnimation();
+                v.pauseGraphAnimation();
+                // console.debug(new Date(e.pointXValue))
+            });
             this.timeline = this.globalHoaxyTimeline;
+            // new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
             // Adding a url querystring so that user can replicate a query by copy/pasting the url
         		this.changeURLParamsHoaxy();
         		this.getArticles(dontScroll);
@@ -1559,7 +1603,20 @@ var app = new Vue({
               return false;
         		}
             // Preparing the proper timeline to show
+            var v = this;
+            this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+            this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+                v.pauseGraphAnimation();
+                v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+                v.graphAnimation.increment = 0;
+                v.graphAnimation.playing  = true;
+                v.graphAnimation.paused = true;
+                v.unpauseGraphAnimation();
+                v.pauseGraphAnimation();
+                // console.debug(new Date(e.pointXValue))
+            });
             this.timeline = this.globalTwitterSearchTimeline;
+            //new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
             // Adding a url querystring so that user can replicate a query by copy/pasting the url
             this.changeURLParamsTwitter();
             var searchUrl = this.attemptToGetUrlHostPath(this.query_text);
@@ -1792,51 +1849,53 @@ var app = new Vue({
             graphAnimation: this.graphAnimation
         });
 
+        //TEMPORARILY KEEPING THIS BLOCK OF CODE IN CASE WE NEED TO REVERT. CURRENTLY MOST FUNCTIONALITY WAS MOVED TO THE
+        //initializeHoaxyTimeline AND initializeTwitterTimeline BUT IF WE MISSED SOMETHING WE WANT THIS CODE TO REVERT
         //create the chart that is used to visualize the timeline
         // the updateGraph function is a callback when the timeline interval is adjusted
-        this.globalHoaxyTimeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
-        this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
-        this.timeline = this.globalHoaxyTimeline
-
-
-        // this.timeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+        // this.globalHoaxyTimeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+        // this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+        // this.timeline = this.globalHoaxyTimeline
+        //
+        //
+        // // this.timeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+        // //
+        // //     v.pauseGraphAnimation();
+        // //     v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+        // //     v.graphAnimation.increment = 0;
+    		// // v.graphAnimation.playing  = true;
+    		// // v.graphAnimation.paused = true;
+        // //     v.unpauseGraphAnimation();
+        // //     v.pauseGraphAnimation();
+        // //
+        // //     // console.debug(new Date(e.pointXValue))
+        // // });
+        //
+        // this.globalHoaxyTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
         //
         //     v.pauseGraphAnimation();
         //     v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
         //     v.graphAnimation.increment = 0;
-    		// v.graphAnimation.playing  = true;
-    		// v.graphAnimation.paused = true;
+        //     v.graphAnimation.playing  = true;
+        //     v.graphAnimation.paused = true;
         //     v.unpauseGraphAnimation();
         //     v.pauseGraphAnimation();
         //
         //     // console.debug(new Date(e.pointXValue))
         // });
-
-        this.globalHoaxyTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
-
-            v.pauseGraphAnimation();
-            v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
-            v.graphAnimation.increment = 0;
-            v.graphAnimation.playing  = true;
-            v.graphAnimation.paused = true;
-            v.unpauseGraphAnimation();
-            v.pauseGraphAnimation();
-
-            // console.debug(new Date(e.pointXValue))
-        });
-
-        this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
-
-            v.pauseGraphAnimation();
-            v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
-            v.graphAnimation.increment = 0;
-            v.graphAnimation.playing  = true;
-            v.graphAnimation.paused = true;
-            v.unpauseGraphAnimation();
-            v.pauseGraphAnimation();
-
-            // console.debug(new Date(e.pointXValue))
-        });
+        //
+        // this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+        //
+        //     v.pauseGraphAnimation();
+        //     v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+        //     v.graphAnimation.increment = 0;
+        //     v.graphAnimation.playing  = true;
+        //     v.graphAnimation.paused = true;
+        //     v.unpauseGraphAnimation();
+        //     v.pauseGraphAnimation();
+        //
+        //     // console.debug(new Date(e.pointXValue))
+        // });
 
         // this.displayError("Test Error");
 
