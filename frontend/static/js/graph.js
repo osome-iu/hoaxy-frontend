@@ -1423,6 +1423,11 @@ function HoaxyGraph(options)
 
 	function StopAnimation(){
 		clearTimeout(animationTimeout);
+		// If the timeline has been animated before we want to bring the tick to the end and show all edges
+		if (graphAnimation.current_timestamp > timespan.start_time) {
+			FilterEdges((new Date()).getTime());
+			graphAnimation.current_timestamp = timespan.end_time;
+		}
 		graphAnimation.increment = 0;
 		graphAnimation.playing  = false;
 		graphAnimation.paused = false;
