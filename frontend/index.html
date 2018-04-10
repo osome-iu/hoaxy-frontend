@@ -263,12 +263,12 @@
                                         class="rounded d-block">
 	                                        <label class="row p-3">
 	                                            <input type="checkbox" :id="article.url_id" :value="article.url_id" v-model="checked_articles" />
-	                                            <div class="check_icons col-1 text-center d-flex align-items-center">
+	                                            <div class="check_icons col-sm-1 col-2 text-center d-flex align-items-center">
 	                                                <i class="fa fa-square-o fw" aria-hidden="true"></i>
 	                                                <i class="fa fa-check-square-o fw" aria-hidden="true"></i>
 	                                            </div>
 
-	                                            <div class="col-11">
+	                                            <div class="col-sm-11 col-10">
 	                                                <span class="article_title"><a :href="article.url_raw" target="_blank">{{article.title}}</a></span>
 	                                                <span class=""><span class="article_domain">From <a :href="'http://' + article.site_domain" target="_blank">{{article.site_domain}}</a></span>
 	                                                <span class="article_date">on {{getDateline(article.date_published)}}</span></span>
@@ -797,11 +797,11 @@
 					<div class="modal-header">
 						<button type="button" class="close"  @click="toggleEdgeModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title text-center" id="edgeModalLabel" >
-							<a target="_blank" :href="'https://twitter.com/intent/user?user_id='+ edge_modal_content.edge.source">@{{edge_modal_content.edge.source_screenName}}</a>
+							<a target="_blank" :href="'https://twitter.com/'+ edge_modal_content.edge.source">@{{edge_modal_content.edge.source_screenName}}</a>
 
 							{{ edge_modal_content.label_string }}
 
-							<a target="_blank" :href="'https://twitter.com/intent/user?user_id='+ edge_modal_content.edge.target">@{{edge_modal_content.edge.target_screenName}}</a>
+							<a target="_blank" :href="'https://twitter.com/'+ edge_modal_content.edge.target">@{{edge_modal_content.edge.target_screenName}}</a>
 
 						</h4>
 					</div>
