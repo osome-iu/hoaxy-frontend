@@ -129,6 +129,10 @@ section
 {
     margin-bottom: 3rem;
 }
+section#secondary_form
+{
+    margin-bottom: 1rem;
+}
 
 /* Overriding bootstrap styling for Hoaxy/Twitter landing page search */
 /* #searchByHoaxy {
@@ -617,9 +621,9 @@ input:not(:checked) + .check_icons > .fa-square-o
 }
 .layout-button
 {
-    margin-top: 1rem;
+    margin-top: .5rem;
     /*line-height: 2rem;*/
-    margin: 1rem auto;
+    /* margin: 1rem auto; */
 
 }
 .layout-button span i
