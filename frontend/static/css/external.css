@@ -425,7 +425,11 @@ li
 
 #focus_label
 {
-    margin-top: -80px;
+    /* margin-top: -80px; */
+    position: absolute;
+    bottom: 5em;
+    right: 0;
+    left: 0;
 }
 
 /* Widget Dialog Box should be a little wider than the conventional dialog box */
