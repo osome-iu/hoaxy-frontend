@@ -901,8 +901,8 @@ function HoaxyGraph(options)
 
 		for (var i in node.incoming)
 		{
-			var fromURL = 'https://twitter.com/intent/user?user_id='+i,
-				toURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id;
+			var fromURL = 'https://twitter.com/'+i,
+				toURL = 'https://twitter.com/'+e.data.node.id;
 
 			for (var j in node.incoming[i].ids)
 			{
@@ -935,8 +935,8 @@ function HoaxyGraph(options)
 		//new outgoing edges, could be has_mentioned, is_quoted_by, is_retweeted_by
 		for (var i in node.outgoing)
 		{
-			var fromURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id,
-				toURL = 'https://twitter.com/intent/user?user_id='+i;
+			var fromURL = 'https://twitter.com/'+e.data.node.id,
+				toURL = 'https://twitter.com/'+i;
 
 			for (var j in node.outgoing[i].ids)
 			{
