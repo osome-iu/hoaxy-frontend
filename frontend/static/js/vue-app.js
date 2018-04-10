@@ -217,7 +217,8 @@ var app = new Vue({
             active_slide: 1,
             show: false,
             // hiddenByCookie: false
-        }
+        },
+        menu_open: false
 
     },
     computed: {

@@ -14,12 +14,14 @@
 		</p>
 		<p>
 			Hoaxy&reg; is <a href="http://www.indiana.edu/comments/copyright.shtml" target="_blank">Copyright</a> &copy; the Trustees of <a href="http://indiana.edu/" target="_blank">Indiana University</a> 2016 -
-			<script type="text/javascript ">
-			var date = new Date();
-			var yy = date.getYear();
-			var year = (yy < 1000) ? yy + 1900 : yy;
-			document.write(year);
-			</script>
+            <span id="current_year"></span>
+            <script type="text/javascript ">
+            var date = new Date();
+            var yy = date.getYear();
+            var year = (yy < 1000) ? yy + 1900 : yy;
+            // document.write(year);
+            document.getElementById("current_year").innerHTML = year;
+            </script>
 		</p>
 	</div>
 </footer>
