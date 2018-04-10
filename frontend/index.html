@@ -432,7 +432,7 @@
 					<button @click="stopGraphAnimation" :disabled="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-stop" aria-hidden="true"></i></button>
 				</div>
 			</div>
-			<div id="sharing_buttons" class="mt-4 mb-4 d-flex flex-column justify-content-center align-items-center" v-if="show_graphs">
+			<div id="sharing_buttons" class="mt-4 d-flex flex-column justify-content-center align-items-center" v-if="show_graphs">
 	<p class="m-0 text-center mb-1">Share</p>
 					<span id="twitter-button">
 							<a class="twitter-share-button"
@@ -449,10 +449,10 @@
 							</span>
 					</span>
 			</div>
-			<div class="d-block p-2 mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
+			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
 				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" v-on:click="prepareAndShowWidgetCode()" data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip" title="add this visualization to your site">Embed</button>
 			</div>
-			<div class="d-block p-2 mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
+			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
 				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='createAsCSV()' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  title="download data as a CSV file">Export</button>
 			</div>
 			<!-- <div class="d-block p-2 mt-5 text-center d-md-flex flex-column justify-content-center align-items-center" v-if="searchBy == 'Hoaxy'">
