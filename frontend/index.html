@@ -422,7 +422,7 @@
 				</template>
 			</div>
 			<div class="mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<p class="m-0 text-center" >Animate</p>
+				<p class="m-0 text-center" >Play</p>
 				<div class="mt-1 d-inline-block d-md-block">
 					<button @click="startGraphAnimation" :disabled="!animationAvailable || failed_to_get_network" v-if="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
 					<button @click="unpauseGraphAnimation" v-if="graphAnimation.playing && graphAnimation.paused" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
