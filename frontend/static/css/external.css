@@ -438,7 +438,7 @@ li
 
 /* Widget Dialog Box should be a little wider than the conventional dialog box */
 #modalDialogWidget {
-  max-width: 800px;
+  max-width: 850px;
 }
 
 .modal-show

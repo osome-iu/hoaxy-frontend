@@ -433,10 +433,10 @@
             :style="graph_column_size <= 0 ? 'display: none' : ''"
             :class="'col-md-' + (graph_column_size === 12? 11: graph_column_size )">
             <p class="text-center">Timeline</p>
-            <div id="chart" style="width: 100%; height: 80vh; margin: 0 auto;" >
+            <div id="chart" style="width: 100%; height: 80vh; margin: 0 auto;" v-if="!failed_to_get_network">
                 <svg></svg>
             </div>
-            <div id="focus_label" class="text-center small">Select and drag a time frame of interest below:</div>
+            <div id="focus_label" class="text-center small" v-if="!failed_to_get_network">Select and drag a time frame of interest below:</div>
         </div>
 
         <div class="col-md-1 col-12 text-center ">
@@ -460,9 +460,9 @@
 				</template>
 			</div>
 			<div class="mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<p class="m-0 text-center" >Animate</p>
+				<p class="m-0 text-center" >Play</p>
 				<div class="mt-1 d-inline-block d-md-block">
-					<button @click="startGraphAnimation" :disabled="!animationAvailable" v-if="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
+					<button @click="startGraphAnimation" :disabled="!animationAvailable || failed_to_get_network" v-if="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
 					<button @click="unpauseGraphAnimation" v-if="graphAnimation.playing && graphAnimation.paused" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
 					<button @click="pauseGraphAnimation" v-if="!graphAnimation.paused && graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-pause" aria-hidden="true"></i></button>
 				</div>
@@ -488,10 +488,10 @@
 					</span>
 			</div>
 			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" v-on:click="prepareAndShowWidgetCode()" data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip" title="add this visualization to your site">Embed</button>
+				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" v-on:click="prepareAndShowWidgetCode()" data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip" :disabled="failed_to_get_network" title="add this visualization to your site">Embed</button>
 			</div>
 			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='createAsCSV()' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  title="download data as a CSV file">Export</button>
+				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='createAsCSV()' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a CSV file">Export</button>
 			</div>
 			<!-- <div class="d-block p-2 mt-5 text-center d-md-flex flex-column justify-content-center align-items-center" v-if="searchBy == 'Hoaxy'">
 				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" id="expandHoaxySearch" @click="scrollToElement('articles_bookmark')">Expand<br />Search</button>
@@ -797,11 +797,11 @@
 					<div class="modal-header">
 						<button type="button" class="close"  @click="toggleEdgeModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title text-center" id="edgeModalLabel" >
-							<a target="_blank" :href="'https://twitter.com/'+ edge_modal_content.edge.source">@{{edge_modal_content.edge.source_screenName}}</a>
+							<a target="_blank" :href="'https://twitter.com/'+ edge_modal_content.edge.source_screenName">@{{edge_modal_content.edge.source_screenName}}</a>
 
 							{{ edge_modal_content.label_string }}
 
-							<a target="_blank" :href="'https://twitter.com/'+ edge_modal_content.edge.target">@{{edge_modal_content.edge.target_screenName}}</a>
+							<a target="_blank" :href="'https://twitter.com/'+ edge_modal_content.edge.target_screenName">@{{edge_modal_content.edge.target_screenName}}</a>
 
 						</h4>
 					</div>
@@ -826,7 +826,7 @@
 					<div class="modal-header">
 						<button type="button" class="close" @click.stop="toggleNodeModal()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title text-center" id="nodeModalLabel">
-							User:  <a target="_blank" v-bind:href="'https://twitter.com/' + node_modal_content.user_id">@{{node_modal_content.screenName}}</a>
+							User:  <a target="_blank" v-bind:href="'https://twitter.com/' + node_modal_content.screenName">@{{node_modal_content.screenName}}</a>
 						</h4>
 					</div>
 					<div class="modal-body" >
@@ -838,7 +838,7 @@
 								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
 							</p>
 							<p v-if="">
-								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.screenName)" class="btn btn-primary" id="">Update Bot Score</button>
+								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.user_id)" class="btn btn-primary" id="">Update Bot Score</button>
 								<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
 							</p>
 
