@@ -117,13 +117,13 @@ function HoaxyGraph(options)
 				to_user_screen_name = edge.to_user_screen_name
 				from_user_id = edge.from_user_id,
 				to_user_id = edge.to_user_id;
-			if(score_stats.user_list.indexOf(from_user_screen_name) < 0)
+			if(score_stats.user_list.indexOf(from_user_id) < 0)
 			{
-				score_stats.user_list.push(from_user_screen_name);
+				score_stats.user_list.push(from_user_id);
 			}
-			if(score_stats.user_list.indexOf(to_user_screen_name) < 0)
+			if(score_stats.user_list.indexOf(to_user_id) < 0)
 			{
-				score_stats.user_list.push(to_user_screen_name);
+				score_stats.user_list.push(to_user_id);
 			}
 			if(user_id_list.indexOf(from_user_id) < 0)
 			{
@@ -155,9 +155,10 @@ function HoaxyGraph(options)
 					if(user)
 					{
 						var sn = user.user.screen_name;
+						var id = user.user.id
 						var score = user.scores.english;
-						botscores[sn] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id };
-                        updateNodeColor(sn, score);
+						botscores[id] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id, screen_name: sn };
+                        updateNodeColor(id, score);
 
 					}
 				}
@@ -228,12 +229,14 @@ function HoaxyGraph(options)
 			return false;
 		}
 
-		var sn = score_stats.user_list[index];
-		var user = {screen_name: sn};
-		if(botscores[sn])
+		var id = score_stats.user_list[index];
+		var node = s.graph.nodes(id);
+		var sn = node.data.screenName;
+		var user = {screen_name: sn, user_id: id};
+		if(botscores[id])
 		{
-			user.score = botscores[sn].score;
-			user.old = botscores[sn].old;
+			user.score = botscores[id].score;
+			user.old = botscores[id].old;
 		}
 
 		updateUserBotScore(user);
@@ -252,22 +255,22 @@ function HoaxyGraph(options)
 			//if exists and fresh
 			if(user.score)
 			{
-				updateNodeColor(user.screen_name, user.score);
+				updateNodeColor(user.user_id, user.score);
 				resolve();
 			}
 			//if score is stale or does not exist
 			if(!user.score || user.old)
 			{
-				var botProm = getNewBotometerScore(user.screen_name);
+				var botProm = getNewBotometerScore(user.user_id);
 				botProm.then(function(response){
 					score_stats.recompute();
 					resolve(response);
 				}, function(){
-					botscores[user.screen_name] = {
+					botscores[user.user_id] = {
 						score: -1,
 						old: true
 					}
-					updateNodeColor(user.screen_name, botscores[user.screen_name].score);
+					updateNodeColor(user.user_id, botscores[user.user_id].score);
 					score_stats.recompute();
 					reject();
 				});
@@ -279,9 +282,11 @@ function HoaxyGraph(options)
 	function twitterResponseFail(error){
 		console.warn(error);
 	}
-	function getNewBotometerScore(screen_name)
+	function getNewBotometerScore(user_id)
 	{
 		var user = {};
+		var node = s.graph.nodes(user_id);
+		var screen_name = node.data.screenName;
 		botScoreA = new Promise(function(resolve, reject){
 			var user_data = twitter.getUserData(screen_name);
 			user_data.then(function(response){
@@ -323,6 +328,8 @@ function HoaxyGraph(options)
 	function getBotScore(user_object)
 	{
 		var sn = user_object.user.screen_name;
+		var id = user_object.user.id;
+		console.debug(user_object);
 		var botscore = axios({
 			method: 'post',
 			url: configuration.botometer_url,
@@ -333,13 +340,14 @@ function HoaxyGraph(options)
 		botscore.then(function(response){
 			// score_stats.recompute();
 
-			botscores[sn] = {
+			botscores[id] = {
 				score: response.data.scores.english,
 				old: false,
 				time: new Date(),
-				user_id: response.data.user.id
+				user_id: response.data.user.id,
+				screen_name: sn
 			}
-			updateNodeColor(sn, botscores[sn].score);
+			updateNodeColor(id, botscores[id].score);
 		},
 		function(error){
 			console.debug("Could not get bot score for " + sn + ": ", error);
@@ -348,19 +356,19 @@ function HoaxyGraph(options)
 		});
 		return botscore;
 	}
-	function updateNodeColor(screen_name, score)
+	function updateNodeColor(node_id, score)
 	{
         // setTimeout(function(){
             color = getNodeColor(score);
     		//change node color on graph based on botscore
             if(s && s.graph)
             {
-    			var node = s.graph.nodes(screen_name);
+    			var node = s.graph.nodes(node_id);
     			// console.debug(screen_name, score,color, node);
     			if(node)
     			{
-    	    		s.graph.nodes(screen_name).color = color;
-    	    		s.graph.nodes(screen_name).borderColor = getBorderColor(score);
+    	    		s.graph.nodes(node_id).color = color;
+    	    		s.graph.nodes(node_id).borderColor = getBorderColor(score);
 					refreshGraph();
     			}
             }
@@ -626,15 +634,18 @@ function HoaxyGraph(options)
 			//create nodes[] data structure to hold info.
 	        for (var i in edges)
 	        {
+
 	            var edge = edges[i],
-					from_user_id = edge.from_user_screen_name,
-					to_user_id = edge.to_user_screen_name,
+					// from_user_id = edge.from_user_screen_name,
+					// to_user_id = edge.to_user_screen_name,
+					from_user_id = edge.from_user_id,
+					to_user_id = edge.to_user_id,
 					tweet_id = edge.tweet_id,
 					tweet_type = edge.tweet_type,
 					is_mention = edge.is_mention,
 					// tweet_created_at = (new Date(edge.tweet_created_at.substring(0, 10))).getTime();
 					tweet_created_at = (new Date(edge.tweet_created_at)).getTime();
-
+// console.debug(edge);
 
 					//filter edges not fall into [start_time, end_time]
 					// if (tweet_created_at < start_time || tweet_created_at > end_time)
@@ -670,7 +681,6 @@ function HoaxyGraph(options)
 	            //if -1, dump it since no  out edge
 	            if (-1 == to_user_id)
 	                continue;
-
 				nodes[from_user_id] = nodes[from_user_id] || {id:"", size:1, color: "", incomingCount: 0, outgoingCount: 0, screenName:"", incoming: {}, outgoing: {}, edges: []};
 				nodes[from_user_id].id = from_user_id;
 	            nodes[from_user_id].size++;
@@ -768,7 +778,7 @@ function HoaxyGraph(options)
 				{
 					new_size = 300;
 				}
-				var score = botscores[nodes[i].screenName];
+				var score = botscores[nodes[i].id];
 
 				if(score && score.score)
 				{
@@ -778,20 +788,20 @@ function HoaxyGraph(options)
 					}
 					else if(score.old === true)
 					{
-						user_list_to_compute.push(nodes[i].screenName);
+						user_list_to_compute.push(nodes[i].id);
 						score_stats.old += 1;
 						score_stats.found += 1;
 					}
 					else
 					{
-						already_computed_user_list.push(nodes[i].screenName);
+						already_computed_user_list.push(nodes[i].id);
 						score_stats.found += 1;
 					}
 					score = score.score;
 				}
 				else
 				{
-					user_list_to_compute.push(nodes[i].screenName);
+					user_list_to_compute.push(nodes[i].id);
 					score = false;
 				}
 				var color = getNodeColor(score);
@@ -803,7 +813,7 @@ function HoaxyGraph(options)
 				// Force atlas will produce the same graph for a given query every time
 				new_x = Math.cos(2*Math.PI*(cnt/node_count));
 				new_y = Math.sin(2*Math.PI*(cnt/node_count));
-
+// console.debug(i);
 				g.nodes.push({
 					x: new_x,
 					y: new_y,
@@ -914,8 +924,8 @@ function HoaxyGraph(options)
 
 		for (var i in node.incoming)
 		{
-			var fromURL = 'https://twitter.com/'+i,
-				toURL = 'https://twitter.com/'+e.data.node.id;
+			var fromURL = 'https://twitter.com/'+node.incoming[i].screenName, //i,
+				toURL = 'https://twitter.com/'+e.data.node.screenName;
 
 			for (var j in node.incoming[i].ids)
 			{
@@ -948,8 +958,8 @@ function HoaxyGraph(options)
 		//new outgoing edges, could be has_mentioned, is_quoted_by, is_retweeted_by
 		for (var i in node.outgoing)
 		{
-			var fromURL = 'https://twitter.com/'+e.data.node.id,
-				toURL = 'https://twitter.com/'+i;
+			var fromURL = 'https://twitter.com/'+e.data.node.screenName,
+				toURL = 'https://twitter.com/'+node.outgoing[i].screenName;
 
 			for (var j in node.outgoing[i].ids)
 			{
@@ -1073,15 +1083,16 @@ function HoaxyGraph(options)
 
 			var score = false;
 			// console.debug(node.screenName, botscores[node.screenName], botscores);
-			if(botscores[node.screenName])
+			console.debug(node);
+			if(botscores[node.id])
 			{
-				var bs = botscores[node.screenName];
+				var bs = botscores[node.id];
 				// console.debug(bs);
-				score = botscores[node.screenName].score;
+				score = botscores[node.id].score;
 				score = Math.floor(score * 100);
 				node_modal_content.botcolor = score != 0 ? getNodeColor(score/100) : "";
 				node_modal_content.botscore = score;
-				node_modal_content.timestamp =botscores[node.screenName].time;
+				node_modal_content.timestamp =botscores[node.id].time;
 			}
 			else
 			{

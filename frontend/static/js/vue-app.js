@@ -1352,7 +1352,7 @@ var app = new Vue({
         {
             var feedback = {
                 source_user_id: this.twitter_account_info.id,
-                target_user_id: this.graph.botscores()[this.node_modal_content.screenName].user_id,
+                target_user_id: this.node_modal_content.user_id, //this.graph.botscores()[this.node_modal_content.screenName].user_id,
                 target_screen_name: this.node_modal_content.screenName,
                 feedback_label: this.feedback_form.type,
                 feedback_text: this.feedback_form.comment,
@@ -1446,7 +1446,8 @@ var app = new Vue({
                 this.graph.getNewScores();
             }
         },
-        getSingleBotScore: function(screen_name){
+        getSingleBotScore: function(user_id){
+            console.debug(user_id);
             var v = this;
             this.getting_bot_scores.running = true;
             var success = new Promise(function(resolve, reject){
@@ -1454,14 +1455,14 @@ var app = new Vue({
                 {
                     v.twitterLogIn()
                     .then(function(){
-                        v.graph.updateUserBotScore({screen_name: screen_name})
+                        v.graph.updateUserBotScore({user_id: user_id})
                         .then(resolve, reject);
 
                     })
                 }
                 else
                 {
-                    v.graph.updateUserBotScore({screen_name: screen_name})
+                    v.graph.updateUserBotScore({user_id: user_id})
                     .then(resolve, reject)
                 }
             });
