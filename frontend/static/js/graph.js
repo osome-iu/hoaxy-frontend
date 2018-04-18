@@ -796,27 +796,32 @@ function HoaxyGraph(options)
 				}
 				var color = getNodeColor(score);
 
-				node_count = node_count / 2;
 				var new_x, new_y;
-				// new_x = Math.cos(360*(cnt/node_count));
-				// new_y = Math.sin(360*(cnt/node_count));
+				// Using x=cos(2pi*fraction), y=sin(2pi*fraction) and the fraction increases
+				// Deterministically with the node counter, essentially placing the
+				// Nodes on a circle regardless of node count, this ensures that
+				// Force atlas will produce the same graph for a given query every time
+				new_x = Math.cos(2*Math.PI*(cnt/node_count));
+				new_y = Math.sin(2*Math.PI*(cnt/node_count));
 
-	            g.nodes.push({
-	                x: Math.random() * 10,
-					y: Math.random() * 10,
+				g.nodes.push({
+					x: new_x,
+					y: new_y,
+					// We can also initialize Force Atlas with a randomized graph
+					// But this will make visualizations look different every time
+					// x: Math.random() * 10,
+					// y: Math.random() * 10,
 					orig_size: nodes[i].size,
-					// x: new_x,
-					// y: new_y,
-	                size: new_size, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
-	                label: nodes[i].screenName,
-	                id: i, //nodes[i].screenName,
+					size: new_size, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
+					label: nodes[i].screenName,
+					id: i, //nodes[i].screenName,
 					node_id: cnt,
-	                color: color,//nodes[i].color,
-	                data: nodes[i]
-	            });
+					color: color,//nodes[i].color,
+					data: nodes[i]
+				});
 				nodes_id[i] = cnt;
 				++cnt;
-	        }
+			}
 
 		  score_stats.current_index = already_computed_user_list.length;
 			for (var i = 0; i<score_stats.current_index; i++){
