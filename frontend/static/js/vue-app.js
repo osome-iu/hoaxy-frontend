@@ -1679,12 +1679,6 @@ var app = new Vue({
             this.show_full_articles_list = false;
             this.$nextTick(function(){
                 this.scrollToElement("article_list");
-                if(this.checked_articles.length > 20)
-                {
-                    this.displayError("You can visualize a maximum of 20 articles.");
-                    this.spinStop(true);
-                    return false;
-                }
                 if(this.checked_articles.length <= 0)
                 {
                     this.displayError("Select at least one article to visualize.");
