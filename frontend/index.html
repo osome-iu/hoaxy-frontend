@@ -758,9 +758,17 @@
 					</div>
 					<div class="modal-body" >
 						<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'white':'black' }">
-							<p>Botometer Score:
-								<span v-if="node_modal_content.botscore > 0"><b>{{node_modal_content.botscore}}%</b></span>
-								<span v-if="!node_modal_content.botscore">Unavailable</span>
+							<p>Botometer Score: <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span>
+								<div class="text-center" v-if="node_modal_content.botscore > 0">
+                                    <h1>{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
+                                    <div class="d-flex justify-content-center h3">
+                                        <div class="botimages">
+                                            <div class="images-nots"><div :style="'width: '+node_modal_content.botscore+'%'" class="images-bots"></div></div>
+
+                                        </div>
+                                    </div>
+                                </div>
+
 								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this user's timeline is set to private or has been deleted entirely.</span>
 								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
 							</p>

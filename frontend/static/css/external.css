@@ -1,3 +1,25 @@
+.botimages
+{
+    width: 300px;
+    height: 2em;
+}
+.botimages div
+{
+    background-size: 300px auto;
+    background-position: left center;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+}
+.images-nots
+{
+    background-image: url(/static/5nots.png);
+}
+.images-bots
+{
+    background-image: url(/static/5bots.png);
+}
+
 
 #tutorial
 {
