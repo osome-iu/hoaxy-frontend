@@ -402,33 +402,40 @@ li
 
 #bot_legend_gradient
 {
-    width: 30rem;
-    max-width: 40vh;
-    height: 2rem;
+    width: 4rem;
     position: absolute;
-    transform: rotate(90deg);
-    transform-origin: left top;
-    left: 100%;
-    /*margin-left: -1rem;*/
+    right: 0;
 }
-#bot_legend_gradient div
+.bot_legend_section
 {
-    position: absolute;
-    line-height: 2rem;
-    height: 2rem;
+    /* line-height: 6rem; */
+    height: 6rem;
+    max-height: 9vh;
     vertical-align: middle;
+    padding-right: .75rem;
+}
+.bot_legend_section span
+{
+    transform: rotate(90deg);
     color: white;
+    font-weight: bold;
 }
-#bot_legend_gradient div:first-child
+.likely_human, .likely_bot
 {
-    left: .5rem;
+    position: relative;
+    transform: rotate(90deg);
+    transform-origin: center center;
+    color: white;
+    right: -1.25rem;
 }
-#bot_legend_gradient div:last-child
+.likely_bot
 {
-    right: .5rem;
+    top: 2.75rem;
 }
-
-
+.likely_human
+{
+    bottom: 4.25rem;
+}
 
 
 #focus_label
