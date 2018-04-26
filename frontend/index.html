@@ -536,19 +536,19 @@
 						>
 							<div class="likely_bot">Bot-like</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" :style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
-								<span>100 users</span>
+								<span v-text="botscoreCount(.8, 1.1) + ' users'">100 users</span>
 							</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ','+ colors.node_colors.botscores[1].blue + ', .9)'">
-								<span>200 users</span>
+								<span v-text="botscoreCount(.6, .8) + ' users'">200 users</span>
 							</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ','+ colors.node_colors.botscores[2].blue + ', .9)'">
-								<span>500 users</span>
+								<span v-text="botscoreCount(.4, .6) + ' users'">500 users</span>
 							</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ','+ colors.node_colors.botscores[3].blue + ', .9)'">
-								<span>300 users</span>
+								<span v-text="botscoreCount(.2, .4) + ' users'">300 users</span>
 							</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section rounded-bottom" :style="'background-color: rgba('+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ', .9)'">
-								<span>100 users</span>
+								<span v-text="botscoreCount(0, .20) + ' users'">100 users</span>
 							</div>
 							<div class="likely_human">Human-like</div>
 						</div>

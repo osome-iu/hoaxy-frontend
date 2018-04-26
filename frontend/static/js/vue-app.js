@@ -217,6 +217,22 @@ var app = new Vue({
 
     },
     computed: {
+        botscoreCount: function() {
+            return function(min, max) {
+                var scores = Object.values(this.graph.botscores());
+                var filtered_scores = scores.filter(function(val){
+                    if(val.score >= min && val.score < max)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                });
+                return filtered_scores.length;
+            };
+        },
         controls_margin_top: function(){
             var h = document.getElementById('articles_controls') && document.getElementById('articles_controls').offsetHeight;
             var lh = document.getElementById('article_list') && document.getElementById('article_list').offsetHeight;
