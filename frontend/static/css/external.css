@@ -13,11 +13,11 @@
 }
 .images-nots
 {
-    background-image: url(/static/5nots.png);
+    background-image: url(../5nots.png);
 }
 .images-bots
 {
-    background-image: url(/static/5bots.png);
+    background-image: url(../5bots.png);
 }
 
 

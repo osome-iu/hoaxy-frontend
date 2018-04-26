@@ -835,7 +835,7 @@
 						<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'white':'black' }">
 							<p>Botometer Score: <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span>
 								<div class="text-center" v-if="node_modal_content.botscore > 0">
-                                    <h1>{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
+                                    <p class="h1">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</p>
                                     <div class="d-flex justify-content-center h3">
                                         <div class="botimages">
                                             <div class="images-nots"><div :style="'width: '+node_modal_content.botscore+'%'" class="images-bots"></div></div>
