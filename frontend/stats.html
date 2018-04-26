@@ -20,10 +20,10 @@
 					<a class="nav-link" :class="{'active':active_tab == 'popular_articles'}" href="#popular_articles" role="tab" @click="active_tab = 'popular_articles'">Popular Articles</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" :class="{'active':active_tab == 'influential_users'}" href="#influential_users" role="tab" @click="active_tab = 'influential_users'">Influential Users</a>
+					<a class="nav-link" :class="{'active':active_tab == 'influential_users'}" href="#influential_users" role="tab" @click="active_tab = 'influential_users'">Influential Accounts</a>
 				</li>
 				<li class="nav-item">
-					<a class="nav-link" :class="{'active':active_tab == 'active_users'}" href="#active_users" role="tab" @click="active_tab = 'active_users'">Active Users</a>
+					<a class="nav-link" :class="{'active':active_tab == 'active_users'}" href="#active_users" role="tab" @click="active_tab = 'active_users'">Active Accounts</a>
 				</li>
 			</ul>
 		</nav>
@@ -60,7 +60,7 @@
 			<section class="tab-pane container-fluid" role="tabpanel" id="" v-if="active_tab=='influential_users'">
 				<div class="row">
 					<div class="col-md-6" v-for="(spreaders, type) in influential_users">
-						<p>Most influential users sharing <span class="">{{formatArticleType(type)}}</span> in the last month</p>
+						<p>Most influential accounts sharing <span class="">{{formatArticleType(type)}}</span> in the last month</p>
 						<div class="table-responsive" :id="'influential_users_' + type">
 							<table class="table table-striped">
 								<tr>
@@ -74,7 +74,7 @@
 									<td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
 								</tr>
 								<tr v-if="spreaders.length == 0">
-									<td colspan="3">Could not find any users</td>
+									<td colspan="3">Could not find any accounts</td>
 								</tr>
 							</table>
 						</div>
@@ -86,7 +86,7 @@
 			<section class="tab-pane container-fluid" role="tabpanel" id="" v-if="active_tab=='active_users'" >
 				<div class="row">
                     <div class="col-md-6" v-for="(spreaders, type) in active_users">
-						<p>Most active users sharing <span class="">{{formatArticleType(type)}}</span> articles in the last month</p>
+						<p>Most active accounts sharing <span class="">{{formatArticleType(type)}}</span> articles in the last month</p>
 						<div class="table-responsive" :id="'influential_users_' + type">
 							<table class="table table-striped">
 								<tr>
@@ -100,7 +100,7 @@
 									<td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
 								</tr>
 								<tr v-if="spreaders.length == 0">
-									<td colspan="3">Could not find any users</td>
+									<td colspan="3">Could not find any accounts</td>
 								</tr>
 							</table>
 						</div>

@@ -539,18 +539,18 @@
                         </div>
                     </div>
                     <div class="mt-2 p-2 text-center">
-                        <div class="row" style="cursor: pointer" @click="info_text='Each circular node represents a twitter user. The larger the circle, the more popular the user. Colors indicate the likelyhood that the user is a bot.'">
+                        <div class="row" style="cursor: pointer" @click="info_text='Each circular node represents a twitter account. The larger the circle, the more popular the account. Colors indicate the likelyhood that the account is a bot.'">
                             <div class="p-1 text-right col-6">
                                 <i class="fa fa-circle-o" aria-hidden="true"></i>
                                 <i class="fa fa-circle-o fa-lg" aria-hidden="true"></i>
                             </div>
                             <div class="p-1 text-left col-6">
 								<i class="float-right pr-2 info-button fa fa-question-circle" aria-hidden="true"></i>
-                                Users
+                                Accounts
 
                             </div>
                         </div>
-                        <div class="row"  style="cursor: pointer" @click="info_text='The edges that connect the nodes represent tweets that connect users through retweets or mentions.  The direction of the arrow indicates the flow of information. The color of the edge indicates whether the tweet contains a link to a claim or a link to a fact-checking article'">
+                        <div class="row"  style="cursor: pointer" @click="info_text='The edges that connect the nodes represent tweets that connect accounts through retweets or mentions.  The direction of the arrow indicates the flow of information. The color of the edge indicates whether the tweet contains a link to a claim or a link to a fact-checking article'">
                             <div class="p-1 text-right col-6">
                                 <i class="fa fa-long-arrow-left" aria-hidden="true"></i>
                                 <i class="fa fa-long-arrow-right" aria-hidden="true"></i>
@@ -564,7 +564,7 @@
                 </div>
 
                 <div style="cursor: pointer"
-					@click="info_text='The color of a node indicates the twitter user\'s likelyhood of being either a bot or a human.  Scores are calculated using Botometer\'s algorithms and information from a user\'s twitter timeline.  For more information, see the FAQ.'"
+					@click="info_text='The color of a node indicates the twitter account\'s likelyhood of being either a bot or a human.  Scores are calculated using Botometer\'s algorithms and information from a account\'s twitter timeline.  For more information, see the FAQ.'"
 					v-if="show_zoom_buttons"
 					id="bot_legend"
 					class="text-right p-2">
@@ -574,19 +574,19 @@
 						>
 							<div class="likely_bot">Bot-like</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" :style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
-								<span v-text="botscoreCount(.8, 1.1) + ' users'">100 users</span>
+								<span v-text="botscoreCount(.8, 1.1)">100</span>
 							</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ','+ colors.node_colors.botscores[1].blue + ', .9)'">
-								<span v-text="botscoreCount(.6, .8) + ' users'">200 users</span>
+								<span v-text="botscoreCount(.6, .8)">200</span>
 							</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ','+ colors.node_colors.botscores[2].blue + ', .9)'">
-								<span v-text="botscoreCount(.4, .6) + ' users'">500 users</span>
+								<span v-text="botscoreCount(.4, .6)">500</span>
 							</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ','+ colors.node_colors.botscores[3].blue + ', .9)'">
-								<span v-text="botscoreCount(.2, .4) + ' users'">300 users</span>
+								<span v-text="botscoreCount(.2, .4)">300</span>
 							</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section rounded-bottom" :style="'background-color: rgba('+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ', .9)'">
-								<span v-text="botscoreCount(0, .20) + ' users'">100 users</span>
+								<span v-text="botscoreCount(0, .20)">100</span>
 							</div>
 							<div class="likely_human">Human-like</div>
 						</div>
@@ -828,7 +828,7 @@
 					<div class="modal-header">
 						<button type="button" class="close" @click.stop="toggleNodeModal()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title text-center" id="nodeModalLabel">
-							User:  <a target="_blank" v-bind:href="'https://twitter.com/' + node_modal_content.screenName">@{{node_modal_content.screenName}}</a>
+							Account:  <a target="_blank" v-bind:href="'https://twitter.com/' + node_modal_content.screenName">@{{node_modal_content.screenName}}</a>
 						</h4>
 					</div>
 					<div class="modal-body" >
@@ -844,7 +844,7 @@
                                     </div>
                                 </div>
 
-								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this user's timeline is set to private or has been deleted entirely.</span>
+								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this account's timeline is set to private or has been deleted entirely.</span>
 								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
 							</p>
 							<p v-if="">
@@ -875,7 +875,7 @@
 						</div>
 						<h2>has quoted: <span v-if="node_modal_content.has_quoted_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.has_quoted">
-							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a> </h3>
+							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a> </h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
 									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
@@ -885,7 +885,7 @@
 
 						<h2>was quoted by: <span v-if="node_modal_content.is_quoted_by_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.is_quoted_by">
-							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
 									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
@@ -893,7 +893,7 @@
 						</template>
 						<h2>has mentioned: <span v-if="node_modal_content.has_mentioned_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.has_mentioned">
-							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
 									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
@@ -901,7 +901,7 @@
 						</template>
 						<h2>was mentioned by: <span v-if="node_modal_content.is_mentioned_by_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.is_mentioned_by">
-							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
 									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
@@ -909,7 +909,7 @@
 						</template>
 						<h2>has retweeted: <span v-if="node_modal_content.has_retweeted_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.has_retweeted">
-							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
 									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
@@ -917,7 +917,7 @@
 						</template>
 						<h2>was retweeted by: <span v-if="node_modal_content.is_retweeted_by_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.is_retweeted_by">
-							<h3>User:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
+							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
 									<div class='article_headline'>{{title}}</div>
 									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
