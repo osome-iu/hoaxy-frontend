@@ -222,8 +222,26 @@ var app = new Vue({
 
     },
     computed: {
+<<<<<<< HEAD
         all_selected: function(){
             return this.checked_articles.length === 20;
+=======
+        botscoreCount: function() {
+            return function(min, max) {
+                var scores = Object.values(this.graph.botscores());
+                var filtered_scores = scores.filter(function(val){
+                    if(val.score >= min && val.score < max)
+                    {
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                });
+                return filtered_scores.length;
+            };
+>>>>>>> master
         },
         controls_margin_top: function(){
             var h = document.getElementById('articles_controls') && document.getElementById('articles_controls').offsetHeight;
