@@ -5,10 +5,37 @@ function TwitterSearchTimeline(settings){
 	var returnObj = {};
 	var chart = null;
 	var lastData = null;
+	var chartData = [];
+	var chartDataWithTweetRates = {};
 
 	chart = nv.models.lineWithFocusChart()
 		.showLegend(false)
 		.useInteractiveGuideline(true);
+
+	// Including interactive tooltips that contain the time period date
+	// Along with the new tweets on that time period
+	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
+			var currentTimeStepIndex = chartData.index;
+
+			// Returning formatted and styled tooltip
+			return "<div><b>" + String(chartData.value)
+												+ "</b></div>"
+												+ "<div style='display:flex;\
+																			 justify-content:left;\
+																			 align-items:center;'>\
+													    <div style='display:inline-block;\
+																					margin:5px;\
+																					width:10px;\
+																					height:10px;\
+																					background-color:"
+																					+ String(colors.edge_colors.claim)
+																					+ ";'>\
+															</div>\
+															<div>New Tweets: "
+															+ String(chartDataWithTweetRates[0].values[currentTimeStepIndex].y)
+															+ "</div>\
+						  						</div>";
+	});
 
 	chart.margin({right: 70, bottom: 50})
 
@@ -20,10 +47,9 @@ function TwitterSearchTimeline(settings){
 		.ticks(5);
 
 	chart.forceY([0])
-	chart.yAxis.axisLabel("Tweets");
+	chart.yAxis.axisLabel("Cumulative Tweets");
 
 	chart.color([colors.edge_colors.claim, "#00ff00"]); //color match with those of nodes
-	var chartData = [];
 
 	function redraw(){
 		if(chart)
@@ -40,6 +66,22 @@ function TwitterSearchTimeline(settings){
 
 	function dateFormatter(d) {
 		return d3.time.format('%m/%d/%Y %H:%M:%S %p')(new Date(d))
+	}
+
+	function calculateTweetRates(chartData) {
+		// Deep copy of the chart data as any shallow copy will mess up
+		// The timeline itself, we only use this new copy for the
+		// Computed tooltips
+		chartDataWithTweetRates = JSON.parse(JSON.stringify(chartData));
+
+		var previousTimestepTweets = 0;
+		var numTimeIncrements = chartDataWithTweetRates[0].values.length;
+
+		for (var i = 0; i < numTimeIncrements; i++) {
+			var currentTweets = chartDataWithTweetRates[0].values[i].y;
+		  chartDataWithTweetRates[0].values[i].y = currentTweets - previousTimestepTweets;
+			previousTimestepTweets = currentTweets;
+		}
 	}
 
 	var debounce_timer = 0;
@@ -131,6 +173,7 @@ function TwitterSearchTimeline(settings){
 		};
 
 		chartData.push(tweet_series);
+		calculateTweetRates(chartData);
 
 		// This adds an event handler to the focus chart
 		try {

@@ -5,10 +5,52 @@ function HoaxyTimeline(settings){
 	var returnObj = {};
 	var chart = null;
 	var lastData = null;
+	var chartData = [];
+	var chartDataWithTweetRates = {};
 
 	chart = nv.models.lineWithFocusChart()
 		.showLegend(false)
 		.useInteractiveGuideline(true);
+
+	// Including interactive tooltips that contain the time period date
+	// Along with the new claims and fact checks for that period
+	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
+			var currentTimeStepIndex = chartData.index;
+
+			// Returning formatted and styled tooltip
+			return "<div><b>" + String(chartData.value)
+												+ "</b></div>"
+												+ "<div style='display:flex;\
+																			 justify-content:left;\
+																			 align-items:center;'>\
+													    <div style='display:inline-block;\
+																					margin:5px;\
+																					width:10px;\
+																					height:10px;\
+																					background-color:"
+																					+ String(colors.edge_colors.claim)
+																					+ ";'>\
+															</div>\
+															<div>New Claims: "
+															+ String(chartDataWithTweetRates[0].values[currentTimeStepIndex].y)
+															+ "</div>\
+						  						</div>"
+													+ "<div style='display:flex;\
+																				 justify-content:left;\
+																				 align-items:center;'>\
+																<div style='display:inline-block;\
+																						margin:5px;\
+																						width:10px;\
+																						height:10px;\
+																						background-color:"
+																						+ String(colors.edge_colors.fact_checking)
+																						+ ";'>\
+																</div>\
+																<div>New Fact-Checks: "
+																+ String(chartDataWithTweetRates[1].values[currentTimeStepIndex].y)
+																+ "</div>\
+														</div>";
+	});
 
 	chart.margin({right: 50, bottom: 50});
 
@@ -17,10 +59,9 @@ function HoaxyTimeline(settings){
 	chart.x2Axis
 		.tickFormat(dateFormatter);
 	chart.forceY([0])
-	chart.yAxis.axisLabel("Tweets");
+	chart.yAxis.axisLabel("Cumulative Tweets");
 
 	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking, "#00ff00"]); //color match with those of nodes
-	var chartData = [];
 
 	function redraw(){
 		if(chart)
@@ -38,6 +79,31 @@ function HoaxyTimeline(settings){
 
 	function dateFormatter(d) {
 		return d3.time.format('%x')(new Date(d))
+	}
+
+	function calculateTweetRates(chartData) {
+		// Deep copy of the chart data as any shallow copy will mess up
+		// The timeline itself, we only use this new copy for the
+		// Computed tooltips
+		chartDataWithTweetRates = JSON.parse(JSON.stringify(chartData));
+
+		var previousTimestepClaims = 0;
+		var previousTimestepFactChecks = 0;
+		var numTimeIncrements = chartDataWithTweetRates[0].values.length;
+
+		for (var i = 0; i < numTimeIncrements; i++) {
+			// Calculating New Claims for time stsep
+			var currentClaims = chartDataWithTweetRates[0].values[i].y;
+		  chartDataWithTweetRates[0].values[i].y =
+				currentClaims - previousTimestepClaims;
+			previousTimestepClaims = currentClaims;
+
+			// Calculating New Fact Checks for time step
+			var currentFactChecks = chartDataWithTweetRates[1].values[i].y;
+			chartDataWithTweetRates[1].values[i].y =
+				currentFactChecks - previousTimestepFactChecks;
+			previousTimestepFactChecks = currentFactChecks;
+		}
 	}
 
 	var debounce_timer = 0;
@@ -150,6 +216,7 @@ function HoaxyTimeline(settings){
 
 		chartData.push(fake_series);
 		chartData.push(factChecking_series);
+		calculateTweetRates(chartData);
 		// console.debug(factChecking_series);
 
 		// chartData.push({
