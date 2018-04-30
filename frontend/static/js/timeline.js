@@ -15,7 +15,23 @@ function HoaxyTimeline(settings){
 	// Including interactive tooltips that contain the time period date
 	// Along with the new claims and fact checks for that period
 	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
-			var currentTimeStepIndex = chartData.index;
+			var currentTimeStepIndex;
+			// Date comes from Hoaxy as MM/DD/YYYY in this timeline as non-utc
+			var currDateNonUTC = new Date(chartData.value);
+			// Converting the date to a UTC timestamp value
+			var currentTimeStepDate = currDateNonUTC.getTime() -
+				currDateNonUTC.getTimezoneOffset() * 60000;
+
+			// Finding the date match from the chartDataWithTweetRates object
+			// We tried to directly use indexes before but indexes get changed
+			// Due to the way D3js handles tooltips/charts
+			for (dateRateIx in chartDataWithTweetRates[0].values) {
+				var dateRateMatch =
+					new Date(chartDataWithTweetRates[0].values[dateRateIx].x).getTime();
+				if (currentTimeStepDate === dateRateMatch) {
+					currentTimeStepIndex = dateRateIx;
+				}
+			}
 
 			// Returning formatted and styled tooltip
 			return "<div><b>" + String(chartData.value)
@@ -269,7 +285,6 @@ function HoaxyTimeline(settings){
 				// c: "#00ff00"
 
 			};
-
 			// chartData[2].values = [
 			// 		{ x: new Date(graphAnimation.current_timestamp), y: 0},
 			// 		{ x: new Date(graphAnimation.current_timestamp), y: max}
@@ -279,7 +294,7 @@ function HoaxyTimeline(settings){
 		{
 			delete chartData[2];
 		}
-		// console.debug(chartData);
+
 		chart.dispatch.on("brush", null);
 		d3.select('#chart svg')
 		.datum(chartData)

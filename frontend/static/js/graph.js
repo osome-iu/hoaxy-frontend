@@ -599,9 +599,6 @@ function HoaxyGraph(options)
 
 	function UpdateGraph(start_time, end_time)
 	{
-		// First we disable any animation that is currently running
-		StopAnimation();
-
 		clearTimeout(animationTimeout);
 
 		// spinStart("updateNetwork");
@@ -1442,9 +1439,8 @@ function HoaxyGraph(options)
 		// If the timeline has been animated before we want to bring the tick to the end and show all edges
 		if (graphAnimation.current_timestamp > timespan.start_time) {
 			FilterEdges((new Date()).getTime());
-			graphAnimation.current_timestamp = timespan.end_time;
 		}
-		graphAnimation.increment = 0;
+
 		graphAnimation.playing  = false;
 		graphAnimation.paused = false;
 		console.debug(graphAnimation.current_timestamp);

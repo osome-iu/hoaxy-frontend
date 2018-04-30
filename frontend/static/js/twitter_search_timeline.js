@@ -15,7 +15,33 @@ function TwitterSearchTimeline(settings){
 	// Including interactive tooltips that contain the time period date
 	// Along with the new tweets on that time period
 	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
-			var currentTimeStepIndex = chartData.index;
+			var currentTimeStepIndex;
+			// In Twitter case, we convert data from: MM/DD/YYYY HH:MM:DD (AM/PM)
+			// and extract all components to create a date
+			var fullRawDate = chartData.value;
+			var dateSplits = fullRawDate.split(' ');
+			var monthDayYear = dateSplits[0].split('/');
+			var month = monthDayYear[0];
+			var day = monthDayYear[1];
+			var year = monthDayYear[2];
+			var hoursMinutesSeconds = dateSplits[1].split(':');
+			var hours = hoursMinutesSeconds[0];
+			var minutes = hoursMinutesSeconds[1];
+			var seconds = hoursMinutesSeconds[2];
+
+			// We subtract 1 from month because Date takes 0 indexed months
+			var currentTimeStepDate = new Date(parseInt(year), parseInt(month)-1,
+				parseInt(day), parseInt(hours), parseInt(minutes), parseInt(seconds)).getTime();
+			// Finding the date match from the chartDataWithTweetRates object
+			// We tried to directly use indexes before but indexes get changed
+			// Due to the way D3js handles tooltips/charts
+			for (dateRateIx in chartDataWithTweetRates[0].values) {
+				var dateRateMatch =
+					new Date(chartDataWithTweetRates[0].values[dateRateIx].x).getTime();
+				if (currentTimeStepDate === dateRateMatch) {
+					currentTimeStepIndex = dateRateIx;
+				}
+			}
 
 			// Returning formatted and styled tooltip
 			return "<div><b>" + String(chartData.value)
@@ -198,6 +224,8 @@ function TwitterSearchTimeline(settings){
 	}
 
 	function UpdateTimestamp(){
+		// console.log('CALLING CHART DATA UPDATE TIMESTAMP PRE');
+		// console.log(chartData);
 		if(graphAnimation.current_timestamp)
 		{
 
@@ -215,23 +243,25 @@ function TwitterSearchTimeline(settings){
 		{
 			delete chartData[1];
 		}
+
 		chart.dispatch.on("brush", null);
 		d3.select('#chart svg')
 		.datum(chartData)
 		.call(chart);
 		chart.dispatch.on("brush", updateDateRange);
 
+
 		// The twitter tooltip only contains tweets and time, so we must hide the second element (time) from the tooltip
 		// This is set up here (adding class twitter_tooltip) and executed in the external.css file
-		try {
-			var twitter_tooltip = document.querySelector('[id^="nvtooltip-"]');
-			twitter_tooltip.className += " twitter_tooltip";
-		}
-		catch(err) {
-	    // In the current design, the chart keeps getting re-drawn so we must keep having to hide this tooltip. However,
-			// Sometimes the nvtooltip element is not found so we have a catch block for this. When time allows, a better
-			// Design for hiding this tooltip can be implemented.
-		}
+		// try {
+		// 	var twitter_tooltip = document.querySelector('[id^="nvtooltip-"]');
+		// 	twitter_tooltip.className += " twitter_tooltip";
+		// }
+		// catch(err) {
+	  //   // In the current design, the chart keeps getting re-drawn so we must keep having to hide this tooltip. However,
+		// 	// Sometimes the nvtooltip element is not found so we have a catch block for this. When time allows, a better
+		// 	// Design for hiding this tooltip can be implemented.
+		// }
 
 	}
 
