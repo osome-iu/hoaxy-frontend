@@ -424,21 +424,23 @@ li
     position: absolute;
     right: 0;
 }
+
 .bot_legend_section
 {
     /* line-height: 6rem; */
     height: 6rem;
     max-height: 9vh;
-    vertical-align: middle;
-    padding-right: .75rem;
+    vertical-align: center;
+    /* padding-right: .75rem; */
 }
 .bot_legend_section span
 {
-    transform: rotate(90deg);
+    /* transform: rotate(90deg); */
     color: white;
-    font-weight: bold;
+    /* font-weight: bold; */
 }
-.likely_human, .likely_bot
+
+/* .likely_human, .likely_bot
 {
     position: relative;
     transform: rotate(90deg);
@@ -453,7 +455,7 @@ li
 .likely_human
 {
     bottom: 4.25rem;
-}
+} */
 
 
 #focus_label

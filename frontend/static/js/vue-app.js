@@ -1449,7 +1449,7 @@ var app = new Vue({
         },
         stopGraphAnimation: function(){
             this.graph.stopAnimation();
-            // this.graphAnimation.current_timestamp = 0;
+            this.graphAnimation.current_timestamp = 0;
         },
         pauseGraphAnimation: function(){
             this.graph.pauseAnimation();
