@@ -534,9 +534,13 @@
 						class="rounded d-flex flex-column"
 						id="bot_legend_gradient"
 						>
-							<div class="likely_bot">Bot-like</div>
-							<div class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" :style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
-								<span v-text="botscoreCount(.8, 1.1)">100</span>
+							<!-- <div class="likely_bot">Bot-like</div> -->
+							<div class="d-flex justify-content-center align-items-start bot_legend_section rounded-top" :style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
+								<div>
+									<span class="d-flex justify-content-center font-weight-bold">Bot</span>
+									<span class="d-flex justify-content-center font-weight-bold">Like</span>
+									<span class="mt-3 d-flex justify-content-center" v-text="botscoreCount(.8, 1.1)">100</span>
+								</div>
 							</div>
 							<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ','+ colors.node_colors.botscores[1].blue + ', .9)'">
 								<span v-text="botscoreCount(.6, .8)">200</span>
@@ -547,10 +551,14 @@
 							<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ','+ colors.node_colors.botscores[3].blue + ', .9)'">
 								<span v-text="botscoreCount(.2, .4)">300</span>
 							</div>
-							<div class="d-flex justify-content-center align-items-center bot_legend_section rounded-bottom" :style="'background-color: rgba('+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ', .9)'">
-								<span v-text="botscoreCount(0, .20)">100</span>
+							<div class="d-flex justify-content-center align-items-end bot_legend_section rounded-bottom" :style="'background-color: rgba('+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ', .9)'">
+								<div>
+									<span class="mb-3 d-flex justify-content-center" v-text="botscoreCount(0, .20)">100</span>
+									<span class="d-flex justify-content-center font-weight-bold">Human</span>
+									<span class="d-flex justify-content-center font-weight-bold">Like</span>
+								</div>
 							</div>
-							<div class="likely_human">Human-like</div>
+							<!-- <div class="likely_human">Human-like</div> -->
 						</div>
 
 				</div>
