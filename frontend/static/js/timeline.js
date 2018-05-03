@@ -16,11 +16,9 @@ function HoaxyTimeline(settings){
 	// Along with the new claims and fact checks for that period
 	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
 			var currentTimeStepIndex;
-			// Date comes from Hoaxy as MM/DD/YYYY in this timeline as non-utc
-			var currDateNonUTC = new Date(chartData.value);
-			// Converting the date to a UTC timestamp value
-			var currentTimeStepDate = currDateNonUTC.getTime() -
-				currDateNonUTC.getTimezoneOffset() * 60000;
+			// Date comes from Hoaxy as MM/DD/YYYY in this timeline as local time zone
+			var currDateLocal = new Date(chartData.value);
+			var currentTimeStepDate = currDateLocal.getTime();
 
 			// Finding the date match from the chartDataWithTweetRates object
 			// We tried to directly use indexes before but indexes get changed
@@ -107,7 +105,18 @@ function HoaxyTimeline(settings){
 		var previousTimestepFactChecks = 0;
 		var numTimeIncrements = chartDataWithTweetRates[0].values.length;
 
+		// Calculating rates
 		for (var i = 0; i < numTimeIncrements; i++) {
+			// Converting the chartDataWithTweetRates from UTC to local time zone
+			// And truncating the hours/days/minutes as in chartData
+			var oldDate = new Date(chartDataWithTweetRates[0].values[i].x);
+			var year = oldDate.getFullYear();
+			var month = oldDate.getMonth();
+			var day = oldDate.getDate();
+			var newDate = new Date(year, month, day);
+			chartDataWithTweetRates[0].values[i].x = newDate;
+			chartDataWithTweetRates[1].values[i].x = newDate;
+
 			// Calculating New Claims for time stsep
 			var currentClaims = chartDataWithTweetRates[0].values[i].y;
 		  chartDataWithTweetRates[0].values[i].y =
@@ -182,7 +191,6 @@ function HoaxyTimeline(settings){
 		time = data.claim.timestamp,
 		volume_factchecking = data.fact_checking.volume, volume_fake = data.claim.volume,
 		factChecking_values = [], fake_values = [];
-
 
 		for (var i in volume_fake)
 		{
