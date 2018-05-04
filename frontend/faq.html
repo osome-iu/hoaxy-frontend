@@ -15,14 +15,41 @@
         <section id="faq" class="container-fluid">
         	<div class="container">
         		<dl>
-        			<dt>Q: What is Hoaxy&reg;?</dt>
+							<dt>FAQ Index</dt>
+							<ul>
+								<li class="mb-0 pb-0"><a href="#faq-q1">Q: What is Hoaxy?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q2">Q: How does it work?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q3">Q: What is a “claim”? Who decides what is true or not?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q4">Q: Do you have an editorial team?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q5">Q: What does the visualization show?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q6">Q: What is the difference between bot score and Complete Automation Probability (CAP)?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q7">Q: How are bot scores and Complete Automation Probabilities (CAPs) calculated?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q8">Q: What if I see some bot scores that are wrong? How can I help?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q9">Q: What are Trending News, Popular Claims, and Fact-Checks in the landing page panel?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q10">Q: What is the difference between Hoaxy search and Twitter search?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q11">Q: How do you match claims to fact-checks?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q12">Q: How does Hoaxy track the spread of articles?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q13">Q: What is the source of social media data?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q14">Q: How do I add a Hoaxy story to my own website?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q15">Q: Can I download the results of a story on my own computer?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q16">Q: Do you access any private conversations?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q17">Q: Do you provide an API to the data you collect?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q18">Q: Can I cite Hoaxy in my work?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q19">Q: What technology does Hoaxy use?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q20">Q: Is Hoaxy open source?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q21">Q: Why am I asked to log in using my Twitter account?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q22">Q: Who are the Hoaxy developers?</a></li>
+								<li class="mb-0 pb-0"><a href="#faq-q23">Q: How can I contact the Hoaxy team?</a></li>
+							</ul>
+
+        			<dt id="faq-q1">Q: What is Hoaxy?</dt>
         			<dd>
         				A: Hoaxy visualizes the spread of articles online. Articles can
 								be found on Twitter, or in a corpus of claims and related fact checking.
         			</dd>
 
 
-        			<dt>Q: How does it work?</dt>
+        			<dt id="faq-q2">Q: How does it work?</dt>
         			<dd>
         				A: The Hoaxy corpus tracks the social sharing of links to
 								stories published by two types of websites: (1) Low-credibility
@@ -35,7 +62,7 @@
 								and factcheck.org, that routinely fact check unverified claims.
         			</dd>
 
-							<dt>Q: What is a “claim”? Who decides what is true or not?</dt>
+							<dt id="faq-q3">Q: What is a “claim”? Who decides what is true or not?</dt>
         			<dd>
         				A: <u>We do <em>not</em> decide what is true or false</u>.
 								Low-credibility sources often publish false news, hoaxes,
@@ -51,7 +78,7 @@
 								its rebuttals.
         			</dd>
 
-							<dt>Q: Do you have an editorial team? </dt>
+							<dt id="faq-q4">Q: Do you have an editorial team?</dt>
         			<dd>
 								A: No. Hoaxy tracks claims and fact checks automatically, 24/7.
 								We do not read the contents of the articles we track.
@@ -60,15 +87,15 @@
 								fact check.
 							</dd>
 
-        			<dt>Q: What does the visualization show?</dt>
+        			<dt id="faq-q5">Q: What does the visualization show?</dt>
         			<dd>
-								A: Hoaxy® visualizes two aspects of the spread of claims and
+								A: Hoaxy visualizes two aspects of the spread of claims and
 								fact checking: temporal trends and diffusion networks. Temporal
 								trends plot the cumulative number of Twitter shares over time.
 								The user can zoom in on any time interval. Diffusion networks
 								display how claims spread from person to person. Each node is
-								a Twitter account and two nodes are connected if a meme
-								(link to a story) is passed between those two accounts via
+								a Twitter account and two nodes are connected if a link to a
+								story is passed between those two accounts via
 								retweets, replies, quotes, or mentions. The color of a
 								connection indicates the type of information: claims and fact
 								checks. Clicking on an edge reveals the tweet(s) and the link
@@ -77,7 +104,7 @@
 								performance.
         			</dd>
 
-							<dt>Q: What is the difference between bot score and Complete
+							<dt id="faq-q6">Q: What is the difference between bot score and Complete
 								Automation Probability (CAP)?
 							</dt>
 							<dd>
@@ -85,10 +112,10 @@
 								automation of an account, where a 5 may indicate a large
 								amount of automation, and 0 may indicate little to no
 								automation.  The Complete Automation Probability (CAP) is the
-								estimated probability that the account is a fully automated bot
+								estimated probability that the account is a fully automated bot.
 							</dd>
 
-							<dt>How are bot scores and Complete Automation Probabilities
+							<dt id="faq-q7">Q: How are bot scores and Complete Automation Probabilities
 								(CAPs) calculated?
 							</dt>
 							<dd>
@@ -101,24 +128,24 @@
 									 target="_blank">Botometer FAQ</a>.
 							</dd>
 
-							<dt>Q: What if I see some bot scores that are wrong?
+							<dt id="faq-q8">Q: What if I see some bot scores that are wrong?
 									How can I help?
 							</dt>
 							<dd>
 								A: Social bot detection is a hard problem.  We are constantly
 								improving our tool’s accuracy, but there will be accounts that
 								our tool fails to classify. You can assist us in making more
-								accurate classifications. When you see accounts that you
-								recognize, either because one of them is your own or because
-								you have information that allows you to recognize them as most
-								likely humans or most likely bots, you can provide feedback on
-								those accounts. Do this by clicking on the account (node) and
+								accurate classifications. You might recognize your own account.
+								Or you might have information that allows you to recognize some
+								other account as most likely human or bot. In these cases,
+								you can provide feedback on those accounts. Do this by
+								clicking on the account (node) and
 								then the “Bot Score Feedback” button. Feedback helps us better
 								distinguish between humans, bots, and everything in between,
 								so your help is greatly appreciated.
 							</dd>
 
-							<dt>Q: What are Trending News, Popular Claims, and Fact-Checks in
+							<dt id="faq-q9">Q: What are Trending News, Popular Claims, and Fact-Checks in
 								the landing page panel?
 							</dt>
 							<dd>
@@ -131,7 +158,7 @@
 								organizations.
 							</dd>
 
-							<dt>Q: What is the difference between Hoaxy search and Twitter
+							<dt id="faq-q10">Q: What is the difference between Hoaxy search and Twitter
 									search?
 							</dt>
 							<dd>
@@ -143,7 +170,7 @@
 									 target="_blank">Hoaxy API</a>
 								to retrieve relevant articles, accounts, and
 								tweets. The Twitter search lets users track articles from any
-								sources posted on Twitter during the 7 days. This mode uses
+								sources posted on Twitter during the last 7 days. This mode uses
 								the
 								<a href="https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"
 									 target="_blank">Twitter Search API</a>
@@ -153,7 +180,7 @@
 									 target="_blank">advanced search operators</a>.
 							</dd>
 
-        			<dt>Q: How do you match claims to fact-checks? </dt>
+        			<dt id="faq-q11">Q: How do you match claims to fact-checks? </dt>
         			<dd>
 								A: We use search engine technology (think of Google) to
 								retrieve claims and fact checks. The user enters a query and
@@ -163,25 +190,24 @@
 								fact-checking articles to be visualized.
         			</dd>
 
-        			<dt>Q: How do you track the spread of a claim?</dt>
+        			<dt id="faq-q12">Q: How does Hoaxy track the spread of articles?</dt>
         			<dd>
 								A: We collect public tweets that include links to stories.
 								We then fetch the page linked in the tweet and store the URL
 								and the text of the page of the article, adding them to our
 								corpus together with the tweet. When the user submits a query
-								we match the most relevant or recent articles
-								(claims and fact checks) and select all the tweets that
-								linked to them. These tweets are displayed in the interactive
-								visualizations.
+								in Hoaxy search mode, we match the most relevant or recent
+								articles (claims and fact checks) and select all the tweets
+								that linked to them.
         			</dd>
 
 
-        			<dt>Q: What is the source of social media data?</dt>
+        			<dt id="faq-q13">Q: What is the source of social media data?</dt>
         			<dd>
         				A: At the moment we only collect data from Twitter.
         			</dd>
 
-							<dt>Q: How do I add a Hoaxy story to my own website?</dt>
+							<dt id="faq-q14">Q: How do I add a Hoaxy story to my own website?</dt>
         			<dd>
 								A: Click the “Embed” button at the bottom of the middle
 								navigation menu. Then, copy the code in the popup and paste
@@ -191,7 +217,7 @@
 								similar to the one in the popup.
         			</dd>
 
-							<dt>Q: Can I download the results of a story on my own computer?</dt>
+							<dt id="faq-q15">Q: Can I download the results of a story on my own computer?</dt>
         			<dd>
 								A: Yes! Click the “Export” button, found at the bottom of the
 								middle navigation menu.  This should download or ask you
@@ -203,13 +229,13 @@
         			</dd>
 
 
-        			<dt>Q: Do you access any private conversations?</dt>
+        			<dt id="faq-q16">Q: Do you access any private conversations?</dt>
         			<dd>
         				A: No, we only access public tweets.
         			</dd>
 
 
-        			<dt>Q: Do you provide an API to the data you collect?</dt>
+        			<dt id="faq-q17">Q: Do you provide an API to the data you collect?</dt>
         			<dd>
         				A: Yes, check out the free
 								<a href="https://market.mashape.com/truthy/hoaxy"
@@ -218,7 +244,7 @@
         			</dd>
 
 
-        			<dt>Q: Can I cite Hoaxy in my work?</dt>
+        			<dt id="faq-q18">Q: Can I cite Hoaxy in my work?</dt>
         			<dd>
 								A: Yes, if you use Hoaxy for your work then please cite the
 								following articles:
@@ -246,7 +272,7 @@
       				</dd>
 
 
-        				<dt>Q: What technology does Hoaxy use?</dt>
+        				<dt id="faq-q19">Q: What technology does Hoaxy use?</dt>
         				<dd>
 									A: Hoaxy is written primarily in Python. On the back-end we
 									use Apache Lucene (for full-text indexing and retrieval),
@@ -265,7 +291,7 @@
 								</dd>
 
 
-        				<dt>Q: Is Hoaxy open source?</dt>
+        				<dt id="faq-q20">Q: Is Hoaxy open source?</dt>
         				<dd>
 									A: Yes. This makes it possible for colleagues, fact checkers,
 									and reporters around the world to deploy versions of the
@@ -283,7 +309,7 @@
 									to let us know if you are using our code.
         				</dd>
 
-								<dt>Q: Why am I asked to log in using my Twitter account?</dt>
+								<dt id="faq-q21">Q: Why am I asked to log in using my Twitter account?</dt>
 	        			<dd>
 									A: To retrieve search results from the Twitter API on your
 									behalf. We also seek your permission to connect to the Twitter
@@ -297,7 +323,7 @@
 										 target="_blank">Botometer FAQ</a>.
 	        			</dd>
 
-        				<dt>Q: Who are the Hoaxy developers?</dt>
+        				<dt id="faq-q22">Q: Who are the Hoaxy developers?</dt>
         				<dd>
         					A: Hoaxy is a joint project of the Indiana University Network
 									Science Institute
@@ -346,7 +372,7 @@
 									   target="_blank">Democracy Fund</a>.
         				</dd>
 
-								<dt>Q: How can I contact the Hoaxy team?</dt>
+								<dt id="faq-q23">Q: How can I contact the Hoaxy team?</dt>
 								<dd>
 									A: The best way to contact the team is by using the
 									<a href="https://osome.iuni.iu.edu/contact/"
