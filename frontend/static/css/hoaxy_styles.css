@@ -775,3 +775,13 @@ white-space: nowrap;
     background-color: #ADADAD;
     border-color: #797979;
 }
+
+/* FAQ Styling */
+dt::before {
+  display: block;
+  content: " ";
+  margin-top: -100px;
+  height: 100px;
+  visibility: hidden;
+  pointer-events: none;
+}
