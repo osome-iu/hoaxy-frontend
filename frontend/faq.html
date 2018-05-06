@@ -12,45 +12,119 @@
 		<!--#set var="subtitle" value="Frequently Asked Questions About Hoaxy" -->
 		<!--#include virtual="./includes/header.html" -->
 
+
+
+				<!-- Currently we use vanilla js to render/view/ and change color of
+			 			 elements in the faq index and faq contents. For optimization
+					   when time allows, we can change this whole process using vue
+					   templates as the code will be more efficient, and maintainable-->
         <section id="faq" class="container-fluid">
         	<div class="container">
         		<dl>
 							<dt>FAQ Index</dt>
 							<ul>
-								<li class="mb-0 pb-0"><a href="#faq-q1">Q: What is Hoaxy?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q2">Q: How does it work?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q3">Q: What is a “claim”? Who decides what is true or not?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q4">Q: Do you have an editorial team?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q5">Q: What does the visualization show?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q6">Q: What is the difference between bot score and Complete Automation Probability (CAP)?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q7">Q: How are bot scores and Complete Automation Probabilities (CAPs) calculated?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q8">Q: What if I see some bot scores that are wrong? How can I help?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q9">Q: What are Trending News, Popular Claims, and Fact-Checks in the landing page panel?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q10">Q: What is the difference between Hoaxy search and Twitter search?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q11">Q: How do you match claims to fact-checks?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q12">Q: How does Hoaxy track the spread of articles?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q13">Q: What is the source of social media data?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q14">Q: How do I add a Hoaxy story to my own website?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q15">Q: Can I download the results of a story on my own computer?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q16">Q: Do you access any private conversations?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q17">Q: Do you provide an API to the data you collect?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q18">Q: Can I cite Hoaxy in my work?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q19">Q: What technology does Hoaxy use?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q20">Q: Is Hoaxy open source?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q21">Q: Why am I asked to log in using my Twitter account?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q22">Q: Who are the Hoaxy developers?</a></li>
-								<li class="mb-0 pb-0"><a href="#faq-q23">Q: How can I contact the Hoaxy team?</a></li>
+								<li v-on:click="changeFaqContentsColor('faq-q1')"
+										class="mb-0 pb-0">
+										<a href="#faq-q1">Q: What is Hoaxy?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q2')"
+										class="mb-0 pb-0">
+										<a href="#faq-q2">Q: How does it work?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q3')"
+										class="mb-0 pb-0">
+										<a href="#faq-q3">Q: What is a “claim”? Who decides what is true or not?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q4')"
+										class="mb-0 pb-0">
+										<a href="#faq-q4">Q: Do you have an editorial team?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q5')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q5">Q: What does the visualization show?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q6')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q6">Q: What is the difference between bot score and Complete Automation Probability (CAP)?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q7')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q7">Q: How are bot scores and Complete Automation Probabilities (CAPs) calculated?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q8')"
+								    class="mb-0 pb-0">
+										<a href="#faq-q8">Q: What if I see some bot scores that are wrong? How can I help?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q9')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q9">Q: What are Trending News, Popular Claims, and Fact-Checks in the landing page panel?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q10')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q10">Q: What is the difference between Hoaxy search and Twitter search?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q11')"
+								    class="mb-0 pb-0">
+										<a href="#faq-q11">Q: How do you match claims to fact-checks?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q12')"
+										class="mb-0 pb-0">
+										<a href="#faq-q12">Q: How does Hoaxy track the spread of articles?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q13')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q13">Q: What is the source of social media data?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q14')"
+										class="mb-0 pb-0">
+										<a href="#faq-q14">Q: How do I add a Hoaxy story to my own website?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q15')"
+										class="mb-0 pb-0">
+										<a href="#faq-q15">Q: Can I download the results of a story on my own computer?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q16')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q16">Q: Do you access any private conversations?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q17')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q17">Q: Do you provide an API to the data you collect?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q18')"
+										class="mb-0 pb-0">
+										<a href="#faq-q18">Q: Can I cite Hoaxy in my work?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q19')"
+										class="mb-0 pb-0"><a href="#faq-q19">Q: What technology does Hoaxy use?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q20')"
+										class="mb-0 pb-0">
+										<a href="#faq-q20">Q: Is Hoaxy open source?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q21')"
+										class="mb-0 pb-0">
+										<a href="#faq-q21">Q: Why am I asked to log in using my Twitter account?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q22')"
+										class="mb-0 pb-0">
+										<a href="#faq-q22">Q: Who are the Hoaxy developers?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q23')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q23">Q: How can I contact the Hoaxy team?</a>
+								</li>
 							</ul>
 
         			<dt id="faq-q1">Q: What is Hoaxy?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
         				A: Hoaxy visualizes the spread of articles online. Articles can
 								be found on Twitter, or in a corpus of claims and related fact checking.
         			</dd>
 
 
         			<dt id="faq-q2">Q: How does it work?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
         				A: The Hoaxy corpus tracks the social sharing of links to
 								stories published by two types of websites: (1) Low-credibility
 								sources that often publish inaccurate, unverified, or satirical
@@ -63,7 +137,7 @@
         			</dd>
 
 							<dt id="faq-q3">Q: What is a “claim”? Who decides what is true or not?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
         				A: <u>We do <em>not</em> decide what is true or false</u>.
 								Low-credibility sources often publish false news, hoaxes,
 								rumors, conspiracy theories, and satire, but may also publish
@@ -79,7 +153,7 @@
         			</dd>
 
 							<dt id="faq-q4">Q: Do you have an editorial team?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
 								A: No. Hoaxy tracks claims and fact checks automatically, 24/7.
 								We do not read the contents of the articles we track.
 								This is why we cannot establish whether a claim is accurate,
@@ -88,7 +162,7 @@
 							</dd>
 
         			<dt id="faq-q5">Q: What does the visualization show?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
 								A: Hoaxy visualizes two aspects of the spread of claims and
 								fact checking: temporal trends and diffusion networks. Temporal
 								trends plot the cumulative number of Twitter shares over time.
@@ -107,7 +181,7 @@
 							<dt id="faq-q6">Q: What is the difference between bot score and Complete
 								Automation Probability (CAP)?
 							</dt>
-							<dd>
+							<dd class="faq-element-contents">
 								A: One can think of the bot score as the likely level of
 								automation of an account, where a 5 may indicate a large
 								amount of automation, and 0 may indicate little to no
@@ -118,7 +192,7 @@
 							<dt id="faq-q7">Q: How are bot scores and Complete Automation Probabilities
 								(CAPs) calculated?
 							</dt>
-							<dd>
+							<dd class="faq-element-contents">
 								A: Bot scores are calculated using a machine learning algorithm
 								trained to classify the level of automation an account presents.
 								The CAP applies a Bayesian formula to estimate the probability
@@ -128,10 +202,10 @@
 									 target="_blank">Botometer FAQ</a>.
 							</dd>
 
-							<dt id="faq-q8">Q: What if I see some bot scores that are wrong?
+							<dt class="faq-element" id="faq-q8">Q: What if I see some bot scores that are wrong?
 									How can I help?
 							</dt>
-							<dd>
+							<dd class="faq-element-contents">
 								A: Social bot detection is a hard problem.  We are constantly
 								improving our tool’s accuracy, but there will be accounts that
 								our tool fails to classify. You can assist us in making more
@@ -148,7 +222,7 @@
 							<dt id="faq-q9">Q: What are Trending News, Popular Claims, and Fact-Checks in
 								the landing page panel?
 							</dt>
-							<dd>
+							<dd class="faq-element-contents">
 								A: The landing page panel provides shortcuts to search for new
 								and relevant articles. Trending News are top and breaking
 								headlines for the United States. Popular Claims are the
@@ -161,7 +235,7 @@
 							<dt id="faq-q10">Q: What is the difference between Hoaxy search and Twitter
 									search?
 							</dt>
-							<dd>
+							<dd class="faq-element-contents">
 								A: There are two search modes. The Hoaxy search finds claims
 								and related fact checking in a corpus of articles from
 								low-credibility and fact-checking sources. This mode leverages
@@ -181,7 +255,7 @@
 							</dd>
 
         			<dt id="faq-q11">Q: How do you match claims to fact-checks? </dt>
-        			<dd>
+        			<dd class="faq-element-contents">
 								A: We use search engine technology (think of Google) to
 								retrieve claims and fact checks. The user enters a query and
 								we match it against our index of claims to find relevant
@@ -191,7 +265,7 @@
         			</dd>
 
         			<dt id="faq-q12">Q: How does Hoaxy track the spread of articles?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
 								A: We collect public tweets that include links to stories.
 								We then fetch the page linked in the tweet and store the URL
 								and the text of the page of the article, adding them to our
@@ -203,12 +277,12 @@
 
 
         			<dt id="faq-q13">Q: What is the source of social media data?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
         				A: At the moment we only collect data from Twitter.
         			</dd>
 
 							<dt id="faq-q14">Q: How do I add a Hoaxy story to my own website?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
 								A: Click the “Embed” button at the bottom of the middle
 								navigation menu. Then, copy the code in the popup and paste
 								it into the body of your site’s html code or in the platform
@@ -218,7 +292,7 @@
         			</dd>
 
 							<dt id="faq-q15">Q: Can I download the results of a story on my own computer?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
 								A: Yes! Click the “Export” button, found at the bottom of the
 								middle navigation menu.  This should download or ask you
 								permission to download a comma separated values (CSV) file.
@@ -230,13 +304,13 @@
 
 
         			<dt id="faq-q16">Q: Do you access any private conversations?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
         				A: No, we only access public tweets.
         			</dd>
 
 
         			<dt id="faq-q17">Q: Do you provide an API to the data you collect?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
         				A: Yes, check out the free
 								<a href="https://market.mashape.com/truthy/hoaxy"
 								   target="_blank">Hoaxy API</a>
@@ -245,7 +319,7 @@
 
 
         			<dt id="faq-q18">Q: Can I cite Hoaxy in my work?</dt>
-        			<dd>
+        			<dd class="faq-element-contents">
 								A: Yes, if you use Hoaxy for your work then please cite the
 								following articles:
         				<br />
@@ -273,7 +347,7 @@
 
 
         				<dt id="faq-q19">Q: What technology does Hoaxy use?</dt>
-        				<dd>
+        				<dd class="faq-element-contents">
 									A: Hoaxy is written primarily in Python. On the back-end we
 									use Apache Lucene (for full-text indexing and retrieval),
 									Scrapy (for web crawling), Apache Tika
@@ -292,7 +366,7 @@
 
 
         				<dt id="faq-q20">Q: Is Hoaxy open source?</dt>
-        				<dd>
+        				<dd class="faq-element-contents">
 									A: Yes. This makes it possible for colleagues, fact checkers,
 									and reporters around the world to deploy versions of the
 									tool to map the spread of claims from their own sources,
@@ -310,7 +384,7 @@
         				</dd>
 
 								<dt id="faq-q21">Q: Why am I asked to log in using my Twitter account?</dt>
-	        			<dd>
+	        			<dd class="faq-element-contents">
 									A: To retrieve search results from the Twitter API on your
 									behalf. We also seek your permission to connect to the Twitter
 									API if you want to refresh the bot scores in the
@@ -324,7 +398,7 @@
 	        			</dd>
 
         				<dt id="faq-q22">Q: Who are the Hoaxy developers?</dt>
-        				<dd>
+        				<dd class="faq-element-contents">
         					A: Hoaxy is a joint project of the Indiana University Network
 									Science Institute
 									(<a href="https://iuni.iu.edu/"
@@ -373,7 +447,7 @@
         				</dd>
 
 								<dt id="faq-q23">Q: How can I contact the Hoaxy team?</dt>
-								<dd>
+								<dd class="faq-element-contents">
 									A: The best way to contact the team is by using the
 									<a href="https://osome.iuni.iu.edu/contact/"
 										 target="_blank">contact information</a>
@@ -416,7 +490,20 @@
             show_tutorial: function(){
 				document.cookie="HideHoaxyTutorial=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
                 location.href = "./";
-            }
+            },
+						changeFaqContentsColor: function(faqElement) {
+							// Resetting all faq content elements to have an inherited
+							// background olor
+							faqElements =
+								document.getElementsByClassName('faq-element-contents');
+					    for (var i = 0; i < faqElements.length; i++) {
+					        faqElements[i].style.backgroundColor="inherit";
+					    }
+							// Changing the background color of the focused faq element
+							document.getElementById(faqElement)
+								.nextElementSibling
+								.style.backgroundColor = 'rgb(204, 212, 226)';
+						}
 		},
 		mounted: function(){
 		}
