@@ -1919,6 +1919,8 @@ var app = new Vue({
         this.spinStop("initialLoad");
         console.debug("Vue Mounted.");
 
+        // this.spinStart();
+
         console.debug(this.query_text);
         if(!this.query_text)
         {

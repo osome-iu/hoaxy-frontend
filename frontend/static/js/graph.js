@@ -1055,7 +1055,9 @@ function HoaxyGraph(options)
 		}
 
 		// var that = this;
-		spinStart("ForceAtlas");
+		// spinStart("ForceAtlas");
+
+		spinStop("generateNetwork");
 		setTimeout(function () {
             // getBotCacheScores();
 
@@ -1063,7 +1065,6 @@ function HoaxyGraph(options)
 			s.camera.goTo({x:0, y:0, ratio:1});
 			spinStop("ForceAtlas");
 			// spinStop("updateNetwork");
-			spinStop("generateNetwork");
 			spinner_notices.graph = "";
 
 			// FilterEdges();
