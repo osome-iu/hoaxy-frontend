@@ -766,7 +766,7 @@
 					</div>
 					<div class="modal-body" >
 						<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'white':'black' }">
-							<p>Botometer Score: <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span>
+							<p>Botometer Score (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.screenName" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span>
 								<div class="text-center" v-if="node_modal_content.botscore > 0">
                                     <h1>{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
                                     <div class="d-flex justify-content-center h3">
