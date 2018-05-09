@@ -1142,11 +1142,14 @@ var app = new Vue({
                   // Check if animation should be disabled or not
                   v.checkIfShouldDisableAnimation(v.twitterEdges);
                 }
-              }, function(){})
+              }, function(){
+                console.debug('User must log in for this service.');
+                v.spinStop("getTwitterSearchResults");
+                v.displayError("Twitter Search Pagination Error: User must \
+                                authenticate via Twitter for this service.");
+              })
               .catch(function(error){
-                // USED FOR DEBUGGING
-                // console.log("Twitter Search Pagination Error:");
-                // console.log(error);
+                console.debug('ERROR CAUGHT');
                 v.spinStop("getTwitterSearchResults");
                 v.displayError("Twitter Search Pagination Error: " + error);
               });
@@ -1941,6 +1944,8 @@ var app = new Vue({
         // this.spinStart("testing");
         // this.spinner_notices.graph = "TESTING TEXT";
         console.debug("Vue Mounted.");
+
+        // this.spinStart();
 
         console.debug(this.query_text);
         if(!this.query_text)
