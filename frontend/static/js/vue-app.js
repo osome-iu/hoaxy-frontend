@@ -1942,6 +1942,8 @@ var app = new Vue({
         // this.spinner_notices.graph = "TESTING TEXT";
         console.debug("Vue Mounted.");
 
+        // this.spinStart();
+
         console.debug(this.query_text);
         if(!this.query_text)
         {
