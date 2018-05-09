@@ -41,7 +41,8 @@
 								</tr>
 								<tr v-for="article in articles">
 									<td>{{article.capture_date}}</td>
-									<td><a :href="article.canonical_url" rel="noreferrer noopener" target="_blank">{{article.title}}</a></td>
+									<!-- <td><a :href="article.canonical_url" rel="noreferrer noopener" target="_blank">{{article.title}}</a></td> -->
+									<td><a :href="createSearchUrl(article.title)">{{article.title}}</a></td>
 									<td>{{article.number_of_tweets}}</td>
 								</tr>
 								<tr v-if="articles.length == 0">
@@ -147,6 +148,9 @@
 				if(type == "fact_checking")
 					return "fact checking articles"
 				return "";
+			},
+			createSearchUrl: function(title){
+				return "./#query=" + encodeURIComponent(title) + "&sort=relevant&type=Hoaxy"
 			},
 			getArticles: function(){
 				this.spinStart();
