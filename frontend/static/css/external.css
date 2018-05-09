@@ -368,10 +368,10 @@ li
 
 .bot_legend_section
 {
-    height: 6rem;
+    height: 4rem;
     max-height: 9vh;
     vertical-align: center;
-}
+  }
 .bot_legend_section span
 {
     color: white;
