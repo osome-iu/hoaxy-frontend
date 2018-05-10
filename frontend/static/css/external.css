@@ -393,7 +393,7 @@ li
 .bot_legend_section span
 {
     color: white;
-    font-weight: bold;
+    /* font-weight: bold; */
 }
 
 #focus_label
