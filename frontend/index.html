@@ -196,34 +196,37 @@
             <div class="container pt-5 pb-3">
                 <form @submit.stop.prevent="show_full_articles_list = false; submitForm()">
                     <input v-model="query_sort" type="hidden" name="sort_by" :disabled="input_disabled" />
-                    <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
+                    <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true2" value="true"  :disabled="input_disabled" />
                     <div class="d-block d-md-flex justify-content-center align-items-center">
                         <!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
                         <div class="btn-group btn-group-toggle mr-md-2 rounded mb-2 mb-md-0 d-md-flex justify-content-md-center d-inline-block">
-                            <button id="searchByTwitter"
+                            <button id="searchByTwitter2"
+								type="button"
                                 data-toggle="tooltip"
                                 title="select to search for chatter on twitter"
                                 class="btn btn-primary"
-                                v-on:click="twitterSearch()"
-                                v-bind:class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">Twitter</button>
+                                @click.prevent.stop="twitterSearch()"
+                                :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">Twitter</button>
 
                             <button id="searchByHoaxy2"
+								type="button"
                                 data-toggle="tooltip"
                                 title="select to search for claims and fact-checks"
                                 class="btn btn-primary"
-                                v-on:click="hoaxySearch()"
-                                v-bind:class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">Hoaxy</button>
+                                @click.prevent.stop="hoaxySearch()"
+                                :class="{ 'active': hoaxySearchSelected, 'text-light': twitterSearchSelected}">Hoaxy</button>
                         </div>
                         <input class="form-control mr-md-2 mb-2 mb-md-0 "
                             type="text"
-                            ref="searchBox"
+                            ref="searchBox2"
                             data-toggle="tooltip"
                             title="enter any phrase or url"
                             @focus="focusSearchBox();"
+                            @change="focusSearchBox();"
                             v-model="query_text"
                             v-bind:placeholder="searchPlaceholder"
                             :disabled="input_disabled || show_full_articles_list == true" />
-                        <button v-if="!show_articles || !show_full_articles_list" class="btn btn-primary btn-blue" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
+                        <button type="submit" v-if="!show_articles || !show_full_articles_list" class="btn btn-primary btn-blue" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
 
 
 
