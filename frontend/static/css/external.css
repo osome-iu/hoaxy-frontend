@@ -281,15 +281,15 @@ li
 #spinner i
 {
 
-    font-size: 100px;
-    line-height: 100px;
+    font-size: 149px;
+    line-height: 149px;
 }
 #spinner span, #spinner > div
 {
     position: absolute;
-    top: 2rem;
-    right: 2rem;
-    /* position: absolute;
+    /* top: 2rem;
+    right: 2rem; */
+    position: absolute;
     display: block;
     top: 50%;
     left: 50%;
@@ -298,8 +298,7 @@ li
     margin-left: -75px;
     margin-top: -75px;
     vertical-align: middle;
-
-
+    text-align: center;
 
     /*font-size: 6rem;*/
     /*height: 6rem;
@@ -327,7 +326,7 @@ li
 }
 #spinner > div
 {
-    margin-right: 100px;
+    margin-top: 100px;
     display: none;
 }
 
