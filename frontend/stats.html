@@ -215,7 +215,9 @@
 							else
 							{
 								bot_percent = a.bot_score * 100;
-								bot_percent = bot_percent.toFixed() + '%';
+                                bot_percent = bot_percent * .05;
+                                bot_percent = bot_percent.toFixed(1);
+								// bot_percent = bot_percent.toFixed() + '%';
 							}
 							a.bot_percent = bot_percent;
 							local[a.spreading_type][a.site_type].push(a);
