@@ -359,13 +359,14 @@ var app = new Vue({
             this.tooltip.left= 0;
         },
         twitterSearch: function() {
+            // console.debug("TEST");
           this.twitter_result_type = 'mixed'
           this.searchBy = "Twitter"
           this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
           this.twitterSearchSelected = true
           this.hoaxySearchSelected = false
           // Focus back on the search box
-          this.$refs.searchBox.focus()
+          // this.$refs.searchBox.focus()
         },
         hoaxySearch: function() {
           this.query_sort = "relevant";
@@ -374,7 +375,7 @@ var app = new Vue({
           this.hoaxySearchSelected = true
           this.twitterSearchSelected = false
           // Focus back on the search box
-          this.$refs.searchBox.focus()
+          // this.$refs.searchBox.focus()
         },
         initializeHoaxyTimeline: function() {
           var v = this;
@@ -1579,6 +1580,7 @@ var app = new Vue({
         },
         submitForm: function(dontScroll){
           // Resets any results from any previous queries
+          console.debug("submit");
           this.stopGraphAnimation();
           this.resetTwitterSearchResults();
           this.resetHoaxySearchResults();
