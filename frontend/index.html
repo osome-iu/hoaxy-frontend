@@ -489,6 +489,7 @@
 		                <button class="btn btn-primary ml-1 mr-1" type="button" value ="+" id="zoom-in" v-if="show_zoom_buttons" @click="zoomInGraph"><i class="fa fa-plus" aria-hidden="true"></i></button>
 		            </div>
 		            <div class="mt-2 p-2 text-center">
+										<div class="alert bg-warning m-1 p-1 text-wrap" v-if="twitterRateLimitReachedObj.isReached">New scores cannot be retrieved.</br>Twitter rate limit reached, </br>try again in 15 minutes.</div>
 		                <button v-if="!getting_bot_scores.running" @click.stop.prevent="getMoreBotScores" class="btn btn-primary" id="">Update Bot Scores</button>
 		                <button v-if="getting_bot_scores.running" disabled class="disabled btn btn-primary" id="">Fetching Scores...</button>
 		                <div class="text-right pt-1">
@@ -779,8 +780,11 @@
 									</div>
                 </div>
 
+
 								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this account's timeline is set to private or has been deleted entirely.</span>
 								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
+
+								<div class="alert bg-warning" v-if="twitterRateLimitReachedObj.isReached">New scores cannot be retrieved. Twitter rate limit reached, try again in 15 minutes.</div>
 
 							<p class="my-2" v-if="">
 								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.user_id)" class="btn btn-primary" id="">Update</button>
