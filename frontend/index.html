@@ -492,6 +492,7 @@
 		                <button class="btn btn-primary ml-1 mr-1" type="button" value ="+" id="zoom-in" v-if="show_zoom_buttons" @click="zoomInGraph"><i class="fa fa-plus" aria-hidden="true"></i></button>
 		            </div>
 		            <div class="mt-2 p-2 text-center">
+										<div class="alert bg-warning m-1 p-1 text-wrap" v-if="twitterRateLimitReachedObj.isReached">New scores cannot be retrieved.</br>Twitter rate limit reached, </br>try again in 15 minutes.</div>
 		                <button v-if="!getting_bot_scores.running" @click.stop.prevent="getMoreBotScores" class="btn btn-primary" id="">Update Bot Scores</button>
 		                <button v-if="getting_bot_scores.running" disabled class="disabled btn btn-primary" id="">Fetching Scores...</button>
 		                <div class="text-right pt-1">
@@ -768,28 +769,33 @@
 						</h4>
 					</div>
 					<div class="modal-body" >
-						<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'white':'black' }">
-							<p>Botometer Score (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.screenName" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span>
+						<div>
+							<h5>Botometer Score (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.screenName" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
 								<div class="text-center" v-if="node_modal_content.botscore > 0">
-                                    <h1>{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
-                                    <div class="d-flex justify-content-center h3">
-                                        <div class="botimages">
-                                            <div class="images-nots"><div :style="'width: '+node_modal_content.botscore+'%'" class="images-bots"></div></div>
+									<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'white':'black' }">
+										<h1 class="m-0 p-0">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
+									</div>
+									<div class="d-flex justify-content-center h3">
+										<div class="botimages">
+											<div class="images-nots"><div :style="'width: '+node_modal_content.botscore+'%'" class="images-bots"></div></div>
 
-                                        </div>
-                                    </div>
-                                </div>
+										</div>
+									</div>
+                </div>
+
 
 								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this account's timeline is set to private or has been deleted entirely.</span>
 								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
-							</p>
-							<p v-if="">
-								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.user_id)" class="btn btn-primary" id="">Update Bot Score</button>
+
+								<div class="alert bg-warning" v-if="twitterRateLimitReachedObj.isReached">New scores cannot be retrieved. Twitter rate limit reached, try again in 15 minutes.</div>
+
+							<p class="my-2" v-if="">
+								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.user_id)" class="btn btn-primary" id="">Update</button>
 								<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
+								<button v-if="node_modal_content.botscore > 0" class="btn btn-primary" @click="feedback_form.display = !feedback_form.display" >Feedback</button>
 							</p>
 
 							<div v-if="node_modal_content.botscore > 0">
-								<button class="btn btn-primary btn-sm" @click="feedback_form.display = !feedback_form.display" >Bot Score Feedback</button>
 
 								<form class="form" v-if="feedback_form.display" @submit.prevent="submitFeedbackForm">
 									<br />

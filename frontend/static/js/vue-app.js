@@ -201,6 +201,13 @@ var app = new Vue({
         top_fact_checking_articles: [],
         top_usa_articles: [],
 
+        // Object that is passed between graph and main app which discerns
+        // whether user has hit the rate limits, and if so, proper alerts
+        // are shown
+        twitterRateLimitReachedObj: {
+          isReached: false
+        },
+
         scrollTop: 0,
         tooltip: {
             title: "",
@@ -1119,11 +1126,14 @@ var app = new Vue({
                   // Check if animation should be disabled or not
                   v.checkIfShouldDisableAnimation(v.twitterEdges);
                 }
-              }, function(){
-                console.debug('User must log in for this service.');
+              }, function(error){
                 v.spinStop("getTwitterSearchResults");
-                v.displayError("Twitter Search Pagination Error: User must \
-                                authenticate via Twitter for this service.");
+                if (error.error.status == 429) {
+                  v.displayError("Twitter rate limit reached. Try again in 15 minutes.");
+                } else {
+                  v.displayError("Twitter Search Pagination Error: User must \
+                                  authenticate via Twitter for this service.");
+                }
               })
               .catch(function(error){
                 console.debug('ERROR CAUGHT');
@@ -1487,25 +1497,33 @@ var app = new Vue({
                 }
             });
             success.then(function(response){
-                // console.debug(response);
-                v.getting_bot_scores.running = false;
+                if (response === "Error: rate limit reached") {
+                  v.twitterRateLimitReachedObj.isReached = true;
+                  v.getting_bot_scores.running = false;
+                } else {
+                  // Resuming the rate limit as we have successfully
+                  // retrieved a bot score
+                  v.twitterRateLimitReachedObj.isReached = false;
+                  // console.debug(response);
+                  v.getting_bot_scores.running = false;
 
-                try {
-                    var score = response.data.scores.english;
-                    v.node_modal_content.botscore = Math.floor(score * 100);
-                    v.node_modal_content.botcolor = v.graph.getNodeColor(score);
-                    v.node_modal_content.timestamp = new Date();
-                }
-                catch (e)
-                {
-                    console.warn(e);
-                    v.node_modal_content.botscore = -1;
-                    v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
+                  try {
+                      var score = response.data.scores.english;
+                      v.node_modal_content.botscore = Math.floor(score * 100);
+                      v.node_modal_content.botcolor = v.graph.getNodeColor(score);
+                      v.node_modal_content.timestamp = new Date();
+                  }
+                  catch (e)
+                  {
+                      console.warn(e);
+                      v.node_modal_content.botscore = -1;
+                      v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
+                  }
                 }
             }, function(){
-                v.getting_bot_scores.running = false;
-                v.node_modal_content.botscore = -1;
-                v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
+                  v.getting_bot_scores.running = false;
+                  v.node_modal_content.botscore = -1;
+                  v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
             })
 
         },
@@ -1868,7 +1886,8 @@ var app = new Vue({
             spinner_notices: this.spinner_notices,
             // twitter_account_info: this.twitter_account_info,
             twitter: this.twitter,
-            graphAnimation: this.graphAnimation
+            graphAnimation: this.graphAnimation,
+            twitterRateLimitReached: this.twitterRateLimitReachedObj
         });
 
         //TEMPORARILY KEEPING THIS BLOCK OF CODE IN CASE WE NEED TO REVERT. CURRENTLY MOST FUNCTIONALITY WAS MOVED TO THE
