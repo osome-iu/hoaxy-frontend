@@ -16,6 +16,7 @@ function HoaxyGraph(options)
 	var twitter = options.twitter || null;
 	var getting_bot_scores = options.getting_bot_scores || false;
 	var graphAnimation = options.graphAnimation || {playing: false, increment: 0, total_increments: 40};
+	var twitterRateLimitReached = options.twitterRateLimitReached;
 
 	var timespan = {
 		start_time: 0, end_time: 0
@@ -239,7 +240,19 @@ function HoaxyGraph(options)
 			user.old = botscores[id].old;
 		}
 
-		updateUserBotScore(user);
+		var success = new Promise(function(resolve, reject){
+			updateUserBotScore(user).then(resolve, reject);
+		});
+		success.then(function(response){
+			if (response === "Error: rate limit reached") {
+				twitterRateLimitReached.isReached = true;
+			} else {
+				// Resuming the rate limit as we have successfully
+				// retrieved a bot score
+				twitterRateLimitReached.isReached = false;
+			}
+		});
+
 		// console.debug(user);
 		index++;
 		return setTimeout(function(){
@@ -265,14 +278,22 @@ function HoaxyGraph(options)
 				botProm.then(function(response){
 					score_stats.recompute();
 					resolve(response);
-				}, function(){
-					botscores[user.user_id] = {
-						score: -1,
-						old: true
+				}, function(error){
+					// If Twitter returns a status code of 429 (rate limit reached)
+					// we reject and let the handlers handle it
+					if (error.error.status == 429) {
+						reject('Error: rate limit reached');
+					// Otherwise we could not retrieve the score, so something
+					// happened to the account, thus we turn the node gray
+					} else {
+						botscores[user.user_id] = {
+							score: -1,
+							old: true
+						}
+						updateNodeColor(user.user_id, botscores[user.user_id].score);
+						score_stats.recompute();
+						reject();
 					}
-					updateNodeColor(user.user_id, botscores[user.user_id].score);
-					score_stats.recompute();
-					reject();
 				});
 			}
 		})
