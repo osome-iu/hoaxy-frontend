@@ -281,10 +281,14 @@ function HoaxyGraph(options)
 				}, function(error){
 					// If Twitter returns a status code of 429 (rate limit reached)
 					// we reject and let the handlers handle it
-					if (error.error.status == 429) {
-						reject('Error: rate limit reached');
-					// Otherwise we could not retrieve the score, so something
-					// happened to the account, thus we turn the node gray
+					// Different error catching mechansisms have the second error obj
+					// So we check for it so it doesn't fail in error catching mechanism
+					if (error.error) {
+						if (error.error.status == 429) {
+							reject('Error: rate limit reached');
+							// Otherwise we could not retrieve the score, so something
+							// happened to the account, thus we turn the node gray
+						}
 					} else {
 						botscores[user.user_id] = {
 							score: -1,
