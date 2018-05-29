@@ -313,17 +313,17 @@ function HoaxyGraph(options)
 		var node = s.graph.nodes(user_id);
 		var screen_name = node.data.screenName;
 		botScoreA = new Promise(function(resolve, reject){
-			var user_data = twitter.getUserData(screen_name);
+			var user_data = twitter.getUserDataById(user_id);
 			user_data.then(function(response){
 				user.user = response;
 			}, function(){})
 			.catch(twitterResponseFail);
-			var user_timeline = twitter.getUserTimeline(screen_name);
+			var user_timeline = twitter.getUserTimelineById(user_id);
 			user_timeline.then(function(response){
 				user.timeline = response;
 			}, function(){})
 			.catch(twitterResponseFail);
-			var user_mentions = twitter.getUserMentions(screen_name);
+			var user_mentions = twitter.getUserMentionsById(user_id);
 			user_mentions.then(function(response){
                 if(response.statuses)
                     user.mentions = response.statuses;
