@@ -153,18 +153,35 @@ var Twitter = function(initialize_key){
         return dfd;
     }
 
-    obj.getUserData = function(screenName){
-        return apiCall('GET', '/1.1/users/show.json', {screen_name: screenName},
+    // TO-DO Remove once the ById methods below work robustly and we don't
+    // decide to switch back
+    // obj.getUserData = function(screenName){
+    //     return apiCall('GET', '/1.1/users/show.json', {screen_name: screenName},
+    //     "Twitter was unable to retrieve information for this user, is there a typo?")
+    // }
+    //
+    // obj.getUserTimeline = function(screenName){
+    //     return apiCall('GET', '/1.1/statuses/user_timeline.json', {screen_name: screenName, count:200},
+    //     "Twitter was unable to retrieve a timeline for this user, is there a typo?")
+    // }
+    //
+    // obj.getUserMentions = function(screenName){
+    //     return apiCall('GET', '/1.1/search/tweets.json', {q: '@'+screenName, count:100},
+    //     "Twitter was unable to retrieve mentions of this user, is there a typo?")
+    // }
+
+    obj.getUserDataById = function(user_id){
+        return apiCall('GET', '/1.1/users/show.json', {user_id: user_id},
         "Twitter was unable to retrieve information for this user, is there a typo?")
     }
 
-    obj.getUserTimeline = function(screenName){
-        return apiCall('GET', '/1.1/statuses/user_timeline.json', {screen_name: screenName, count:200},
+    obj.getUserTimelineById = function(user_id){
+        return apiCall('GET', '/1.1/statuses/user_timeline.json', {user_id: user_id, count:200},
         "Twitter was unable to retrieve a timeline for this user, is there a typo?")
     }
 
-    obj.getUserMentions = function(screenName){
-        return apiCall('GET', '/1.1/search/tweets.json', {q: '@'+screenName, count:100},
+    obj.getUserMentionsById = function(user_id){
+        return apiCall('GET', '/1.1/search/tweets.json', {q: user_id, count:100},
         "Twitter was unable to retrieve mentions of this user, is there a typo?")
     }
 
