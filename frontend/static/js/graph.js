@@ -946,8 +946,8 @@ function HoaxyGraph(options)
 
 		for (var i in node.incoming)
 		{
-			var fromURL = 'https://twitter.com/'+node.incoming[i].screenName, //i,
-				toURL = 'https://twitter.com/'+e.data.node.screenName;
+			var fromURL = 'https://twitter.com/intent/user?user_id='+String(i), //i,
+				toURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id;
 
 			for (var j in node.incoming[i].ids)
 			{
@@ -980,8 +980,8 @@ function HoaxyGraph(options)
 		//new outgoing edges, could be has_mentioned, is_quoted_by, is_retweeted_by
 		for (var i in node.outgoing)
 		{
-			var fromURL = 'https://twitter.com/'+e.data.node.screenName,
-				toURL = 'https://twitter.com/'+node.outgoing[i].screenName;
+			var fromURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id,
+				toURL = 'https://twitter.com/intent/user?user_id='+String(i);
 
 			for (var j in node.outgoing[i].ids)
 			{
@@ -1013,6 +1013,7 @@ function HoaxyGraph(options)
 		node_modal_content.has_quoted = tweets.has_quoted;
 		node_modal_content.has_retweeted = tweets.has_retweeted;
 		node_modal_content.has_mentioned = tweets.has_mentioned;
+
 		node_modal_content.is_quoted_by = tweets.is_quoted_by;
 		node_modal_content.is_retweeted_by = tweets.is_retweeted_by;
 
@@ -1172,7 +1173,6 @@ function HoaxyGraph(options)
 			}
 
 			edge_modal_content.label_string = label_string;
-
 			// $("#edgeModal").off('shown.bs.modal show.bs.modal');
 			// $("#edgeModal").on("shown.bs.modal show.bs.modal", function(){
 			// 	$(".modal-dialog").scrollTop(0);
