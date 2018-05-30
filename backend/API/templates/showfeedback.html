@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Botometer Feedback</title>
+    <style>
+table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+    font-weight: normal;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
+table, th, td {
+    border: 1px solid black;
+    
+}
+
+h1 {
+    text-align: center;
+}
+</style>
+</head>
+<body>
+    <h1>Botometer Feedback</h1>
+    <table>
+        <tr>
+            <th>total</th>
+            <th>human</th>
+            <th>bot</th>
+            <th>org</th>
+            <th>cyborg</th>
+            <th>block</th>
+            <th>unfollow</th>
+        </tr>
+        <tr>
+            <th>{{total_num}}</th>
+            <th>{{label_counter["human"]}}</th>
+            <th>{{label_counter["bot"]}}</th>
+            <th>{{label_counter["org"]}}</th>
+            <th>{{label_counter["cyborg"]}}</th>
+            <th>{{label_counter["block"]}}</th>
+            <th>{{label_counter["unfollow"]}}</th>
+        </tr>
+    </table>
+
+    <br>
+
+    <table>
+    <tr>
+        <th>id</th>
+        <th>screen_name</th>
+        <th>label</th>
+        <th>feedback_text</th>
+        <th>time</th>
+    </tr>
+    {% for feedback in feedbacks%}
+    <tr>
+        {% for i in range(4)%}
+            <th>{{feedback[i]}}</th>
+        {% endfor%}
+        <th>{{feedback[4]|strftime}}</th>
+    </tr>
+    {% endfor %}
+  <tr>
+  </tr>
+</table>
+</body>
+</html>

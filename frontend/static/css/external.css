@@ -1,0 +1,669 @@
+.botimages
+{
+    width: 300px;
+    height: 2em;
+}
+.botimages div
+{
+    background-size: 300px auto;
+    background-position: left center;
+    background-repeat: no-repeat;
+    height: 100%;
+    width: 100%;
+}
+.images-nots
+{
+    background-image: url(/static/5nots.png);
+}
+.images-bots
+{
+    background-image: url(/static/5bots.png);
+}
+
+
+#tutorial
+{
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10000;
+    background: rgba( 0,0,0,.7);
+}
+#tutorial-carousel
+{
+    width: 100%;
+}
+#tutorial-content
+{
+    height: 70%;
+    width: 100%;
+    background: rgba( 0,0,0,.5);
+    /* background: gray; */
+}
+#tutorial-content .carousel-item img
+{
+    max-width: 90%;
+    margin: 0 auto;
+    max-height: 100%;
+}
+.carousel-inner
+{
+    position: absolute;
+    /* padding-top: 4em;
+    padding-bottom: 4em; */
+    top: 4em;
+    left: 0;
+    right: 0;
+    bottom: 4em;
+}
+.carousel-item > div
+{
+    height: 100%;
+}
+#tutorial-content .carousel-item
+{
+    text-align: center;
+    height: 100%;
+    position: relative;
+}
+#tutorial-content .carousel-item
+{
+    display: none;
+}
+#tutorial-content .carousel-item.active
+{
+    display: block;
+}
+.carousel-control-prev,
+.carousel-control-next
+{
+    width: 5%;
+}
+.first-slide img, .last-slide img
+{
+    visibility: hidden;
+}
+.first-slide-content, .last-slide-content
+{
+    position: relative;
+}
+.first-slide-content > div, .last-slide-content > div
+{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0; right: 0;
+    margin: 0 auto;
+    width: 90%;
+    background: white;
+    /* background: green; */
+}
+.close-tutorial-button
+{
+    margin-top: -3rem;
+    margin-bottom: 0rem;
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s, transform .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+
+/*article list transition*/
+.slide_in-enter-active, .slide_in-leave-active {
+  transition: transform .5s;
+  transition: max-height .5s, transform .5s;
+  max-height: 200rem;
+}
+.slide_in-enter, .slide_in-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  /* opacity: 0; */
+  transform: scaleY(0);
+  max-height: 0;
+}
+
+
+#article_list_container
+{
+    overflow: hidden;
+    transform-origin: center top;
+}
+
+
+
+
+/*Header*/
+header
+{
+    margin-top: 2em;
+    margin-bottom: 3rem;
+}
+footer
+{
+    margin-top: 3rem;
+}
+
+section
+{
+    margin-bottom: 3rem;
+}
+section#secondary_form
+{
+    margin-bottom: 1rem;
+}
+
+/* Overriding bootstrap styling for Hoaxy/Twitter landing page search */
+/* #searchByHoaxy {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+#searchByTwitter {
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+} */
+
+/*#searchByLabel {
+  border-color: gray;
+  border-style: solid;
+  border-width: thin;
+}*/
+
+/* #query {
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+  border-left-color: white;
+} */
+
+.loader {
+    border: 16px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 16px solid #3498db;
+    width: 120px;
+    height: 120px;
+    -webkit-animation: spin 2s linear infinite;
+    animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+    0% {
+        -webkit-transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
+
+
+
+li.claim, li.claim a, .claim_label
+{
+    color: black;
+    background-color: darkgray;
+}
+li.fact_checking, li.fact_checking a, .fact_checking_label
+{
+    color: black;
+    background-color: rgb(238,210,2);
+}
+li label
+{
+    /*padding: 1rem;
+    display: inline-block;
+    width: 100%;*/
+}
+li
+{
+    margin-bottom: 1rem;
+}
+
+.claim_label, .fact_checking_label
+{
+
+    height: .25rem;
+    display: inline-block;
+    vertical-align: middle;
+}
+.line
+{
+    width: 3.5rem;
+}
+.tab-content .claim_label, .tab-content .fact_checking_label
+{
+    width: auto;
+    height: auto;
+}
+
+
+
+#visualize_top
+{
+    /* margin-top: .75rem; */
+
+}
+#articles_controls
+{
+    /* position: sticky; */
+}
+
+#spinner
+{
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	background: rgba(200, 200, 255, 1);
+	/*background: green;*/
+	z-index: 20000;
+}
+#spinner.transparent, .modal
+{
+    background: rgba(200,200,255,.7);
+}
+#spinner i
+{
+
+    font-size: 149px;
+    line-height: 149px;
+}
+#spinner span, #spinner > div
+{
+    position: absolute;
+    /* top: 2rem;
+    right: 2rem; */
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+    height: 150px;
+    width: 150px;
+    margin-left: -75px;
+    margin-top: -75px;
+    vertical-align: middle;
+    text-align: center;
+
+    /*font-size: 6rem;*/
+    /*height: 6rem;
+    width: 6rem;*/
+    /*display: inline-block;
+    vertical-align: middle;
+    text-align: center;*/
+    /*line-height: 10rem;
+    margin-top: -3rem;
+    margin-left: -3rem;*/
+}
+#spinner > div
+{
+    margin-top: 100px;
+    display: none;
+}
+
+#sigmagraph
+{
+    position: relative;
+}
+#graph_help_text
+{
+    position: absolute;
+    bottom: 0em;
+    right: 2em;
+}
+
+
+
+#zoom_buttons
+{
+    position: absolute;
+    top: 1.5rem;
+    right: .5rem;
+    /*left:  0;*/
+}
+#zoom_buttons > div
+{
+    white-space: nowrap;
+    line-height: 1;
+}
+.graph_legend
+{
+    position: relative;
+    /*z-index: 11;*/
+}
+.graph_legend > div
+{
+    position: relative;
+}
+.bg-light.bg-semi-transparent
+{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    opacity: .8;
+    /*z-index: 10;*/
+}
+
+#bot_legend_gradient
+{
+    width: 4rem;
+    position: absolute;
+    right: 0;
+}
+
+.bot_legend_section
+{
+    height: 4rem;
+    max-height: 9vh;
+    vertical-align: center;
+  }
+.bot_legend_section span
+{
+    color: white;
+    /* font-weight: bold; */
+}
+
+#focus_label
+{
+    /* margin-top: -80px; */
+    position: absolute;
+    bottom: 5em;
+    right: 0;
+    left: 0;
+}
+
+/* Widget Dialog Box should be a little wider than the conventional dialog box */
+#modalDialogWidget {
+  max-width: 850px;
+}
+
+.modal-show
+{
+    display: block;
+    z-index: 15000;
+}
+.modal{
+    opacity: 0;
+    transition: opacity .1s linear;
+}
+
+.modal-dialog
+{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+}
+/*.modal-dialog.modal-dialog-fade
+{
+    opacity: .5;
+/*}*/
+.modal-body
+{
+    overflow: auto;
+}
+.modal-content
+{
+    font-size: .875rem;
+    position: absolute;
+    top: 3rem;
+    bottom: 3rem;
+    left: 3rem;
+    right: 3rem;
+    overflow: auto;
+}
+.modal-content h2
+{
+    font-size: 1.25rem;
+}
+.modal-content h3
+{
+    font-size: 1rem;
+    margin-left: 1rem;
+    margin-top: .75rem;
+}
+
+.modal-content .article_headline
+{
+    margin-left: 2rem;
+}
+ .modal-content .modal_links
+ {
+     margin-left: 3rem;
+ }
+
+
+#popular_articles_claim tr td:first-child,
+#popular_articles_fact_checking tr td:first-child
+{
+white-space: nowrap;
+}
+
+#articles.hidden,
+#graphs.hidden
+{
+    display: none;
+}
+
+#article_list a
+{
+    text-decoration: underline;
+}
+
+#article_list input[type="checkbox"]
+{
+    display: none;
+}
+#article_list .article_title
+{
+    display: block;
+}
+.check_icons{
+}
+input + .check_icons > .fa-check-square-o,
+input + .check_icons > .fa-square-o
+{
+    display: none;
+    font-size: 2rem;
+    vertical-align: middle;
+}
+
+input:checked + .check_icons > .fa-check-square-o,
+input:not(:checked) + .check_icons > .fa-square-o
+{
+    display: inline-block;
+}
+
+
+
+#graph_error
+{
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+
+#graphs
+{
+    position: relative;
+}
+#timeline
+{
+    /*position: absolute;
+    height: 50%;
+
+    bottom: 2rem;
+    left: 2rem;
+    display: none;
+
+    background: lightgray;
+    border: solid gray 1px;*/
+}
+#shrink_right_button, #shrink_left_button
+{
+    position: absolute;
+    top: 50%;
+}
+#shrink_left_button
+{
+    right: 0;
+}
+#shrink_right_button
+{
+    left: 0;
+}
+#chart
+{
+    height: 100%;
+    width: 100%;
+    /*padding: 1rem;*/
+}
+
+#errorModalBody i
+{
+    vertical-align: middle;
+}
+
+
+/*#toggle_timeline_button
+{
+    position: absolute;
+    bottom: 2rem;
+    left: 2rem;
+}
+#timeline .toggle_button
+{
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}*/
+#legend label
+{
+    /*display: block;*/
+    margin: 0 auto;
+}
+
+.animation-control, .layout-button
+{
+    vertical-align: middle;
+    font-size: .75rem;
+    display: block;
+
+}
+.layout-button
+{
+    margin-top: .5rem;
+    /*line-height: 2rem;*/
+    /* margin: 1rem auto; */
+
+}
+.layout-button span i
+{
+    vertical-align: middle;
+    /*margin: 4px;*/
+}
+.layout-button > span
+{
+    display: inline-block;
+    height: 2em;
+    width: 1em;
+    /*line-height: 2rem;*/
+    vertical-align: middle;
+    padding: 2px;
+    font-size: 1em;
+    overflow: hidden;
+    color: #222222;
+    background: white;
+    border-radius: 2px;
+    border: solid gray 1px;
+    /*border: solid darkgray 1px;*/
+}
+.layout-button-timeline > span
+{
+    /*border: solid white 1px;*/
+    /*background: white;*/
+    width: 3em;
+}
+
+.layout-button-split > span:first-child
+{
+    /*border: solid white 1px;*/
+    width: 1.1em;
+    /*background: white;*/
+    border-right: solid white 1px;
+}
+.layout-button-split > span:last-child
+{
+    /*border: solid black 1px;*/
+    width: 1.9em;
+    /*background: black;*/
+}
+.layout-button-graph > span
+{
+    /*border: solid black 1px;*/
+    width: 3em;
+    /*background: black;*/
+}
+.layout-button-graph i
+{
+    position: absolute;
+    display: block;
+    margin: auto;
+    width: 2em;
+    height: 2em;
+    margin: 0 5px;
+
+}
+
+.graph_legend div.row .info-button
+{
+    color: lightgray;
+}
+.graph_legend div.row:hover .info-button
+{
+    color: black;
+}
+
+.nvtooltip table tr:nth-child(3)
+{
+    display: none;
+}
+
+.twitter_tooltip table tr:nth-child(2)
+{
+    display: none;
+}
+
+/* LANDING PAGE DASHBOARD STYLING BELOW*/
+.table-borderless td,
+.table-borderless th {
+    border: 0;
+}
+
+.tight-span {
+    position: relative;
+    top: -4px;
+}

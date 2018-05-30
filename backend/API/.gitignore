@@ -1,0 +1,8 @@
+.ropeproject/*
+*.pyc
+*.xml
+*.log
+*.err
+*.dat
+.db.connection
+.pass
