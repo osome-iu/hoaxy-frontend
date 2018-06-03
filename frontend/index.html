@@ -770,7 +770,7 @@
 					</div>
 					<div class="modal-body" >
 						<div>
-							<h5>Botometer Score (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.screenName" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
+							<h5>Botometer Score (<a v-on:click.prevent="checkAccountDetails(node_modal_content.user_id, node_modal_content.screenName)" href="#" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
 								<div class="text-center" v-if="node_modal_content.botscore > 0">
 									<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'white':'black' }">
 										<h1 class="m-0 p-0">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
@@ -787,7 +787,17 @@
 								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this account's timeline is set to private or has been deleted entirely.</span>
 								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
 
-								<div class="alert bg-warning" v-if="twitterRateLimitReachedObj.isReached">New scores cannot be retrieved. Twitter rate limit reached, try again in 15 minutes.</div>
+								<div class="alert bg-warning" v-if="twitterRateLimitReachedObj.isReached">Warning: New scores cannot be retrieved. Twitter rate limit reached, try again in 15 minutes.</div>
+								<div class="alert bg-warning"
+										 v-if="node_modal_content.staleAcctInfo.isStale">
+										 Warning: This account has changed its screen name from
+										 <a v-bind:href="'https://twitter.com/' + node_modal_content.staleAcctInfo.oldSn" target="_blank">
+											 @{{ node_modal_content.staleAcctInfo.oldSn }}
+										 </a> (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.oldSn" target="_blank">details</a>) to
+										 <a v-bind:href="'https://twitter.com/intent/user?user_id=' + node_modal_content.staleAcctInfo.newId" target="_blank">
+											 @{{ node_modal_content.staleAcctInfo.newSn }}
+										 </a> (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">details</a>)
+								</div>
 
 							<p class="my-2" v-if="">
 								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.user_id)" class="btn btn-primary" id="">Update</button>

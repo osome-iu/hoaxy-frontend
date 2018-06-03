@@ -316,6 +316,12 @@ function HoaxyGraph(options)
 			var user_data = twitter.getUserDataById(user_id);
 			user_data.then(function(response){
 				user.user = response;
+				if (screen_name != user.user.screen_name) {
+					node_modal_content.staleAcctInfo.newId = user_id;
+					node_modal_content.staleAcctInfo.oldSn = screen_name;
+					node_modal_content.staleAcctInfo.newSn = user.user.screen_name;
+					node_modal_content.staleAcctInfo.isStale = true;
+				}
 			}, function(){})
 			.catch(twitterResponseFail);
 			var user_timeline = twitter.getUserTimelineById(user_id);
@@ -1104,6 +1110,12 @@ function HoaxyGraph(options)
 			// $('#myModalLabel').html('User:  <a target="_blank" href="https://twitter.com/intent/user?user_id='+e.data.node.id+'">@'+ node.screenName +'</a>');
 			node_modal_content.user_id = e.data.node.id;
 			node_modal_content.screenName = node.screenName;
+			node_modal_content.staleAcctInfo = {
+				isStale: false,
+				newId: '',
+				oldSn: '',
+				newSn: ''
+			}
 
 			var score = false;
 			// console.debug(node.screenName, botscores[node.screenName], botscores);
