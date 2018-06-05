@@ -795,10 +795,8 @@ function HoaxyGraph(options)
 			score_stats.old = 0;
 			score_stats.found = 0;
 
-			var already_computed_user_list = [];
-			var stale_scores_to_compute = [];
-			var scores_never_computed_to_compute = [];
-			var user_list_to_compute = [];
+			already_computed_user_list = [];
+			user_list_to_compute = [];
 			score_stats.user_list = [];
 	        for (var i in nodes)// i is index
 	        {
@@ -818,8 +816,7 @@ function HoaxyGraph(options)
 					}
 					else if(score.old === true)
 					{
-						stale_scores_to_compute.push(nodes[i].id);
-						// user_list_to_compute.push(nodes[i].id);
+						user_list_to_compute.push(nodes[i].id);
 						score_stats.old += 1;
 						score_stats.found += 1;
 					}
@@ -832,8 +829,7 @@ function HoaxyGraph(options)
 				}
 				else
 				{
-					scores_never_computed_to_compute.push(nodes[i].id);
-					// user_list_to_compute.push(nodes[i].id);
+					user_list_to_compute.push(nodes[i].id);
 					score = false;
 				}
 				var color = getNodeColor(score);
@@ -865,45 +861,14 @@ function HoaxyGraph(options)
 				++cnt;
 			}
 
-			console.log('never computed initial');
-			console.log(scores_never_computed_to_compute);
-
-			// We now order and prioritize the scores that need to be computed first
-			// First we compute scores that have not ever been computed before
-			var neverComputedLength = scores_never_computed_to_compute.length;
-			for (var i = 0; i < neverComputedLength; i++) {
-				user_list_to_compute.push(scores_never_computed_to_compute[i]);
-			}
-
-			console.log('user list after never computed');
-			console.log(user_list_to_compute)
-			// Then we compute stale scores
-			var staleLength = stale_scores_to_compute.length;
-			for (var i = 0; i < staleLength; i++) {
-				user_list_to_compute.push(stale_scores_to_compute[i]);
-			}
-
-			console.log('user list after stale scores');
-			console.log(user_list_to_compute);
-
-			console.log('scores stats before');
-			console.log(score_stats.user_list);
-
 		  score_stats.current_index = already_computed_user_list.length;
 			for (var i = 0; i<score_stats.current_index; i++){
 				score_stats.user_list.push(already_computed_user_list[i])
 			}
-
-			console.log('score stats after already computed');
-			console.log(score_stats.user_list);
-
 			toComputeLen = user_list_to_compute.length;
 			for (var i = 0; i<toComputeLen; i++){
 				score_stats.user_list.push(user_list_to_compute[i])
 			}
-
-			console.log('score stats after never computed and stale');
-			console.log(score_stats.user_list);
 
 			node_count = g.nodes.length;
 
