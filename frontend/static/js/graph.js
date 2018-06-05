@@ -281,10 +281,14 @@ function HoaxyGraph(options)
 				}, function(error){
 					// If Twitter returns a status code of 429 (rate limit reached)
 					// we reject and let the handlers handle it
-					if (error.error.status == 429) {
-						reject('Error: rate limit reached');
-					// Otherwise we could not retrieve the score, so something
-					// happened to the account, thus we turn the node gray
+					// Different error catching mechansisms have the second error obj
+					// So we check for it so it doesn't fail in error catching mechanism
+					if (error.error) {
+						if (error.error.status == 429) {
+							reject('Error: rate limit reached');
+							// Otherwise we could not retrieve the score, so something
+							// happened to the account, thus we turn the node gray
+						}
 					} else {
 						botscores[user.user_id] = {
 							score: -1,
@@ -309,17 +313,23 @@ function HoaxyGraph(options)
 		var node = s.graph.nodes(user_id);
 		var screen_name = node.data.screenName;
 		botScoreA = new Promise(function(resolve, reject){
-			var user_data = twitter.getUserData(screen_name);
+			var user_data = twitter.getUserDataById(user_id);
 			user_data.then(function(response){
 				user.user = response;
+				if (screen_name != user.user.screen_name) {
+					node_modal_content.staleAcctInfo.newId = user_id;
+					node_modal_content.staleAcctInfo.oldSn = screen_name;
+					node_modal_content.staleAcctInfo.newSn = user.user.screen_name;
+					node_modal_content.staleAcctInfo.isStale = true;
+				}
 			}, function(){})
 			.catch(twitterResponseFail);
-			var user_timeline = twitter.getUserTimeline(screen_name);
+			var user_timeline = twitter.getUserTimelineById(user_id);
 			user_timeline.then(function(response){
 				user.timeline = response;
 			}, function(){})
 			.catch(twitterResponseFail);
-			var user_mentions = twitter.getUserMentions(screen_name);
+			var user_mentions = twitter.getUserMentionsById(user_id);
 			user_mentions.then(function(response){
                 if(response.statuses)
                     user.mentions = response.statuses;
@@ -942,8 +952,8 @@ function HoaxyGraph(options)
 
 		for (var i in node.incoming)
 		{
-			var fromURL = 'https://twitter.com/'+node.incoming[i].screenName, //i,
-				toURL = 'https://twitter.com/'+e.data.node.screenName;
+			var fromURL = 'https://twitter.com/intent/user?user_id='+String(i), //i,
+				toURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id;
 
 			for (var j in node.incoming[i].ids)
 			{
@@ -976,8 +986,8 @@ function HoaxyGraph(options)
 		//new outgoing edges, could be has_mentioned, is_quoted_by, is_retweeted_by
 		for (var i in node.outgoing)
 		{
-			var fromURL = 'https://twitter.com/'+e.data.node.screenName,
-				toURL = 'https://twitter.com/'+node.outgoing[i].screenName;
+			var fromURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id,
+				toURL = 'https://twitter.com/intent/user?user_id='+String(i);
 
 			for (var j in node.outgoing[i].ids)
 			{
@@ -1009,6 +1019,7 @@ function HoaxyGraph(options)
 		node_modal_content.has_quoted = tweets.has_quoted;
 		node_modal_content.has_retweeted = tweets.has_retweeted;
 		node_modal_content.has_mentioned = tweets.has_mentioned;
+
 		node_modal_content.is_quoted_by = tweets.is_quoted_by;
 		node_modal_content.is_retweeted_by = tweets.is_retweeted_by;
 
@@ -1099,6 +1110,12 @@ function HoaxyGraph(options)
 			// $('#myModalLabel').html('User:  <a target="_blank" href="https://twitter.com/intent/user?user_id='+e.data.node.id+'">@'+ node.screenName +'</a>');
 			node_modal_content.user_id = e.data.node.id;
 			node_modal_content.screenName = node.screenName;
+			node_modal_content.staleAcctInfo = {
+				isStale: false,
+				newId: '',
+				oldSn: '',
+				newSn: ''
+			}
 
 			var score = false;
 			// console.debug(node.screenName, botscores[node.screenName], botscores);
@@ -1168,7 +1185,6 @@ function HoaxyGraph(options)
 			}
 
 			edge_modal_content.label_string = label_string;
-
 			// $("#edgeModal").off('shown.bs.modal show.bs.modal');
 			// $("#edgeModal").on("shown.bs.modal show.bs.modal", function(){
 			// 	$(".modal-dialog").scrollTop(0);

@@ -809,11 +809,11 @@
 					<div class="modal-header">
 						<button type="button" class="close"  @click="toggleEdgeModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title text-center" id="edgeModalLabel" >
-							<a target="_blank" :href="'https://twitter.com/'+ edge_modal_content.edge.source_screenName">@{{edge_modal_content.edge.source_screenName}}</a>
+							<a target="_blank" :href="'https://twitter.com/intent/user?user_id='+ edge_modal_content.edge.source">@{{edge_modal_content.edge.source_screenName}}</a>
 
 							{{ edge_modal_content.label_string }}
 
-							<a target="_blank" :href="'https://twitter.com/'+ edge_modal_content.edge.target_screenName">@{{edge_modal_content.edge.target_screenName}}</a>
+							<a target="_blank" :href="'https://twitter.com/intent/user?user_id='+ edge_modal_content.edge.target">@{{edge_modal_content.edge.target_screenName}}</a>
 
 						</h4>
 					</div>
@@ -838,12 +838,12 @@
 					<div class="modal-header">
 						<button type="button" class="close" @click.stop="toggleNodeModal()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title text-center" id="nodeModalLabel">
-							Account:  <a target="_blank" v-bind:href="'https://twitter.com/' + node_modal_content.screenName">@{{node_modal_content.screenName}}</a>
+							Account:  <a target="_blank" v-bind:href="'https://twitter.com/intent/user?user_id=' + node_modal_content.user_id">@{{node_modal_content.screenName}}</a>
 						</h4>
                     </div>
                     <div class="modal-body" >
                         <div>
-                            <h5>Botometer Score (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.screenName" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
+                            <h5>Botometer Score (<a v-on:click.prevent="checkAccountDetails(node_modal_content.user_id, node_modal_content.screenName)" href="#" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
                             <div class="text-center" v-if="node_modal_content.botscore > 0">
                                 <!-- <<<<<<< HEAD
                                 <p class="h1">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</p>
@@ -867,7 +867,17 @@
 								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this account's timeline is set to private or has been deleted entirely.</span>
 								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
 
-								<div class="alert bg-warning" v-if="twitterRateLimitReachedObj.isReached">New scores cannot be retrieved. Twitter rate limit reached, try again in 15 minutes.</div>
+								<div class="alert bg-warning" v-if="twitterRateLimitReachedObj.isReached">Warning: New scores cannot be retrieved. Twitter rate limit reached, try again in 15 minutes.</div>
+								<div class="alert bg-warning"
+										 v-if="node_modal_content.staleAcctInfo.isStale">
+										 Warning: This account has changed its screen name from
+										 <a v-bind:href="'https://twitter.com/' + node_modal_content.staleAcctInfo.oldSn" target="_blank">
+											 @{{ node_modal_content.staleAcctInfo.oldSn }}
+										 </a> (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.oldSn" target="_blank">details</a>) to
+										 <a v-bind:href="'https://twitter.com/intent/user?user_id=' + node_modal_content.staleAcctInfo.newId" target="_blank">
+											 @{{ node_modal_content.staleAcctInfo.newSn }}
+										 </a> (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">details</a>)
+								</div>
 
 							<p class="my-2" v-if="">
 								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.user_id)" class="btn btn-primary" id="">Update</button>
