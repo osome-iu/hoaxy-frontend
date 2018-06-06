@@ -1869,8 +1869,17 @@ var app = new Vue({
             this.scrollToElement("secondary_form");
         },
         loadShareButtons: function(){
-            twttr.widgets.load();
-			FB.XFBML.parse();
+            try {
+                twttr.widgets.load();
+            } catch (e) {
+                console.warn("error loading twttr widgets", e);
+            }
+
+            try {
+                FB.XFBML.parse();
+            } catch(e) {
+                console.warn("error loading facbook widgets", e);
+            }
         }
     },
     watch: {
