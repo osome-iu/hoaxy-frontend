@@ -163,7 +163,78 @@ function HoaxyGraph(options)
 
 					}
 				}
-				score_stats.recompute();
+				//score_stats.recompute();
+				
+				score_stats.unavailable = 0;
+				score_stats.old = 0;
+				score_stats.found = 0;
+
+				var already_computed_account_list = [];
+				var stale_scores_to_compute = [];
+				var scores_never_computed_to_compute = [];
+				var account_list_to_compute = [];
+
+				score_stats.user_list = [];
+
+				for (var i in graph.nodes)// i is index
+				{
+					var score = botscores[graph.nodes[i].id];
+					if(score && score.score)
+			    {
+						if(score.score === -1)
+				    {
+							scores_never_computed_to_compute.push(graph.nodes[i].id);
+							score_stats.unavailable += 1;
+						}
+						else if(score.old === true)
+				    {
+							stale_scores_to_compute.push(graph.nodes[i].id);
+							// account_list_to_compute.push(nodes[i].id);
+							score_stats.old += 1;
+							score_stats.found += 1;
+				    }
+						else
+				    {
+							already_computed_account_list.push(graph.nodes[i].id);
+							score_stats.found += 1;
+				    }
+						score = score.score;
+			    }
+					else
+			    {
+						scores_never_computed_to_compute.push(graph.nodes[i].id);
+						// account_list_to_compute.push(nodes[i].id);
+						score = false;
+			    }
+		    }
+
+				// We now order and prioritize the scores that need to be computed first
+				// First we compute scores that have not ever been computed before
+				var neverComputedLength = scores_never_computed_to_compute.length;
+				for (var i = 0; i < neverComputedLength; i++) {
+				    account_list_to_compute.push(scores_never_computed_to_compute[i]);
+				}
+
+				// Then we compute stale scores
+				var staleLength = stale_scores_to_compute.length;
+				for (var i = 0; i < staleLength; i++) {
+				    account_list_to_compute.push(stale_scores_to_compute[i]);
+				}
+
+				// Populating bot update list with already updated scores first
+				// Update bot update index to the point after this list
+				score_stats.current_index = already_computed_account_list.length;
+				for (var i = 0; i<score_stats.current_index; i++){
+				    score_stats.user_list.push(already_computed_account_list[i])
+				}
+
+				// Then we add the bot scores that are stale or never obtained
+				toComputeLen = account_list_to_compute.length;
+				for (var i = 0; i<toComputeLen; i++){
+				    score_stats.user_list.push(account_list_to_compute[i])
+				}
+
+				score_stats.total = graph.nodes.length;
 				getting_bot_scores.running = false;
 
 				//when we get the cache, go through cache and update botscores:
@@ -791,17 +862,22 @@ function HoaxyGraph(options)
 
 			var nodes_id = {};
 			var cnt = 0;
+
 			score_stats.unavailable = 0;
 			score_stats.old = 0;
 			score_stats.found = 0;
 
-			already_computed_user_list = [];
-			user_list_to_compute = [];
+			var already_computed_account_list = [];
+			var stale_scores_to_compute = [];
+			var scores_never_computed_to_compute = [];
+			var account_list_to_compute = [];
+
 			score_stats.user_list = [];
-	        for (var i in nodes)// i is index
-	        {
-                var percent = Math.sqrt(nodes[i].size) / Math.sqrt(max_size);
-                var new_size = (percent * 1000) + 1;
+
+      for (var i in nodes)// i is index
+      {
+        var percent = Math.sqrt(nodes[i].size) / Math.sqrt(max_size);
+        var new_size = (percent * 1000) + 1;
 				if(new_size < 300)
 				{
 					new_size = 300;
@@ -812,24 +888,27 @@ function HoaxyGraph(options)
 				{
 					if(score.score === -1)
 					{
+						scores_never_computed_to_compute.push(nodes[i].id);
 						score_stats.unavailable += 1;
 					}
 					else if(score.old === true)
 					{
-						user_list_to_compute.push(nodes[i].id);
+						stale_scores_to_compute.push(nodes[i].id);
+						//account_list_to_compute.push(nodes[i].id);
 						score_stats.old += 1;
 						score_stats.found += 1;
 					}
 					else
 					{
-						already_computed_user_list.push(nodes[i].id);
+						already_computed_account_list.push(nodes[i].id);
 						score_stats.found += 1;
 					}
 					score = score.score;
 				}
 				else
 				{
-					user_list_to_compute.push(nodes[i].id);
+					scores_never_computed_to_compute.push(nodes[i].id);
+					//account_list_to_compute.push(nodes[i].id);
 					score = false;
 				}
 				var color = getNodeColor(score);
@@ -861,17 +940,33 @@ function HoaxyGraph(options)
 				++cnt;
 			}
 
-		  score_stats.current_index = already_computed_user_list.length;
-			for (var i = 0; i<score_stats.current_index; i++){
-				score_stats.user_list.push(already_computed_user_list[i])
+			// We now order and prioritize the scores that need to be computed first
+			// First we compute scores that have not ever been computed before
+			var neverComputedLength = scores_never_computed_to_compute.length;
+			for (var i = 0; i < neverComputedLength; i++) {
+			    account_list_to_compute.push(scores_never_computed_to_compute[i]);
 			}
-			toComputeLen = user_list_to_compute.length;
+
+	    // Then we compute stale scores
+	    var staleLength = stale_scores_to_compute.length;
+			for (var i = 0; i < staleLength; i++) {
+			    account_list_to_compute.push(stale_scores_to_compute[i]);
+			}
+
+			// Populating bot update list with already updated scores first
+			// Update bot update index to the point after this list
+			score_stats.current_index = already_computed_account_list.length;
+			for (var i = 0; i<score_stats.current_index; i++){
+			    score_stats.user_list.push(already_computed_account_list[i])
+			}
+
+			// Then we add the bot scores that are stale or never obtained
+			toComputeLen = account_list_to_compute.length;
 			for (var i = 0; i<toComputeLen; i++){
-				score_stats.user_list.push(user_list_to_compute[i])
+			    score_stats.user_list.push(account_list_to_compute[i])
 			}
 
 			node_count = g.nodes.length;
-
 			score_stats.total = node_count;
 
 			//put edges into sigma
