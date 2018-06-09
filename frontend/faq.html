@@ -27,9 +27,13 @@
 										class="mb-0 pb-0">
 										<a href="#faq-q1">Q: What is Hoaxy?</a>
 								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q10')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q10">Q: What is the difference between Hoaxy search and Twitter search?</a>
+								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q2')"
 										class="mb-0 pb-0">
-										<a href="#faq-q2">Q: How does it work?</a>
+										<a href="#faq-q2">Q: How does Hoaxy search work?</a>
 								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q3')"
 										class="mb-0 pb-0">
@@ -54,10 +58,6 @@
 								<li v-on:click="changeFaqContentsColor('faq-q9')"
 									  class="mb-0 pb-0">
 										<a href="#faq-q9">Q: What are Trending News, Popular Claims, and Fact-Checks in the landing page panel?</a>
-								</li>
-								<li v-on:click="changeFaqContentsColor('faq-q10')"
-									  class="mb-0 pb-0">
-										<a href="#faq-q10">Q: What is the difference between Hoaxy search and Twitter search?</a>
 								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q11')"
 								    class="mb-0 pb-0">
@@ -114,12 +114,34 @@
 
         			<dt id="faq-q1">Q: What is Hoaxy?</dt>
         			<dd class="faq-element-contents">
-        				A: Hoaxy visualizes the spread of articles online. Articles can
+        				A: Hoaxy is a tool that visualizes the spread of articles online. Articles can
 								be found on Twitter, or in a corpus of claims and related fact checking.
         			</dd>
 
 
-        			<dt id="faq-q2">Q: How does it work?</dt>
+							<dt id="faq-q10">Q: What is the difference between Hoaxy search and Twitter
+									search?
+							</dt>
+							<dd class="faq-element-contents">
+								A: There are two search modes. <b>Hoaxy</b> search finds claims
+								and related fact checking in a limited corpus of articles from
+								low-credibility and fact-checking sources, dating back to 2016. 
+								This mode leverages the
+								<a href="https://market.mashape.com/truthy/hoaxy"
+									 target="_blank">Hoaxy API</a>
+								to retrieve relevant articles, accounts, and
+								tweets. <b>Twitter</b> search lets users track articles from any
+								sources posted on Twitter, but only during the last 7 days. This mode uses
+								the
+								<a href="https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"
+									 target="_blank">Twitter Search API</a>
+								to retrieve relevant, popular, or mixed	tweets matching your
+								search query. It is compatible with all
+								<a href="https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators"
+									 target="_blank">advanced search operators</a>.
+							</dd>
+
+        			<dt id="faq-q2">Q: How does Hoaxy search work?</dt>
         			<dd class="faq-element-contents">
         				A: The Hoaxy corpus tracks the social sharing of links to
 								stories published by two types of websites: (1) Low-credibility
@@ -217,28 +239,6 @@
 								organizations.
 							</dd>
 
-							<dt id="faq-q10">Q: What is the difference between Hoaxy search and Twitter
-									search?
-							</dt>
-							<dd class="faq-element-contents">
-								A: There are two search modes. The Hoaxy search finds claims
-								and related fact checking in a corpus of articles from
-								low-credibility and fact-checking sources. This mode leverages
-								the
-								<a href="https://market.mashape.com/truthy/hoaxy"
-									 target="_blank">Hoaxy API</a>
-								to retrieve relevant articles, accounts, and
-								tweets. The Twitter search lets users track articles from any
-								sources posted on Twitter during the last 7 days. This mode uses
-								the
-								<a href="https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"
-									 target="_blank">Twitter Search API</a>
-								to retrieve relevant, popular, or mixed	tweets matching your
-								search query. It is compatible with all
-								<a href="https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators"
-									 target="_blank">advanced search operators</a>.
-							</dd>
-
         			<dt id="faq-q11">Q: How do you match claims to fact-checks? </dt>
         			<dd class="faq-element-contents">
 								A: We use search engine technology (think of Google) to
@@ -315,9 +315,9 @@
 									 ONE, e0196087. https://doi.org/10.1371/journal.pone.0196087
 								</p>
 
-								<p>[2] Chengcheng Shao, Giovanni Luca Ciampaglia, Onur Varol,
-									 Alessandro Flammini, and Filippo Menczer (2017). The spread
-									 of misinformation by social bots. Technical Report arXiv
+								<p>[2] Chengcheng Shao, Giovanni Luca Ciampaglia, Onur Varol, Kaicheng Yang, 
+									 Alessandro Flammini, and Filippo Menczer (2018). The spread
+									 of low-credibility content by social bots. Technical Report arXiv
 									 1707.07592. https://arxiv.org/abs/1707.07592
 								</p>
 
@@ -326,7 +326,7 @@
 									 Tracking Online Misinformation. In Proceedings of the 25th
 									 International Conference Companion on World Wide Web
 									 (WWW '16 Companion), pp. 745-750.
-									 http://dx.doi.org/10.1145/2872518.2890098
+									 http://doi.org/10.1145/2872518.2890098
 								</p>
       				</dd>
 
