@@ -164,7 +164,7 @@ function HoaxyGraph(options)
 					}
 				}
 				//score_stats.recompute();
-				
+
 				score_stats.unavailable = 0;
 				score_stats.old = 0;
 				score_stats.found = 0;
@@ -334,6 +334,15 @@ function HoaxyGraph(options)
 
 	function updateUserBotScore(user)
 	{
+		function initiateBotScoreCouldNotBeRetrieved() {
+			botscores[user.user_id] = {
+				score: -1,
+				old: true
+			}
+			updateNodeColor(user.user_id, botscores[user.user_id].score);
+			score_stats.recompute();
+		}
+
 		var prom = new Promise(function(resolve, reject){
 			// var prom = null;
 			//if exists and fresh
@@ -359,14 +368,14 @@ function HoaxyGraph(options)
 							reject('Error: rate limit reached');
 							// Otherwise we could not retrieve the score, so something
 							// happened to the account, thus we turn the node gray
+						} else {
+							// Request failed for another reason besides a 429 status code
+							initiateBotScoreCouldNotBeRetrieved();
+							reject();
 						}
 					} else {
-						botscores[user.user_id] = {
-							score: -1,
-							old: true
-						}
-						updateNodeColor(user.user_id, botscores[user.user_id].score);
-						score_stats.recompute();
+						// Request failed for another reason besides a 429 status code
+						initiateBotScoreCouldNotBeRetrieved();
 						reject();
 					}
 				});
