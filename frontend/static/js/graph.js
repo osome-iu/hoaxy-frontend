@@ -401,6 +401,10 @@ function HoaxyGraph(options)
 					node_modal_content.staleAcctInfo.oldSn = screen_name;
 					node_modal_content.staleAcctInfo.newSn = user.user.screen_name;
 					node_modal_content.staleAcctInfo.isStale = true;
+				} else {
+					node_modal_content.staleAcctInfo.oldSn = screen_name;
+					node_modal_content.staleAcctInfo.newSn = 'unchanged';
+					node_modal_content.staleAcctInfo.isStale = false;
 				}
 			}, function(){})
 			.catch(twitterResponseFail);
@@ -420,7 +424,7 @@ function HoaxyGraph(options)
 
 			var got_from_twitter = Promise.all([user_data, user_timeline, user_mentions]);
 			got_from_twitter.then(function(values){
-				var botScore = getBotScore(user);
+				var botScore = getBotScore(user, screen_name);
 				botScore.then(resolve, reject);
 			}, function(error){
 				console.warn("Could not get bot score for " + screen_name + ": ", error);
@@ -436,7 +440,7 @@ function HoaxyGraph(options)
 		}, twitterResponseFail)
 		return botScoreA;
 	}
-	function getBotScore(user_object)
+	function getBotScore(user_object, potentially_old_sn)
 	{
 		var sn = user_object.user.screen_name;
 		var id = user_object.user.id_str;
@@ -451,14 +455,40 @@ function HoaxyGraph(options)
 		botscore.then(function(response){
 			// score_stats.recompute();
 
+			var newId = response.data.user.id_str;
+			if (potentially_old_sn != response.data.user.screen_name) {
+				var oldSn = potentially_old_sn;
+				var newSn = response.data.user.screen_name;
+				var isStale = true;
+			} else {
+				var oldSn = potentially_old_sn;
+				var newSn = 'unchanged';
+				var isStale = false;
+			}
+
 			botscores[id] = {
 				score: response.data.scores.english,
 				old: false,
 				time: new Date(),
 				user_id: response.data.user.id,
-				screen_name: sn
+				screen_name: sn,
+				completeAutomationProbability:
+					Math.floor(response.data.cap.english * 100),
+				staleAcctInfo:
+				{
+					isStale: isStale,
+					newId: newId,
+					oldSn: oldSn,
+					newSn: newSn
+				}
 			}
+
+			node_modal_content.showStaleContent = true;
 			updateNodeColor(id, botscores[id].score);
+
+			// Updating user that was retrieved for showing opened modal content
+			// getting_bot_scores.accountJustRetrieved = response.data.user.id_str;
+
 		},
 		function(error){
 			console.debug("Could not get bot score for " + sn + ": ", error);
@@ -1209,17 +1239,15 @@ function HoaxyGraph(options)
 
 	    s.bind('clickNode', function (e) {
 			var node = e.data.node.data;
+
+
 			// console.debug(e.data);
 	        //the following /**/ is for twitter user widget.
 			// $('#myModalLabel').html('User:  <a target="_blank" href="https://twitter.com/intent/user?user_id='+e.data.node.id+'">@'+ node.screenName +'</a>');
 			node_modal_content.user_id = e.data.node.id;
 			node_modal_content.screenName = node.screenName;
-			node_modal_content.staleAcctInfo = {
-				isStale: false,
-				newId: '',
-				oldSn: '',
-				newSn: ''
-			}
+
+			node_modal_content.staleAcctInfo.openedModalWhileFetchingScores = getting_bot_scores.running;
 
 			var score = false;
 			// console.debug(node.screenName, botscores[node.screenName], botscores);
@@ -1232,10 +1260,20 @@ function HoaxyGraph(options)
 				score = Math.floor(score * 100);
 				node_modal_content.botcolor = score != 0 ? getNodeColor(score/100) : "";
 				node_modal_content.botscore = score;
-				node_modal_content.timestamp =botscores[node.id].time;
+				node_modal_content.timestamp = botscores[node.id].time;
+
+				node_modal_content.staleAcctInfo.isStale = botscores[node.id].staleAcctInfo.isStale;
+				node_modal_content.staleAcctInfo.newId = botscores[node.id].staleAcctInfo.newId;
+				node_modal_content.staleAcctInfo.oldSn = botscores[node.id].staleAcctInfo.oldSn;
+				node_modal_content.staleAcctInfo.newSn = botscores[node.id].staleAcctInfo.newSn;
+
+				// updating the CAP score
+				node_modal_content.completeAutomationProbability = botscores[node.id].completeAutomationProbability;
+				node_modal_content.showStaleContent = true;
 			}
 			else
 			{
+				node_modal_content.showStaleContent = false;
 				node_modal_content.botscore = false;
 				node_modal_content.botcolor = "";
 			}

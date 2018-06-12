@@ -113,7 +113,11 @@ var app = new Vue({
 
         timeline: null,
         graph: null,
-        getting_bot_scores: {running: false},
+        getting_bot_scores:
+        {
+          running: false
+          // accountJustRetrieved: ''
+        },
 
         copiedWidgetText: false,
         widgetScreenshotDataUrl: "",
@@ -136,6 +140,7 @@ var app = new Vue({
               oldSn: '',
               newSn: ''
             },
+            showStaleContent: true,
             user_id: "",
             screenname: "",
             has_quoted: [],
@@ -150,6 +155,7 @@ var app = new Vue({
             is_quoted_by_count: 0,
             is_mentioned_by_count: 0,
             is_retweeted_by_count: 0,
+            completeAutomationProbability: 0,
             botscore: 0,
             botcolor: 0
         },
@@ -214,7 +220,7 @@ var app = new Vue({
         twitterRateLimitReachedObj: {
           isReached: false
         },
-        
+
         scrollTop: 0,
         tooltip: {
             title: "",
@@ -372,93 +378,97 @@ var app = new Vue({
             this.tooltip.top= 0;
             this.tooltip.left= 0;
         },
-        generateStaleAccountWarning: function(new_id, old_sn, new_sn) {
-          this.node_modal_content.staleAcctInfo.newId = new_id;
-          this.node_modal_content.staleAcctInfo.oldSn = old_sn;
-          this.node_modal_content.staleAcctInfo.newSn = new_sn;
-          this.node_modal_content.staleAcctInfo.isStale = true;
-        },
-        checkAccountDetails: function(user_id, potentially_old_sn) {
-            var v = this;
-            window.open("https://botometer.iuni.iu.edu/#!/?sn=" + v.node_modal_content.screenName);
-
-            var success = new Promise(function(resolve, reject){
-              if(!v.twitter_account_info.id)
-              {
-                  v.twitterLogIn()
-                  .then(function(){
-                    var user_data = v.twitter.getUserDataById(user_id);
-              			user_data.then(function(userResponse){
-                      if (potentially_old_sn != userResponse.screen_name) {
-                        v.generateStaleAccountWarning(user_id, potentially_old_sn, userResponse.screen_name);
-                      }
-                      resolve();
-              			}, function(error){
-            					// If Twitter returns a status code of 429 (rate limit reached)
-            					// we reject and let the handlers handle it
-            					// Different error catching mechansisms have the second error obj
-            					// So we check for it so it doesn't fail in error catching mechanism
-            					if (error.error) {
-            						if (error.error.status == 429) {
-            							reject('Error: rate limit reached');
-            							// Otherwise we could not retrieve the score, so something
-            							// happened to the account, thus we turn the node gray
-            						}
-            					} else {
-            						reject();
-            					}
-            				})
-              			.catch(function(error)
-                    {
-                      console.log('Error: ');
-                      console.log(error);
-                    })
-                  })
-              }
-              else
-              {
-                var user_data = v.twitter.getUserDataById(user_id);
-                user_data.then(function(userResponse){
-                  if (potentially_old_sn != userResponse.screen_name) {
-                    v.generateStaleAccountWarning(user_id, potentially_old_sn, userResponse.screen_name);
-                  }
-                  resolve();
-                }, function(error){
-                  // If Twitter returns a status code of 429 (rate limit reached)
-                  // we reject and let the handlers handle it
-                  // Different error catching mechansisms have the second error obj
-                  // So we check for it so it doesn't fail in error catching mechanism
-                  if (error.error) {
-                    if (error.error.status == 429) {
-                      reject('Error: rate limit reached');
-                      // Otherwise we could not retrieve the score, so something
-                      // happened to the account, thus we turn the node gray
-                    }
-                  } else {
-                    reject();
-                  }
-                })
-                .catch(function(error)
-                {
-                  console.log('error');
-                  console.log(error);
-                  reject();
-                })
-              }
-            });
-            success.then(function(response){
-                if (response === "Error: rate limit reached") {
-                  v.twitterRateLimitReachedObj.isReached = true;
-                } else {
-                  // Resuming the rate limit as we have successfully
-                  // retrieved bot score data
-                  v.twitterRateLimitReachedObj.isReached = false;
-                }
-            }, function(err){
-                console.log('Promise Failed: ');
-                console.log(err)
-            })
-        },
+        // generateStaleAccountWarning: function(new_id, old_sn, new_sn) {
+        //   this.node_modal_content.staleAcctInfo.newId = new_id;
+        //   this.node_modal_content.staleAcctInfo.oldSn = old_sn;
+        //   this.node_modal_content.staleAcctInfo.newSn = new_sn;
+        //   this.node_modal_content.staleAcctInfo.isStale = true;
+        // },
+        // checkAccountDetails: function(user_id, potentially_old_sn) {
+        //     var v = this;
+        //     // window.open("https://botometer.iuni.iu.edu/#!/?sn=" + v.node_modal_content.screenName);
+        //
+        //     var success = new Promise(function(resolve, reject){
+        //       if(!v.twitter_account_info.id)
+        //       {
+        //           v.twitterLogIn()
+        //           .then(function(){
+        //             var user_data = v.twitter.getUserDataById(user_id);
+        //       			user_data.then(function(userResponse){
+        //               if (potentially_old_sn != userResponse.screen_name) {
+        //                 v.generateStaleAccountWarning(user_id, potentially_old_sn, userResponse.screen_name);
+        //               } else {
+        //                 v.node_modal_content.staleAcctInfo.isStale = false;
+        //                 v.node_modal_content.staleAcctInfo.oldSn = potentially_old_sn;
+        //                 v.node_modal_content.staleAcctInfo.newSn = 'unchanged';
+        //               }
+        //               resolve();
+        //       			}, function(error){
+        //     					// If Twitter returns a status code of 429 (rate limit reached)
+        //     					// we reject and let the handlers handle it
+        //     					// Different error catching mechansisms have the second error obj
+        //     					// So we check for it so it doesn't fail in error catching mechanism
+        //     					if (error.error) {
+        //     						if (error.error.status == 429) {
+        //     							reject('Error: rate limit reached');
+        //     							// Otherwise we could not retrieve the score, so something
+        //     							// happened to the account, thus we turn the node gray
+        //     						}
+        //     					} else {
+        //     						reject();
+        //     					}
+        //     				})
+        //       			.catch(function(error)
+        //             {
+        //               console.log('Error: ');
+        //               console.log(error);
+        //             })
+        //           })
+        //       }
+        //       else
+        //       {
+        //         var user_data = v.twitter.getUserDataById(user_id);
+        //         user_data.then(function(userResponse){
+        //           if (potentially_old_sn != userResponse.screen_name) {
+        //             v.generateStaleAccountWarning(user_id, potentially_old_sn, userResponse.screen_name);
+        //           }
+        //           resolve();
+        //         }, function(error){
+        //           // If Twitter returns a status code of 429 (rate limit reached)
+        //           // we reject and let the handlers handle it
+        //           // Different error catching mechansisms have the second error obj
+        //           // So we check for it so it doesn't fail in error catching mechanism
+        //           if (error.error) {
+        //             if (error.error.status == 429) {
+        //               reject('Error: rate limit reached');
+        //               // Otherwise we could not retrieve the score, so something
+        //               // happened to the account, thus we turn the node gray
+        //             }
+        //           } else {
+        //             reject();
+        //           }
+        //         })
+        //         .catch(function(error)
+        //         {
+        //           console.log('error');
+        //           console.log(error);
+        //           reject();
+        //         })
+        //       }
+        //     });
+        //     success.then(function(response){
+        //         if (response === "Error: rate limit reached") {
+        //           v.twitterRateLimitReachedObj.isReached = true;
+        //         } else {
+        //           // Resuming the rate limit as we have successfully
+        //           // retrieved bot score data
+        //           v.twitterRateLimitReachedObj.isReached = false;
+        //         }
+        //     }, function(err){
+        //         console.log('Promise Failed: ');
+        //         console.log(err)
+        //     })
+        // },
         twitterSearch: function() {
             // console.debug("TEST");
           this.twitter_result_type = 'mixed'
