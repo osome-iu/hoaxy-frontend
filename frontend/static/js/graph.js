@@ -439,7 +439,7 @@ function HoaxyGraph(options)
 	function getBotScore(user_object)
 	{
 		var sn = user_object.user.screen_name;
-		var id = user_object.user.id;
+		var id = user_object.user.id_str;
 		console.debug(user_object);
 		var botscore = axios({
 			method: 'post',
