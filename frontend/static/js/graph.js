@@ -466,6 +466,9 @@ function HoaxyGraph(options)
 				var isStale = false;
 			}
 
+			node_modal_content.completeAutomationProbability =
+				Math.floor(response.data.cap.english * 100);
+
 			botscores[id] = {
 				score: response.data.scores.english,
 				old: false,
@@ -473,7 +476,7 @@ function HoaxyGraph(options)
 				user_id: response.data.user.id,
 				screen_name: sn,
 				completeAutomationProbability:
-					Math.floor(response.data.cap.english * 100),
+					node_modal_content.completeAutomationProbability,
 				staleAcctInfo:
 				{
 					isStale: isStale,
@@ -1262,14 +1265,22 @@ function HoaxyGraph(options)
 				node_modal_content.botscore = score;
 				node_modal_content.timestamp = botscores[node.id].time;
 
-				node_modal_content.staleAcctInfo.isStale = botscores[node.id].staleAcctInfo.isStale;
-				node_modal_content.staleAcctInfo.newId = botscores[node.id].staleAcctInfo.newId;
-				node_modal_content.staleAcctInfo.oldSn = botscores[node.id].staleAcctInfo.oldSn;
-				node_modal_content.staleAcctInfo.newSn = botscores[node.id].staleAcctInfo.newSn;
+				// Right now these results are not cached so there are instances
+				// Where the botscores exist but stale account info does not
+				// We provite proper checks here so that model content can be generated
+				if(botscores[node.id].hasOwnProperty('staleAcctInfo') && botscores[node.id].hasOwnProperty('completeAutomationProbability')){
+						node_modal_content.staleAcctInfo.isStale = botscores[node.id].staleAcctInfo.isStale;
+						node_modal_content.staleAcctInfo.newId = botscores[node.id].staleAcctInfo.newId;
+						node_modal_content.staleAcctInfo.oldSn = botscores[node.id].staleAcctInfo.oldSn;
+						node_modal_content.staleAcctInfo.newSn = botscores[node.id].staleAcctInfo.newSn;
 
-				// updating the CAP score
-				node_modal_content.completeAutomationProbability = botscores[node.id].completeAutomationProbability;
-				node_modal_content.showStaleContent = true;
+						// updating the CAP score
+						node_modal_content.completeAutomationProbability = botscores[node.id].completeAutomationProbability;
+						node_modal_content.showStaleContent = true;
+				} else {
+						node_modal_content.showStaleContent = false;
+				}
+
 			}
 			else
 			{
