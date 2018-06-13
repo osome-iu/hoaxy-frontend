@@ -840,23 +840,18 @@
 						<h4 class="modal-title text-center" id="nodeModalLabel">
 							Account:  <a target="_blank" v-bind:href="'https://twitter.com/intent/user?user_id=' + node_modal_content.user_id">@{{node_modal_content.screenName}}</a>
 						</h4>
-                    </div>
-                    <div class="modal-body" >
-                        <div>
-                            <h5>Botometer Score (<a v-on:click.prevent="checkAccountDetails(node_modal_content.user_id, node_modal_content.screenName)" href="#" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
-                            <div class="text-center" v-if="node_modal_content.botscore > 0">
-                                <!-- <<<<<<< HEAD
-                                <p class="h1">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</p>
-                                <div class="d-flex justify-content-center h3">
-                                <div class="botimages">
-                                <div class="images-nots"><div :style="'width: '+node_modal_content.botscore+'%'" class="images-bots"></div></div>
-                                ======= -->
-                                <div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'white':'black' }">
-                                    <h1 class="m-0 p-0 text-white">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
-                                </div>
-                                <div class="d-flex justify-content-center h3">
-                                    <div class="botimages">
-                                        <div class="images-nots"><div :style="'width: '+node_modal_content.botscore+'%'" class="images-bots"></div></div>
+					</div>
+					<div class="modal-body" >
+						<div>
+							<!-- <h5>Botometer Score (<a v-on:click.prevent="checkAccountDetails(node_modal_content.user_id, node_modal_content.screenName)" href="#" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5> -->
+							<h5>Botometer Score: <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
+								<div class="text-center" v-if="node_modal_content.botscore > 0">
+									<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'white':'black' }">
+										<h1 class="m-0 p-0 text-white">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
+									</div>
+									<div class="d-flex justify-content-center h3">
+										<div class="botimages">
+											<div class="images-nots"><div :style="'width: '+node_modal_content.botscore+'%'" class="images-bots"></div></div>
 
                                     </div>
                                 </div>
@@ -869,7 +864,7 @@
 
 								<div class="alert bg-warning" v-if="twitterRateLimitReachedObj.isReached">Warning: New scores cannot be retrieved. Twitter rate limit reached, try again in 15 minutes.</div>
 								<div class="alert bg-warning"
-										 v-if="node_modal_content.staleAcctInfo.isStale">
+										 v-if="node_modal_content.showStaleContent && !getting_bot_scores.running && node_modal_content.staleAcctInfo.isStale">
 										 Warning: This account has changed its screen name from
 										 <a v-bind:href="'https://twitter.com/' + node_modal_content.staleAcctInfo.oldSn" target="_blank">
 											 @{{ node_modal_content.staleAcctInfo.oldSn }}
@@ -877,6 +872,14 @@
 										 <a v-bind:href="'https://twitter.com/intent/user?user_id=' + node_modal_content.staleAcctInfo.newId" target="_blank">
 											 @{{ node_modal_content.staleAcctInfo.newSn }}
 										 </a> (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">details</a>)
+								</div>
+								<div class="alert bg-warning"
+										 v-if="node_modal_content.staleAcctInfo.openedModalWhileFetchingScores">
+										 Warning: This modal content may be stale as we are now fetching more data. Open this content again once new data is fetched.
+								</div>
+								<div class="alert bg-secondary text-white"
+										 v-if="node_modal_content.showStaleContent && !getting_bot_scores.running && !node_modal_content.staleAcctInfo.isStale && node_modal_content.staleAcctInfo.newSn == 'unchanged'">
+										 We estimate a {{ node_modal_content.completeAutomationProbability }}% probability that this account is completely automated. Click <a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.oldSn" target="_blank">here</a> for more details from Botometer.
 								</div>
 
 							<p class="my-2" v-if="">
