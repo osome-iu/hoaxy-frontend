@@ -877,9 +877,17 @@
 										 v-if="node_modal_content.staleAcctInfo.openedModalWhileFetchingScores">
 										 Warning: This modal content may be stale as we are now fetching more data. Open this content again once new data is fetched.
 								</div>
-								<div class="alert bg-secondary text-white"
-										 v-if="node_modal_content.showStaleContent && !getting_bot_scores.running && !node_modal_content.staleAcctInfo.isStale && node_modal_content.staleAcctInfo.newSn == 'unchanged'">
+								<div class="alert modal-informational"
+										 v-if="!node_modal_content.showStaleContent">
+										 Details not available. Click the "Update" button to fetch latest bot score and details for this account.
+								</div>
+								<div class="alert modal-informational"
+										 v-else-if="!node_modal_content.staleAcctInfo.isStale && node_modal_content.showStaleContent && !getting_bot_scores.running">
 										 We estimate a {{ node_modal_content.completeAutomationProbability }}% probability that this account is completely automated. Click <a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.oldSn" target="_blank">here</a> for more details from Botometer.
+								</div>
+								<div class="alert modal-informational"
+										 v-else-if="node_modal_content.staleAcctInfo.isStale && node_modal_content.showStaleContent && !getting_bot_scores.running">
+										 We estimate a {{ node_modal_content.completeAutomationProbability }}% probability that this account is completely automated. Click <a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">here</a> for more details from Botometer.
 								</div>
 
 							<p class="my-2" v-if="">

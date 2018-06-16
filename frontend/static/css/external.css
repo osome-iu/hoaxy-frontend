@@ -681,3 +681,8 @@ input:not(:checked) + .check_icons > .fa-square-o
     position: relative;
     top: -4px;
 }
+
+.modal-informational
+{
+  background-color: lightgray;
+}
