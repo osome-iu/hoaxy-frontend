@@ -396,16 +396,6 @@ function HoaxyGraph(options)
 			var user_data = twitter.getUserDataById(user_id);
 			user_data.then(function(response){
 				user.user = response;
-				if (screen_name != user.user.screen_name) {
-					node_modal_content.staleAcctInfo.newId = user_id;
-					node_modal_content.staleAcctInfo.oldSn = screen_name;
-					node_modal_content.staleAcctInfo.newSn = user.user.screen_name;
-					node_modal_content.staleAcctInfo.isStale = true;
-				} else {
-					node_modal_content.staleAcctInfo.oldSn = screen_name;
-					node_modal_content.staleAcctInfo.newSn = 'unchanged';
-					node_modal_content.staleAcctInfo.isStale = false;
-				}
 			}, function(){})
 			.catch(twitterResponseFail);
 			var user_timeline = twitter.getUserTimelineById(user_id);
@@ -455,6 +445,7 @@ function HoaxyGraph(options)
 		botscore.then(function(response){
 			// score_stats.recompute();
 
+			// Storing the consistent account info for this given bot score retrieval
 			var newId = response.data.user.id_str;
 			if (potentially_old_sn != response.data.user.screen_name) {
 				var oldSn = potentially_old_sn;
@@ -466,9 +457,18 @@ function HoaxyGraph(options)
 				var isStale = false;
 			}
 
-			node_modal_content.completeAutomationProbability =
+			var completeAutomationProbability =
 				Math.floor(response.data.cap.english * 100);
 
+			// Storing consistent account information to the global modal content
+			node_modal_content.staleAcctInfo.newId = newId;
+			node_modal_content.staleAcctInfo.oldSn = oldSn;
+			node_modal_content.staleAcctInfo.newSn = newSn;
+			node_modal_content.staleAcctInfo.isStale = isStale;
+			node_modal_content.completeAutomationProbability =
+				completeAutomationProbability;
+
+			// Storing consistent account information to a global cache
 			botscores[id] = {
 				score: response.data.scores.english,
 				old: false,
@@ -476,7 +476,7 @@ function HoaxyGraph(options)
 				user_id: response.data.user.id,
 				screen_name: sn,
 				completeAutomationProbability:
-					node_modal_content.completeAutomationProbability,
+					completeAutomationProbability,
 				staleAcctInfo:
 				{
 					isStale: isStale,
