@@ -165,10 +165,10 @@ var Twitter = function(initialize_key){
     //     "Twitter was unable to retrieve a timeline for this user, is there a typo?")
     // }
     //
-    // obj.getUserMentions = function(screenName){
-    //     return apiCall('GET', '/1.1/search/tweets.json', {q: '@'+screenName, count:100},
-    //     "Twitter was unable to retrieve mentions of this user, is there a typo?")
-    // }
+    obj.getUserMentions = function(screenName){
+        return apiCall('GET', '/1.1/search/tweets.json', {q: '@'+screenName, count:100},
+        "Twitter was unable to retrieve mentions of this user, is there a typo?")
+    }
 
     obj.getUserDataById = function(user_id){
         return apiCall('GET', '/1.1/users/show.json', {user_id: user_id},
@@ -180,10 +180,10 @@ var Twitter = function(initialize_key){
         "Twitter was unable to retrieve a timeline for this user, is there a typo?")
     }
 
-    obj.getUserMentionsById = function(user_id){
-        return apiCall('GET', '/1.1/search/tweets.json', {q: user_id, count:100},
-        "Twitter was unable to retrieve mentions of this user, is there a typo?")
-    }
+    // obj.getUserMentionsById = function(user_id){
+    //     return apiCall('GET', '/1.1/search/tweets.json', {q: user_id, count:100},
+    //     "Twitter was unable to retrieve mentions of this user, is there a typo?")
+    // }
 
     obj.getFollowers = function(screenName, count){
         return getNeighbors('followers', screenName, count);
