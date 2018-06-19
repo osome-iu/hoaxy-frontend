@@ -393,26 +393,36 @@ function HoaxyGraph(options)
 		var node = s.graph.nodes(user_id);
 		var screen_name = node.data.screenName;
 		botScoreA = new Promise(function(resolve, reject){
-			var user_data = twitter.getUserDataById(user_id);
-			user_data.then(function(response){
-				user.user = response;
+			// Bulking user data and mentions promises together as they need
+			// To happen sequentially
+			var user_data_and_mentions = new Promise(function(resolve, reject) {
+				var user_data = twitter.getUserDataById(user_id);
+				user_data.then(function(response){
+					user.user = response;
+					var user_mentions = twitter.getUserMentions(user.user.screen_name);
+					user_mentions.then(function(responseMentions){
+										if(responseMentions.statuses)
+												user.mentions = responseMentions.statuses;
+										else
+												user.mentions = responseMentions;
+										// Both user data and mentions was retrieved, so resolving
+										// user_data_and_mentions promise
+										resolve();
+					}, function(){})
+					.catch(twitterResponseFail);
+				}, function(){})
+				.catch(twitterResponseFail);
 			}, function(){})
 			.catch(twitterResponseFail);
+			// Can happen asynchronously
 			var user_timeline = twitter.getUserTimelineById(user_id);
 			user_timeline.then(function(response){
 				user.timeline = response;
 			}, function(){})
 			.catch(twitterResponseFail);
-			var user_mentions = twitter.getUserMentionsById(user_id);
-			user_mentions.then(function(response){
-                if(response.statuses)
-                    user.mentions = response.statuses;
-                else
-                    user.mentions = response;
-			}, function(){})
-			.catch(twitterResponseFail);
 
-			var got_from_twitter = Promise.all([user_data, user_timeline, user_mentions]);
+
+			var got_from_twitter = Promise.all([user_data_and_mentions, user_timeline]);
 			got_from_twitter.then(function(values){
 				var botScore = getBotScore(user, screen_name);
 				botScore.then(resolve, reject);
@@ -444,9 +454,10 @@ function HoaxyGraph(options)
 		});
 		botscore.then(function(response){
 			// score_stats.recompute();
-
 			// Storing the consistent account info for this given bot score retrieval
 			var newId = response.data.user.id_str;
+			var newScore = response.data.scores.english;
+
 			if (potentially_old_sn != response.data.user.screen_name) {
 				var oldSn = potentially_old_sn;
 				var newSn = response.data.user.screen_name;
@@ -460,17 +471,25 @@ function HoaxyGraph(options)
 			var completeAutomationProbability =
 				Math.floor(response.data.cap.english * 100);
 
+
+			// The following contents should only be actualized once we have
+			// A robust way of showing the user that modal is constantly changing
+			// When we get new bot scores
+			// node_modal_content.botscore = Math.floor(newScore * 100);
+			// node_modal_content.botcolor = newScore != 0 ? getNodeColor(newScore/100) : "";
+			// node_modal_content.completeAutomationProbability =
+			// 	completeAutomationProbability;
+
 			// Storing consistent account information to the global modal content
 			node_modal_content.staleAcctInfo.newId = newId;
 			node_modal_content.staleAcctInfo.oldSn = oldSn;
 			node_modal_content.staleAcctInfo.newSn = newSn;
 			node_modal_content.staleAcctInfo.isStale = isStale;
-			node_modal_content.completeAutomationProbability =
-				completeAutomationProbability;
+
 
 			// Storing consistent account information to a global cache
 			botscores[id] = {
-				score: response.data.scores.english,
+				score: newScore,
 				old: false,
 				time: new Date(),
 				user_id: response.data.user.id,
