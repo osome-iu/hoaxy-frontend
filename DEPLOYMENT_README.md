@@ -36,7 +36,7 @@ Changes specific to the live Branded Hoaxy Website at <http://hoaxy.iuni.iu.edu>
 3) Open a file that you want to edit.
 4) Using the pencil icon at the top of the code listing to "Edit this file"
 5) Make changes to the file.
-6) Add a commit message and make sure to select the radio button for "commit directly to the `deployment` branch
+6) Add a commit message and make sure to select the radio button: "Commit directly to the `deployment` branch."
 7) Click "Commit changes" to commit the changes.
 8) Log into `carl` as the truthy user using your favorite SSH terminal
 9) cd to the repository: `cd /u/truthy/code/hoaxy-frontend`
