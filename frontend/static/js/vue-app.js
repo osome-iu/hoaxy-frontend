@@ -526,7 +526,7 @@ var app = new Vue({
         },
         stripWwwIfPresent: function(url) {
           if (url.substring(0, 4) == "www.") {
-            return url.substring(4, );
+            return url.substring(4);
           } else {
             return url;
           }
