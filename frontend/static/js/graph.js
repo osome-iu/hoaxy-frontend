@@ -67,6 +67,8 @@ function HoaxyGraph(options)
 	var user_id_list = [];
 	var botscores = {};
 
+	var numSigmaInstancesLaunched = 0;
+
 	function UpdateEdges(new_edges){
 		edges = new_edges;
 		console.debug("Edges updated.");
@@ -1200,7 +1202,8 @@ function HoaxyGraph(options)
 
 	function drawGraph() {
 
-
+		// Used for tracking when to stop sigma rendering as to not stop too soon
+		numSigmaInstancesLaunched++;
 
 		// console.log("Drawing Sigma");
 		// $('#graph-container').empty();
@@ -1246,15 +1249,25 @@ function HoaxyGraph(options)
 		// spinStart("ForceAtlas");
 
 		spinStop("generateNetwork");
+
 		setTimeout(function () {
             // getBotCacheScores();
 
-			s.stopForceAtlas2();
-			s.camera.goTo({x:0, y:0, ratio:1});
-			spinStop("ForceAtlas");
-			// spinStop("updateNetwork");
-			spinner_notices.graph = "";
-
+			// If more sigma graphs are undergoing this timeout, do not stop
+			// the latter graph from a previous graph's timeout, using this
+			// mechanism which normalizes the sigma graph to 1, and when that
+			// happens, the visualization rendering is stopped with full time
+			// to render
+		  if (numSigmaInstancesLaunched < 2) {
+				s.stopForceAtlas2();
+				s.camera.goTo({x:0, y:0, ratio:1});
+				spinStop("ForceAtlas");
+				// spinStop("updateNetwork");
+				spinner_notices.graph = "";
+				numSigmaInstancesLaunched--;
+			} else {
+				numSigmaInstancesLaunched--;
+			}
 			// FilterEdges();
 
 		}, 2000 + jiggle_compensator);
