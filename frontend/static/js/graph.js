@@ -471,7 +471,7 @@ function HoaxyGraph(options)
 			}
 
 			var completeAutomationProbability =
-				Math.floor(response.data.cap.english * 100);
+				Math.round(response.data.cap.english * 100);
 
 
 			// The following contents should only be actualized once we have
@@ -487,7 +487,7 @@ function HoaxyGraph(options)
 			node_modal_content.staleAcctInfo.oldSn = oldSn;
 			node_modal_content.staleAcctInfo.newSn = newSn;
 			node_modal_content.staleAcctInfo.isStale = isStale;
-
+			node_modal_content.completeAutomationProbability = completeAutomationProbability;
 
 			// Storing consistent account information to a global cache
 			botscores[id] = {
