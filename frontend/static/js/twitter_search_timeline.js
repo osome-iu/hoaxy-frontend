@@ -63,14 +63,23 @@ function TwitterSearchTimeline(settings){
 						  						</div>";
 	});
 
-	chart.margin({right: 70, bottom: 50})
+	chart.margin({right: 70, bottom: 80})
 
 	chart.xAxis
 		.tickFormat(dateFormatter)
-		.ticks(5);
+		.ticks(5)
+		.staggerLabels(true);
 	chart.x2Axis
 		.tickFormat(dateFormatter)
+		.staggerLabels(true)
 		.ticks(5);
+
+	// chart.focus.margin({bottom: 50});
+	// chart.xAxis
+	// 	.tickValues(function(x){
+	// 		console.debug(x);
+	// 	});
+	// chart.xAxis.rotateLabels(-45);
 
 	chart.forceY([0])
 	chart.yAxis.axisLabel("Cumulative Tweets");
@@ -81,9 +90,16 @@ function TwitterSearchTimeline(settings){
 		if(chart)
 		{
 			chart.dispatch.on("brush", null);
+			// chart.x2Axis.margin({bottom: 100});
 			d3.select('#chart svg')
 			.call(chart);
 			chart.dispatch.on("brush", updateDateRange);
+
+			d3.selectAll('#chart svg .nv-axisMax-x text')
+			.attr("transform", "translate(0, 12)");
+			d3.select('#chart svg .nvd3 > g')
+			.attr("transform", "translate(0, -10)");
+			
 		}
 	}
 	function removeUpdateDateRangeCallback(){
@@ -91,6 +107,7 @@ function TwitterSearchTimeline(settings){
 	}
 
 	function dateFormatter(d) {
+		// console.debug(d);
 		return d3.time.format('%m/%d/%Y %H:%M:%S %p')(new Date(d))
 	}
 

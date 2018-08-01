@@ -66,7 +66,7 @@ function HoaxyTimeline(settings){
 														</div>";
 	});
 
-	chart.margin({right: 50, bottom: 50});
+	chart.margin({right: 50, bottom: 75});
 
 	chart.xAxis
 		.tickFormat(dateFormatter);
@@ -85,6 +85,10 @@ function HoaxyTimeline(settings){
 			.call(chart);
 			chart.dispatch.on("brush", updateDateRange);
 			// chart.interactiveLayer.dispatch.on("elementClick", function(e){ console.debug(new Date(e.pointXValue)) });
+
+			
+			d3.select('#chart svg .nvd3 > g')
+			.attr("transform", "translate(0, -10)");
 		}
 	}
 	function removeUpdateDateRangeCallback(){
