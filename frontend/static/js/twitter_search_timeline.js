@@ -223,6 +223,12 @@ function TwitterSearchTimeline(settings){
 			d3.select('#chart svg')
 			.datum(chartData)
 			.call(chart);
+
+			
+			d3.selectAll('#chart svg .nv-axisMax-x text')
+			.attr("transform", "translate(0, 12)");
+			d3.select('#chart svg .nvd3 > g')
+			.attr("transform", "translate(0, -10)");
 		}
 		catch(e){
 			console.debug(e);
@@ -234,6 +240,12 @@ function TwitterSearchTimeline(settings){
 			d3.select('#chart svg')
 			.datum(chartData)
 			.call(chart);
+
+			
+			d3.selectAll('#chart svg .nv-axisMax-x text')
+			.attr("transform", "translate(0, 12)");
+			d3.select('#chart svg .nvd3 > g')
+			.attr("transform", "translate(0, -10)");
 		}
 		catch(e){
 			console.debug("Error in triggerUpdataRange.", e);
@@ -265,6 +277,11 @@ function TwitterSearchTimeline(settings){
 		d3.select('#chart svg')
 		.datum(chartData)
 		.call(chart);
+		
+		d3.selectAll('#chart svg .nv-axisMax-x text')
+		.attr("transform", "translate(0, 12)");
+		d3.select('#chart svg .nvd3 > g')
+		.attr("transform", "translate(0, -10)");
 		chart.dispatch.on("brush", updateDateRange);
 
 
