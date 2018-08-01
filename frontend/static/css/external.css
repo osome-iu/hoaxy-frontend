@@ -399,9 +399,10 @@ li
 {
     /* margin-top: -80px; */
     position: absolute;
-    bottom: 5em;
+    bottom: 5.5em;
     right: 0;
     left: 0;
+    padding: 0 .25em;
 }
 
 /* Widget Dialog Box should be a little wider than the conventional dialog box */
