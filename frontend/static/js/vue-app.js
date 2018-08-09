@@ -1220,14 +1220,19 @@ var app = new Vue({
           }
         },
         getTwitterSearchResults: function(query){
+
+            // console.debug(query);
             this.spinStart("getTwitterSearchResults");
             this.spinner_notices.timeline = "Searching Twitter...";
             var v = this;
             var response = undefined;
             // Ensuring that the search encoding follows Twitter search standards: https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
-            // Query string is already being URI encoded so we don't explicitly encode it
-            var query_string = query;
+            
+            // Query string is already being URI encoded but the getTweets function re-encodes it, so we need to unencode it first so it's not double encoded
+            var query_string = decodeURIComponent(query);
             // Will later be used for pagination
+
+            // console.debug(query_string);
             var max_id = "";
             // This function will paginate tweet search requests and is recursive
             function paginateTwitterRequests() {

@@ -35,6 +35,10 @@
 										class="mb-0 pb-0">
 										<a href="#faq-q2">How does Hoaxy search work?</a>
 								</li>
+								<li v-on:click="changeFaqContentsColor('faq-twitter-search')"
+										class="mb-0 pb-0">
+										<a href="#faq-twitter-search">How do I use advanced Twitter search terms?</a>
+								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q3')"
 										class="mb-0 pb-0">
 										<a href="#faq-q3">What is a “claim”? Who decides what is true or not?</a>
@@ -131,16 +135,21 @@
 									 target="_blank">Hoaxy API</a>
 								to retrieve relevant articles, accounts, and
 								tweets. <b>Twitter</b> search lets users track articles from any
-								sources posted on Twitter, but only during the last 7 days. This mode uses
+								sources posted on Twitter, but only within the last 7 days. 
+								
+								
+								Twitter mode uses
 								the
 								<a href="https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"
-									 target="_blank">Twitter Search API</a>
+								target="_blank">Twitter Search API</a>
 								to retrieve relevant, popular, or mixed	tweets matching your
 								search query. It is compatible with all
 								<a href="https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators"
-									 target="_blank">advanced search operators</a>.
+								target="_blank">advanced search operators</a>.
+								
+								At most, Hoaxy is capable of visualizing the top 1000 accounts and in the case of a Twitter search, this will be the most recently active 1000 accounts if sorted by <em>Recent</em>.
 							</dd>
-
+							
         			<dt id="faq-q2">How does Hoaxy search work?</dt>
         			<dd class="faq-element-contents">
         				The Hoaxy corpus tracks the social sharing of links to
@@ -152,6 +161,26 @@
 								news and fact-checking organizations. (2) Independent
 								fact-checking organizations, such as snopes.com, politifact.com,
 								and factcheck.org, that routinely fact check unverified claims.
+					</dd>
+					
+					
+
+        			<dt id="faq-twitter-search">How do I use advanced Twitter search terms?</dt>
+        			<dd class="faq-element-contents">
+							Twitter mode uses
+							the
+							<a href="https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"
+							target="_blank">Twitter Search API</a>
+							to retrieve relevant, popular, or mixed	tweets matching your
+							search query. It is compatible with all
+							<a href="https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators"
+							target="_blank">advanced search operators</a>.
+
+							<br /><br />
+
+							For example, instead of <code>puppy</code>  you could search for <code>puppy OR kitten</code> or <code>puppy filter:media</code>.
+
+
         			</dd>
 
 							<dt id="faq-q3">What is a “claim”? Who decides what is true or not?</dt>
