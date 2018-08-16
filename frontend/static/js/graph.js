@@ -164,7 +164,7 @@ function HoaxyGraph(options)
 		start_index = 0;
 		end_index = 0;
 
-		console.debug(graph.nodes);
+		// console.debug(graph.nodes);
 
 		// var new_user_list = [];
 		// for(var index in graph.nodes)
@@ -221,7 +221,7 @@ function HoaxyGraph(options)
 			.then(
 				function(response){
 					spinStop("getBotCacheScores");
-					console.debug("Got botcache: ", response.data);
+					// console.debug("Got botcache: ", response.data);
 					var results = response.data.result;
 					for(var i in results)
 					{
