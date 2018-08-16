@@ -83,9 +83,9 @@ function HoaxyGraph(options)
 			// 	twitter_account_info = response;
 			// 	if(twitter_account_info.id)
 			// 	{
-					score_stats.reset();
-					botscores = {};
-					getBotCacheScores();
+					// score_stats.reset();
+					// botscores = {};
+					// getBotCacheScores();
 
 					// var prom = this.graph.getBotCacheScores();
 					// var v = this;
@@ -1938,7 +1938,7 @@ function HoaxyGraph(options)
 	returnObj.updateEdges = UpdateEdges;
 	returnObj.updateGraph = UpdateGraph;
 	returnObj.getNewScores = getNewScores;
-	// returnObj.getBotCacheScores = getBotCacheScores;
+	returnObj.getBotCacheScores = getBotCacheScores;
 	returnObj.getNodeColor = getNodeColor;
 	returnObj.updateUserBotScore = updateUserBotScore;
 	returnObj.zoomIn = zoomIn;
@@ -1946,6 +1946,7 @@ function HoaxyGraph(options)
 	returnObj.redraw = redraw;
 	returnObj.getEdges = function(){ return edges; };
 	returnObj.botscores = function(){ return botscores; };
+	returnObj.resetBotscores = function(){ botscores = {}; };
 
 	returnObj.score_stats = score_stats;
 	//Used for taking snapshot of graph
