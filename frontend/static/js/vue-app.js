@@ -1160,6 +1160,10 @@ var app = new Vue({
             Vue.nextTick(function(){
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
+                v.graph.score_stats.reset();
+                v.graph.resetBotscores();
+        
+                v.graph.getBotCacheScores();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("secondary_form");
             });
@@ -1212,6 +1216,10 @@ var app = new Vue({
                 // console.log(typeof(v.twitterEdges));
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
+                v.graph.score_stats.reset();
+                v.graph.resetBotscores();
+        
+                v.graph.getBotCacheScores();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("secondary_form");
             });
@@ -1450,6 +1458,10 @@ var app = new Vue({
                         v.hoaxyEdges = edge_list;
                         v.graph.updateEdges(edge_list);
                         v.updateGraph();
+                        v.graph.score_stats.reset();
+                        v.graph.resetBotscores();
+                
+                        v.graph.getBotCacheScores();
                         // v.timeline.redraw();
                         //Check if the animation should be disabled or not
                         v.checkIfShouldDisableAnimation(v.hoaxyEdges);
@@ -1901,6 +1913,7 @@ var app = new Vue({
                 return false;
 
             this.graph.updateGraph(starting_time, ending_time);
+
             this.show_zoom_buttons = true;
             this.scrollToElement("secondary_form");
         },
