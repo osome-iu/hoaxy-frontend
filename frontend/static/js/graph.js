@@ -106,6 +106,12 @@ function HoaxyGraph(options)
 	var retry_count = 0;
 	function getBotCacheScores()
     {
+		if(graph.nodes === undefined)
+		{
+			setTimeout(function(){getBotCacheScores();}, 100);
+			console.debug("No nodes, wait a sec");
+			return false;
+		}
 		getting_bot_scores.running = true;
 		// spinStart("getBotCacheScores");
 		score_stats.user_list.length = 0;
@@ -157,7 +163,37 @@ function HoaxyGraph(options)
 		];
 		start_index = 0;
 		end_index = 0;
-		
+
+		console.debug(graph.nodes);
+
+		// var new_user_list = [];
+		// for(var index in graph.nodes)
+		// {
+		// 	var node = graph.nodes[index];
+		// 	new_user_list.push({id: node.id, size: node.orig_size});
+		// }
+
+		var sorted_nodes = graph.nodes.sort(function(gifford, carell){
+			if(gifford.orig_size > carell.orig_size)
+			{
+				return -1;
+			}
+			else if (gifford.orig_size < carell.orig_size)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		});
+		// console.debug(sorted_nodes);
+		var sorted_user_ids = [];
+		for(var i in graph.nodes)
+		{
+			sorted_user_ids.push(graph.nodes[i].id);
+		}
+		// console.debug(sorted_user_ids);
 		for(i=0; i < botcache_chunk_sizes.length; i++)
 		{
 			var chunk_size = botcache_chunk_sizes[i];
@@ -165,17 +201,13 @@ function HoaxyGraph(options)
 			start_index = end_index;
 			end_index = end_index + chunk_size;
 
-			// if(end_index >= user_id_list.length)
-			// {
-			// 	end_index = user_id_list.length - 1;
-			// }
-
-			var user_id_list_chunk = user_id_list.slice(start_index, end_index);
+			var user_id_list_chunk = sorted_user_ids.slice(start_index, end_index);
+			// console.debug(user_id_list_chunk);
 			if(user_id_list_chunk.length === 0)
 			{
 				break;
 			}
-			console.debug("UserID LIST CHUNK: ", user_id_list_chunk);
+			// console.debug("UserID LIST CHUNK: ", user_id_list_chunk);
 			var botcache_request = axios({
 				method: 'post',
 				url: configuration.botcache_url,
@@ -312,7 +344,9 @@ function HoaxyGraph(options)
 
 
 
-
+		// NON CHUNKED LEGACY VERSION:
+		//
+		//
 		// var botcache_request = axios({
 		// 	method: 'post',
 		// 	url: configuration.botcache_url,
