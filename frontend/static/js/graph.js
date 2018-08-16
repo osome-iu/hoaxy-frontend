@@ -106,6 +106,12 @@ function HoaxyGraph(options)
 	var retry_count = 0;
 	function getBotCacheScores()
     {
+		if(graph.nodes === undefined)
+		{
+			setTimeout(function(){getBotCacheScores();}, 100);
+			console.debug("No nodes, wait a sec");
+			return false;
+		}
 		getting_bot_scores.running = true;
 		// spinStart("getBotCacheScores");
 		score_stats.user_list.length = 0;
@@ -138,129 +144,348 @@ function HoaxyGraph(options)
 			}
 		}
 
-		var botcache_request = axios({
-			method: 'post',
-			url: configuration.botcache_url,
-			responseType: "json",
-			data: {
-				"user_id": user_id_list.join(",")
+
+
+
+
+
+
+
+
+		// var botcache_chunk_size = 200;
+
+		// for(i=0; i<Math.floor(user_id_list.length/botcache_chunk_size)+1; i++)
+
+		var botcache_chunk_sizes = [
+			50,
+			200,
+			1000
+		];
+		start_index = 0;
+		end_index = 0;
+
+		// console.debug(graph.nodes);
+
+		// var new_user_list = [];
+		// for(var index in graph.nodes)
+		// {
+		// 	var node = graph.nodes[index];
+		// 	new_user_list.push({id: node.id, size: node.orig_size});
+		// }
+
+		var sorted_nodes = graph.nodes.sort(function(gifford, carell){
+			if(gifford.orig_size > carell.orig_size)
+			{
+				return -1;
+			}
+			else if (gifford.orig_size < carell.orig_size)
+			{
+				return 1;
+			}
+			else
+			{
+				return 0;
 			}
 		});
-		botcache_request
-		.then(
-			function(response){
-				spinStop("getBotCacheScores");
-				console.debug("Got botcache: ", response.data);
-                var results = response.data.result;
-				for(var i in results)
-				{
-					var user = results[i];
-					if(user)
-					{
-						var sn = user.user.screen_name;
-						var id = user.user.id
-						var score = user.scores.english;
-						botscores[id] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id, screen_name: sn };
-                        updateNodeColor(id, score);
+		// console.debug(sorted_nodes);
+		var sorted_user_ids = [];
+		for(var i in graph.nodes)
+		{
+			sorted_user_ids.push(graph.nodes[i].id);
+		}
+		// console.debug(sorted_user_ids);
+		for(i=0; i < botcache_chunk_sizes.length; i++)
+		{
+			var chunk_size = botcache_chunk_sizes[i];
+			
+			start_index = end_index;
+			end_index = end_index + chunk_size;
 
+			var user_id_list_chunk = sorted_user_ids.slice(start_index, end_index);
+			// console.debug(user_id_list_chunk);
+			if(user_id_list_chunk.length === 0)
+			{
+				break;
+			}
+			// console.debug("UserID LIST CHUNK: ", user_id_list_chunk);
+			var botcache_request = axios({
+				method: 'post',
+				url: configuration.botcache_url,
+				responseType: "json",
+				data: {
+					"user_id": user_id_list_chunk.join(",")
+				}
+			});
+
+			botcache_request
+			.then(
+				function(response){
+					spinStop("getBotCacheScores");
+					// console.debug("Got botcache: ", response.data);
+					var results = response.data.result;
+					for(var i in results)
+					{
+						var user = results[i];
+						if(user)
+						{
+							var sn = user.user.screen_name;
+							var id = user.user.id
+							var score = user.scores.english;
+							botscores[id] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id, screen_name: sn };
+							updateNodeColor(id, score);
+
+						}
+					}
+					//score_stats.recompute();
+
+					score_stats.unavailable = 0;
+					score_stats.old = 0;
+					score_stats.found = 0;
+
+					var already_computed_account_list = [];
+					var stale_scores_to_compute = [];
+					var scores_never_computed_to_compute = [];
+					var account_list_to_compute = [];
+
+					score_stats.user_list = [];
+
+					for (var i in graph.nodes)// i is index
+					{
+						var score = botscores[graph.nodes[i].id];
+						if(score && score.score)
+					{
+							if(score.score === -1)
+						{
+								scores_never_computed_to_compute.push(graph.nodes[i].id);
+								score_stats.unavailable += 1;
+							}
+							else if(score.old === true)
+						{
+								stale_scores_to_compute.push(graph.nodes[i].id);
+								// account_list_to_compute.push(nodes[i].id);
+								score_stats.old += 1;
+								score_stats.found += 1;
+						}
+							else
+						{
+								already_computed_account_list.push(graph.nodes[i].id);
+								score_stats.found += 1;
+						}
+							score = score.score;
+					}
+						else
+					{
+							scores_never_computed_to_compute.push(graph.nodes[i].id);
+							// account_list_to_compute.push(nodes[i].id);
+							score = false;
 					}
 				}
-				//score_stats.recompute();
 
-				score_stats.unavailable = 0;
-				score_stats.old = 0;
-				score_stats.found = 0;
+					// We now order and prioritize the scores that need to be computed first
+					// First we compute scores that have not ever been computed before
+					var neverComputedLength = scores_never_computed_to_compute.length;
+					for (var i = 0; i < neverComputedLength; i++) {
+						account_list_to_compute.push(scores_never_computed_to_compute[i]);
+					}
 
-				var already_computed_account_list = [];
-				var stale_scores_to_compute = [];
-				var scores_never_computed_to_compute = [];
-				var account_list_to_compute = [];
+					// Then we compute stale scores
+					var staleLength = stale_scores_to_compute.length;
+					for (var i = 0; i < staleLength; i++) {
+						account_list_to_compute.push(stale_scores_to_compute[i]);
+					}
 
-				score_stats.user_list = [];
+					// Populating bot update list with already updated scores first
+					// Update bot update index to the point after this list
+					score_stats.current_index = already_computed_account_list.length;
+					for (var i = 0; i<score_stats.current_index; i++){
+						score_stats.user_list.push(already_computed_account_list[i])
+					}
 
-				for (var i in graph.nodes)// i is index
-				{
-					var score = botscores[graph.nodes[i].id];
-					if(score && score.score)
-			    {
-						if(score.score === -1)
-				    {
-							scores_never_computed_to_compute.push(graph.nodes[i].id);
-							score_stats.unavailable += 1;
-						}
-						else if(score.old === true)
-				    {
-							stale_scores_to_compute.push(graph.nodes[i].id);
-							// account_list_to_compute.push(nodes[i].id);
-							score_stats.old += 1;
-							score_stats.found += 1;
-				    }
-						else
-				    {
-							already_computed_account_list.push(graph.nodes[i].id);
-							score_stats.found += 1;
-				    }
-						score = score.score;
-			    }
-					else
-			    {
-						scores_never_computed_to_compute.push(graph.nodes[i].id);
-						// account_list_to_compute.push(nodes[i].id);
-						score = false;
-			    }
-		    }
+					// Then we add the bot scores that are stale or never obtained
+					toComputeLen = account_list_to_compute.length;
+					for (var i = 0; i<toComputeLen; i++){
+						score_stats.user_list.push(account_list_to_compute[i])
+					}
 
-				// We now order and prioritize the scores that need to be computed first
-				// First we compute scores that have not ever been computed before
-				var neverComputedLength = scores_never_computed_to_compute.length;
-				for (var i = 0; i < neverComputedLength; i++) {
-				    account_list_to_compute.push(scores_never_computed_to_compute[i]);
+					score_stats.total = graph.nodes.length;
+					getting_bot_scores.running = false;
+
+					//when we get the cache, go through cache and update botscores:
+					//botscore[sn] = {score: xx, old: false/true};
+
+					// spinStop("getBotCacheScores");
+			})
+			.catch(
+				function (error) {
+					getting_bot_scores.running = false;
+					console.warn('Botometer Scores Request Error: ', error);
+
+					// if it's a network error, retry a maximum of 5 times
+					// if it was the expected 502, the second try will probably succeed.
+					if(error.message === "Network Error" && retry_count < 5)
+					{
+						retry_count += 1;
+						console.info("Retry bot score cache request #", retry_count);
+						getBotCacheScores();
+					}
+
+					spinStop("getBotCacheScores");
 				}
+			);
+}
 
-				// Then we compute stale scores
-				var staleLength = stale_scores_to_compute.length;
-				for (var i = 0; i < staleLength; i++) {
-				    account_list_to_compute.push(stale_scores_to_compute[i]);
-				}
 
-				// Populating bot update list with already updated scores first
-				// Update bot update index to the point after this list
-				score_stats.current_index = already_computed_account_list.length;
-				for (var i = 0; i<score_stats.current_index; i++){
-				    score_stats.user_list.push(already_computed_account_list[i])
-				}
 
-				// Then we add the bot scores that are stale or never obtained
-				toComputeLen = account_list_to_compute.length;
-				for (var i = 0; i<toComputeLen; i++){
-				    score_stats.user_list.push(account_list_to_compute[i])
-				}
 
-				score_stats.total = graph.nodes.length;
-				getting_bot_scores.running = false;
 
-				//when we get the cache, go through cache and update botscores:
-				//botscore[sn] = {score: xx, old: false/true};
 
-				// spinStop("getBotCacheScores");
-		})
-		.catch(
-			function (error) {
-				getting_bot_scores.running = false;
-				console.warn('Botometer Scores Request Error: ', error);
 
-				// if it's a network error, retry a maximum of 5 times
-				// if it was the expected 502, the second try will probably succeed.
-				if(error.message === "Network Error" && retry_count < 5)
-				{
-					retry_count += 1;
-					console.info("Retry bot score cache request #", retry_count);
-					getBotCacheScores();
-				}
 
-				spinStop("getBotCacheScores");
-			}
-		);
+
+
+
+		// NON CHUNKED LEGACY VERSION:
+		//
+		//
+		// var botcache_request = axios({
+		// 	method: 'post',
+		// 	url: configuration.botcache_url,
+		// 	responseType: "json",
+		// 	data: {
+		// 		"user_id": user_id_list.join(",")
+		// 	}
+		// });
+		// botcache_request
+		// .then(
+		// 	function(response){
+		// 		spinStop("getBotCacheScores");
+		// 		console.debug("Got botcache: ", response.data);
+        //         var results = response.data.result;
+		// 		for(var i in results)
+		// 		{
+		// 			var user = results[i];
+		// 			if(user)
+		// 			{
+		// 				var sn = user.user.screen_name;
+		// 				var id = user.user.id
+		// 				var score = user.scores.english;
+		// 				botscores[id] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id, screen_name: sn };
+        //                 updateNodeColor(id, score);
+
+		// 			}
+		// 		}
+		// 		//score_stats.recompute();
+
+		// 		score_stats.unavailable = 0;
+		// 		score_stats.old = 0;
+		// 		score_stats.found = 0;
+
+		// 		var already_computed_account_list = [];
+		// 		var stale_scores_to_compute = [];
+		// 		var scores_never_computed_to_compute = [];
+		// 		var account_list_to_compute = [];
+
+		// 		score_stats.user_list = [];
+
+		// 		for (var i in graph.nodes)// i is index
+		// 		{
+		// 			var score = botscores[graph.nodes[i].id];
+		// 			if(score && score.score)
+		// 	    {
+		// 				if(score.score === -1)
+		// 		    {
+		// 					scores_never_computed_to_compute.push(graph.nodes[i].id);
+		// 					score_stats.unavailable += 1;
+		// 				}
+		// 				else if(score.old === true)
+		// 		    {
+		// 					stale_scores_to_compute.push(graph.nodes[i].id);
+		// 					// account_list_to_compute.push(nodes[i].id);
+		// 					score_stats.old += 1;
+		// 					score_stats.found += 1;
+		// 		    }
+		// 				else
+		// 		    {
+		// 					already_computed_account_list.push(graph.nodes[i].id);
+		// 					score_stats.found += 1;
+		// 		    }
+		// 				score = score.score;
+		// 	    }
+		// 			else
+		// 	    {
+		// 				scores_never_computed_to_compute.push(graph.nodes[i].id);
+		// 				// account_list_to_compute.push(nodes[i].id);
+		// 				score = false;
+		// 	    }
+		//     }
+
+		// 		// We now order and prioritize the scores that need to be computed first
+		// 		// First we compute scores that have not ever been computed before
+		// 		var neverComputedLength = scores_never_computed_to_compute.length;
+		// 		for (var i = 0; i < neverComputedLength; i++) {
+		// 		    account_list_to_compute.push(scores_never_computed_to_compute[i]);
+		// 		}
+
+		// 		// Then we compute stale scores
+		// 		var staleLength = stale_scores_to_compute.length;
+		// 		for (var i = 0; i < staleLength; i++) {
+		// 		    account_list_to_compute.push(stale_scores_to_compute[i]);
+		// 		}
+
+		// 		// Populating bot update list with already updated scores first
+		// 		// Update bot update index to the point after this list
+		// 		score_stats.current_index = already_computed_account_list.length;
+		// 		for (var i = 0; i<score_stats.current_index; i++){
+		// 		    score_stats.user_list.push(already_computed_account_list[i])
+		// 		}
+
+		// 		// Then we add the bot scores that are stale or never obtained
+		// 		toComputeLen = account_list_to_compute.length;
+		// 		for (var i = 0; i<toComputeLen; i++){
+		// 		    score_stats.user_list.push(account_list_to_compute[i])
+		// 		}
+
+		// 		score_stats.total = graph.nodes.length;
+		// 		getting_bot_scores.running = false;
+
+		// 		//when we get the cache, go through cache and update botscores:
+		// 		//botscore[sn] = {score: xx, old: false/true};
+
+		// 		// spinStop("getBotCacheScores");
+		// })
+		// .catch(
+		// 	function (error) {
+		// 		getting_bot_scores.running = false;
+		// 		console.warn('Botometer Scores Request Error: ', error);
+
+		// 		// if it's a network error, retry a maximum of 5 times
+		// 		// if it was the expected 502, the second try will probably succeed.
+		// 		if(error.message === "Network Error" && retry_count < 5)
+		// 		{
+		// 			retry_count += 1;
+		// 			console.info("Retry bot score cache request #", retry_count);
+		// 			getBotCacheScores();
+		// 		}
+
+		// 		spinStop("getBotCacheScores");
+		// 	}
+		// );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		return botcache_request;
 
