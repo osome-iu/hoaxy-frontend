@@ -106,6 +106,7 @@ function HoaxyGraph(options)
 	var retry_count = 0;
 	function getBotCacheScores()
     {
+		console.debug("Querying bot cache.");
 		if(graph.nodes === undefined)
 		{
 			setTimeout(function(){getBotCacheScores();}, 100);
@@ -314,15 +315,15 @@ function HoaxyGraph(options)
 					//botscore[sn] = {score: xx, old: false/true};
 
 					// spinStop("getBotCacheScores");
-			})
-			.catch(
-				function (error) {
+			},
+			function (error) {
 					getting_bot_scores.running = false;
 					console.warn('Botometer Scores Request Error: ', error);
 
 					// if it's a network error, retry a maximum of 5 times
 					// if it was the expected 502, the second try will probably succeed.
-					if(error.message === "Network Error" && retry_count < 5)
+					// if(error.message === "Network Error" && retry_count < 5)
+					if(retry_count < 5)
 					{
 						retry_count += 1;
 						console.info("Retry bot score cache request #", retry_count);
@@ -990,6 +991,9 @@ function HoaxyGraph(options)
 	function UpdateGraph(start_time, end_time)
 	{
 		clearTimeout(animationTimeout);
+		if(graph.nodes){
+			graph.nodes = [];
+		}
 
 		// spinStart("updateNetwork");
 		console.debug("Updating Graph");
@@ -1002,7 +1006,8 @@ function HoaxyGraph(options)
 		}
 
 		var TWEET_URL = "https://twitter.com/%0/status/%1";
-	    var g = {nodes: [], edges: []},
+		var g = {nodes: [], edges: []},
+		graph = g;
 
 		//set all nodes color to grey (#BDBDBD); 11/02/2016
 	    node_colors = colors.node_colors,
