@@ -222,7 +222,7 @@ function HoaxyGraph(options)
 			.then(
 				function(response){
 					spinStop("getBotCacheScores");
-					// console.debug("Got botcache: ", response.data);
+					console.debug("Got botcache: ", response.data);
 					var results = response.data.result;
 					for(var i in results)
 					{
@@ -1007,17 +1007,18 @@ function HoaxyGraph(options)
 
 		var TWEET_URL = "https://twitter.com/%0/status/%1";
 		var g = {nodes: [], edges: []},
-		graph = g;
-
 		//set all nodes color to grey (#BDBDBD); 11/02/2016
-	    node_colors = colors.node_colors,
+		 node_colors = colors.node_colors,
 		edge_colors = {
 			"fact_checking": colors.edge_colors.fact_checking,
 			"claim": colors.edge_colors.claim,
 		},
 	    nodes = {},
 		count,
-	    edgeCount = {};
+		edgeCount = {};
+		
+		graph = g;
+
 		timespan.start_time = 0;
 		timespan.end_time = 0;
 		var node_count = 0, edge_count=0;
@@ -1437,6 +1438,12 @@ function HoaxyGraph(options)
 
 		// console.log("Drawing Sigma");
 		// $('#graph-container').empty();
+
+		// if(!graph || !graph.nodes || !graph.edges)
+		// {
+		// 	setTimeout(function(){drawGraph()}, 100);
+		// 	return false;
+		// }
 
 		s = new sigma({
 			graph:graph,
