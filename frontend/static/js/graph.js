@@ -991,9 +991,9 @@ function HoaxyGraph(options)
 	function UpdateGraph(start_time, end_time)
 	{
 		clearTimeout(animationTimeout);
-		if(graph.nodes){
-			graph.nodes = [];
-		}
+		// if(graph.nodes){
+		// 	graph.nodes = [];
+		// }
 
 		// spinStart("updateNetwork");
 		console.debug("Updating Graph");
