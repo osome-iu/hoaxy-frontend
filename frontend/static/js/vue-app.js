@@ -233,7 +233,9 @@ var app = new Vue({
             active_slide: 1,
             show: false,
             // hiddenByCookie: false
-        }
+        },
+
+        nodes_filtered_by_score: false
 
     },
     computed: {
@@ -377,6 +379,25 @@ var app = new Vue({
             this.tooltip.show= false;
             this.tooltip.top= 0;
             this.tooltip.left= 0;
+        },
+        filterNodesByScore: function(min, max)
+        {
+            // console.debug(this.nodes_filtered_by_score);
+            //if we double click on a color
+            if(this.nodes_filtered_by_score === max + " " + min)
+            {
+                //display all nodes
+                this.graph.filterNodesByScore();
+                this.nodes_filtered_by_score = false;
+                
+            }
+            else
+            {
+                //display only the filtered nodes
+                this.graph.filterNodesByScore(max, min);
+                this.nodes_filtered_by_score = max + " " + min;
+            }
+            // console.debug(this.nodes_filtered_by_score);
         },
         // generateStaleAccountWarning: function(new_id, old_sn, new_sn) {
         //   this.node_modal_content.staleAcctInfo.newId = new_id;

@@ -1918,6 +1918,43 @@ function HoaxyGraph(options)
 	}
 
 
+	function filterNodesByScore(max, min){
+		var nodes = s.graph.nodes();
+		for(var node_id in nodes)
+		{
+			var node = nodes[node_id];
+			
+			var score = false;
+			if(botscores[node.id])
+			{
+				score = botscores[node.id].score;
+			}
+			// var node_color = getNodeColor(score);
+			// console.debug(score);
+			if(max)
+			{
+				if(score !== false && score >= min && score < max)
+				{
+					updateNodeColor(node.id, score);
+					// console.debug("colorize");
+				}
+				else
+				{
+					// console.debug("hide");
+					// updateNodeColor(node.id, false);
+					node.color = "rgba(0,0,0,.05)";
+					node.borderColor = "rgba(0,0,0,.05)";
+				}
+			}
+			else
+			{
+				updateNodeColor(node.id, score);
+			}
+		}
+		refreshGraph();
+	}
+
+
  // ######
  // #     # ###### ##### #    # #####  #    #
  // #     # #        #   #    # #    # ##   #
@@ -1947,6 +1984,8 @@ function HoaxyGraph(options)
 	returnObj.getEdges = function(){ return edges; };
 	returnObj.botscores = function(){ return botscores; };
 	returnObj.resetBotscores = function(){ botscores = {}; };
+
+	returnObj.filterNodesByScore = filterNodesByScore;
 
 	returnObj.score_stats = score_stats;
 	//Used for taking snapshot of graph
