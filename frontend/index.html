@@ -515,7 +515,7 @@
             </div>
 						<div>
 	            <div class="d-block p-2" v-if="show_zoom_buttons" id="graph_help_text">
-	                Click on network nodes and edges for details.
+	                Click on network nodes and edges for details. Click on color scale to filter nodes by color.
 	            </div>
 
 						</div>
@@ -566,9 +566,9 @@
                         </div>
 										</div>
                 </div>
-
+				
+				<!-- @click="info_text='The color of a node indicates the twitter account\'s likelihood of being either a bot or a human.  Scores are calculated using Botometer\'s algorithms and information from a account\'s twitter timeline.  For more information, see the FAQ.'" -->
                 <div style="cursor: pointer"
-					@click="info_text='The color of a node indicates the twitter account\'s likelihood of being either a bot or a human.  Scores are calculated using Botometer\'s algorithms and information from a account\'s twitter timeline.  For more information, see the FAQ.'"
 					v-if="show_zoom_buttons"
 					id="bot_legend"
 					class="text-right p-2">
@@ -580,19 +580,29 @@
 						<div
 							class="rounded d-flex flex-column"
 							>
-								<div class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" :style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
+								<div @click="filterNodesByScore(.8, 1.1)" 
+									class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" 
+									:style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
 										<span v-text="botscoreCount(.8, 1.1)">100</span>
 								</div>
-								<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ','+ colors.node_colors.botscores[1].blue + ', .9)'">
-									<span v-text="botscoreCount(.6, .8)">200</span>
+								<div @click="filterNodesByScore(.6, .8)" 
+									class="d-flex justify-content-center align-items-center bot_legend_section" 
+									:style="'background-color: rgba('+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ','+ colors.node_colors.botscores[1].blue + ', .9)'">
+										<span v-text="botscoreCount(.6, .8)">200</span>
 								</div>
-								<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ','+ colors.node_colors.botscores[2].blue + ', .9)'">
-									<span v-text="botscoreCount(.4, .6)">500</span>
+								<div @click="filterNodesByScore(.4, .6)" 
+									class="d-flex justify-content-center align-items-center bot_legend_section" 
+									:style="'background-color: rgba('+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ','+ colors.node_colors.botscores[2].blue + ', .9)'">
+										<span v-text="botscoreCount(.4, .6)">500</span>
 								</div>
-								<div class="d-flex justify-content-center align-items-center bot_legend_section" :style="'background-color: rgba('+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ','+ colors.node_colors.botscores[3].blue + ', .9)'">
-									<span v-text="botscoreCount(.2, .4)">300</span>
+								<div @click="filterNodesByScore(.2, .4)" 
+									class="d-flex justify-content-center align-items-center bot_legend_section" 
+									:style="'background-color: rgba('+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ','+ colors.node_colors.botscores[3].blue + ', .9)'">
+										<span v-text="botscoreCount(.2, .4)">300</span>
 								</div>
-								<div class="d-flex justify-content-center align-items-center bot_legend_section rounded-bottom" :style="'background-color: rgba('+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ', .9)'">
+								<div @click="filterNodesByScore(0, .20)" 
+									class="d-flex justify-content-center align-items-center bot_legend_section rounded-bottom" 
+									:style="'background-color: rgba('+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ', .9)'">
 										<span v-text="botscoreCount(0, .20)">100</span>
 								</div>
 							</div>
