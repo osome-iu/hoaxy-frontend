@@ -788,6 +788,35 @@
                     </div>
                 </div>
             </div>
+		</div>
+		
+		
+
+        <div id="authenticateModal" :class="{'modal-show': show_authenticate_modal}" @click.stop="toggleModal('authenticate')" class="modal " tabindex="-1" role="dialog" aria-labelledby="authenticateModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
+            <div class="modal-dialog" role="document">
+                <div @click.stop="" class="alert m-5 alert-info">
+                    <div class="modal-header">
+                        <h4 class="modal-title text-center" id="authenticateModalLabel" >
+							Twitter Error
+                        </h4>
+						<button type="button" class="close float-right"  @click="toggleModal('authenticate')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body" id="authenticateModalBody" >
+						<div class="">
+							<!-- <i class="float-left m-2 fa fa-3x fa-exclamation-triangle" aria-hidden="true"></i> -->
+							<p>
+								There was an issue contacting Twitter.  Please try again by clicking the button below and re-authenticate with Twitter if necessary.
+							</p>
+							<p>
+								<button class="btn btn-success btn-lg" @click="submitForm(true); toggleModal('authenticate')">Retry Query</button>
+							</p>
+						</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="toggleModal('authenticate')">Close</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
 		<div id="errorModal" :class="{'modal-show': show_error_modal}" @click.stop="toggleErrorModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
