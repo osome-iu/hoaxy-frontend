@@ -124,6 +124,7 @@ var app = new Vue({
         showWidgetModal: false,
         show_error_modal: false,
         error_message: "",
+        show_authenticate_modal: false,
         show_edge_modal: false,
         show_node_modal: false,
         modal_opacity: false,
@@ -1264,8 +1265,10 @@ var app = new Vue({
                 if (error.error.status == 429) {
                   v.displayError("Twitter rate limit reached. Try again in 15 minutes.");
                 } else {
-                  v.displayError("Twitter Search Pagination Error: User must \
-                                  authenticate via Twitter for this service.");
+                  v.toggleModal("authenticate", true);
+
+                //   v.displayError("Twitter Search Pagination Error: User must \
+                //                   authenticate via Twitter for this service.");
                 }
               })
               .catch(function(error){
