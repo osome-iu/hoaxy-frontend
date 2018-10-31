@@ -544,26 +544,31 @@
 							>
 								<div @click="filterNodesByScore(.8, 1.1)" 
 									class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" 
+									:class="{'selected_node_filter': nodes_filtered_by_score == '1.1 0.8'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
 										<span v-text="botscoreCount(.8, 1.1)">100</span>
 								</div>
 								<div @click="filterNodesByScore(.6, .8)" 
 									class="d-flex justify-content-center align-items-center bot_legend_section" 
+									:class="{'selected_node_filter': nodes_filtered_by_score == '0.8 0.6'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ','+ colors.node_colors.botscores[1].blue + ', .9)'">
 										<span v-text="botscoreCount(.6, .8)">200</span>
 								</div>
 								<div @click="filterNodesByScore(.4, .6)" 
 									class="d-flex justify-content-center align-items-center bot_legend_section" 
+									:class="{'selected_node_filter': nodes_filtered_by_score == '0.6 0.4'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ','+ colors.node_colors.botscores[2].blue + ', .9)'">
 										<span v-text="botscoreCount(.4, .6)">500</span>
 								</div>
 								<div @click="filterNodesByScore(.2, .4)" 
 									class="d-flex justify-content-center align-items-center bot_legend_section" 
+									:class="{'selected_node_filter': nodes_filtered_by_score == '0.4 0.2'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ','+ colors.node_colors.botscores[3].blue + ', .9)'">
 										<span v-text="botscoreCount(.2, .4)">300</span>
 								</div>
 								<div @click="filterNodesByScore(0, .20)" 
 									class="d-flex justify-content-center align-items-center bot_legend_section rounded-bottom" 
+									:class="{'selected_node_filter': nodes_filtered_by_score == '0.2 0'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ', .9)'">
 										<span v-text="botscoreCount(0, .20)">100</span>
 								</div>

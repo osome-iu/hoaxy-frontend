@@ -1,3 +1,8 @@
+.selected_node_filter
+{
+    border: solid black 2px;
+}
+
 .botimages
 {
     width: 300px;
