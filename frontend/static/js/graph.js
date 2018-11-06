@@ -157,11 +157,7 @@ function HoaxyGraph(options)
 
 		// for(i=0; i<Math.floor(user_id_list.length/botcache_chunk_size)+1; i++)
 
-		var botcache_chunk_sizes = [
-			50,
-			200,
-			1000
-		];
+		var botcache_chunk_sizes = configuration.botcache_chunk_sizes;
 		start_index = 0;
 		end_index = 0;
 
@@ -333,7 +329,7 @@ function HoaxyGraph(options)
 					spinStop("getBotCacheScores");
 				}
 			);
-}
+		}
 
 
 
