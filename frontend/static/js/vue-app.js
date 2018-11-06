@@ -7,11 +7,11 @@ var colors = {
         "fact_checking" : 'darkblue',
         "claim" : 'darkblue',
         "botscores": [
-            {red: 255, green: 0, blue: 0} ,
-      			{red: 245, green: 90, blue: 150} ,
-      			{red: 255, green: 128, blue: 200} ,
-      			{red: 170, green: 90, blue: 220} ,
-      			{red: 0, green: 0, blue: 255}
+            {red: 215, green: 25, blue: 28} ,
+      			{red: 253, green: 174, blue: 97} ,
+      			{red: 255, green: 255, blue: 191} ,
+      			{red: 171, green: 221, blue: 164} ,
+      			{red: 62, green: 182, blue: 229}
             // {red: 215, green: 25, blue: 28},
             //
             // {red: 181, green: 56, blue: 80},
