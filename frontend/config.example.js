@@ -38,6 +38,12 @@ configuration = function(){
 
 	obj.twitter_key = "";
 
+	obj.botcache_chunk_sizes = [
+		// 50,
+		// 200,
+		2000
+	];
+
 
 	return obj;
 }();
