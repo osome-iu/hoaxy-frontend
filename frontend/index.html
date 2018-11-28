@@ -817,7 +817,7 @@
 							<!-- <h5>Botometer Score (<a v-on:click.prevent="checkAccountDetails(node_modal_content.user_id, node_modal_content.screenName)" href="#" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5> -->
 							<h5>Botometer Score: <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
 								<div class="text-center" v-if="node_modal_content.botscore > 0">
-									<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'white':'black' }">
+									<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'black':'black' }">
 										<h1 class="m-0 p-0">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
 									</div>
 									<div class="d-flex justify-content-center h3">
