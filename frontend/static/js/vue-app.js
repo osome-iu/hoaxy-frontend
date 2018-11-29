@@ -637,7 +637,7 @@ var app = new Vue({
               v.spinStop();
             },
             function (error) {
-              console.log("Get Top Articles Request failed: " + error.response.statusText);
+              console.log("Get Top Articles Request failed: ", error);
               v.spinStop();
             }
           );
@@ -687,7 +687,7 @@ var app = new Vue({
               v.spinStop();
             },
             function (error) {
-              alert("Get Articles Request failed: " + error.response.statusText);
+              console.log("Get Articles Request failed: ", error);
               v.spinStop();
             }
           );
@@ -1502,7 +1502,7 @@ var app = new Vue({
                 },
                 function (error) {
                     var error_message = "";
-                    if(error.response)
+                    if(error.response && error.response.statusText)
                     {
                         error_message = error.response.statusText;
                     }
