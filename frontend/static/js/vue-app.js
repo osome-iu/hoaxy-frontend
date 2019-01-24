@@ -806,7 +806,7 @@ var app = new Vue({
             {
                 this.spin_key_table.splice(key_index, 1);
             }
-            if(this.spin_key_table.length == 0)
+            if(this.spin_key_table.length == 0 || reset === true)
             {
                 this.loading = false;
                 this.input_disabled = false;
@@ -1538,7 +1538,7 @@ var app = new Vue({
                 v.twitterLogIn()
                 .then(function(){
                     v.sendFeedbackData();
-                });
+                }, function(error){console.warn(error); v.spinStop(null, true);});
             }
             else
             {
@@ -1626,7 +1626,7 @@ var app = new Vue({
                 },
                 function(error){
                     v.twitter_account_info = {};
-                    console.debug("error: ", error);
+                    console.warn("error: ", error);
                     // this.getting_bot_scores.running = false;
                 }
             );
@@ -1637,7 +1637,7 @@ var app = new Vue({
             if(!this.twitter_account_info.id)
             {
                 var prom = this.twitterLogIn();
-                prom.then( this.graph.getNewScores );
+                prom.then( this.graph.getNewScores, function(error){console.warn(error);  v.spinStop(null, true);} );
 
             }
             else
@@ -1657,6 +1657,9 @@ var app = new Vue({
                         v.graph.updateUserBotScore({user_id: user_id})
                         .then(resolve, reject);
 
+                    },function(error){
+                        console.warn(error);
+                        reject(error)
                     })
                 }
                 else
