@@ -72,6 +72,8 @@ var app = new Vue({
         //  #     # #    #   #   #    #
         //  ######  #    #   #   #    #
 
+        imported_data: null,
+
         loading: true,
         mounted: false,
         show_articles: false,
@@ -1968,6 +1970,9 @@ var app = new Vue({
         this.show_articles = false;
         this.show_graphs = false;
 
+        //if there is posted imported data, it should be in an element called "post_data"
+        this.imported_data = JSON.parse(document.getElementById("post_data").innerHTML);
+        console.debug(this.imported_data);
 
         //create hourglass loading spinner
         var v = this;

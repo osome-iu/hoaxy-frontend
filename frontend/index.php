@@ -1,3 +1,17 @@
+<?php
+
+	$post_data = '';
+
+	if(isset($_POST) && isset($_POST["data"]))
+	{
+		$post_data = ($_POST["data"]);
+	}
+
+
+?>
+
+
+
 <!DOCTYPE html>
 <html>
 
@@ -7,6 +21,7 @@
 </head>
 
 <body>
+	<div style="display: none" id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>
 	<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
 			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
