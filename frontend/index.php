@@ -3,7 +3,7 @@
 
 <head>
 	<title>Claim and Fact Checking Spreading Visualization</title>
-	<!--#include virtual="./includes/includes.html" -->
+	<?php include("./includes/includes.html"); ?>
 </head>
 
 <body>
@@ -18,7 +18,7 @@
 		</div>
 
 
-		<!--#include virtual="./includes/header.html" -->
+		<?php include("./includes/header.html" ); ?>
 
 		<!--
 		#######
@@ -629,7 +629,7 @@
 	</div>
 </transition>
 
-		<!--#include virtual="./includes/footer.html" -->
+		<?php include("./includes/footer.html"); ?>
 
 
 		<!--
