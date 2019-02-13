@@ -1264,11 +1264,15 @@ var app = new Vue({
 
             // console.debug(query_string);
             var max_id = "";
+
+            var query_limit = 10;
+
             // This function will paginate tweet search requests and is recursive
             function paginateTwitterRequests() {
               tweetsReponse = v.twitter.getTweets(query_string, max_id, v.twitter_result_type);
               // Handling the get Tweets response
               tweetsReponse.then(function(response){
+                query_limit -= 1; 
                 if (response.search_metadata.next_results) {
                   // Retrieving the maximum id for which the next result we must return tweets smaller than, hence older than this tweet
                   max_id = response.statuses[response.statuses.length-1].id_str;
@@ -1277,8 +1281,9 @@ var app = new Vue({
                   query_string = "";
                 }
                 v.buildTwitterEdgesTimeline(response.statuses);
+                console.debug(v.twitterUserSet.size, query_limit);
                 // Check if pagination must continue, if the number of nodes on the graph exceeds 1000 we don't send additional requests
-                if (v.twitterUserSet.size < 1000 && query_string != "") {
+                if (v.twitterUserSet.size < 1000 && query_string != "" && query_limit > 0) {
                   // Continue pagination
                   paginateTwitterRequests()
                 } else {
