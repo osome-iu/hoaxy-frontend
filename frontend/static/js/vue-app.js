@@ -1690,12 +1690,26 @@ var app = new Vue({
           Object.keys(firstEdge)
                 .forEach(function(key, ix) {
                     headerRow.push(key);
+                    
+                    if(key == "from_user_id")
+                    {
+                      headerRow.push("from_user_botscore");
+                    }
+                    if(key == "to_user_id")
+                    {
+                      headerRow.push("to_user_botscore");
+                    }
                  });
           //Adding final computed column called tweet_url
           headerRow.push("tweet_url")
           //Sorting results for cleanliness
           headerRow.sort()
           csvData.push(headerRow)
+
+          console.debug(this.graph.botscores());
+
+          let botscores = this.graph.botscores();
+
           //Iterating through edge list and building data rows where each row is an edge
           var numEdges = edgeList.length;
           if (numEdges > 0) {
@@ -1703,12 +1717,28 @@ var app = new Vue({
                 var dataRow = [];
                 for (var keyIx = 0; keyIx < headerRow.length; keyIx++) {
                   if (edgeList[edgeNum].hasOwnProperty(headerRow[keyIx])) {
+
+                    // if(headerRow[keyIx] == "")
+                    if (headerRow[keyIx] == "from_user_id" || headerRow[keyIx] == "to_user_id") {
+
+                      try {
+                        let score = Math.floor(botscores[edgeList[edgeNum][headerRow[keyIx]]].score * 100)
+
+                        dataRow.push(Number((score/100) * 5 ).toFixed(1));
+                      }
+                      catch(err)
+                      {
+                        dataRow.push("");
+                      }
+                    }
                     if (headerRow[keyIx] == "title") {
                       // Quote delimiting the article title to deal with comma delimitation problems (e.g. "hello, world" will now be treated as one column in a csv and not two)
                       dataRow.push("\"" + edgeList[edgeNum][headerRow[keyIx]] + "\"");
                     } else {
                       dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
                     }
+                    
+
                   } else {
                     if (headerRow[keyIx] == "tweet_url") {
                       dataRow.push("https://twitter.com/" + String(edgeList[edgeNum]['from_user_screen_name']) + "/status/" + String(edgeList[edgeNum]['tweet_id']));
