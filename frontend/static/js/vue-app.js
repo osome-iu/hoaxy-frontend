@@ -71,6 +71,8 @@ var app = new Vue({
         //  #     # ######   #   ######
         //  #     # #    #   #   #    #
         //  ######  #    #   #   #    #
+        import_or_search: "import",
+        ready_to_visualize: false,
 
         imported_data: null,
 
@@ -337,6 +339,50 @@ var app = new Vue({
     // #     # ######   #   #    #  ####  #####   ####
 
     methods: {
+        fileUploadHandler: function(evt){
+            this.ready_to_visualize = false;
+         
+            var file = evt.target.files[0]; 
+        
+            var reader = new FileReader();
+            var vm = this;
+            reader.onload = (function(theFile) {
+                return function(e) {
+                  var csv_string = (e.target.result);
+                  var rows = vm.parseCSV(csv_string);
+                  // console.debug(rows);
+                  vm.imported_data = rows;
+                  vm.ready_to_visualize = true;
+                };
+              })(file);
+        
+              reader.readAsText(file);   
+        },
+        parseCSV: function(csv_string)
+        {
+            var rowstrings = csv_string.split("\n");
+            var rows = [];
+            var header_row = rowstrings[0].split(",");
+            for(var row of rowstrings)
+            {
+              var split_row = row.split(",");
+              var row_obj = {};
+              for(var col_header_index in header_row)
+              {
+                  row_obj[header_row[col_header_index]] = split_row[col_header_index];
+              }
+
+
+              rows.push(row_obj);
+            }
+            return rows;
+
+        },
+        visualizeImportedData: function(){
+          console.debug("visualize", this.imported_data);
+        },
+
+
 
         tutorialNextSlide: function(){
             if(this.tutorial.active_slide < 5)

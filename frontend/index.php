@@ -45,12 +45,16 @@
 		#        ####  #    # #    #
 
 	-->
+
+	
+	<output id="list"></output>
+
 		<section id="form" class="container">
-			<form @submit.stop.prevent="submitForm()">
-				<div class="container">
+			<div class="container">
+				<form v-if="import_or_search == 'search'" @submit.stop.prevent="submitForm()">
 					<div class="col-12 text-center">
 
-						<div class="col-12 text-center d-md-flex align-items-center">
+					<div class="col-12 text-center d-md-flex align-items-center">
 						<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
                             <div class="pr-2 text-nowrap">Search by:</div>
                             <div class="">
@@ -78,6 +82,9 @@
                                 v-bind:placeholder="searchPlaceholder"
                                 :disabled="input_disabled" />
 						</div>
+
+						
+
 					</div>
 					<div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
 						<span class="radio-container">
@@ -112,11 +119,36 @@
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
 						<button class="btn btn-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
+						<button class="btn btn-secondary ml-3 btn-sm" 
+							@click="import_or_search=(import_or_search=='import'?'search':'import')">Or Import Data</button>
 					</div>
-					<div class="clearfix"></div>
+					
 				</form>
+				
+				<div v-if="import_or_search == 'import'" class="">
+					<div class="col-12 text-center ">
+						<div class="col-12 text-center d-md-flex align-items-center">
+							<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
+							<div class="pr-2 text-nowrap">Visualize Existing Data:</div>
+							<input type="file" id="import_file" name="import_file" 
+								@change="fileUploadHandler" 
+								class="form-control form-control-file" />
+						</div>
+					</div>
 
-
+					
+					<div class="col-12 text-center mt-3">
+							<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
+							<button class="btn btn-primary btn-blue" @click="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
+							<button class="btn btn-secondary ml-3 btn-sm" 
+							@click="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
+					</div>
+				</div>
+				
+				<div class="container">
+				</div>
+				
+				<div class="clearfix"></div>
 			</div>
 		</section>
 
