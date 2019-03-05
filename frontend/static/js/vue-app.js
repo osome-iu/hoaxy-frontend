@@ -330,14 +330,13 @@ var app = new Vue({
 
     },
 
-    // #     #
-    // ##   ## ###### ##### #    #  ####  #####   ####
-    // # # # # #        #   #    # #    # #    # #
-    // #  #  # #####    #   ###### #    # #    #  ####
-    // #     # #        #   #    # #    # #    #      #
-    // #     # #        #   #    # #    # #    # #    #
-    // #     # ######   #   #    #  ####  #####   ####
-
+// ##     ## ######## ######## ##     ##  #######  ########   ######  
+// ###   ### ##          ##    ##     ## ##     ## ##     ## ##    ## 
+// #### #### ##          ##    ##     ## ##     ## ##     ## ##       
+// ## ### ## ######      ##    ######### ##     ## ##     ##  ######  
+// ##     ## ##          ##    ##     ## ##     ## ##     ##       ## 
+// ##     ## ##          ##    ##     ## ##     ## ##     ## ##    ## 
+// ##     ## ########    ##    ##     ##  #######  ########   ######  
     methods: {
         fileUploadHandler: function(evt){
             this.ready_to_visualize = false;
@@ -379,7 +378,67 @@ var app = new Vue({
 
         },
         visualizeImportedData: function(){
-          console.debug("visualize", this.imported_data);
+          // console.debug("visualize", this.imported_data);
+
+          // function updateEdgesAndTimeline(typeOfTweet) {
+          //   try {
+          //     twitterEdge.tweet_id = twitterEntities[key].id_str;
+          //   } catch(err) {
+          //       twitterEdge.tweet_id = "";
+          //   }
+          //   var formattedDate = v.formatDate(twitterEntities[key].created_at);
+          //   v.twitterDates.push(new Date(formattedDate));
+
+          //   // Updating edges
+          //   twitterEdge.date_published = formattedDate;
+          //   twitterEdge.pub_date = formattedDate;
+          //   twitterEdge.tweet_created_at = formattedDate;
+          //   twitterEdge.tweet_type = typeOfTweet;
+          //   v.twitterEdges.push(twitterEdge);
+          // }
+
+          this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+          this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+              v.pauseGraphAnimation();
+              v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+              v.graphAnimation.increment = 0;
+              v.graphAnimation.playing  = true;
+              v.graphAnimation.paused = true;
+              v.unpauseGraphAnimation();
+              v.pauseGraphAnimation();
+              // console.debug(new Date(e.pointXValue))
+          });
+          this.timeline = this.globalTwitterSearchTimeline;
+
+          var data = this.imported_data;
+          data.shift();
+
+          this.resetTwitterSearchResults();
+
+          // this.twitterEdges.length = 0;
+          // this.twitterDates.length = 0;
+
+          for(var i in data)
+          {
+            var edge = data[i];
+            // console.debug(edge.pub_date);
+            var newdate = new Date(edge.pub_date);
+            if(!(newdate instanceof Date && !isNaN(newdate)))
+            {
+              continue;
+            }
+
+            this.twitterEdges.push(edge);
+            this.twitterDates.push(newdate);
+            this.twitterUserSet.add(edge.from_user_id);
+            this.twitterUserSet.add(edge.to_user_id);
+          }
+
+          // console.debug(this.twitterDates);
+
+          this.buildTwitterGraph();
+          // Check if animation should be disabled or not
+          this.checkIfShouldDisableAnimation(this.twitterEdges);
         },
 
 
@@ -448,97 +507,18 @@ var app = new Vue({
             }
             // console.debug(this.nodes_filtered_by_score);
         },
-        // generateStaleAccountWarning: function(new_id, old_sn, new_sn) {
-        //   this.node_modal_content.staleAcctInfo.newId = new_id;
-        //   this.node_modal_content.staleAcctInfo.oldSn = old_sn;
-        //   this.node_modal_content.staleAcctInfo.newSn = new_sn;
-        //   this.node_modal_content.staleAcctInfo.isStale = true;
-        // },
-        // checkAccountDetails: function(user_id, potentially_old_sn) {
-        //     var v = this;
-        //     // window.open("https://botometer.iuni.iu.edu/#!/?sn=" + v.node_modal_content.screenName);
-        //
-        //     var success = new Promise(function(resolve, reject){
-        //       if(!v.twitter_account_info.id)
-        //       {
-        //           v.twitterLogIn()
-        //           .then(function(){
-        //             var user_data = v.twitter.getUserDataById(user_id);
-        //       			user_data.then(function(userResponse){
-        //               if (potentially_old_sn != userResponse.screen_name) {
-        //                 v.generateStaleAccountWarning(user_id, potentially_old_sn, userResponse.screen_name);
-        //               } else {
-        //                 v.node_modal_content.staleAcctInfo.isStale = false;
-        //                 v.node_modal_content.staleAcctInfo.oldSn = potentially_old_sn;
-        //                 v.node_modal_content.staleAcctInfo.newSn = 'unchanged';
-        //               }
-        //               resolve();
-        //       			}, function(error){
-        //     					// If Twitter returns a status code of 429 (rate limit reached)
-        //     					// we reject and let the handlers handle it
-        //     					// Different error catching mechansisms have the second error obj
-        //     					// So we check for it so it doesn't fail in error catching mechanism
-        //     					if (error.error) {
-        //     						if (error.error.status == 429) {
-        //     							reject('Error: rate limit reached');
-        //     							// Otherwise we could not retrieve the score, so something
-        //     							// happened to the account, thus we turn the node gray
-        //     						}
-        //     					} else {
-        //     						reject();
-        //     					}
-        //     				})
-        //       			.catch(function(error)
-        //             {
-        //               console.log('Error: ');
-        //               console.log(error);
-        //             })
-        //           })
-        //       }
-        //       else
-        //       {
-        //         var user_data = v.twitter.getUserDataById(user_id);
-        //         user_data.then(function(userResponse){
-        //           if (potentially_old_sn != userResponse.screen_name) {
-        //             v.generateStaleAccountWarning(user_id, potentially_old_sn, userResponse.screen_name);
-        //           }
-        //           resolve();
-        //         }, function(error){
-        //           // If Twitter returns a status code of 429 (rate limit reached)
-        //           // we reject and let the handlers handle it
-        //           // Different error catching mechansisms have the second error obj
-        //           // So we check for it so it doesn't fail in error catching mechanism
-        //           if (error.error) {
-        //             if (error.error.status == 429) {
-        //               reject('Error: rate limit reached');
-        //               // Otherwise we could not retrieve the score, so something
-        //               // happened to the account, thus we turn the node gray
-        //             }
-        //           } else {
-        //             reject();
-        //           }
-        //         })
-        //         .catch(function(error)
-        //         {
-        //           console.log('error');
-        //           console.log(error);
-        //           reject();
-        //         })
-        //       }
-        //     });
-        //     success.then(function(response){
-        //         if (response === "Error: rate limit reached") {
-        //           v.twitterRateLimitReachedObj.isReached = true;
-        //         } else {
-        //           // Resuming the rate limit as we have successfully
-        //           // retrieved bot score data
-        //           v.twitterRateLimitReachedObj.isReached = false;
-        //         }
-        //     }, function(err){
-        //         console.log('Promise Failed: ');
-        //         console.log(err)
-        //     })
-        // },
+        
+        
+
+
+//  ######  ########    ###    ########   ######  ##     ##    ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######  
+// ##    ## ##         ## ##   ##     ## ##    ## ##     ##    ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ## ##    ## 
+// ##       ##        ##   ##  ##     ## ##       ##     ##    ##       ##     ## ####  ## ##          ##     ##  ##     ## ####  ## ##       
+//  ######  ######   ##     ## ########  ##       #########    ######   ##     ## ## ## ## ##          ##     ##  ##     ## ## ## ##  ######  
+//       ## ##       ######### ##   ##   ##       ##     ##    ##       ##     ## ##  #### ##          ##     ##  ##     ## ##  ####       ## 
+// ##    ## ##       ##     ## ##    ##  ##    ## ##     ##    ##       ##     ## ##   ### ##    ##    ##     ##  ##     ## ##   ### ##    ## 
+//  ######  ######## ##     ## ##     ##  ######  ##     ##    ##        #######  ##    ##  ######     ##    ####  #######  ##    ##  ######  
+
         twitterSearch: function() {
             // console.debug("TEST");
           this.twitter_result_type = 'mixed'
@@ -892,7 +872,7 @@ var app = new Vue({
           // for (var date in dates) {
           //   console.log(dates[date]);
           // }
-
+          // console.debug(dates);
           var v = this;
           var numBins = 0;
           var offsetBin = 0;
@@ -974,7 +954,7 @@ var app = new Vue({
           //   v.twitterTimeline.fact_checking.volume.push(0);
           // }
 
-          console.debug(v.twitterTimeline.claim);
+          // console.debug(v.twitterTimeline.claim);
         },
         resetTwitterSearchResults: function() {
           // Re-enabling animation
@@ -1233,6 +1213,9 @@ var app = new Vue({
             v.spinner_notices.timeline = "";
             v.spinStart("updateTimeline");
             v.show_graphs = true;
+
+            // console.debug(v.twitterTimeline);
+
             //update the timeline on the next tick because at this point
             // the graphs are still hidden. Graphs will be visible on the
             // next tick
