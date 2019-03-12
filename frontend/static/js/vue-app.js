@@ -191,6 +191,9 @@ var app = new Vue({
         searchPlaceholder: 'Example: vaccines',
         hoaxySearchSelected: true,
         twitterSearchSelected: false,
+
+        lang: 'en',
+
         // Edge lists
         twitterEdges: [],
         hoaxyEdges: [],
@@ -1269,9 +1272,13 @@ var app = new Vue({
 
             var query_limit = 10;
 
+            //Test language
+            //var lang = 'ja';
+            var lang = this.lang
+
             // This function will paginate tweet search requests and is recursive
             function paginateTwitterRequests() {
-              tweetsReponse = v.twitter.getTweets(query_string, max_id, v.twitter_result_type);
+              tweetsReponse = v.twitter.getTweets(query_string, lang, max_id, v.twitter_result_type);
               // Handling the get Tweets response
               tweetsReponse.then(function(response){
                 query_limit -= 1; 

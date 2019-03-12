@@ -81,6 +81,15 @@
 																v-model="query_text"
                                 v-bind:placeholder="searchPlaceholder"
                                 :disabled="input_disabled" />
+
+								<select v-model="lang">
+								    <!--<option v-bind:value="{ lang: 'ar' }">Arabic (العربية)</option>-->
+								    <option value="ar">Arabic (العربية)</option>
+									<option value="en">English</option>
+									<option value="fr">French (français)</option>
+                                    <option value="de">German (Deutsch)</option>
+                                    <option value="ja">Japanese (日本語)</option>
+                                </select>
 						</div>
 
 						
