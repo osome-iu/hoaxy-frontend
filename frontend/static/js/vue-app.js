@@ -1272,8 +1272,6 @@ var app = new Vue({
 
             var query_limit = 10;
 
-            //Test language
-            //var lang = 'ja';
             var lang = this.lang
 
             // This function will paginate tweet search requests and is recursive
