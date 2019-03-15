@@ -104,6 +104,13 @@ function HoaxyGraph(options)
 		return edges;
 	}
 	var retry_count = 0;
+
+	// Used when importing bot scores from CSV/JSON/etc.
+	function setBotScore(importedID, importedBotscore)
+	{
+		botscores[importedID] = {score: importedBotscore, user_id: importedID};
+	}
+
 	function getBotCacheScores()
     {
 		console.debug("Querying bot cache.");
@@ -144,7 +151,6 @@ function HoaxyGraph(options)
 				user_id_list.push(to_user_id);
 			}
 		}
-
 
 
 
@@ -1232,7 +1238,9 @@ function HoaxyGraph(options)
 				var tweetURL = TWEET_URL.replace("%0", i).replace("%1", node.outgoing[i].ids[j]);
 				if (true != node.outgoing[i].is_mentions[j] && false != node.outgoing[i].is_mentions[j])
 					console.log("GenerateUserModal Parse outgoing.is_mentions error!!");
+				
 				var tweet_type = "";
+
 				//if is_mention == true, or "reply"==tweet type, then must be a mention
 				if(true == node.outgoing[i].is_mentions[j] || "reply" == node.outgoing[i].tweet_types[j])
 				{
@@ -1373,6 +1381,7 @@ function HoaxyGraph(options)
 			var score = false;
 			// console.debug(node.screenName, botscores[node.screenName], botscores);
 			console.debug(node);
+			console.debug(botscores);
 			if(botscores[node.id])
 			{
 				var bs = botscores[node.id];
@@ -1833,6 +1842,8 @@ function HoaxyGraph(options)
 	returnObj.getEdges = function(){ return edges; };
 	returnObj.botscores = function(){ return botscores; };
 	returnObj.resetBotscores = function(){ botscores = {}; };
+
+	returnObj.setBotScore = setBotScore;
 
 	returnObj.filterNodesByScore = filterNodesByScore;
 

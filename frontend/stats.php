@@ -2,14 +2,14 @@
 <html>
 
 <head>
+
 	<title>Hoaxy&reg; : Dashboard</title>
-	<!--#include virtual="./includes/includes.html" -->
+	<?php include("./includes/includes.html"); ?>
 </head>
 
 <body>
 	<div id="vue-app">
-		<!--#set var="subtitle" value="" -->
-		<!--#include virtual="./includes/header.html" -->
+		<?php include("./includes/header.html"); ?>
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
 			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
 		</div>
@@ -313,6 +313,6 @@
 	});
 
 	</script>
-	<!--#include virtual="./includes/footer.html" -->
+	<?php include("./includes/footer.html"); ?>
 </body>
 </html>

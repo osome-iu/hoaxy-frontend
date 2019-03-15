@@ -1,9 +1,24 @@
+<?php
+
+	$post_data = '';
+
+	if(isset($_POST) && isset($_POST["data"]))
+	{
+		$post_data = ($_POST["data"]);
+	}
+
+
+?>
+
+
+
 <!DOCTYPE html>
 <html>
 
 <head>
+
 	<title>Hoaxy&reg; by OSoMe</title>
-	<!--#include virtual="./includes/includes.html" -->
+	<?php include("./includes/includes.html"); ?>
 </head>
 
 <body>
@@ -16,6 +31,10 @@
 	  fjs.parentNode.insertBefore(js, fjs);
 	}(document, 'script', 'facebook-jssdk'));
 	</script> -->
+
+	<!-- Could remove json_encode to bring it in as just a string -->
+	<!--<div style="display: none" id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>-->
+	<div id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>
 	<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
 			<span class="fa outline"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
@@ -27,8 +46,7 @@
 		</div>
 
 
-		<!--#set var="subtitle" value="" -->
-		<!--#include virtual="./includes/header.html" -->
+		<?php include("./includes/header.html" ); ?>
 
 		<!--
 		#######
@@ -40,12 +58,17 @@
 		#        ####  #    # #    #
 
 	-->
+
+
+	
+	<output id="list"></output>
+
 		<section id="form" class="container-fluid">
-			<form @submit.stop.prevent="submitForm()">
-				<div class="container">
+			<div class="container">
+				<form v-if="import_or_search == 'search'" @submit.stop.prevent="submitForm()">
 					<div class="col-12 text-center">
 
-						<div class="col-12 text-center d-md-flex align-items-center">
+					<div class="col-12 text-center d-md-flex align-items-center">
 						<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
                             <div class="pr-2 text-nowrap">Search by:</div>
                             <div class="">
@@ -71,8 +94,34 @@
 																@mouseOut="hideTooltip"
 																v-model="query_text"
                                 v-bind:placeholder="searchPlaceholder"
-                                :disabled="input_disabled" />
+								:disabled="input_disabled" />
+								
+								
+
+								
+									&nbsp; &nbsp; &nbsp; &nbsp;
+								    <div for="name" class="control-label" v-if="twitterSearchSelected">
+										Language:&nbsp;
+									</div>
+									<select class="form-control" style="width: auto" v-if="twitterSearchSelected" v-model="lang">
+										<option value="ar">Arabic (العربية)</option>
+										<option value="bn">Bengali (বাংলা)</option>
+										<option value="en">English</option>
+										<option value="fr">French (français)</option>
+										<option value="de">German (Deutsch)</option>
+										<option value="hi">Hindi (हिन्दी)</option>
+										<option value="it">Italian (Italiano)</option>
+										<option value="ja">Japanese (日本語)</option>
+										<option value="ms">Malay (بهاس ملايو‎)</option>
+										<option value="pt">Portuguese (Português)</option>
+										<option value="ru">Russian (русский)</option>
+										<option value="es">Spanish (Español)</option>
+										<option value="tr">Turkish (Türkçe)</option>
+									</select>
 						</div>
+
+						
+
 					</div>
 					<div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
 						<span class="radio-container">
@@ -102,16 +151,43 @@
 								<input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_mixed" checked value="mixed"  :disabled="input_disabled" /> Mixed
 							</label>
 						</span>
+						
+                        
 					</div>
 
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
 						<button class="btn btn-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
+						<button class="btn btn-secondary ml-3 btn-sm" 
+							@click="import_or_search=(import_or_search=='import'?'search':'import')">Or Import Data</button>
 					</div>
-					<div class="clearfix"></div>
+					
 				</form>
+				
+				<div v-if="import_or_search == 'import'" class="">
+					<div class="col-12 text-center ">
+						<div class="col-12 text-center d-md-flex align-items-center">
+							<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
+							<div class="pr-2 text-nowrap">Visualize Existing Data:</div>
+							<input type="file" id="import_file" name="import_file" 
+								@change="fileUploadHandler" 
+								class="form-control form-control-file" />
+						</div>
+					</div>
 
-
+					
+					<div class="col-12 text-center mt-3">
+							<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
+							<button class="btn btn-primary btn-blue" @click="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
+							<button class="btn btn-secondary ml-3 btn-sm" 
+							@click="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
+					</div>
+				</div>
+				
+				<div class="container">
+				</div>
+				
+				<div class="clearfix"></div>
 			</div>
 		</section>
 
@@ -671,8 +747,7 @@
 	</div>
 </transition>
 
-
-		<!--#include virtual="./includes/footer.html" -->
+		<?php include("./includes/footer.html"); ?>
 
 
 		<!--

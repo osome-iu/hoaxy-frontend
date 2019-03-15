@@ -71,6 +71,10 @@ var app = new Vue({
         //  #     # ######   #   ######
         //  #     # #    #   #   #    #
         //  ######  #    #   #   #    #
+        import_or_search: "search",
+        ready_to_visualize: false,
+
+        imported_data: null,
 
         loading: true,
         mounted: false,
@@ -191,6 +195,9 @@ var app = new Vue({
         searchPlaceholder: 'Example: vaccines',
         hoaxySearchSelected: true,
         twitterSearchSelected: false,
+
+        lang: 'en',
+
         // Edge lists
         twitterEdges: [],
         hoaxyEdges: [],
@@ -334,15 +341,174 @@ var app = new Vue({
 
     },
 
-    // #     #
-    // ##   ## ###### ##### #    #  ####  #####   ####
-    // # # # # #        #   #    # #    # #    # #
-    // #  #  # #####    #   ###### #    # #    #  ####
-    // #     # #        #   #    # #    # #    #      #
-    // #     # #        #   #    # #    # #    # #    #
-    // #     # ######   #   #    #  ####  #####   ####
-
+// ##     ## ######## ######## ##     ##  #######  ########   ######  
+// ###   ### ##          ##    ##     ## ##     ## ##     ## ##    ## 
+// #### #### ##          ##    ##     ## ##     ## ##     ## ##       
+// ## ### ## ######      ##    ######### ##     ## ##     ##  ######  
+// ##     ## ##          ##    ##     ## ##     ## ##     ##       ## 
+// ##     ## ##          ##    ##     ## ##     ## ##     ## ##    ## 
+// ##     ## ########    ##    ##     ##  #######  ########   ######  
     methods: {
+        fileUploadHandler: function(evt){
+            this.ready_to_visualize = false;
+         
+            var file = evt.target.files[0]; 
+        
+            var reader = new FileReader();
+            var vm = this;
+            reader.onload = (function(theFile) {
+                return function(e) {
+                  var csv_string = (e.target.result);
+                  var rows = vm.parseCSV(csv_string);
+                  vm.imported_data = rows;
+                  vm.ready_to_visualize = true;
+                };
+              })(file);
+        
+              reader.readAsText(file);   
+        },
+        parseCSV: function(csv_string)
+        {
+            var rowstrings = csv_string.split("\n");
+            var rows = [];
+            var header_row = rowstrings[0].split(",");
+            
+            for(var row of rowstrings)
+            {
+              var split_row = row.split(",");
+              var row_obj = {};
+              for(var col_header_index in header_row)
+              {
+                  row_obj[header_row[col_header_index]] = split_row[col_header_index];
+              }
+
+              rows.push(row_obj);
+            }
+            return rows;
+
+        },
+        visualizeImportedData: function(){
+          // console.debug("visualize", this.imported_data);
+
+          // function updateEdgesAndTimeline(typeOfTweet) {
+          //   try {
+          //     twitterEdge.tweet_id = twitterEntities[key].id_str;
+          //   } catch(err) {
+          //       twitterEdge.tweet_id = "";
+          //   }
+          //   var formattedDate = v.formatDate(twitterEntities[key].created_at);
+          //   v.twitterDates.push(new Date(formattedDate));
+
+          //   // Updating edges
+          //   twitterEdge.date_published = formattedDate;
+          //   twitterEdge.pub_date = formattedDate;
+          //   twitterEdge.tweet_created_at = formattedDate;
+          //   twitterEdge.tweet_type = typeOfTweet;
+          //   v.twitterEdges.push(twitterEdge);
+          // }
+
+          var v = this;
+
+          this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
+          this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+              v.pauseGraphAnimation();
+              v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+              v.graphAnimation.increment = 0;
+              v.graphAnimation.playing  = true;
+              v.graphAnimation.paused = true;
+              v.unpauseGraphAnimation();
+              v.pauseGraphAnimation();
+              // console.debug(new Date(e.pointXValue))
+          });
+          this.timeline = this.globalTwitterSearchTimeline;
+
+          var data = this.imported_data;
+          data.shift();
+
+          // console.debug(data);
+
+          this.resetTwitterSearchResults();
+
+          // this.twitterEdges.length = 0;
+          // this.twitterDates.length = 0;
+
+          // Using the original search URL to restore search terms into search box
+          var tempDataRow = data[1];
+          var urlHash = tempDataRow.original_query;
+          var urlVars = String(urlHash).split('&');
+          var urlKeyValues = String(urlVars).split('=');
+          var urlKeyValues = String(urlKeyValues).split(',');
+          
+          this.query_text = urlKeyValues[1];
+          this.searched_query_text = urlKeyValues[1];
+
+          this.query_sort = urlKeyValues[3];
+
+          this.searchBy = urlKeyValues[5];
+          this.searchedBy = urlKeyValues[5];
+
+          if(this.searchBy == 'Hoaxy')
+          {
+            this.hoaxySearchSelected = true;
+            this.twitterSearchSelected = false;
+          }
+          else
+          {
+            this.hoaxySearchSelected = false;
+            this.twitterSearchSelected = true;
+          }
+          
+
+          for(var i in data)
+          {
+            var edge = data[i];
+            
+            edge.date_published = edge.tweet_created_at;
+            edge.pub_date = edge.tweet_created_at;
+
+
+            var newdate = new Date(edge.pub_date);
+
+            if(!(newdate instanceof Date && !isNaN(newdate)))
+            {
+              continue;
+            }
+
+            if(edge.from_user_botscore != "")
+            {
+              this.graph.setBotScore(edge.from_user_id, edge.from_user_botscore);
+            }
+
+            if(edge.to_user_botscore != "")
+            {
+              this.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
+            }
+
+            // Coming in as strings from CSV when they should be booleans
+            if(edge.is_mention.toString().toUpperCase() == "TRUE")
+            {
+              edge.is_mention = true;
+            }
+            if(edge.is_mention.toString().toUpperCase() == "FALSE")
+            {
+              edge.is_mention = false;
+            }
+
+            
+            this.twitterEdges.push(edge);
+            this.twitterDates.push(newdate);
+            this.twitterUserSet.add(edge.from_user_id);
+            this.twitterUserSet.add(edge.to_user_id);
+          }
+
+           // true meaning we won't reset scores
+           this.buildTwitterGraph(true);
+
+          // Check if animation should be disabled or not
+          this.checkIfShouldDisableAnimation(this.twitterEdges);
+        },
+
+
 
         selectTop20: function(){
             var articles = this.getSubsetOfArticles();
@@ -424,97 +590,18 @@ var app = new Vue({
             }
             // console.debug(this.nodes_filtered_by_score);
         },
-        // generateStaleAccountWarning: function(new_id, old_sn, new_sn) {
-        //   this.node_modal_content.staleAcctInfo.newId = new_id;
-        //   this.node_modal_content.staleAcctInfo.oldSn = old_sn;
-        //   this.node_modal_content.staleAcctInfo.newSn = new_sn;
-        //   this.node_modal_content.staleAcctInfo.isStale = true;
-        // },
-        // checkAccountDetails: function(user_id, potentially_old_sn) {
-        //     var v = this;
-        //     // window.open("https://botometer.iuni.iu.edu/#!/?sn=" + v.node_modal_content.screenName);
-        //
-        //     var success = new Promise(function(resolve, reject){
-        //       if(!v.twitter_account_info.id)
-        //       {
-        //           v.twitterLogIn()
-        //           .then(function(){
-        //             var user_data = v.twitter.getUserDataById(user_id);
-        //       			user_data.then(function(userResponse){
-        //               if (potentially_old_sn != userResponse.screen_name) {
-        //                 v.generateStaleAccountWarning(user_id, potentially_old_sn, userResponse.screen_name);
-        //               } else {
-        //                 v.node_modal_content.staleAcctInfo.isStale = false;
-        //                 v.node_modal_content.staleAcctInfo.oldSn = potentially_old_sn;
-        //                 v.node_modal_content.staleAcctInfo.newSn = 'unchanged';
-        //               }
-        //               resolve();
-        //       			}, function(error){
-        //     					// If Twitter returns a status code of 429 (rate limit reached)
-        //     					// we reject and let the handlers handle it
-        //     					// Different error catching mechansisms have the second error obj
-        //     					// So we check for it so it doesn't fail in error catching mechanism
-        //     					if (error.error) {
-        //     						if (error.error.status == 429) {
-        //     							reject('Error: rate limit reached');
-        //     							// Otherwise we could not retrieve the score, so something
-        //     							// happened to the account, thus we turn the node gray
-        //     						}
-        //     					} else {
-        //     						reject();
-        //     					}
-        //     				})
-        //       			.catch(function(error)
-        //             {
-        //               console.log('Error: ');
-        //               console.log(error);
-        //             })
-        //           })
-        //       }
-        //       else
-        //       {
-        //         var user_data = v.twitter.getUserDataById(user_id);
-        //         user_data.then(function(userResponse){
-        //           if (potentially_old_sn != userResponse.screen_name) {
-        //             v.generateStaleAccountWarning(user_id, potentially_old_sn, userResponse.screen_name);
-        //           }
-        //           resolve();
-        //         }, function(error){
-        //           // If Twitter returns a status code of 429 (rate limit reached)
-        //           // we reject and let the handlers handle it
-        //           // Different error catching mechansisms have the second error obj
-        //           // So we check for it so it doesn't fail in error catching mechanism
-        //           if (error.error) {
-        //             if (error.error.status == 429) {
-        //               reject('Error: rate limit reached');
-        //               // Otherwise we could not retrieve the score, so something
-        //               // happened to the account, thus we turn the node gray
-        //             }
-        //           } else {
-        //             reject();
-        //           }
-        //         })
-        //         .catch(function(error)
-        //         {
-        //           console.log('error');
-        //           console.log(error);
-        //           reject();
-        //         })
-        //       }
-        //     });
-        //     success.then(function(response){
-        //         if (response === "Error: rate limit reached") {
-        //           v.twitterRateLimitReachedObj.isReached = true;
-        //         } else {
-        //           // Resuming the rate limit as we have successfully
-        //           // retrieved bot score data
-        //           v.twitterRateLimitReachedObj.isReached = false;
-        //         }
-        //     }, function(err){
-        //         console.log('Promise Failed: ');
-        //         console.log(err)
-        //     })
-        // },
+        
+        
+
+
+//  ######  ########    ###    ########   ######  ##     ##    ######## ##     ## ##    ##  ######  ######## ####  #######  ##    ##  ######  
+// ##    ## ##         ## ##   ##     ## ##    ## ##     ##    ##       ##     ## ###   ## ##    ##    ##     ##  ##     ## ###   ## ##    ## 
+// ##       ##        ##   ##  ##     ## ##       ##     ##    ##       ##     ## ####  ## ##          ##     ##  ##     ## ####  ## ##       
+//  ######  ######   ##     ## ########  ##       #########    ######   ##     ## ## ## ## ##          ##     ##  ##     ## ## ## ##  ######  
+//       ## ##       ######### ##   ##   ##       ##     ##    ##       ##     ## ##  #### ##          ##     ##  ##     ## ##  ####       ## 
+// ##    ## ##       ##     ## ##    ##  ##    ## ##     ##    ##       ##     ## ##   ### ##    ##    ##     ##  ##     ## ##   ### ##    ## 
+//  ######  ######## ##     ## ##     ##  ######  ##     ##    ##        #######  ##    ##  ######     ##    ####  #######  ##    ##  ######  
+
         twitterSearch: function() {
             // console.debug("TEST");
           this.twitter_result_type = 'mixed'
@@ -786,6 +873,12 @@ var app = new Vue({
           }
           // change article query
           this.query_text = article;
+
+          if(this.import_or_search == "import")
+          {
+            this.import_or_search = "search";
+          }
+
           // focus on the search box
           this.$refs.searchBox.focus();
         },
@@ -868,7 +961,7 @@ var app = new Vue({
           // for (var date in dates) {
           //   console.log(dates[date]);
           // }
-
+          // console.debug(dates);
           var v = this;
           var numBins = 0;
           var offsetBin = 0;
@@ -950,7 +1043,7 @@ var app = new Vue({
           //   v.twitterTimeline.fact_checking.volume.push(0);
           // }
 
-          console.debug(v.twitterTimeline.claim);
+          // console.debug(v.twitterTimeline.claim);
         },
         resetTwitterSearchResults: function() {
           // Re-enabling animation
@@ -990,6 +1083,7 @@ var app = new Vue({
             this.from_user_screen_name="";
             this.id=undefined;
             this.is_mention= false;
+            this.original_query="";
             this.pub_date= "";
             this.site_domain="";
             this.site_type="claim";
@@ -1171,9 +1265,10 @@ var app = new Vue({
           }
           v.spinStop("buildGraph");
         },
-        buildTwitterGraph: function() {
+        buildTwitterGraph: function(dont_reset) {
           var v = this;
           // Checking if any edges were found and if not, show message to user to try another query
+          // console.log(v.twitterEdges);
           if (v.twitterEdges.length == 0) {
             v.show_zoom_buttons = false;
             v.failed_to_get_network = true;
@@ -1183,8 +1278,12 @@ var app = new Vue({
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.graph.score_stats.reset();
-                v.graph.resetBotscores();
-        
+                
+                if(!dont_reset)
+                {
+                  v.graph.resetBotscores();
+                }
+                
                 v.graph.getBotCacheScores();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("secondary_form");
@@ -1209,6 +1308,9 @@ var app = new Vue({
             v.spinner_notices.timeline = "";
             v.spinStart("updateTimeline");
             v.show_graphs = true;
+
+            // console.debug(v.twitterTimeline);
+
             //update the timeline on the next tick because at this point
             // the graphs are still hidden. Graphs will be visible on the
             // next tick
@@ -1239,8 +1341,11 @@ var app = new Vue({
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.graph.score_stats.reset();
-                v.graph.resetBotscores();
-        
+                
+                if(!dont_reset)
+                {
+                  v.graph.resetBotscores();
+                }
                 v.graph.getBotCacheScores();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("secondary_form");
@@ -1267,9 +1372,11 @@ var app = new Vue({
 
             var query_limit = 10;
 
+            var lang = this.lang
+
             // This function will paginate tweet search requests and is recursive
             function paginateTwitterRequests() {
-              tweetsReponse = v.twitter.getTweets(query_string, max_id, v.twitter_result_type);
+              tweetsReponse = v.twitter.getTweets(query_string, lang, max_id, v.twitter_result_type);
               // Handling the get Tweets response
               tweetsReponse.then(function(response){
                 query_limit -= 1; 
@@ -1383,7 +1490,7 @@ var app = new Vue({
                 function (error) {
                     v.spinner_notices.articles = "";
                     v.displayError("Get URLs Request failed: " + error);
-                    console.log('Articles Request Error:', error);
+                    // console.log('Articles Request Error:', error);
                     v.spinStop("getArticles");
                 }
             );
@@ -1426,7 +1533,7 @@ var app = new Vue({
                 function (error) {
                     v.spinner_notices.timeline = "";
                     v.displayError("Get TimeLine Request failed: " + error);
-                    console.log('Timeline Request Error', error);
+                    // console.log('Timeline Request Error', error);
 
                     // v.updateGraph();
                     v.spinStop("getTimeline");
@@ -1517,7 +1624,7 @@ var app = new Vue({
                     }
 
                     v.displayError("Get Graph Request failed: " + error_message);
-                    console.log('Network Graph Request Error', error_message);
+                    // console.log('Network Graph Request Error', error_message);
                     v.spinStop("getNetwork");
                     v.spinner_notices.graph = "";
                 }
@@ -1710,7 +1817,7 @@ var app = new Vue({
         },
         buildCSVContent: function(edgeList) {
           this.spinStart("createCSV");
-          var csvFile = "data:text/csv;charset=utf-8,";
+          var csvFile = "data:text/csv;charset=iso-639,";
           var csvData = [];
           //Constructing and pushing header row to csv data
           var headerRow = [];
@@ -1731,16 +1838,19 @@ var app = new Vue({
                  });
           //Adding final computed column called tweet_url
           headerRow.push("tweet_url")
+          
+          // Adding row for maintaining original query searched
+          // headerRow.push("original_query");
+
           //Sorting results for cleanliness
           headerRow.sort()
           csvData.push(headerRow)
-
-          console.debug(this.graph.botscores());
 
           let botscores = this.graph.botscores();
 
           //Iterating through edge list and building data rows where each row is an edge
           var numEdges = edgeList.length;
+          var urlString = window.location.hash.toString();
           if (numEdges > 0) {
               for (var edgeNum = 0; edgeNum < numEdges; edgeNum++) {
                 var dataRow = [];
@@ -1751,9 +1861,11 @@ var app = new Vue({
                     if (headerRow[keyIx] == "from_user_id" || headerRow[keyIx] == "to_user_id") {
 
                       try {
-                        let score = Math.floor(botscores[edgeList[edgeNum][headerRow[keyIx]]].score * 100)
+                        // let score = Math.floor(botscores[edgeList[edgeNum][headerRow[keyIx]]].score * 100)
+                        let score = botscores[edgeList[edgeNum][headerRow[keyIx]]].score;
 
-                        dataRow.push(Number((score/100) * 5 ).toFixed(1));
+                        // dataRow.push(Number((score/100) * 5 ).toFixed(1));
+                        dataRow.push(score);
                       }
                       catch(err)
                       {
@@ -1763,15 +1875,22 @@ var app = new Vue({
                     if (headerRow[keyIx] == "title") {
                       // Quote delimiting the article title to deal with comma delimitation problems (e.g. "hello, world" will now be treated as one column in a csv and not two)
                       dataRow.push("\"" + edgeList[edgeNum][headerRow[keyIx]] + "\"");
-                    } else {
+                    } 
+                    else if (headerRow[keyIx] == "original_query")
+                    {
+                      dataRow.push(urlString.substr(1));
+                    }
+                    else {
                       dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
                     }
+                    
                     
 
                   } else {
                     if (headerRow[keyIx] == "tweet_url") {
                       dataRow.push("https://twitter.com/" + String(edgeList[edgeNum]['from_user_screen_name']) + "/status/" + String(edgeList[edgeNum]['tweet_id']));
                     }
+                    
                   }
                 }
                 // Finishing and adding one row of data
@@ -1805,7 +1924,7 @@ var app = new Vue({
         },
         submitForm: function(dontScroll){
           // Resets any results from any previous queries
-          console.debug("submit");
+          // console.debug("submit");
           this.stopGraphAnimation();
           this.resetTwitterSearchResults();
           this.resetHoaxySearchResults();
@@ -1818,7 +1937,7 @@ var app = new Vue({
               this.displayError("You must input a claim.");
               this.spinStop(true);
               return false;
-        		}
+            }
             // Preparing the proper timeline to show
             var v = this;
             this.globalHoaxyTimeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
@@ -1835,7 +1954,7 @@ var app = new Vue({
             this.timeline = this.globalHoaxyTimeline;
             // new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
             // Adding a url querystring so that user can replicate a query by copy/pasting the url
-        		this.changeURLParamsHoaxy();
+            this.changeURLParamsHoaxy();
         		this.getArticles(dontScroll);
         		this.spinStop();
       	  }
@@ -1848,7 +1967,7 @@ var app = new Vue({
               this.displayError("You must input a valid search query.");
               this.spinStop(true);
               return false;
-        		}
+            }
             // Preparing the proper timeline to show
             var v = this;
             this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
@@ -2029,6 +2148,16 @@ var app = new Vue({
         this.show_articles = false;
         this.show_graphs = false;
 
+        //if there is posted imported data, it should be in an element called "post_data"
+        //Can choose to not use JSON.parse to read the string (already comma-sep) to have it POSTed like that
+        //this.imported_data = /*JSON.parse(*/document.getElementById("post_data").innerHTML/*)*/;
+
+        this.imported_data = Papa.parse(document.getElementById("post_data").innerHTML);
+        //console.debug(this.imported_data);
+
+        //#TODO - Parse imported (JSON) data
+
+        //VISUALIZE
 
         //create hourglass loading spinner
         var v = this;
@@ -2157,11 +2286,11 @@ var app = new Vue({
         this.spinStop("initialLoad");
         // this.spinStart("testing");
         // this.spinner_notices.graph = "TESTING TEXT";
-        console.debug("Vue Mounted.");
+        //console.debug("Vue Mounted.");
 
         // this.spinStart();
 
-        console.debug(this.query_text);
+        // console.debug(this.query_text);
         if(!this.query_text)
         {
             var cookies = document.cookie.split("; ");

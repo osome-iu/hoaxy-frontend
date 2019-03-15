@@ -193,8 +193,12 @@ var Twitter = function(initialize_key){
         return getNeighbors('friends', screenName, count);
     }
 
-    obj.getTweets = function(query, max_id, result_type){
-      return apiCall('GET', '/1.1/search/tweets.json', {q: query, max_id: max_id, result_type: result_type, count: 100, include_entities: 1},
+    obj.getUserLanguage = function(lang){
+        return apiCall('GET', '/1.1/search/tweets.json', lang)
+    }
+
+    obj.getTweets = function(query, lang, max_id, result_type){
+      return apiCall('GET', '/1.1/search/tweets.json', {q: query, lang: lang, max_id: max_id, result_type: result_type, count: 100, include_entities: 1},
       "Twitter was unable to retrieve mentions of this user, is there a typo?");
     }
 
