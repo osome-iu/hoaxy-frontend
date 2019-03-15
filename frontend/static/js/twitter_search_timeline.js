@@ -43,8 +43,6 @@ function TwitterSearchTimeline(settings){
 				}
 			}
 
-			console.debug(chartDataWithTweetRates[0].values, currentTimeStepIndex);
-
 			// Returning formatted and styled tooltip
 			return "<div><b>" + String(chartData.value)
 												+ "</b></div>"

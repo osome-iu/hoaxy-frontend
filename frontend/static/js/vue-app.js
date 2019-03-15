@@ -380,7 +380,7 @@ var app = new Vue({
 
         },
         visualizeImportedData: function(){
-           console.debug("visualize", this.imported_data);
+          // console.debug("visualize", this.imported_data);
 
           // function updateEdgesAndTimeline(typeOfTweet) {
           //   try {
@@ -417,7 +417,7 @@ var app = new Vue({
           var data = this.imported_data;
           data.shift();
 
-          console.debug(data);
+          // console.debug(data);
 
           this.resetTwitterSearchResults();
 
@@ -429,13 +429,6 @@ var app = new Vue({
             var edge = data[i];
             // console.debug(edge.pub_date);
             
-            /*
-            if(!edge.pub_date)
-            {
-              edge.pub_date = edge.date_published;
-            }
-            */
-
             edge.date_published = edge.tweet_created_at;
             edge.pub_date = edge.tweet_created_at;
 
@@ -457,6 +450,16 @@ var app = new Vue({
               this.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
             }
 
+            // Coming in as strings from CSV when they should be booleans
+            if(edge.is_mention.toString().toUpperCase() == "TRUE")
+            {
+              edge.is_mention = true;
+            }
+            if(edge.is_mention.toString().toUpperCase() == "FALSE")
+            {
+              edge.is_mention = false;
+            }
+
             
             this.twitterEdges.push(edge);
             this.twitterDates.push(newdate);
@@ -466,7 +469,9 @@ var app = new Vue({
 
           // console.debug(this.twitterDates);
 
-          this.buildTwitterGraph();
+           // true meaning we won't reset scores
+           this.buildTwitterGraph(true);
+
           // Check if animation should be disabled or not
           this.checkIfShouldDisableAnimation(this.twitterEdges);
         },
@@ -732,7 +737,7 @@ var app = new Vue({
         getDateline: function(url_pub_date){
             // console.debug(url_pub_date);
             var pub_date = moment(url_pub_date);
-            var dateline = pub_date.format('DDD, MMM D, YYYY');
+            var dateline = pub_date.format('MMM D, YYYY');
             return dateline;
         },
         attemptToGetUrlHostName: function(url){
@@ -1205,7 +1210,7 @@ var app = new Vue({
           }
           v.spinStop("buildGraph");
         },
-        buildTwitterGraph: function() {
+        buildTwitterGraph: function(dont_reset) {
           var v = this;
           // Checking if any edges were found and if not, show message to user to try another query
           console.log(v.twitterEdges);
@@ -1218,7 +1223,11 @@ var app = new Vue({
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.graph.score_stats.reset();
-                v.graph.resetBotscores();
+                
+                if(!dont_reset)
+                {
+                  v.graph.resetBotscores();
+                }
                 
                 v.graph.getBotCacheScores();
                 v.spinStop("generateNetwork");
@@ -1277,8 +1286,11 @@ var app = new Vue({
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.graph.score_stats.reset();
-                v.graph.resetBotscores();
-        
+                
+                if(!dont_reset)
+                {
+                  v.graph.resetBotscores();
+                }
                 v.graph.getBotCacheScores();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("secondary_form");
@@ -1784,8 +1796,10 @@ var app = new Vue({
                     if (headerRow[keyIx] == "from_user_id" || headerRow[keyIx] == "to_user_id") {
 
                       try {
+                        // let score = Math.floor(botscores[edgeList[edgeNum][headerRow[keyIx]]].score * 100)
                         let score = botscores[edgeList[edgeNum][headerRow[keyIx]]].score;
 
+                        // dataRow.push(Number((score/100) * 5 ).toFixed(1));
                         dataRow.push(score);
                       }
                       catch(err)
@@ -2073,7 +2087,6 @@ var app = new Vue({
         //console.debug(this.imported_data);
 
         //#TODO - Parse imported (JSON) data
-        //Then visualize
 
         //VISUALIZE
 

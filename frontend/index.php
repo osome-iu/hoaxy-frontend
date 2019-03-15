@@ -58,9 +58,7 @@
 
 					<div class="col-12 text-center d-md-flex align-items-center">
 						<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
-                            <div class="pr-2 text-nowrap">
-								Search by:
-							</div>
+                            <div class="pr-2 text-nowrap">Search by:</div>
                             <div class="">
                                 <div class="btn-group btn-group-toggle pr-2">
                                     <button id="searchByTwitter" data-toggle="tooltip" data-delay="0" title="search Twitter content from the past 7 days" type="button"

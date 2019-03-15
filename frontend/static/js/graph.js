@@ -106,28 +106,9 @@ function HoaxyGraph(options)
 	var retry_count = 0;
 
 	// Used when importing bot scores from CSV/JSON/etc.
-	function setBotScore(importedID, importedBotscore/*, importedToID, importedToBotscore*/)
+	function setBotScore(importedID, importedBotscore)
 	{
-		/*
-		if (importedFromBotscore == 0 || importedFromBotscore == null)
-		{
-			importedFromBotscore = -5;
-		}
-
-		if (importedToBotscore == 0 || importedToBotscore == null)
-		{
-			importedToBotscore = -5;
-		}
-		*/
-
 		botscores[importedID] = {score: importedBotscore, user_id: importedID};
-
-		//botscores[importedToID] = {score: importedToBotscore, user_id: importedToID};
-		
-		/* Potential coloration fixes:
-		// updateUserBotScore(importedToID);
-		// updateNodeColor(importedToID, importedToBotscore);
-		*/
 	}
 
 	function getBotCacheScores()
@@ -1257,7 +1238,12 @@ function HoaxyGraph(options)
 				var tweetURL = TWEET_URL.replace("%0", i).replace("%1", node.outgoing[i].ids[j]);
 				if (true != node.outgoing[i].is_mentions[j] && false != node.outgoing[i].is_mentions[j])
 					console.log("GenerateUserModal Parse outgoing.is_mentions error!!");
+				
 				var tweet_type = "";
+
+				console.debug(i);
+				console.debug(node.outgoing[i]);
+
 				//if is_mention == true, or "reply"==tweet type, then must be a mention
 				if(true == node.outgoing[i].is_mentions[j] || "reply" == node.outgoing[i].tweet_types[j])
 				{
@@ -1271,6 +1257,7 @@ function HoaxyGraph(options)
 				{
 					tweet_type = "is_retweeted_by";
 				}
+				console.debug(tweet_type);
 				tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: toURL, screenName: node.outgoing[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
 				tweets[tweet_type][i].article_titles.push(node.outgoing[i].titles[j]);
 				tweets[tweet_type][i].tweet_urls.push(tweetURL);
@@ -1398,6 +1385,7 @@ function HoaxyGraph(options)
 			var score = false;
 			// console.debug(node.screenName, botscores[node.screenName], botscores);
 			console.debug(node);
+			console.debug(botscores);
 			if(botscores[node.id])
 			{
 				var bs = botscores[node.id];
