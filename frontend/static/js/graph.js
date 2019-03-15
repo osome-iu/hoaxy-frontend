@@ -1241,9 +1241,6 @@ function HoaxyGraph(options)
 				
 				var tweet_type = "";
 
-				console.debug(i);
-				console.debug(node.outgoing[i]);
-
 				//if is_mention == true, or "reply"==tweet type, then must be a mention
 				if(true == node.outgoing[i].is_mentions[j] || "reply" == node.outgoing[i].tweet_types[j])
 				{
@@ -1257,7 +1254,6 @@ function HoaxyGraph(options)
 				{
 					tweet_type = "is_retweeted_by";
 				}
-				console.debug(tweet_type);
 				tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: toURL, screenName: node.outgoing[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
 				tweets[tweet_type][i].article_titles.push(node.outgoing[i].titles[j]);
 				tweets[tweet_type][i].tweet_urls.push(tweetURL);

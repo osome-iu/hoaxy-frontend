@@ -71,7 +71,7 @@ var app = new Vue({
         //  #     # ######   #   ######
         //  #     # #    #   #   #    #
         //  ######  #    #   #   #    #
-        import_or_search: "import",
+        import_or_search: "search",
         ready_to_visualize: false,
 
         imported_data: null,
@@ -424,10 +424,36 @@ var app = new Vue({
           // this.twitterEdges.length = 0;
           // this.twitterDates.length = 0;
 
+          // Using the original search URL to restore search terms into search box
+          var tempDataRow = data[1];
+          var urlHash = tempDataRow.original_query;
+          var urlVars = String(urlHash).split('&');
+          var urlKeyValues = String(urlVars).split('=');
+          var urlKeyValues = String(urlKeyValues).split(',');
+          
+          this.query_text = urlKeyValues[1];
+          this.searched_query_text = urlKeyValues[1];
+
+          this.query_sort = urlKeyValues[3];
+
+          this.searchBy = urlKeyValues[5];
+          this.searchedBy = urlKeyValues[5];
+
+          if(this.searchBy == 'Hoaxy')
+          {
+            this.hoaxySearchSelected = true;
+            this.twitterSearchSelected = false;
+          }
+          else
+          {
+            this.hoaxySearchSelected = false;
+            this.twitterSearchSelected = true;
+          }
+          
+
           for(var i in data)
           {
             var edge = data[i];
-            // console.debug(edge.pub_date);
             
             edge.date_published = edge.tweet_created_at;
             edge.pub_date = edge.tweet_created_at;
@@ -466,8 +492,6 @@ var app = new Vue({
             this.twitterUserSet.add(edge.from_user_id);
             this.twitterUserSet.add(edge.to_user_id);
           }
-
-          // console.debug(this.twitterDates);
 
            // true meaning we won't reset scores
            this.buildTwitterGraph(true);
@@ -825,6 +849,12 @@ var app = new Vue({
           }
           // change article query
           this.query_text = article;
+
+          if(this.import_or_search == "import")
+          {
+            this.import_or_search = "search";
+          }
+
           // focus on the search box
           this.$refs.searchBox.focus();
         },
@@ -1029,6 +1059,7 @@ var app = new Vue({
             this.from_user_screen_name="";
             this.id=undefined;
             this.is_mention= false;
+            this.original_query="";
             this.pub_date= "";
             this.site_domain="";
             this.site_type="claim";
@@ -1213,7 +1244,7 @@ var app = new Vue({
         buildTwitterGraph: function(dont_reset) {
           var v = this;
           // Checking if any edges were found and if not, show message to user to try another query
-          console.log(v.twitterEdges);
+          // console.log(v.twitterEdges);
           if (v.twitterEdges.length == 0) {
             v.show_zoom_buttons = false;
             v.failed_to_get_network = true;
@@ -1430,7 +1461,7 @@ var app = new Vue({
                 function (error) {
                     v.spinner_notices.articles = "";
                     v.displayError("Get URLs Request failed: " + error);
-                    console.log('Articles Request Error:', error);
+                    // console.log('Articles Request Error:', error);
                     v.spinStop("getArticles");
                 }
             );
@@ -1473,7 +1504,7 @@ var app = new Vue({
                 function (error) {
                     v.spinner_notices.timeline = "";
                     v.displayError("Get TimeLine Request failed: " + error);
-                    console.log('Timeline Request Error', error);
+                    // console.log('Timeline Request Error', error);
 
                     // v.updateGraph();
                     v.spinStop("getTimeline");
@@ -1564,7 +1595,7 @@ var app = new Vue({
                     }
 
                     v.displayError("Get Graph Request failed: " + error_message);
-                    console.log('Network Graph Request Error', error_message);
+                    // console.log('Network Graph Request Error', error_message);
                     v.spinStop("getNetwork");
                     v.spinner_notices.graph = "";
                 }
@@ -1778,6 +1809,10 @@ var app = new Vue({
                  });
           //Adding final computed column called tweet_url
           headerRow.push("tweet_url")
+          
+          // Adding row for maintaining original query searched
+          // headerRow.push("original_query");
+
           //Sorting results for cleanliness
           headerRow.sort()
           csvData.push(headerRow)
@@ -1786,6 +1821,7 @@ var app = new Vue({
 
           //Iterating through edge list and building data rows where each row is an edge
           var numEdges = edgeList.length;
+          var urlString = window.location.hash.toString();
           if (numEdges > 0) {
               for (var edgeNum = 0; edgeNum < numEdges; edgeNum++) {
                 var dataRow = [];
@@ -1810,15 +1846,22 @@ var app = new Vue({
                     if (headerRow[keyIx] == "title") {
                       // Quote delimiting the article title to deal with comma delimitation problems (e.g. "hello, world" will now be treated as one column in a csv and not two)
                       dataRow.push("\"" + edgeList[edgeNum][headerRow[keyIx]] + "\"");
-                    } else {
+                    } 
+                    else if (headerRow[keyIx] == "original_query")
+                    {
+                      dataRow.push(urlString.substr(1));
+                    }
+                    else {
                       dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
                     }
+                    
                     
 
                   } else {
                     if (headerRow[keyIx] == "tweet_url") {
                       dataRow.push("https://twitter.com/" + String(edgeList[edgeNum]['from_user_screen_name']) + "/status/" + String(edgeList[edgeNum]['tweet_id']));
                     }
+                    
                   }
                 }
                 // Finishing and adding one row of data
@@ -1852,7 +1895,7 @@ var app = new Vue({
         },
         submitForm: function(dontScroll){
           // Resets any results from any previous queries
-          console.debug("submit");
+          // console.debug("submit");
           this.stopGraphAnimation();
           this.resetTwitterSearchResults();
           this.resetHoaxySearchResults();
@@ -1865,7 +1908,7 @@ var app = new Vue({
               this.displayError("You must input a claim.");
               this.spinStop(true);
               return false;
-        		}
+            }
             // Preparing the proper timeline to show
             var v = this;
             this.globalHoaxyTimeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
@@ -1882,7 +1925,7 @@ var app = new Vue({
             this.timeline = this.globalHoaxyTimeline;
             // new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
             // Adding a url querystring so that user can replicate a query by copy/pasting the url
-        		this.changeURLParamsHoaxy();
+            this.changeURLParamsHoaxy();
         		this.getArticles(dontScroll);
         		this.spinStop();
       	  }
@@ -1895,7 +1938,7 @@ var app = new Vue({
               this.displayError("You must input a valid search query.");
               this.spinStop(true);
               return false;
-        		}
+            }
             // Preparing the proper timeline to show
             var v = this;
             this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
@@ -2215,11 +2258,11 @@ var app = new Vue({
         // this.displayError("Test Error");
 
         this.spinStop("initialLoad");
-        console.debug("Vue Mounted.");
+        // console.debug("Vue Mounted.");
 
         // this.spinStart();
 
-        console.debug(this.query_text);
+        // console.debug(this.query_text);
         if(!this.query_text)
         {
             var cookies = document.cookie.split("; ");
