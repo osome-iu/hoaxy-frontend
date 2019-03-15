@@ -61,7 +61,7 @@
 
 
 	
-	<output id="list"></output>
+	<!-- <output id="list"></output> -->
 
 		<section id="form" class="container-fluid">
 			<div class="container">
