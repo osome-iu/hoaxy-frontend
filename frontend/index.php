@@ -21,7 +21,9 @@
 </head>
 
 <body>
-	<div style="display: none" id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>
+	<!-- Could remove json_encode to bring it in as just a string -->
+	<!--<div style="display: none" id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>-->
+	<div id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>
 	<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
 			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
@@ -56,7 +58,9 @@
 
 					<div class="col-12 text-center d-md-flex align-items-center">
 						<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
-                            <div class="pr-2 text-nowrap">Search by:</div>
+                            <div class="pr-2 text-nowrap">
+								Search by:
+							</div>
                             <div class="">
                                 <div class="btn-group btn-group-toggle pr-2">
                                     <button id="searchByTwitter" data-toggle="tooltip" data-delay="0" title="search Twitter content from the past 7 days" type="button"
@@ -80,23 +84,30 @@
 																@mouseOut="hideTooltip"
 																v-model="query_text"
                                 v-bind:placeholder="searchPlaceholder"
-                                :disabled="input_disabled" />
+								:disabled="input_disabled" />
+								
+								
 
-								<select class="form-control" style="width: auto" v-if="twitterSearchSelected" v-model="lang">
-                                    <option value="ar">Arabic (العربية)</option>
-									<option value="bn">Bengali (বাংলা)</option>
-									<option value="en">English</option>
-									<option value="fr">French (français)</option>
-                                    <option value="de">German (Deutsch)</option>
-									<option value="hi">Hindi (हिन्दी)</option>
-									<option value="it">Italian (Italiano)</option>
-                                    <option value="ja">Japanese (日本語)</option>
-									<option value="ms">Malay (بهاس ملايو‎)</option>
-									<option value="pt">Portuguese (Português)</option>
-									<option value="ru">Russian (русский)</option>
-									<option value="es">Spanish (Español)</option>
-									<option value="tr">Turkish (Türkçe)</option>
-                                </select>
+								
+									&nbsp; &nbsp; &nbsp; &nbsp;
+								    <div for="name" class="control-label" v-if="twitterSearchSelected">
+										Language:&nbsp;
+									</div>
+									<select class="form-control" style="width: auto" v-if="twitterSearchSelected" v-model="lang">
+										<option value="ar">Arabic (العربية)</option>
+										<option value="bn">Bengali (বাংলা)</option>
+										<option value="en">English</option>
+										<option value="fr">French (français)</option>
+										<option value="de">German (Deutsch)</option>
+										<option value="hi">Hindi (हिन्दी)</option>
+										<option value="it">Italian (Italiano)</option>
+										<option value="ja">Japanese (日本語)</option>
+										<option value="ms">Malay (بهاس ملايو‎)</option>
+										<option value="pt">Portuguese (Português)</option>
+										<option value="ru">Russian (русский)</option>
+										<option value="es">Spanish (Español)</option>
+										<option value="tr">Turkish (Türkçe)</option>
+									</select>
 						</div>
 
 						
@@ -130,6 +141,8 @@
 								<input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_mixed" checked value="mixed"  :disabled="input_disabled" /> Mixed
 							</label>
 						</span>
+						
+                        
 					</div>
 
 					<div class="col-12 text-center">

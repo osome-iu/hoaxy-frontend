@@ -352,7 +352,6 @@ var app = new Vue({
                 return function(e) {
                   var csv_string = (e.target.result);
                   var rows = vm.parseCSV(csv_string);
-                  // console.debug(rows);
                   vm.imported_data = rows;
                   vm.ready_to_visualize = true;
                 };
@@ -365,6 +364,7 @@ var app = new Vue({
             var rowstrings = csv_string.split("\n");
             var rows = [];
             var header_row = rowstrings[0].split(",");
+            
             for(var row of rowstrings)
             {
               var split_row = row.split(",");
@@ -374,14 +374,13 @@ var app = new Vue({
                   row_obj[header_row[col_header_index]] = split_row[col_header_index];
               }
 
-
               rows.push(row_obj);
             }
             return rows;
 
         },
         visualizeImportedData: function(){
-          // console.debug("visualize", this.imported_data);
+           console.debug("visualize", this.imported_data);
 
           // function updateEdgesAndTimeline(typeOfTweet) {
           //   try {
@@ -400,6 +399,8 @@ var app = new Vue({
           //   v.twitterEdges.push(twitterEdge);
           // }
 
+          var v = this;
+
           this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
           this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
               v.pauseGraphAnimation();
@@ -416,6 +417,8 @@ var app = new Vue({
           var data = this.imported_data;
           data.shift();
 
+          console.debug(data);
+
           this.resetTwitterSearchResults();
 
           // this.twitterEdges.length = 0;
@@ -425,12 +428,36 @@ var app = new Vue({
           {
             var edge = data[i];
             // console.debug(edge.pub_date);
+            
+            /*
+            if(!edge.pub_date)
+            {
+              edge.pub_date = edge.date_published;
+            }
+            */
+
+            edge.date_published = edge.tweet_created_at;
+            edge.pub_date = edge.tweet_created_at;
+
+
             var newdate = new Date(edge.pub_date);
+
             if(!(newdate instanceof Date && !isNaN(newdate)))
             {
               continue;
             }
 
+            if(edge.from_user_botscore != "")
+            {
+              this.graph.setBotScore(edge.from_user_id, edge.from_user_botscore);
+            }
+
+            if(edge.to_user_botscore != "")
+            {
+              this.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
+            }
+
+            
             this.twitterEdges.push(edge);
             this.twitterDates.push(newdate);
             this.twitterUserSet.add(edge.from_user_id);
@@ -705,7 +732,7 @@ var app = new Vue({
         getDateline: function(url_pub_date){
             // console.debug(url_pub_date);
             var pub_date = moment(url_pub_date);
-            var dateline = pub_date.format('MMM D, YYYY');
+            var dateline = pub_date.format('DDD, MMM D, YYYY');
             return dateline;
         },
         attemptToGetUrlHostName: function(url){
@@ -1181,6 +1208,7 @@ var app = new Vue({
         buildTwitterGraph: function() {
           var v = this;
           // Checking if any edges were found and if not, show message to user to try another query
+          console.log(v.twitterEdges);
           if (v.twitterEdges.length == 0) {
             v.show_zoom_buttons = false;
             v.failed_to_get_network = true;
@@ -1191,7 +1219,7 @@ var app = new Vue({
                 v.updateGraph();
                 v.graph.score_stats.reset();
                 v.graph.resetBotscores();
-        
+                
                 v.graph.getBotCacheScores();
                 v.spinStop("generateNetwork");
                 v.scrollToElement("secondary_form");
@@ -1717,7 +1745,7 @@ var app = new Vue({
         },
         buildCSVContent: function(edgeList) {
           this.spinStart("createCSV");
-          var csvFile = "data:text/csv;charset=utf-8,";
+          var csvFile = "data:text/csv;charset=iso-639,";
           var csvData = [];
           //Constructing and pushing header row to csv data
           var headerRow = [];
@@ -1742,8 +1770,6 @@ var app = new Vue({
           headerRow.sort()
           csvData.push(headerRow)
 
-          console.debug(this.graph.botscores());
-
           let botscores = this.graph.botscores();
 
           //Iterating through edge list and building data rows where each row is an edge
@@ -1758,9 +1784,9 @@ var app = new Vue({
                     if (headerRow[keyIx] == "from_user_id" || headerRow[keyIx] == "to_user_id") {
 
                       try {
-                        let score = Math.floor(botscores[edgeList[edgeNum][headerRow[keyIx]]].score * 100)
+                        let score = botscores[edgeList[edgeNum][headerRow[keyIx]]].score;
 
-                        dataRow.push(Number((score/100) * 5 ).toFixed(1));
+                        dataRow.push(score);
                       }
                       catch(err)
                       {
@@ -2040,8 +2066,16 @@ var app = new Vue({
         this.show_graphs = false;
 
         //if there is posted imported data, it should be in an element called "post_data"
-        this.imported_data = JSON.parse(document.getElementById("post_data").innerHTML);
-        console.debug(this.imported_data);
+        //Can choose to not use JSON.parse to read the string (already comma-sep) to have it POSTed like that
+        //this.imported_data = /*JSON.parse(*/document.getElementById("post_data").innerHTML/*)*/;
+
+        this.imported_data = Papa.parse(document.getElementById("post_data").innerHTML);
+        //console.debug(this.imported_data);
+
+        //#TODO - Parse imported (JSON) data
+        //Then visualize
+
+        //VISUALIZE
 
         //create hourglass loading spinner
         var v = this;

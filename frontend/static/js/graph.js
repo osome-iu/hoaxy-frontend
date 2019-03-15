@@ -104,6 +104,32 @@ function HoaxyGraph(options)
 		return edges;
 	}
 	var retry_count = 0;
+
+	// Used when importing bot scores from CSV/JSON/etc.
+	function setBotScore(importedID, importedBotscore/*, importedToID, importedToBotscore*/)
+	{
+		/*
+		if (importedFromBotscore == 0 || importedFromBotscore == null)
+		{
+			importedFromBotscore = -5;
+		}
+
+		if (importedToBotscore == 0 || importedToBotscore == null)
+		{
+			importedToBotscore = -5;
+		}
+		*/
+
+		botscores[importedID] = {score: importedBotscore, user_id: importedID};
+
+		//botscores[importedToID] = {score: importedToBotscore, user_id: importedToID};
+		
+		/* Potential coloration fixes:
+		// updateUserBotScore(importedToID);
+		// updateNodeColor(importedToID, importedToBotscore);
+		*/
+	}
+
 	function getBotCacheScores()
     {
 		console.debug("Querying bot cache.");
@@ -144,7 +170,6 @@ function HoaxyGraph(options)
 				user_id_list.push(to_user_id);
 			}
 		}
-
 
 
 
@@ -1833,6 +1858,8 @@ function HoaxyGraph(options)
 	returnObj.getEdges = function(){ return edges; };
 	returnObj.botscores = function(){ return botscores; };
 	returnObj.resetBotscores = function(){ botscores = {}; };
+
+	returnObj.setBotScore = setBotScore;
 
 	returnObj.filterNodesByScore = filterNodesByScore;
 
