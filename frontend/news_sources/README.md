@@ -4,7 +4,7 @@ This folder location is used for the Hoaxy Botometer dashboard.  Essentially, th
 
 # What should I do?
 
-Place a file called `top-news-usa.json` in this location populated with json data regarding news that has the following shema:
+Place a file called `top-news-usa.json` in this location populated with json data regarding news that has the following schema:
 
 ```json
 {"id": 

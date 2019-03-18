@@ -76,6 +76,8 @@ var app = new Vue({
 
         imported_data: null,
 
+        not_imported: true,
+
         loading: true,
         mounted: false,
         show_articles: false,
@@ -415,40 +417,52 @@ var app = new Vue({
           this.timeline = this.globalTwitterSearchTimeline;
 
           var data = this.imported_data;
+          var checkHeaderDataRow = this.imported_data[0];
           data.shift();
 
           // console.debug(data);
 
           this.resetTwitterSearchResults();
+          this.resetHoaxySearchResults();
 
           // this.twitterEdges.length = 0;
           // this.twitterDates.length = 0;
 
           // Using the original search URL to restore search terms into search box
           var tempDataRow = data[1];
-          var urlHash = tempDataRow.original_query;
-          var urlVars = String(urlHash).split('&');
-          var urlKeyValues = String(urlVars).split('=');
-          var urlKeyValues = String(urlKeyValues).split(',');
+
+          console.debug(checkHeaderDataRow);
+          console.debug(checkHeaderDataRow.original_query);
+          if(checkHeaderDataRow.original_query != null)
+          {
+            var urlHash = tempDataRow.original_query;
+            var urlVars = String(urlHash).split('&');
+            var urlKeyValues = String(urlVars).split('=');
+            var urlKeyValues = String(urlKeyValues).split(',');
+            
+            this.query_text = urlKeyValues[1];
+            this.searched_query_text = urlKeyValues[1];
+
+            this.query_sort = urlKeyValues[3];
+
+            this.searchBy = urlKeyValues[5];
+            this.searchedBy = urlKeyValues[5];
+
+            if(this.searchBy == 'Hoaxy')
+            {
+              this.hoaxySearchSelected = true;
+              this.twitterSearchSelected = false;
+              this.hoaxyEdges.original_query = tempDataRow.original_query;
+            }
+            else
+            {
+              this.hoaxySearchSelected = false;
+              this.twitterSearchSelected = true;
+              this.twitterEdges.original_query = tempDataRow.original_query;
+            }
+          }
+
           
-          this.query_text = urlKeyValues[1];
-          this.searched_query_text = urlKeyValues[1];
-
-          this.query_sort = urlKeyValues[3];
-
-          this.searchBy = urlKeyValues[5];
-          this.searchedBy = urlKeyValues[5];
-
-          if(this.searchBy == 'Hoaxy')
-          {
-            this.hoaxySearchSelected = true;
-            this.twitterSearchSelected = false;
-          }
-          else
-          {
-            this.hoaxySearchSelected = false;
-            this.twitterSearchSelected = true;
-          }
           
 
           for(var i in data)
@@ -457,6 +471,7 @@ var app = new Vue({
             
             edge.date_published = edge.tweet_created_at;
             edge.pub_date = edge.tweet_created_at;
+            
 
 
             var newdate = new Date(edge.pub_date);
@@ -498,6 +513,8 @@ var app = new Vue({
 
           // Check if animation should be disabled or not
           this.checkIfShouldDisableAnimation(this.twitterEdges);
+
+          this.not_imported = false;
         },
 
 
@@ -1557,6 +1574,8 @@ var app = new Vue({
                             y.site_domain = x.domain;
                             y.pub_date = x.publish_date;
                             y.url_raw = x.canonical_url;
+                            var urlString = window.location.hash.toString();
+                            y.original_query = urlString.substr(1);
                             return y;
                         });
                         // console.log("HOAXY PRE STUFF:");
@@ -1722,10 +1741,15 @@ var app = new Vue({
                 var prom = this.twitterLogIn();
                 prom.then( this.graph.getNewScores, function(error){console.warn(error);  v.spinStop(null, true);} );
 
+                // test
+                this.not_imported = true;
             }
             else
             {
                 this.graph.getNewScores();
+
+                // test
+                this.not_imported = true;
             }
         },
         getSingleBotScore: function(user_id){
@@ -1798,20 +1822,20 @@ var app = new Vue({
                 .forEach(function(key, ix) {
                     headerRow.push(key);
                     
-                    if(key == "from_user_id")
+                    if(key == "from_user_id" && !(headerRow.includes("from_user_botscore")))
                     {
                       headerRow.push("from_user_botscore");
                     }
-                    if(key == "to_user_id")
+                    if(key == "to_user_id" && !(headerRow.includes("to_user_botscore")))
                     {
                       headerRow.push("to_user_botscore");
                     }
                  });
           //Adding final computed column called tweet_url
-          headerRow.push("tweet_url")
-          
-          // Adding row for maintaining original query searched
-          // headerRow.push("original_query");
+          if(!(headerRow.includes("tweet_url")))
+          {
+            headerRow.push("tweet_url")
+          }
 
           //Sorting results for cleanliness
           headerRow.sort()
@@ -1822,51 +1846,60 @@ var app = new Vue({
           //Iterating through edge list and building data rows where each row is an edge
           var numEdges = edgeList.length;
           var urlString = window.location.hash.toString();
-          if (numEdges > 0) {
-              for (var edgeNum = 0; edgeNum < numEdges; edgeNum++) {
-                var dataRow = [];
-                for (var keyIx = 0; keyIx < headerRow.length; keyIx++) {
-                  if (edgeList[edgeNum].hasOwnProperty(headerRow[keyIx])) {
-
-                    // if(headerRow[keyIx] == "")
-                    if (headerRow[keyIx] == "from_user_id" || headerRow[keyIx] == "to_user_id") {
-
-                      try {
-                        // let score = Math.floor(botscores[edgeList[edgeNum][headerRow[keyIx]]].score * 100)
-                        let score = botscores[edgeList[edgeNum][headerRow[keyIx]]].score;
-
-                        // dataRow.push(Number((score/100) * 5 ).toFixed(1));
-                        dataRow.push(score);
-                      }
-                      catch(err)
-                      {
-                        dataRow.push("");
-                      }
-                    }
-                    if (headerRow[keyIx] == "title") {
-                      // Quote delimiting the article title to deal with comma delimitation problems (e.g. "hello, world" will now be treated as one column in a csv and not two)
-                      dataRow.push("\"" + edgeList[edgeNum][headerRow[keyIx]] + "\"");
-                    } 
-                    else if (headerRow[keyIx] == "original_query")
+          if (numEdges > 0) 
+          {
+            for (var edgeNum = 0; edgeNum < numEdges; edgeNum++) 
+            {
+              var dataRow = [];
+              for (var keyIx = 0; keyIx < headerRow.length; keyIx++) 
+              {
+                if (edgeList[edgeNum].hasOwnProperty(headerRow[keyIx])) 
+                {
+                  // if(headerRow[keyIx] == "")
+                  if (headerRow[keyIx] == "from_user_id" || headerRow[keyIx] == "to_user_id") 
+                  {
+                    try 
                     {
-                      dataRow.push(urlString.substr(1));
-                    }
-                    else {
-                      dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
-                    }
-                    
-                    
+                      // let score = Math.floor(botscores[edgeList[edgeNum][headerRow[keyIx]]].score * 100)
+                      let score = botscores[edgeList[edgeNum][headerRow[keyIx]]].score;
 
-                  } else {
-                    if (headerRow[keyIx] == "tweet_url") {
-                      dataRow.push("https://twitter.com/" + String(edgeList[edgeNum]['from_user_screen_name']) + "/status/" + String(edgeList[edgeNum]['tweet_id']));
+                      // dataRow.push(Number((score/100) * 5 ).toFixed(1));
+                      dataRow.push(score);
                     }
-                    
+                    catch(err)
+                    {
+                      console.debug("Caught error in exporting botscores.");
+                      dataRow.push("");
+                    }
+                  }
+                  if (headerRow[keyIx] == "title") 
+                  {
+                    // Quote delimiting the article title to deal with comma delimitation problems (e.g. "hello, world" will now be treated as one column in a csv and not two)
+                    dataRow.push("\"" + edgeList[edgeNum][headerRow[keyIx]] + "\"");
+                  } 
+                  else if (headerRow[keyIx] == "original_query")
+                  {
+                    dataRow.push(urlString.substr(1));
+                  }
+                  else 
+                  {
+                    dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
+                  }
+                  
+                  
+
+                } 
+                else 
+                {
+                  if (headerRow[keyIx] == "tweet_url") 
+                  {
+                    dataRow.push("https://twitter.com/" + String(edgeList[edgeNum]['from_user_screen_name']) + "/status/" + String(edgeList[edgeNum]['tweet_id']));
                   }
                 }
-                // Finishing and adding one row of data
-                csvData.push(dataRow);
               }
+              // Finishing and adding one row of data
+              csvData.push(dataRow);
+            }
           }
           // Constructing csv file from data
           csvData.forEach(function(dataRow){
