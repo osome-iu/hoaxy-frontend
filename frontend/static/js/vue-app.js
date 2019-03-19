@@ -345,7 +345,7 @@ var app = new Vue({
     methods: {
         fileUploadHandler: function(evt){
             this.ready_to_visualize = false;
-         
+
             var file = evt.target.files[0]; 
         
             var reader = new FileReader();
@@ -363,6 +363,7 @@ var app = new Vue({
         },
         parseCSV: function(csv_string)
         {
+            // csv_string = decodeURI(csv_string);
             var rowstrings = csv_string.split("\n");
             var rows = [];
             var header_row = rowstrings[0].split(",");
@@ -403,118 +404,126 @@ var app = new Vue({
 
           var v = this;
 
-          this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
-          this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
-              v.pauseGraphAnimation();
-              v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
-              v.graphAnimation.increment = 0;
-              v.graphAnimation.playing  = true;
-              v.graphAnimation.paused = true;
-              v.unpauseGraphAnimation();
-              v.pauseGraphAnimation();
-              // console.debug(new Date(e.pointXValue))
-          });
-          this.timeline = this.globalTwitterSearchTimeline;
+          v.spinStart("visualizeImportedData");
 
-          var data = this.imported_data;
-          var checkHeaderDataRow = this.imported_data[0];
-          data.shift();
 
-          // console.debug(data);
+          setTimeout(function(){
 
-          this.resetTwitterSearchResults();
-          this.resetHoaxySearchResults();
+            v.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: v.updateGraph, graphAnimation: v.graphAnimation});
+            v.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+                v.pauseGraphAnimation();
+                v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+                v.graphAnimation.increment = 0;
+                v.graphAnimation.playing  = true;
+                v.graphAnimation.paused = true;
+                v.unpauseGraphAnimation();
+                v.pauseGraphAnimation();
+                // console.debug(new Date(e.pointXValue))
+            });
+            v.timeline = v.globalTwitterSearchTimeline;
 
-          // this.twitterEdges.length = 0;
-          // this.twitterDates.length = 0;
+            var data = v.imported_data;
+            var checkHeaderDataRow = v.imported_data[0];
+            data.shift();
 
-          // Using the original search URL to restore search terms into search box
-          var tempDataRow = data[1];
+            // console.debug(data);
 
-          console.debug(checkHeaderDataRow);
-          console.debug(checkHeaderDataRow.original_query);
-          if(checkHeaderDataRow.original_query != null)
-          {
-            var urlHash = tempDataRow.original_query;
-            var urlVars = String(urlHash).split('&');
-            var urlKeyValues = String(urlVars).split('=');
-            var urlKeyValues = String(urlKeyValues).split(',');
-            
-            this.query_text = urlKeyValues[1];
-            this.searched_query_text = urlKeyValues[1];
+            v.resetTwitterSearchResults();
+            v.resetHoaxySearchResults();
 
-            this.query_sort = urlKeyValues[3];
+            // v.twitterEdges.length = 0;
+            // v.twitterDates.length = 0;
 
-            this.searchBy = urlKeyValues[5];
-            this.searchedBy = urlKeyValues[5];
+            // Using the original search URL to restore search terms into search box
+            var tempDataRow = data[1];
 
-            if(this.searchBy == 'Hoaxy')
+            if(checkHeaderDataRow.original_query != null)
             {
-              this.hoaxySearchSelected = true;
-              this.twitterSearchSelected = false;
-              this.hoaxyEdges.original_query = tempDataRow.original_query;
-            }
-            else
-            {
-              this.hoaxySearchSelected = false;
-              this.twitterSearchSelected = true;
-              this.twitterEdges.original_query = tempDataRow.original_query;
-            }
-          }
+              var urlHash = decodeURI(tempDataRow.original_query);
+              var urlVars = String(urlHash).split('&');
+              var urlKeyValues = String(urlVars).split('=');
+              var urlKeyValues = String(urlKeyValues).split(',');
 
-          
-          
+              v.query_text = urlKeyValues[1];
+              v.searched_query_text = urlKeyValues[1];
 
-          for(var i in data)
-          {
-            var edge = data[i];
-            
-            edge.date_published = edge.tweet_created_at;
-            edge.pub_date = edge.tweet_created_at;
-            
+              // May remove since query_sort can't work without "Search" context
+              // We're in "Import" context when this function runs.
+              // Switching conditionally with Vue seems to make the search bar disappear entirely.
+              // v.query_sort = urlKeyValues[3];
 
+              v.searchBy = urlKeyValues[5];
+              v.searchedBy = urlKeyValues[5];
 
-            var newdate = new Date(edge.pub_date);
-
-            if(!(newdate instanceof Date && !isNaN(newdate)))
-            {
-              continue;
-            }
-
-            if(edge.from_user_botscore != "")
-            {
-              this.graph.setBotScore(edge.from_user_id, edge.from_user_botscore);
-            }
-
-            if(edge.to_user_botscore != "")
-            {
-              this.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
-            }
-
-            // Coming in as strings from CSV when they should be booleans
-            if(edge.is_mention.toString().toUpperCase() == "TRUE")
-            {
-              edge.is_mention = true;
-            }
-            if(edge.is_mention.toString().toUpperCase() == "FALSE")
-            {
-              edge.is_mention = false;
+              if(v.searchBy == 'Hoaxy')
+              {
+                v.hoaxySearchSelected = true;
+                v.twitterSearchSelected = false;
+                v.hoaxyEdges.original_query = tempDataRow.original_query;
+              }
+              else
+              {
+                v.hoaxySearchSelected = false;
+                v.twitterSearchSelected = true;
+                v.twitterEdges.original_query = tempDataRow.original_query;
+              }
             }
 
             
-            this.twitterEdges.push(edge);
-            this.twitterDates.push(newdate);
-            this.twitterUserSet.add(edge.from_user_id);
-            this.twitterUserSet.add(edge.to_user_id);
-          }
+            
 
-           // true meaning we won't reset scores
-           this.buildTwitterGraph(true);
+            for(var i in data)
+            {
+              var edge = data[i];
+              
+              edge.date_published = edge.tweet_created_at;
+              edge.pub_date = edge.tweet_created_at;
+              
 
-          // Check if animation should be disabled or not
-          this.checkIfShouldDisableAnimation(this.twitterEdges);
 
-          this.not_imported = false;
+              var newdate = new Date(edge.pub_date);
+
+              if(!(newdate instanceof Date && !isNaN(newdate)))
+              {
+                continue;
+              }
+
+              if(edge.from_user_botscore != "")
+              {
+                v.graph.setBotScore(edge.from_user_id, edge.from_user_botscore);
+              }
+
+              if(edge.to_user_botscore != "")
+              {
+                v.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
+              }
+
+              // Coming in as strings from CSV when they should be booleans
+              if(edge.is_mention.toString().toUpperCase() == "TRUE")
+              {
+                edge.is_mention = true;
+              }
+              if(edge.is_mention.toString().toUpperCase() == "FALSE")
+              {
+                edge.is_mention = false;
+              }
+
+              
+              v.twitterEdges.push(edge);
+              v.twitterDates.push(newdate);
+              v.twitterUserSet.add(edge.from_user_id);
+              v.twitterUserSet.add(edge.to_user_id);
+            }
+
+            // true meaning we won't reset scores
+            v.buildTwitterGraph(true);
+
+            // Check if animation should be disabled or not
+            v.checkIfShouldDisableAnimation(v.twitterEdges);
+
+            //v.not_imported = false;
+            v.spinStop("visualizeImportedData");
+          }, 250);
         },
 
 
@@ -596,23 +605,18 @@ var app = new Vue({
 //  ######  ######## ##     ## ##     ##  ######  ##     ##    ##        #######  ##    ##  ######     ##    ####  #######  ##    ##  ######  
 
         twitterSearch: function() {
-            // console.debug("TEST");
-          this.twitter_result_type = 'mixed'
-          this.searchBy = "Twitter"
+          this.twitter_result_type = 'mixed';
+          this.searchBy = "Twitter";
           this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
-          this.twitterSearchSelected = true
-          this.hoaxySearchSelected = false
-          // Focus back on the search box
-          // this.$refs.searchBox.focus()
+          this.twitterSearchSelected = true;
+          this.hoaxySearchSelected = false;
         },
         hoaxySearch: function() {
           this.query_sort = "relevant";
-          this.searchBy = "Hoaxy"
+          this.searchBy = "Hoaxy";
           this.searchPlaceholder = 'Example: vaccines';
-          this.hoaxySearchSelected = true
-          this.twitterSearchSelected = false
-          // Focus back on the search box
-          // this.$refs.searchBox.focus()
+          this.hoaxySearchSelected = true;
+          this.twitterSearchSelected = false;
         },
         initializeHoaxyTimeline: function() {
           var v = this;
@@ -1260,6 +1264,7 @@ var app = new Vue({
         },
         buildTwitterGraph: function(dont_reset) {
           var v = this;
+
           // Checking if any edges were found and if not, show message to user to try another query
           // console.log(v.twitterEdges);
           if (v.twitterEdges.length == 0) {
@@ -1740,16 +1745,10 @@ var app = new Vue({
             {
                 var prom = this.twitterLogIn();
                 prom.then( this.graph.getNewScores, function(error){console.warn(error);  v.spinStop(null, true);} );
-
-                // test
-                this.not_imported = true;
             }
             else
             {
                 this.graph.getNewScores();
-
-                // test
-                this.not_imported = true;
             }
         },
         getSingleBotScore: function(user_id){
@@ -1846,6 +1845,8 @@ var app = new Vue({
           //Iterating through edge list and building data rows where each row is an edge
           var numEdges = edgeList.length;
           var urlString = window.location.hash.toString();
+          console.debug(window.location.hash);
+          console.debug(urlString);
           if (numEdges > 0) 
           {
             for (var edgeNum = 0; edgeNum < numEdges; edgeNum++) 
@@ -1868,7 +1869,6 @@ var app = new Vue({
                     }
                     catch(err)
                     {
-                      console.debug("Caught error in exporting botscores.");
                       dataRow.push("");
                     }
                   }
