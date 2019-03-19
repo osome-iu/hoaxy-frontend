@@ -1,3 +1,5 @@
+var v = this;
+
 var max_articles = 20;
 
 var TWEET_URL = "https://twitter.com/%0/status/%1";
@@ -350,7 +352,7 @@ var app = new Vue({
         
             var reader = new FileReader();
             var vm = this;
-            reader.onload = (function(theFile) {
+            reader.onload = (function() {
                 return function(e) {
                   var csv_string = (e.target.result);
                   var rows = vm.parseCSV(csv_string);
@@ -364,7 +366,7 @@ var app = new Vue({
         parseCSV: function(csv_string)
         {
             // csv_string = decodeURI(csv_string);
-            var rowstrings = csv_string.split("\n");
+            var rowstrings = csv_string.split("\r\n");
             var rows = [];
             var header_row = rowstrings[0].split(",");
             
@@ -488,6 +490,7 @@ var app = new Vue({
                 continue;
               }
 
+              
               if(edge.from_user_botscore != "")
               {
                 v.graph.setBotScore(edge.from_user_id, edge.from_user_botscore);
@@ -497,6 +500,7 @@ var app = new Vue({
               {
                 v.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
               }
+              
 
               // Coming in as strings from CSV when they should be booleans
               if(edge.is_mention.toString().toUpperCase() == "TRUE")
@@ -508,7 +512,10 @@ var app = new Vue({
                 edge.is_mention = false;
               }
 
-              
+              // Weren't here during search, but were added during import
+              // Need to delete to emulate search scenario
+              edge.title = edge.title.slice(1,edge.title.length - 1);
+
               v.twitterEdges.push(edge);
               v.twitterDates.push(newdate);
               v.twitterUserSet.add(edge.from_user_id);
@@ -1076,6 +1083,7 @@ var app = new Vue({
             this.canonical_url="";
             this.date_published="";
             this.domain="";
+            this.from_user_botscore="";
             this.from_user_id="";
             this.from_user_screen_name="";
             this.id=undefined;
@@ -1085,12 +1093,14 @@ var app = new Vue({
             this.site_domain="";
             this.site_type="claim";
             this.title="";
+            this.to_user_botscore="";
             this.to_user_id="";
             this.to_user_screen_name="";
             this.tweet_created_at="";
             this.tweet_id="";
             this.tweet_type="";
-            this.url_id= undefined;
+            this.tweet_url="";
+            this.url_id=undefined;
             this.url_raw="";
           }
 
@@ -1809,6 +1819,52 @@ var app = new Vue({
             var p = this.twitter.logOut();
             this.twitter_account_info = {};
         },
+        buildJSONContent: function(edgeList)
+        {
+          this.spinStart("createJSON");
+
+          // Loop iterator
+          var numEdges = edgeList.length;
+          // Needed to store original_query
+          var urlString = window.location.hash.toString();
+
+          let botscores = this.graph.botscores();
+
+          for(var edgeNum = 0; edgeNum < numEdges; edgeNum++)
+          {
+            // remove # from window.location.hash
+            edgeList[edgeNum].original_query = urlString.substr(1);
+
+            // Botscores must exist to be exported, otherwise undefined error
+            // Implied else will export default value of ""
+            if((botscores[edgeList[edgeNum].from_user_id]) && (botscores[edgeList[edgeNum].from_user_id].score))
+            {
+              edgeList[edgeNum].from_user_botscore = botscores[edgeList[edgeNum].from_user_id].score;
+            }
+            if((botscores[edgeList[edgeNum].to_user_id]) && (botscores[edgeList[edgeNum].to_user_id].score))
+            {
+              edgeList[edgeNum].to_user_botscore = botscores[edgeList[edgeNum].to_user_id].score;
+            }
+
+            if(edgeList[edgeNum]['from_user_screen_name'] && edgeList[edgeNum]['tweet_id'])
+            {
+              edgeList[edgeNum].tweet_url = "https://twitter.com/" + String(edgeList[edgeNum]['from_user_screen_name']) + "/status/" + String(edgeList[edgeNum]['tweet_id']);
+            }
+          }
+
+          // JSON string created here; all data should be in the edgeList first.
+          var dataStr = "data:text/json;charset=iso-639," + encodeURIComponent(JSON.stringify(edgeList));
+          
+          // Preparing json file for download
+          var JSONLink = document.createElement("a");
+          JSONLink.setAttribute("href", dataStr);
+          JSONLink.setAttribute("download", "hoaxy_visualization.json");
+          document.body.appendChild(JSONLink);
+          this.spinStop("createJSON");
+          
+          // File will be downloaded now
+          JSONLink.click();
+        },
         buildCSVContent: function(edgeList) {
           this.spinStart("createCSV");
           var csvFile = "data:text/csv;charset=iso-639,";
@@ -1821,6 +1877,7 @@ var app = new Vue({
                 .forEach(function(key, ix) {
                     headerRow.push(key);
                     
+                    /*
                     if(key == "from_user_id" && !(headerRow.includes("from_user_botscore")))
                     {
                       headerRow.push("from_user_botscore");
@@ -1829,29 +1886,31 @@ var app = new Vue({
                     {
                       headerRow.push("to_user_botscore");
                     }
+                    */
                  });
           //Adding final computed column called tweet_url
+          /*
           if(!(headerRow.includes("tweet_url")))
           {
             headerRow.push("tweet_url")
           }
+          */
 
           //Sorting results for cleanliness
-          headerRow.sort()
-          csvData.push(headerRow)
+          headerRow.sort();
+          csvData.push(headerRow);
 
           let botscores = this.graph.botscores();
 
           //Iterating through edge list and building data rows where each row is an edge
           var numEdges = edgeList.length;
           var urlString = window.location.hash.toString();
-          console.debug(window.location.hash);
-          console.debug(urlString);
           if (numEdges > 0) 
           {
             for (var edgeNum = 0; edgeNum < numEdges; edgeNum++) 
             {
-              var dataRow = [];
+              let dataRow = [];
+
               for (var keyIx = 0; keyIx < headerRow.length; keyIx++) 
               {
                 if (edgeList[edgeNum].hasOwnProperty(headerRow[keyIx])) 
@@ -1872,7 +1931,7 @@ var app = new Vue({
                       dataRow.push("");
                     }
                   }
-                  if (headerRow[keyIx] == "title") 
+                  else if (headerRow[keyIx] == "title") 
                   {
                     // Quote delimiting the article title to deal with comma delimitation problems (e.g. "hello, world" will now be treated as one column in a csv and not two)
                     dataRow.push("\"" + edgeList[edgeNum][headerRow[keyIx]] + "\"");
@@ -1885,9 +1944,6 @@ var app = new Vue({
                   {
                     dataRow.push(edgeList[edgeNum][headerRow[keyIx]]);
                   }
-                  
-                  
-
                 } 
                 else 
                 {
@@ -1915,6 +1971,19 @@ var app = new Vue({
           this.spinStop("createCSV");
           // File will be downloaded now
           downloadLink.click();
+        },
+        createAsJSON: function()
+        {
+          if (this.hoaxyEdges.length > 0) 
+          {
+            // Creating Hoaxy JSON
+            this.buildJSONContent(this.hoaxyEdges);
+          }
+          else if (this.twitterEdges.length > 0) 
+          {
+            // Creating Twitter JSON
+            this.buildJSONContent(this.twitterEdges);
+          }
         },
         createAsCSV: function() {
           if (this.hoaxyEdges.length > 0) {
