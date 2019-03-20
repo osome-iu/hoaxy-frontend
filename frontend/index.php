@@ -159,7 +159,7 @@
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
 						<button class="btn btn-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
 						<button class="btn btn-secondary ml-3 btn-sm" 
-							@click="import_or_search=(import_or_search=='import'?'search':'import')">Or Import Data</button>
+							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Import Data</button>
 					</div>
 					
 				</form>
@@ -178,9 +178,9 @@
 					
 					<div class="col-12 text-center mt-3">
 							<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-							<button class="btn btn-primary btn-blue" @click="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
+							<button class="btn btn-primary btn-blue" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
 							<button class="btn btn-secondary ml-3 btn-sm" 
-							@click="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
+							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
 					</div>
 				</div>
 				
