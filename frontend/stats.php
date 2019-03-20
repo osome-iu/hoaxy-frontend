@@ -2,7 +2,6 @@
 <html>
 
 <head>
-
 	<title>Hoaxy&reg; : Dashboard</title>
 	<?php include("./includes/includes.html"); ?>
 </head>

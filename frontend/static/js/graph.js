@@ -71,7 +71,7 @@ function HoaxyGraph(options)
 
 	function UpdateEdges(new_edges){
 		edges = new_edges;
-		console.debug("Edges updated.");
+		//console.debug("Edges updated.");
 		var g = this;
 		if(edges.length === 0)
 		{
@@ -851,7 +851,7 @@ function HoaxyGraph(options)
 		// }
 
 		// spinStart("updateNetwork");
-		console.debug("Updating Graph");
+		// console.debug("Updating Graph");
 		KillGraph();
 
 		// console.debug(edges);

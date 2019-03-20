@@ -416,7 +416,6 @@ var app = new Vue({
               {
                 var json_string = (e.target.result);
                 vm.imported_data = JSON.parse(json_string);
-                console.debug(vm.imported_data);
                 vm.ready_to_visualize = true;
               };
             })(file);
@@ -433,7 +432,6 @@ var app = new Vue({
                 var csv_string = (e.target.result);
                 var rows = vm.parseCSV(csv_string);
                 vm.imported_data = rows;
-                console.debug(vm.imported_data);
                 vm.ready_to_visualize = true;
               };
             })(file);
