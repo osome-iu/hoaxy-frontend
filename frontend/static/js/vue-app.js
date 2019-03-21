@@ -155,8 +155,6 @@ var app = new Vue({
           image: defaultProfileImage
         },
 
-        me: {},
-
         twitter_account_info: {},
         twitter: {},
         twitter_result_type: 'mixed',
@@ -463,6 +461,8 @@ var app = new Vue({
           var fileType = file.type;
           // Cut off "application/" section of file type.
           fileType = fileType.substr(12);
+
+          console.debug(fileType);
 
           var reader = new FileReader();
           var vm = this;

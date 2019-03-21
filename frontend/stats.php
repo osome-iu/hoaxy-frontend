@@ -121,6 +121,9 @@
 			active_tab: "popular_articles",
 			mounted: false,
 
+			tutorial: false,
+			twitter: false,
+
 			popular_articles: {
 				claim: [],
 				fact_checking: [],

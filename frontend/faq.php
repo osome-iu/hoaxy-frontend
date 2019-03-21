@@ -9,7 +9,6 @@
 <body>
 
 	<div id="vue-app">
-		<!--#set var="subtitle" value="Frequently Asked Questions About Hoaxy" -->
 		<?php include("./includes/header.html"); ?>
 
 
@@ -490,13 +489,23 @@
 	// 			new_content += "</a>";
 	// 			dt.html(new_content);
 	// 		});
+	var defaultProfileImage = "static/assets/Twitter_logo_blue_32-cropped.png";
 	var app = new Vue({
 
 		el: '#vue-app',
 		data:{
+			
 			show_tutorial_link: undefined,
-            tutorial: false,
-            menu_open: false
+			tutorial: false,
+			menu_open: false,
+
+			twitter: false,
+			
+			profile:
+			{
+				name: "",
+				image: defaultProfileImage
+			},
 		},
 		methods: {
             show_tutorial: function(){
@@ -524,6 +533,7 @@
 	</script>
 	<?php include("./includes/footer.html"); ?>
 	<script>
+		/*
 	var updateSubtitle = function(){
 		var subtitle = document.getElementById("hoaxy_subtitle");
 		var content = subtitle.innerHTML;
@@ -537,6 +547,7 @@
 		}
 		subtitle.innerHTML = content.join(" ");
 	}();
+	*/
 
 	</script>
 </body>
