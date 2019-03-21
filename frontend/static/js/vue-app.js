@@ -1,5 +1,7 @@
 var max_articles = 20;
 
+var defaultProfileImage = "static/assets/Twitter_logo_blue_32-cropped.png";
+
 var papa_parse_config =
 {
 	delimiter: "",	// "" = auto-detect
@@ -147,6 +149,13 @@ var app = new Vue({
 
         checked_articles: [],
 
+        profile:
+        {
+          name: "",
+          image: defaultProfileImage
+        },
+
+        me: {},
 
         twitter_account_info: {},
         twitter: {},
@@ -389,6 +398,62 @@ var app = new Vue({
 // ##     ## ##          ##    ##     ## ##     ## ##     ## ##    ## 
 // ##     ## ########    ##    ##     ##  #######  ########   ######  
     methods: {
+        logIn: function()
+        {
+          var v = this;
+          var p = this.twitterLogIn();
+          p.then(function(response)
+          {
+            v.twitter_account_info = userData;
+            v.profile.image = userData.profile_image_url_https;
+            v.profile.name = "@" + userData.screen_name;
+          })
+          
+          console.debug("logIn() called");
+        },
+        logOut: function()
+        {
+          var v = this;
+          var p = this.twitterLogOut();
+
+          p.then(function(response)
+          {
+            v.profile.name = "";
+            // delete this.me;
+            v.profile.image = defaultProfileImage;
+            console.debug("logOut() called");
+          })
+        },
+        watchMe: function()
+        {
+          var v = this;
+
+          /*
+          if(v.twitter.me())
+          {
+            me.then(function(userData)
+            {
+              v.me = userData;
+              v.profile.image = userData.profile_image_url_https;
+              v.profile.name = "@" + userData.screen_name;
+              watcher;
+            })
+          }*/
+          /*
+          var watcher = vm.$watch(v.twitter.me(), function(me)
+          {
+            if(v.twitter.me())
+            {
+              me.then(function(userData)
+              {
+                v.me = userData;
+                v.profile.image = userData.profile_image_url_https;
+                v.profile.name = "@" + userData.screen_name;
+                watcher;
+              })
+            }
+          })*/
+        },
         fileUploadHandler: function(evt)
         {
           // Start with Visualize button disabled.
@@ -1802,6 +1867,8 @@ var app = new Vue({
             me.then(
                 function(response){
                     v.twitter_account_info = response;
+                    v.profile.image = response.profile_image_url_https;
+                    v.profile.name = "@" + response.screen_name;
                 },
                 function(error){
                     v.twitter_account_info = {};
@@ -1880,6 +1947,10 @@ var app = new Vue({
         twitterLogOut: function(){
             var p = this.twitter.logOut();
             this.twitter_account_info = {};
+            this.profile.name = "";
+            // delete this.me;
+            this.profile.image = defaultProfileImage;
+            return p;
         },
         buildJSONContent: function()
         {

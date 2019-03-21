@@ -35,8 +35,17 @@
 			<a class="nav-link nav-item d-sm-none" href="https://github.com/IUNetSci/hoaxy-frontend" target="_blank">Hoaxy Front-end Open Source Code</a>
 			<a class="nav-link nav-item d-sm-none" href="https://github.com/IUNetSci/hoaxy-backend" target="_blank">Hoaxy Back-end Open Source Code</a>
 			<a class="nav-item nav-link" href="http://osome.iuni.iu.edu/" target="_blank">OSoMe</a>
-		</div>
 
+			<div>
+				<b-dropdown class="nav-item" variant="link" size="md" no-caret>
+					<template slot="button-content"><img class="profile-logo logo-24" :src="profile.image"><span class="profile-name" style="color: white" v-text="profile.name"></span>
+					</template>
+			
+					<b-dropdown-item v-if="!twitter_account_info.name" class="dropdown-item" @click.prevent.stop="twitterLogIn()">Log In</b-dropdown-item>
+					<b-dropdown-item v-if="twitter_account_info.name" class="dropdown-item" @click.prevent.stop="twitterLogOut()">Log Out</b-dropdown-item>
+				</b-dropdown>
+			</div>	
+		</div>
 	</div>
 </nav>
 
