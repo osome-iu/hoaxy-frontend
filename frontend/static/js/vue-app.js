@@ -458,11 +458,14 @@ var app = new Vue({
           this.ready_to_visualize = false;
 
           var file = evt.target.files[0]; 
-          var fileType = file.type;
+          var appFileType = file.type;
           // Cut off "application/" section of file type.
-          fileType = fileType.substr(12);
+          appFileType = appFileType.substr(12);
 
-          console.debug(fileType);
+          var textFileType = file.type;
+          textFileType = textFileType.substr(5);
+
+          console.debug(appFileType);
 
           var reader = new FileReader();
           var vm = this;
@@ -470,7 +473,7 @@ var app = new Vue({
           // Check file type, and if valid, remember it.
           // Un-disable Visualize button.
           // Parse file appropriately.
-          if(fileType == "json")
+          if(appFileType == "json")
           {
             vm.imported_file_type = "json";
             vm.ready_to_visualize = true;
@@ -485,7 +488,7 @@ var app = new Vue({
               };
             })(file);
           }
-          else if (fileType == "csv" || fileType == "vnd.ms-excel")
+          else if (textFileType == "csv" || textFileType == "x-csv" || textFileType == "plain" || appFileType == "vnd.ms-excel")
           {
             vm.imported_file_type = "csv";
             vm.ready_to_visualize = true;
