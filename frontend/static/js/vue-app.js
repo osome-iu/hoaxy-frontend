@@ -465,8 +465,6 @@ var app = new Vue({
           var textFileType = file.type;
           textFileType = textFileType.substr(5);
 
-          console.debug(appFileType);
-
           var reader = new FileReader();
           var vm = this;
 
@@ -514,7 +512,6 @@ var app = new Vue({
         },
         parseCSV: function(csv_string)
         {
-            // csv_string = decodeURI(csv_string);
             var rowstrings = csv_string.split("\r\n");
             var rows = [];
             var header_row = rowstrings[0].split(",");
@@ -2016,7 +2013,6 @@ var app = new Vue({
           dataStr += JSON.stringify(dataArray);
           // "canonical_url,date_published,domain,from_user_botscore,from_user_id,from_user_screen_name,id,is_mention,original_query,pub_date,site_domain,site_type,title,to_user_botscore,to_user_id,to_user_screen_name,tweet_created_at,tweet_id,tweet_type,tweet_url,url_id,url_raw,\r\n" +
 
-          
           return dataStr;
         },
         downloadJSON: function(dataStr)
@@ -2054,7 +2050,7 @@ var app = new Vue({
           var csv = Papa.unparse(json, this.papa_unparse_config);
 
           // Preparing csv file for download
-          csv =  "data:text/csv;charset=iso-639," + csv;
+          csv =  "data:text/csv;charset=iso-639," + csv.toString();
           var CSVLink = document.createElement("a");
           CSVLink.setAttribute("href", csv);
           CSVLink.setAttribute("download", downloadStr);
@@ -2062,19 +2058,6 @@ var app = new Vue({
           
           // File will be downloaded now
           CSVLink.click();
-        },
-        createAsJSON: function()
-        {
-          if (this.hoaxyEdges.length > 0) 
-          {
-            // Creating Hoaxy JSON
-            this.buildJSONContent(this.hoaxyEdges);
-          }
-          else if (this.twitterEdges.length > 0) 
-          {
-            // Creating Twitter JSON
-            this.buildJSONContent(this.twitterEdges);
-          }
         },
         submitForm: function(dontScroll){
           // Resets any results from any previous queries
