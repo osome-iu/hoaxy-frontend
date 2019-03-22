@@ -302,7 +302,7 @@ li
     width: 150px;
     margin-left: -75px;
     margin-top: -75px;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     text-align: center;
 
     /*font-size: 6rem;*/
@@ -415,6 +415,11 @@ li
   max-width: 850px;
 }
 
+.nowrap
+{
+    white-space: nowrap;
+}
+
 .modal-show
 {
     display: block;
@@ -448,8 +453,10 @@ li
     position: absolute;
     top: 3rem;
     bottom: 3rem;
+    /*
     left: 3rem;
     right: 3rem;
+    */
     overflow: auto;
 }
 .modal-content h2

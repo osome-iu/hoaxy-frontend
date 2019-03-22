@@ -2050,7 +2050,7 @@ var app = new Vue({
           var csv = Papa.unparse(json, this.papa_unparse_config);
 
           // Preparing csv file for download
-          csv =  "data:text/csv;charset=iso-639," + csv.toString();
+          csv = "data:text/csv;charset=iso-639," + csv;
           var CSVLink = document.createElement("a");
           CSVLink.setAttribute("href", csv);
           CSVLink.setAttribute("download", downloadStr);

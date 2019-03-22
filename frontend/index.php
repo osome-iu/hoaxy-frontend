@@ -310,7 +310,7 @@
 
 
 
-                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-primary ml-md-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
+                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-primary ml-md-2 text-nowrap" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
                         <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-primary ml-md-2" v-if="show_articles && show_full_articles_list">Cancel</button>
 
                     </div>
@@ -574,10 +574,10 @@
 				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" v-on:click="prepareAndShowWidgetCode()" data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip" :disabled="failed_to_get_network" title="add this visualization to your site">Embed</button>
 			</div>
 			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='downloadCSV(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a CSV file">Export - CSV</button>
+				<button class="btn btn-primary ml-1 mr-1 text-nowrap" style="z-index: 0; font-size: .75rem" type="button" @click='downloadCSV(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a CSV file">Export - CSV</button>
 			</div>
 			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='downloadJSON(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a JSON file">Export - JSON</button>
+				<button class="btn btn-primary ml-1 mr-1 text-nowrap" style="z-index: 0; font-size: .75rem" type="button" @click='downloadJSON(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a JSON file">Export - JSON</button>
 			</div>
 			<!-- <div class="d-block p-2 mt-5 text-center d-md-flex flex-column justify-content-center align-items-center" v-if="searchBy == 'Hoaxy'">
 				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" id="expandHoaxySearch" @click="scrollToElement('articles_bookmark')">Expand<br />Search</button>
@@ -838,7 +838,7 @@
 							<span class="pl-2">{{info_text}}</span>
 						</div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-border-top">
                         <button type="button" class="btn btn-secondary" @click="info_text = ''">Close</button>
                     </div>
                 </div>
@@ -858,7 +858,7 @@
 
             <div class="modal-dialog" role="document">
                 <div @click.stop="" class="alert m-5 alert-info">
-                    <div class="modal-header">
+                    <div class="modal-border-bottom">
                         <h4 class="modal-title text-center" id="tutorialModalLabel" >
 							Tutorial
                         </h4>
@@ -870,7 +870,7 @@
 
 						</div> -->
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-border-top">
                         <button type="button" class="btn btn-secondary" @click="toggleTutorialModal()">Close</button>
                     </div>
                 </div>
@@ -882,7 +882,7 @@
         <div id="authenticateModal" :class="{'modal-show': show_authenticate_modal}" @click.stop="toggleModal('authenticate')" class="modal " tabindex="-1" role="dialog" aria-labelledby="authenticateModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
             <div class="modal-dialog" role="document">
                 <div @click.stop="" class="alert m-5 alert-info">
-                    <div class="modal-header">
+                    <div class="modal-border-bottom">
                         <h4 class="modal-title text-center" id="authenticateModalLabel" >
 							Twitter Error
                         </h4>
@@ -899,7 +899,7 @@
 							</p>
 						</div>
                     </div>
-                    <div class="modal-footer">
+                    <div class="modal-border-top">
                         <button type="button" class="btn btn-secondary" @click="toggleModal('authenticate')">Close</button>
                     </div>
                 </div>
@@ -909,7 +909,7 @@
 		<div id="errorModal" :class="{'modal-show': show_error_modal}" @click.stop="toggleErrorModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog" role="document">
 				<div @click.stop="" class="alert m-5 alert-danger">
-					<div class="modal-header">
+					<div class="modal-border-bottom">
 						<h4 class="modal-title text-center" id="errorModalLabel" >
 							An Error Occurred
 						</h4>
@@ -921,7 +921,7 @@
 							<span>{{error_message}}</span>
 						</div>
 					</div>
-					<div class="modal-footer">
+					<div class="modal-border-top">
 						<button type="button" class="btn btn-secondary" @click="toggleErrorModal()">Close</button>
 					</div>
 				</div>
@@ -932,7 +932,7 @@
 		<div id="edgeModal" :class="{'modal-show': show_edge_modal}" @click.stop="toggleEdgeModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="edgeModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog" role="document">
 				<div @click.stop="" class="modal-content">
-					<div class="modal-header">
+					<div class="modal-border-bottom">
 						<button type="button" class="close"  @click="toggleEdgeModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title text-center" id="edgeModalLabel" >
 							<a target="_blank" :href="'https://twitter.com/intent/user?user_id='+ edge_modal_content.edge.source">@{{edge_modal_content.edge.source_screenName}}</a>
@@ -951,17 +951,17 @@
 
 						</template>
 					</div>
-					<div class="modal-footer">
+					<div class="modal-border-top">
 						<button type="button" class="btn btn-default" @click="toggleEdgeModal()">Close</button>
 					</div>
 				</div>
 			</div>
 		</div>
 
-		<div id="nodeModal"  :class="{'modal-show': show_node_modal}" @click.stop="toggleNodeModal()" class="modal "  tabindex="-1" role="dialog" :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
+		<div id="nodeModal"  :class="{'modal-show': show_node_modal}" @click.stop="toggleNodeModal()" class="modal"  tabindex="-1" role="dialog" :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog"  role="document">
 				<div class="modal-content" @click.stop="">
-					<div class="modal-header">
+					<div class="modal-border-bottom">
 						<button type="button" class="close" @click.stop="toggleNodeModal()" aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title text-center" id="nodeModalLabel">
 							Account:  <a target="_blank" v-bind:href="'https://twitter.com/intent/user?user_id=' + node_modal_content.user_id">@{{node_modal_content.screenName}}</a>
@@ -1094,8 +1094,8 @@
 						</template>
 
 					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" @click.stop="toggleNodeModal()">Close</button>
+					<div style="border-top: 1px solid #ccc;">
+						<button type="button" class="btn btn-primary" style="float: right" @click.stop="toggleNodeModal()">Close</button>
 					</div>
 				</div>
 			</div>
@@ -1115,5 +1115,8 @@
 	</div>
 
 	<script src="./static/js/vue-app.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -207,7 +207,7 @@ div#fixedfooter {
     color: #CCC;
     background: #333;
     height: 6vh;
-    //padding:8px;
+    /*padding:8px;*/
 }
 
 .block {
@@ -584,7 +584,15 @@ footer
     right: 2em;
 }
 
+.modal-border-bottom
+{
+    border-bottom: 1px solid #ccc;
+}
 
+.modal-border-top
+{
+    border-top: 1px solid #ccc;
+}
 
 .modal-content
 {
