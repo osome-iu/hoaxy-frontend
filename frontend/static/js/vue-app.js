@@ -2051,6 +2051,7 @@ var app = new Vue({
 
           // Preparing csv file for download
           csv = "data:text/csv;charset=iso-639," + csv;
+          csv = encodeURI(csv);
           var CSVLink = document.createElement("a");
           CSVLink.setAttribute("href", csv);
           CSVLink.setAttribute("download", downloadStr);
