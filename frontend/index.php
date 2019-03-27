@@ -161,15 +161,15 @@
 
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-						<button class="btn btn-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
-						<button class="btn btn-secondary ml-3 btn-sm" 
+						<button class="btn btn-outline-primary" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
+						<button class="btn btn-primary ml-3" 
 							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Import Data</button>
 					</div>
 					
 				</form>
 				
 				<div v-if="import_or_search == 'import'" class="">
-					<div class="col-12 text-center ">
+					<div class="col-12 text-center">
 						<div class="col-12 text-center d-md-flex align-items-center">
 							<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
 							<div class="pr-2 text-nowrap">Visualize Existing Data:</div>
@@ -182,8 +182,8 @@
 					
 					<div class="col-12 text-center mt-3">
 							<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-							<button class="btn btn-primary btn-blue" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
-							<button class="btn btn-secondary ml-3 btn-sm" 
+							<button class="btn btn-outline-primary" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
+							<button class="btn btn-primary ml-3" 
 							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
 					</div>
 				</div>

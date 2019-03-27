@@ -1,15 +1,15 @@
 <nav class="navbar navbar-expand fixed-top text-center text-md-left">
-	<div class="container flex-column d-flex flex-wrap flex-sm-row align-items-end justify-content-between">
+	<div class="container flex-column d-flex flex-wrap flex-sm-row align-items-center justify-content-between">
 		<!-- <a href="https://github.com/IUNetSci" style="position: fixed; bottom: 0; left: 0; border: 0;" ><img src="./static/assets/forkme.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png"></a> -->
-		<div class="d-flex flex-row justify-content-between p-0 col-12 col-sm">
-			<div class="navbar-brand hoaxy-logo"><a class="" href="./"><i class="fa fa-retweet"></i> <span class="reg">HOAXY</span></a></div>
-			<div class="d-block d-sm-none">
+		<div class="d-flex flex-row justify-content-between align-items-center p-0 col-12 col-sm">
+			<div class="navbar-brand hoaxy-logo align-items-center"><a class="" href="./"><i class="fa fa-retweet"></i> <span class="reg">HOAXY</span></a></div>
+			<div class="d-block d-sm-none align-items-center">
 				<button class="btn btn-primary text-dark" type="button" aria-expanded="false" aria-label="Toggle navigation" @click="menu_open = !menu_open">
 			    	<i class="fa fa-bars" aria-hidden="true"></i>
 			    </button>
 			</div>
 		</div>
-		<div class="navbar-nav float-sm-right flex-wrap text-right justify-content-around d-none d-sm-flex"
+		<div class="navbar-nav float-sm-right text-right justify-content-around align-items-center d-none d-sm-flex"
 			:class="{'d-block':menu_open}"
 		id="">
 			<span id="help_dropdown" class="nav-item d-none d-sm-inline">

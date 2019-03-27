@@ -1925,7 +1925,15 @@ var app = new Vue({
                   v.getting_bot_scores.running = false;
 
                   try {
-                      var score = response.data.scores.english;
+                      var score = 0;
+                      if(response.data.user.lang == 'en' || response.data.user.lang == 'en-gb')
+                      {
+                        score = response.data.scores.english;
+                      }
+                      else
+                      {
+                        score = response.data.scores.universal;
+                      }
                       v.node_modal_content.botscore = Math.floor(score * 100);
                       v.node_modal_content.botcolor = v.graph.getNodeColor(score);
                       v.node_modal_content.timestamp = new Date();

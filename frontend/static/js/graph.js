@@ -222,7 +222,8 @@ function HoaxyGraph(options)
 
 			botcache_request
 			.then(
-				function(response){
+				function(response)
+				{
 					spinStop("getBotCacheScores");
 					console.debug("Got botcache: ", response.data);
 					var results = response.data.result;
@@ -232,11 +233,19 @@ function HoaxyGraph(options)
 						if(user)
 						{
 							var sn = user.user.screen_name;
-							var id = user.user.id
-							var score = user.scores.english;
+							var id = user.user.id;
+							var score = 0;
+							if(user.user.lang == 'en' || user.user.lang == 'en-gb')
+							{	
+								score = user.scores.english;
+							}
+							else
+							{
+								score = user.scores.universal;
+							}
+							
 							botscores[id] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id, screen_name: sn };
 							updateNodeColor(id, score);
-
 						}
 					}
 					//score_stats.recompute();
@@ -539,7 +548,15 @@ function HoaxyGraph(options)
 			// score_stats.recompute();
 			// Storing the consistent account info for this given bot score retrieval
 			var newId = response.data.user.id_str;
-			var newScore = response.data.scores.english;
+			var newScore = 0;
+			if(response.data.user.lang == 'en' || response.data.user.lang == 'en-gb')
+			{	
+				newScore = response.data.scores.english;
+			}
+			else
+			{
+				newScore = response.data.scores.universal;
+			}
 
 			if (potentially_old_sn != response.data.user.screen_name) {
 				var oldSn = potentially_old_sn;
@@ -1380,8 +1397,10 @@ function HoaxyGraph(options)
 
 			var score = false;
 			// console.debug(node.screenName, botscores[node.screenName], botscores);
+			/*
 			console.debug(node);
 			console.debug(botscores);
+			*/
 			if(botscores[node.id])
 			{
 				var bs = botscores[node.id];

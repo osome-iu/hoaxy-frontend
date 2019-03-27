@@ -766,6 +766,12 @@ white-space: nowrap;
     margin: 0 auto;
 }
 
+.btn-secondary
+{
+    background-color: #DFDFDF;
+    border-color: #8A8A8A;
+    color: black;
+}
 .btn-primary
 {
     background-color: #DFDFDF;
@@ -782,6 +788,8 @@ white-space: nowrap;
 {
     background-color: #ADADAD;
     border-color: #797979;
+    background-color: #0062ff;
+    border-color: #005cbf;
 }
 
 /* FAQ Styling */
