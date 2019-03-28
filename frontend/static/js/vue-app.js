@@ -103,7 +103,6 @@ var colors = {
 var app = new Vue({
     el: '#vue-app',
     data: {
-
         //  ######
         //  #     #   ##   #####   ##
         //  #     #  #  #    #    #  #
@@ -406,8 +405,6 @@ var app = new Vue({
             v.profile.image = userData.profile_image_url_https;
             v.profile.name = "@" + userData.screen_name;
           })
-          
-          console.debug("logIn() called");
         },
         logOut: function()
         {
@@ -419,38 +416,19 @@ var app = new Vue({
             v.profile.name = "";
             // delete this.me;
             v.profile.image = defaultProfileImage;
-            console.debug("logOut() called");
           })
         },
-        watchMe: function()
+        checkPOSTData()
         {
-          var v = this;
+          /*
+          this.imported_data = JSON.parse(document.getElementById("post_data").innerHTML);
+          console.debug(this.imported_data);
 
-          /*
-          if(v.twitter.me())
+          //VISUALIZE
+          if (this.imported_data)
           {
-            me.then(function(userData)
-            {
-              v.me = userData;
-              v.profile.image = userData.profile_image_url_https;
-              v.profile.name = "@" + userData.screen_name;
-              watcher;
-            })
+            visualizeImportedData();
           }*/
-          /*
-          var watcher = vm.$watch(v.twitter.me(), function(me)
-          {
-            if(v.twitter.me())
-            {
-              me.then(function(userData)
-              {
-                v.me = userData;
-                v.profile.image = userData.profile_image_url_https;
-                v.profile.name = "@" + userData.screen_name;
-                watcher;
-              })
-            }
-          })*/
         },
         fileUploadHandler: function(evt)
         {
@@ -1518,7 +1496,7 @@ var app = new Vue({
                   query_string = "";
                 }
                 v.buildTwitterEdgesTimeline(response.statuses);
-                console.debug(v.twitterUserSet.size, query_limit);
+                // console.debug(v.twitterUserSet.size, query_limit);
                 // Check if pagination must continue, if the number of nodes on the graph exceeds 1000 we don't send additional requests
                 if (v.twitterUserSet.size < 1000 && query_string != "" && query_limit > 0) {
                   // Continue pagination
@@ -1891,7 +1869,7 @@ var app = new Vue({
             }
         },
         getSingleBotScore: function(user_id){
-            console.debug(user_id);
+            //console.debug(user_id);
             var v = this;
             this.getting_bot_scores.running = true;
             var success = new Promise(function(resolve, reject){
@@ -2288,6 +2266,20 @@ var app = new Vue({
       this.getPopularArticles();
       // Retrieving top trending articles to show them in the dashboard
       this.getTopUsaArticles();
+
+      try
+      {
+        this.imported_data = JSON.parse(document.getElementById("post_data").innerHTML);
+        this.imported_data = JSON.parse(this.imported_data);
+      }
+      catch(e)
+      {
+        console.warn(e);
+        if(this.imported_data != "")
+        {
+          location.href = 'https://hoaxy.iuni.iu.edu/';
+        }
+      }
     },
     mounted: function(){
         this.mounted = true;
@@ -2298,12 +2290,11 @@ var app = new Vue({
         //Can choose to not use JSON.parse to read the string (already comma-sep) to have it POSTed like that
         //this.imported_data = /*JSON.parse(*/document.getElementById("post_data").innerHTML/*)*/;
 
-        this.imported_data = Papa.parse(document.getElementById("post_data").innerHTML);
-        //console.debug(this.imported_data);
-
-        //#TODO - Parse imported (JSON) data
-
         //VISUALIZE
+        if (this.imported_data != "")
+        {
+          this.visualizeImportedData();
+        }
 
         //create hourglass loading spinner
         var v = this;

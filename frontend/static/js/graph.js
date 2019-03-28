@@ -1,6 +1,5 @@
 function HoaxyGraph(options)
 {
-
     //background: linear-gradient(to bottom, rgb(44,123,182) 0%,rgb(171,217,233) 30%,rgb(255,255,191) 50%,rgb(253,174,97) 70%,rgb(215,25,28) 100%);
 
 	var returnObj = {};
@@ -113,11 +112,11 @@ function HoaxyGraph(options)
 
 	function getBotCacheScores()
     {
-		console.debug("Querying bot cache.");
+		//console.debug("Querying bot cache.");
 		if(graph.nodes === undefined)
 		{
 			setTimeout(function(){getBotCacheScores();}, 100);
-			console.debug("No nodes, wait a sec");
+			//console.debug("No nodes, wait a sec");
 			return false;
 		}
 		getting_bot_scores.running = true;
@@ -338,7 +337,7 @@ function HoaxyGraph(options)
 						if(retry_count < 5)
 						{
 							retry_count += 1;
-							console.info("Retry bot score cache request #", retry_count);
+							//console.info("Retry bot score cache request #", retry_count);
 							getBotCacheScores();
 						}
 					}
@@ -350,33 +349,25 @@ function HoaxyGraph(options)
 				}
 			);
 		}
-
-
 		return botcache_request;
-
-
 	}
 
 	var counter = 0;
 
-  function getNewScores(){
+  function getNewScores()
+  {
 		getting_bot_scores.running = true;
 		counter = 20;
-		console.debug(score_stats.current_index);
 		getBotScoreTimer(score_stats.current_index);
   }
 
 	//space out the requests so that we don't hit the rate limit so quickly
-	function getBotScoreTimer(index){
-		// if(index > 20)
-		// {
-		// 	console.debug(botscores);
-		// 	return false;
-		// }
+	function getBotScoreTimer(index)
+	{
 		if(counter <= 0)
 		{
 			score_stats.current_index = index;
-			console.debug("got some botscores:", botscores);
+			//console.debug("got some botscores:", botscores);
 			getting_bot_scores.running = false;
 			return false;
 		}
@@ -536,7 +527,7 @@ function HoaxyGraph(options)
 	{
 		var sn = user_object.user.screen_name;
 		var id = user_object.user.id_str;
-		console.debug(user_object);
+		//console.debug(user_object);
 		var botscore = axios({
 			method: 'post',
 			url: configuration.botometer_url,
@@ -1768,7 +1759,7 @@ function HoaxyGraph(options)
 		graphAnimation.playing  = true;
 		graphAnimation.paused = false;
 		AnimateFilter(timespan.start_time);
-		console.debug(graphAnimation.current_timestamp);
+		//console.debug(graphAnimation.current_timestamp);
 	}
 
 	function StopAnimation(){
@@ -1780,18 +1771,18 @@ function HoaxyGraph(options)
 
 		graphAnimation.playing  = false;
 		graphAnimation.paused = false;
-		console.debug(graphAnimation.current_timestamp);
+		//console.debug(graphAnimation.current_timestamp);
 	}
 	function PauseAnimation(){
 		clearTimeout(animationTimeout);
 		graphAnimation.paused = true;
-		console.debug(graphAnimation.current_timestamp);
-		console.debug("PAUSE");
+		// console.debug(graphAnimation.current_timestamp);
+		// console.debug("PAUSE");
 	}
 	function UnpauseAnimation(){
 		graphAnimation.paused = false;
 		AnimateFilter(graphAnimation.current_timestamp);
-		console.debug(graphAnimation.current_timestamp);
+		// console.debug(graphAnimation.current_timestamp);
 	}
 
 
@@ -1840,8 +1831,6 @@ function HoaxyGraph(options)
  // #    #  #        #   #    # #   #  #   ##
  // #     # ######   #    ####  #    # #    #
 
-
-	console.debug("Graph initialized");
 
 	returnObj.filter = FilterEdges;
 	returnObj.startAnimation = StartAnimation;
