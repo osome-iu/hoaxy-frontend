@@ -495,7 +495,7 @@
 </transition>
 		<div id="widgetModal" :class="{'modal-show': showWidgetModal}" @click.stop="resetWidgetContent()" class="modal" tabindex="-1" role="dialog"
 		aria-labelledby="infoModalLabel" style="opacity: 1" aria-labelledby="nodeModalLabel">
-			<div id="modalDialogWidget" class="modal-dialog" role="document">
+			<div id="modalDialogWidget" class="modal-dialog" style="pointer-events: auto;" role="document">
 				<div @click.stop="" class="alert m-5 alert-info">
 					<div class="modal-body" id="infoModalBody">
 						<div class="d-flex flex-column">
@@ -521,11 +521,11 @@
 			class="modal " tabindex="-1"
 			role="dialog"
 			aria-labelledby="infoModalLabel"
-			style="opacity: 1"
+			style="opacity: 1;"
 			aria-labelledby="nodeModalLabel">
             <div class="modal-dialog" role="document">
                 <div @click.stop="" class="alert m-5 alert-info">
-                    <div class="modal-body" id="infoModalBody" >
+                    <div class="modal-body" id="infoModalBody">
 						<div class="d-flex align-items-center">
 							<i class="float-left mr-4 fa fa-3x fa-question-circle" aria-hidden="true"></i>
 							<span class="pl-2">{{info_text}}</span>

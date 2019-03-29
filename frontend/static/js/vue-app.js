@@ -356,7 +356,7 @@ var app = new Vue({
           return "<div style=\"box-sizing:border-box;color:black;background-color:white;border:solid;border-width:thin;border-color:gray;border-radius:10px;width:625px;height:250px;\"><div style=\"float:left;width:250px;height:250px;display:inline-block;margin-right:0px;\"><div style=\"box-sizing:inherit;text-align:center;vertical-align:middle;color:blue;font-size:35px;font-weight:bold;height:60px;padding-top:30px;padding-bottom:30px\">HOAXY</div><div style=\"overflow:hidden;height:110px;word-break:break-word;box-sizing:inherit;padding:5px;font-size:16px\">Use Hoaxy to see how this spreads online: <a href=\"" + location.href + "\" target=\"_blank\">" + this.shortenArticleText(this.searched_query_text, 70) + "</a></div></div><div style=\"margin-left:0px;float:left;width:370px;height:250px;display:inline-block;border-left:1px solid;border-color:#DCDCDC;\"><img style=\"box-sizing:inherit;width:370px;height:240px;padding-top:5px;padding-right:5px;\" src=\"" + this.widgetScreenshotDataUrl + "\"></img></div></div>"
           */
           return ''
-            + '<link rel="stylesheet" href="' + location.origin + (location.pathname !== '/'?location.pathname:'') + '/static/css/widget.css" />'
+            + '<link rel="stylesheet" href="' + location.origin + (location.pathname !== '/'?location.pathname:'') + '/static/css/widget.min.css" />'
             + '<div class="hoaxy-widget">'
             +   '<div class="hoaxy-widget-leftdiv">'
             +       '<div class="hoaxy-widget-leftdiv-toplogo">'
