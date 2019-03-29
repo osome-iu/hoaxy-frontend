@@ -28,7 +28,6 @@
 			<div class="container">
 				<form v-if="import_or_search == 'search'" @submit.stop.prevent="submitForm()">
 					<div class="col-12 text-center">
-
 					<div class="col-12 text-center d-md-flex align-items-center">
 						<div class="pr-2 text-nowrap">Search by:</div>
                             <div class="">
@@ -39,7 +38,6 @@
                                     @mouseOver="hoverTooltip"
                                     @mouseOut="hideTooltip"
                                     v-bind:class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">Twitter</button>
-
                                     <button id="searchByHoaxy" data-toggle="tooltip" title="search articles from misinformation and fact-checking sources" type="button"
                                     class="btn btn-primary"
 									@mouseOver="hoverTooltip"
