@@ -16,6 +16,7 @@ function HoaxyGraph(options)
 	var getting_bot_scores = options.getting_bot_scores || false;
 	var graphAnimation = options.graphAnimation || {playing: false, increment: 0, total_increments: 40};
 	var twitterRateLimitReached = options.twitterRateLimitReached;
+	var lang = "";
 
 	var timespan = {
 		start_time: 0, end_time: 0
@@ -234,7 +235,7 @@ function HoaxyGraph(options)
 							var sn = user.user.screen_name;
 							var id = user.user.id;
 							var score = 0;
-							if(user.user.lang == 'en' || user.user.lang == 'en-gb')
+							if(lang == 'en' || lang == 'en-gb')
 							{	
 								score = user.scores.english;
 							}
@@ -1850,6 +1851,7 @@ function HoaxyGraph(options)
 	returnObj.getEdges = function(){ return edges; };
 	returnObj.botscores = function(){ return botscores; };
 	returnObj.resetBotscores = function(){ botscores = {}; };
+	returnObj.setLang = function(passedLang){lang = passedLang};
 
 	returnObj.setBotScore = setBotScore;
 
