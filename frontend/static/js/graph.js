@@ -1,6 +1,5 @@
 function HoaxyGraph(options)
 {
-
     //background: linear-gradient(to bottom, rgb(44,123,182) 0%,rgb(171,217,233) 30%,rgb(255,255,191) 50%,rgb(253,174,97) 70%,rgb(215,25,28) 100%);
 
 	var returnObj = {};
@@ -17,6 +16,7 @@ function HoaxyGraph(options)
 	var getting_bot_scores = options.getting_bot_scores || false;
 	var graphAnimation = options.graphAnimation || {playing: false, increment: 0, total_increments: 40};
 	var twitterRateLimitReached = options.twitterRateLimitReached;
+	var lang = "";
 
 	var timespan = {
 		start_time: 0, end_time: 0
@@ -71,7 +71,7 @@ function HoaxyGraph(options)
 
 	function UpdateEdges(new_edges){
 		edges = new_edges;
-		console.debug("Edges updated.");
+		//console.debug("Edges updated.");
 		var g = this;
 		if(edges.length === 0)
 		{
@@ -113,11 +113,11 @@ function HoaxyGraph(options)
 
 	function getBotCacheScores()
     {
-		console.debug("Querying bot cache.");
+		//console.debug("Querying bot cache.");
 		if(graph.nodes === undefined)
 		{
 			setTimeout(function(){getBotCacheScores();}, 100);
-			console.debug("No nodes, wait a sec");
+			//console.debug("No nodes, wait a sec");
 			return false;
 		}
 		getting_bot_scores.running = true;
@@ -222,7 +222,8 @@ function HoaxyGraph(options)
 
 			botcache_request
 			.then(
-				function(response){
+				function(response)
+				{
 					spinStop("getBotCacheScores");
 					console.debug("Got botcache: ", response.data);
 					var results = response.data.result;
@@ -232,11 +233,19 @@ function HoaxyGraph(options)
 						if(user)
 						{
 							var sn = user.user.screen_name;
-							var id = user.user.id
-							var score = user.scores.english;
+							var id = user.user.id;
+							var score = 0;
+							if(lang == 'en' || lang == 'en-gb')
+							{	
+								score = user.scores.english;
+							}
+							else
+							{
+								score = user.scores.universal;
+							}
+							
 							botscores[id] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id, screen_name: sn };
 							updateNodeColor(id, score);
-
 						}
 					}
 					//score_stats.recompute();
@@ -329,7 +338,7 @@ function HoaxyGraph(options)
 						if(retry_count < 5)
 						{
 							retry_count += 1;
-							console.info("Retry bot score cache request #", retry_count);
+							//console.info("Retry bot score cache request #", retry_count);
 							getBotCacheScores();
 						}
 					}
@@ -341,33 +350,25 @@ function HoaxyGraph(options)
 				}
 			);
 		}
-
-
 		return botcache_request;
-
-
 	}
 
 	var counter = 0;
 
-  function getNewScores(){
+  function getNewScores()
+  {
 		getting_bot_scores.running = true;
 		counter = 20;
-		console.debug(score_stats.current_index);
 		getBotScoreTimer(score_stats.current_index);
   }
 
 	//space out the requests so that we don't hit the rate limit so quickly
-	function getBotScoreTimer(index){
-		// if(index > 20)
-		// {
-		// 	console.debug(botscores);
-		// 	return false;
-		// }
+	function getBotScoreTimer(index)
+	{
 		if(counter <= 0)
 		{
 			score_stats.current_index = index;
-			console.debug("got some botscores:", botscores);
+			//console.debug("got some botscores:", botscores);
 			getting_bot_scores.running = false;
 			return false;
 		}
@@ -527,7 +528,7 @@ function HoaxyGraph(options)
 	{
 		var sn = user_object.user.screen_name;
 		var id = user_object.user.id_str;
-		console.debug(user_object);
+		//console.debug(user_object);
 		var botscore = axios({
 			method: 'post',
 			url: configuration.botometer_url,
@@ -539,7 +540,15 @@ function HoaxyGraph(options)
 			// score_stats.recompute();
 			// Storing the consistent account info for this given bot score retrieval
 			var newId = response.data.user.id_str;
-			var newScore = response.data.scores.english;
+			var newScore = 0;
+			if(response.data.user.lang == 'en' || response.data.user.lang == 'en-gb')
+			{	
+				newScore = response.data.scores.english;
+			}
+			else
+			{
+				newScore = response.data.scores.universal;
+			}
 
 			if (potentially_old_sn != response.data.user.screen_name) {
 				var oldSn = potentially_old_sn;
@@ -851,7 +860,7 @@ function HoaxyGraph(options)
 		// }
 
 		// spinStart("updateNetwork");
-		console.debug("Updating Graph");
+		// console.debug("Updating Graph");
 		KillGraph();
 
 		// console.debug(edges);
@@ -1380,8 +1389,10 @@ function HoaxyGraph(options)
 
 			var score = false;
 			// console.debug(node.screenName, botscores[node.screenName], botscores);
+			/*
 			console.debug(node);
 			console.debug(botscores);
+			*/
 			if(botscores[node.id])
 			{
 				var bs = botscores[node.id];
@@ -1749,7 +1760,7 @@ function HoaxyGraph(options)
 		graphAnimation.playing  = true;
 		graphAnimation.paused = false;
 		AnimateFilter(timespan.start_time);
-		console.debug(graphAnimation.current_timestamp);
+		//console.debug(graphAnimation.current_timestamp);
 	}
 
 	function StopAnimation(){
@@ -1761,18 +1772,18 @@ function HoaxyGraph(options)
 
 		graphAnimation.playing  = false;
 		graphAnimation.paused = false;
-		console.debug(graphAnimation.current_timestamp);
+		//console.debug(graphAnimation.current_timestamp);
 	}
 	function PauseAnimation(){
 		clearTimeout(animationTimeout);
 		graphAnimation.paused = true;
-		console.debug(graphAnimation.current_timestamp);
-		console.debug("PAUSE");
+		// console.debug(graphAnimation.current_timestamp);
+		// console.debug("PAUSE");
 	}
 	function UnpauseAnimation(){
 		graphAnimation.paused = false;
 		AnimateFilter(graphAnimation.current_timestamp);
-		console.debug(graphAnimation.current_timestamp);
+		// console.debug(graphAnimation.current_timestamp);
 	}
 
 
@@ -1822,8 +1833,6 @@ function HoaxyGraph(options)
  // #     # ######   #    ####  #    # #    #
 
 
-	console.debug("Graph initialized");
-
 	returnObj.filter = FilterEdges;
 	returnObj.startAnimation = StartAnimation;
 	returnObj.stopAnimation = StopAnimation;
@@ -1842,6 +1851,7 @@ function HoaxyGraph(options)
 	returnObj.getEdges = function(){ return edges; };
 	returnObj.botscores = function(){ return botscores; };
 	returnObj.resetBotscores = function(){ botscores = {}; };
+	returnObj.setLang = function(passedLang){lang = passedLang};
 
 	returnObj.setBotScore = setBotScore;
 

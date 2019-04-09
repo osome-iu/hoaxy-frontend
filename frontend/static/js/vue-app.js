@@ -1,5 +1,9 @@
 var max_articles = 20;
 
+var defaultProfileImage = "static/assets/Twitter_logo_blue_32-cropped.png";
+
+var defaultHoaxyLang = "en";
+
 var papa_parse_config =
 {
 	delimiter: "",	// "" = auto-detect
@@ -101,7 +105,6 @@ var colors = {
 var app = new Vue({
     el: '#vue-app',
     data: {
-
         //  ######
         //  #     #   ##   #####   ##
         //  #     #  #  #    #    #  #
@@ -147,6 +150,11 @@ var app = new Vue({
 
         checked_articles: [],
 
+        profile:
+        {
+          name: "",
+          image: defaultProfileImage
+        },
 
         twitter_account_info: {},
         twitter: {},
@@ -232,7 +240,7 @@ var app = new Vue({
         hoaxySearchSelected: true,
         twitterSearchSelected: false,
 
-        lang: 'en',
+        lang: defaultHoaxyLang,
 
         // Edge lists
         twitterEdges: [],
@@ -387,9 +395,12 @@ var app = new Vue({
           this.ready_to_visualize = false;
 
           var file = evt.target.files[0]; 
-          var fileType = file.type;
+          var appFileType = file.type;
           // Cut off "application/" section of file type.
-          fileType = fileType.substr(12);
+          appFileType = appFileType.substr(12);
+          
+          var textFileType = file.type;
+          textFileType = textFileType.substr(5);
 
           var reader = new FileReader();
           var vm = this;
@@ -397,7 +408,7 @@ var app = new Vue({
           // Check file type, and if valid, remember it.
           // Un-disable Visualize button.
           // Parse file appropriately.
-          if(fileType == "json")
+          if(appFileType == "json")
           {
             vm.imported_file_type = "json";
             vm.ready_to_visualize = true;
@@ -408,12 +419,11 @@ var app = new Vue({
               {
                 var json_string = (e.target.result);
                 vm.imported_data = JSON.parse(json_string);
-                console.debug(vm.imported_data);
                 vm.ready_to_visualize = true;
               };
             })(file);
           }
-          else if (fileType == "csv" || fileType == "vnd.ms-excel")
+          else if (textFileType == "csv" || textFileType == "x-csv" || textFileType == "plain" || appFileType == "vnd.ms-excel")
           {
             vm.imported_file_type = "csv";
             vm.ready_to_visualize = true;
@@ -425,7 +435,6 @@ var app = new Vue({
                 var csv_string = (e.target.result);
                 var rows = vm.parseCSV(csv_string);
                 vm.imported_data = rows;
-                console.debug(vm.imported_data);
                 vm.ready_to_visualize = true;
               };
             })(file);
@@ -440,7 +449,6 @@ var app = new Vue({
         },
         parseCSV: function(csv_string)
         {
-            // csv_string = decodeURI(csv_string);
             var rowstrings = csv_string.split("\r\n");
             var rows = [];
             var header_row = rowstrings[0].split(",");
@@ -595,7 +603,6 @@ var app = new Vue({
             this.tutorial.show = false;
             document.cookie="HideHoaxyTutorial=true;max-age=31536000";
         },
-
 
         hoverTooltip: function(e){
             var element = e.target;
@@ -1325,6 +1332,7 @@ var app = new Vue({
                 if(!dont_reset)
                 {
                   v.graph.resetBotscores();
+                  v.graph.setLang(v.lang);
                   v.graph.getBotCacheScores();
                 }
                 
@@ -1388,6 +1396,7 @@ var app = new Vue({
                 if(!dont_reset)
                 {
                   v.graph.resetBotscores();
+                  v.graph.setLang(v.lang);
                   v.graph.getBotCacheScores();
                 }
                 v.spinStop("generateNetwork");
@@ -1404,7 +1413,7 @@ var app = new Vue({
             var response = undefined;
             // Ensuring that the search encoding follows Twitter search standards: https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
             // Query string is already being URI encoded so we don't explicitly encode it
-            var query_string = query;
+            var query_string = decodeURIComponent(query);
             // Will later be used for pagination
             var max_id = "";
 
@@ -1426,7 +1435,7 @@ var app = new Vue({
                   query_string = "";
                 }
                 v.buildTwitterEdgesTimeline(response.statuses);
-                console.debug(v.twitterUserSet.size, query_limit);
+                // console.debug(v.twitterUserSet.size, query_limit);
                 // Check if pagination must continue, if the number of nodes on the graph exceeds 1000 we don't send additional requests
                 if (v.twitterUserSet.size < 1000 && query_string != "" && query_limit > 0) {
                   // Continue pagination
@@ -1504,7 +1513,7 @@ var app = new Vue({
                     // v.show_articles = true;
                     if(!dontScroll)
                     {
-                        v.scrollToElement("articles");
+                        // v.scrollToElement("articles");
                     }
 
                     // if(debug)
@@ -1636,7 +1645,7 @@ var app = new Vue({
                         v.updateGraph();
                         v.graph.score_stats.reset();
                         v.graph.resetBotscores();
-                
+                        v.graph.setLang(v.lang);
                         v.graph.getBotCacheScores();
                         // v.timeline.redraw();
                         //Check if the animation should be disabled or not
@@ -1797,7 +1806,7 @@ var app = new Vue({
             }
         },
         getSingleBotScore: function(user_id){
-            console.debug(user_id);
+            //console.debug(user_id);
             var v = this;
             this.getting_bot_scores.running = true;
             var success = new Promise(function(resolve, reject){
@@ -1831,7 +1840,15 @@ var app = new Vue({
                   v.getting_bot_scores.running = false;
 
                   try {
-                      var score = response.data.scores.english;
+                      var score = 0;
+                      if(response.data.user.lang == 'en' || response.data.user.lang == 'en-gb')
+                      {
+                        score = response.data.scores.english;
+                      }
+                      else
+                      {
+                        score = response.data.scores.universal;
+                      }
                       v.node_modal_content.botscore = Math.floor(score * 100);
                       v.node_modal_content.botcolor = v.graph.getNodeColor(score);
                       v.node_modal_content.timestamp = new Date();
@@ -1915,7 +1932,6 @@ var app = new Vue({
           dataStr += JSON.stringify(dataArray);
           // "canonical_url,date_published,domain,from_user_botscore,from_user_id,from_user_screen_name,id,is_mention,original_query,pub_date,site_domain,site_type,title,to_user_botscore,to_user_id,to_user_screen_name,tweet_created_at,tweet_id,tweet_type,tweet_url,url_id,url_raw,\r\n" +
 
-          
           return dataStr;
         },
         downloadJSON: function(dataStr)
@@ -1953,7 +1969,8 @@ var app = new Vue({
           var csv = Papa.unparse(json, this.papa_unparse_config);
 
           // Preparing csv file for download
-          csv =  "data:text/csv;charset=iso-639," + csv;
+          csv = "data:text/csv;charset=iso-639," + csv;
+          csv = encodeURI(csv);
           var CSVLink = document.createElement("a");
           CSVLink.setAttribute("href", csv);
           CSVLink.setAttribute("download", downloadStr);
@@ -1961,19 +1978,6 @@ var app = new Vue({
           
           // File will be downloaded now
           CSVLink.click();
-        },
-        createAsJSON: function()
-        {
-          if (this.hoaxyEdges.length > 0) 
-          {
-            // Creating Hoaxy JSON
-            this.buildJSONContent(this.hoaxyEdges);
-          }
-          else if (this.twitterEdges.length > 0) 
-          {
-            // Creating Twitter JSON
-            this.buildJSONContent(this.twitterEdges);
-          }
         },
         submitForm: function(dontScroll){
           // Resets any results from any previous queries
@@ -2178,11 +2182,17 @@ var app = new Vue({
           this.$refs.searchBox.focus();
         },
         "show_graphs": function(){
-
         },
         "graphAnimation.current_timestamp": function(){
           this.timeline.updateTimestamp();
         },
+        "searchBy": function()
+        {
+          if(this.searchBy == "Hoaxy")
+          {
+            this.lang = defaultHoaxyLang;
+          }
+        }
     },
 
 
@@ -2207,11 +2217,6 @@ var app = new Vue({
         //if there is posted imported data, it should be in an element called "post_data"
         //Can choose to not use JSON.parse to read the string (already comma-sep) to have it POSTed like that
         //this.imported_data = /*JSON.parse(*/document.getElementById("post_data").innerHTML/*)*/;
-
-        this.imported_data = Papa.parse(document.getElementById("post_data").innerHTML);
-        //console.debug(this.imported_data);
-
-        //#TODO - Parse imported (JSON) data
 
         //VISUALIZE
 
@@ -2340,8 +2345,6 @@ var app = new Vue({
         // this.displayError("Test Error");
 
         this.spinStop("initialLoad");
-        // console.debug("Vue Mounted.");
-
         // this.spinStart();
 
         // console.debug(this.query_text);
