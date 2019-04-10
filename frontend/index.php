@@ -53,12 +53,14 @@
 								<select class="form-control" style="width: auto" v-if="twitterSearchSelected" v-model="lang">
 									<option value="ar">Arabic (العربية)</option>
 									<option value="bn">Bengali (বাংলা)</option>
+									<option value="bg">Bulgarian (български език)</option>
 									<option value="en">English</option>
 									<option value="fr">French (français)</option>
 									<option value="de">German (Deutsch)</option>
 									<option value="hi">Hindi (हिन्दी)</option>
 									<option value="it">Italian (Italiano)</option>
 									<option value="ja">Japanese (日本語)</option>
+									<!--<option value="mkd">Macedonian (македонски јазик)</option>-->
 									<option value="ms">Malay (بهاس ملايو‎)</option>
 									<option value="pt">Portuguese (Português)</option>
 									<option value="ru">Russian (русский)</option>

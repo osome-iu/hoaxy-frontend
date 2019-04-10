@@ -2,6 +2,8 @@ var max_articles = 20;
 
 var defaultProfileImage = "static/assets/Twitter_logo_blue_32-cropped.png";
 
+var defaultHoaxyLang = "en";
+
 var papa_parse_config =
 {
 	delimiter: "",	// "" = auto-detect
@@ -242,7 +244,7 @@ var app = new Vue({
         hoaxySearchSelected: true,
         twitterSearchSelected: false,
 
-        lang: 'en',
+        lang: defaultHoaxyLang,
 
         // Edge lists
         twitterEdges: [],
@@ -1390,6 +1392,7 @@ var app = new Vue({
                 if(!dont_reset)
                 {
                   v.graph.resetBotscores();
+                  v.graph.setLang(v.lang);
                   v.graph.getBotCacheScores();
                 }
                 
@@ -1453,6 +1456,7 @@ var app = new Vue({
                 if(!dont_reset)
                 {
                   v.graph.resetBotscores();
+                  v.graph.setLang(v.lang);
                   v.graph.getBotCacheScores();
                 }
                 v.spinStop("generateNetwork");
@@ -1706,7 +1710,7 @@ var app = new Vue({
                         v.updateGraph();
                         v.graph.score_stats.reset();
                         v.graph.resetBotscores();
-                
+                        v.graph.setLang(v.lang);
                         v.graph.getBotCacheScores();
                         // v.timeline.redraw();
                         //Check if the animation should be disabled or not
@@ -2246,11 +2250,17 @@ var app = new Vue({
           this.$refs.searchBox.focus();
         },
         "show_graphs": function(){
-
         },
         "graphAnimation.current_timestamp": function(){
           this.timeline.updateTimestamp();
         },
+        "searchBy": function()
+        {
+          if(this.searchBy == "Hoaxy")
+          {
+            this.lang = defaultHoaxyLang;
+          }
+        }
     },
 
 
