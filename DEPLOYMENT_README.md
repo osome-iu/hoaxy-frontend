@@ -14,7 +14,7 @@ Changes specific to the live Branded Hoaxy Website at <http://hoaxy.iuni.iu.edu>
 
 1) Log into `carl` using the truthy user.
 2) cd to the repository: `cd /u/truthy/code/hoaxy-frontend`
-3) Confirm that you are on the development branch: `git branch` should display a list of branches and `development` should have a  `*` next to it as follows:
+3) Confirm that you are on the development branch: `git branch` should display a list of branches and `deployment` should have a  `*` next to it as follows:
 
         [truthy@carl hoaxy-frontend]$ git branch
         * deployment
