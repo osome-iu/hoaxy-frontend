@@ -54,6 +54,7 @@
 									<option value="ar">Arabic (العربية)</option>
 									<option value="bn">Bengali (বাংলা)</option>
 									<option value="bg">Bulgarian (български език)</option>
+									<option value="zh">Chinese (中文, 汉语, 漢語)</option>
 									<option value="en">English</option>
 									<option value="fr">French (français)</option>
 									<option value="de">German (Deutsch)</option>
