@@ -443,6 +443,8 @@
 										target="_blank">Clayton Davis</a>,
 									<a href="http://www.kaichengyang.me/"
 										target="_blank">Kaicheng Yang</a>,
+									<a href="http://iuni.iu.edu/about/people/person/chathuri-peli-kankanamalage"
+										target="_blank">Chathuri Peli Kankanamalage</a>,
 									and
 									<a href="http://iuni.iu.edu/people/person/marc_mccarty"
 										target="_blank">Marc McCarty</a>.
