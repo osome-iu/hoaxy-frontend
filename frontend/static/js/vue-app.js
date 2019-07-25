@@ -104,7 +104,8 @@ var colors = {
 
 var app = new Vue({
     el: '#vue-app',
-    data: {
+    data: function() {
+      return {
         //  ######
         //  #     #   ##   #####   ##
         //  #     #  #  #    #    #  #
@@ -297,7 +298,7 @@ var app = new Vue({
         menu_open: false,
 
         nodes_filtered_by_score: false
-
+      };
     },
     computed: {
         all_selected: function(){
@@ -1908,7 +1909,7 @@ var app = new Vue({
 
                   try {
                       var score = 0;
-                      if(response.data.user.lang == 'en' || response.data.user.lang == 'en-gb')
+                      if(v.lang == 'en' || v.lang == 'en-gb')
                       {
                         score = response.data.scores.english;
                       }
