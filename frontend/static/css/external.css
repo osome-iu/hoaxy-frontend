@@ -18,11 +18,11 @@
 }
 .images-nots
 {
-    background-image: url(/static/5nots.png);
+    background-image: url(../5nots.png);
 }
 .images-bots
 {
-    background-image: url(/static/5bots.png);
+    background-image: url(../5bots.png);
 }
 
 
@@ -33,7 +33,7 @@
     right: 0;
     top: 0;
     bottom: 0;
-    z-index: 10000;
+    z-index: 25000;
     background: rgba( 0,0,0,.7);
 }
 #tutorial-carousel
@@ -302,7 +302,7 @@ li
     width: 150px;
     margin-left: -75px;
     margin-top: -75px;
-    vertical-align: middle;
+    /* vertical-align: middle; */
     text-align: center;
 
     /*font-size: 6rem;*/
@@ -314,6 +314,20 @@ li
     /*line-height: 10rem;
     margin-top: -3rem;
     margin-left: -3rem;*/
+}
+.outline
+{
+    text-shadow:
+        1px 1px 1px rgba(255, 255, 255, 1),
+        1px -1px 1px rgba(255, 255, 255, 1),
+        -1px -1px 1px rgba(255, 255, 255, 1),
+        -1px 1px 1px rgba(255, 255, 255, 1),
+        0px 1px 1px rgba(255, 255, 255, 1),
+        0px -1px 1px rgba(255, 255, 255, 1),
+        -1px 0px 1px rgba(255, 255, 255, 1),
+        -1px 0px 1px rgba(255, 255, 255, 1)
+    ;
+
 }
 #spinner > div
 {
@@ -401,6 +415,11 @@ li
   max-width: 850px;
 }
 
+.nowrap
+{
+    white-space: nowrap;
+}
+
 .modal-show
 {
     display: block;
@@ -434,8 +453,10 @@ li
     position: absolute;
     top: 3rem;
     bottom: 3rem;
+    /*
     left: 3rem;
     right: 3rem;
+    */
     overflow: auto;
 }
 .modal-content h2

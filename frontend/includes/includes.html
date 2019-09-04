@@ -3,10 +3,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- VueJS -->
-<script src="./static/js/vue@2.4.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
+<script src="https://unpkg.com/vuex@3.1.0/dist/vuex.min.js"></script>
+
 
 <!-- MomentJS for formatting dates-->
-<script src="./static/js/moment@2.18.1.js"></script>
+<script src="./static/js/moment.min.js"></script>
 
 <!-- Javascript Promise Polyfill for IE -->
 <script src="./static/js/es6-promise.min.js"></script>
@@ -17,19 +19,35 @@
 
 <!-- For Twitter Authentication -->
 <script src="./static/js/oauth.min.js"></script>
-<script src="./static/js/twitter.js"></script>
+<!--
+<script src="./static/js/twitter.js"></script>-->
+<script src="./static/js/twitter.min.js"></script>
+
+<!-- Bootstrap -->
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
 <!-- FontAwesome -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" crossorigin="anonymous">
+<!--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+-->
 
-<!-- Bootstrap -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+<!-- Bootstrap Vue -->
+<link
+  type="text/css"
+  rel="stylesheet"
+  href="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.css"
+/>
+
+<script src="//unpkg.com/@babel/polyfill@latest/dist/polyfill.min.js"></script>
+<script src="//unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.min.js"></script>
 
 <!-- sigma.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sigma.js/1.2.0/sigma.min.js"></script>
 <script src="./static/sigmaplugins/sigma.layout.forceAtlas2.min.js"></script>
 <script src="./static/sigmaplugins/sigma.renderers.parallelEdges.min.js"></script>
-<script src="./static/sigmaplugins/sigma.renderers.snaphot.js"></script>
+<script src="./static/sigmaplugins/sigma.renderers.snapshot.min.js"></script>
+
+
 
 <!-- D3 -->
 <script src="./static/js/d3.v3.min.js"></script>
@@ -37,9 +55,15 @@
 <link rel="stylesheet" href="./static/css/nv.d3.css" />
 
 <!-- Hoaxy -->
+<!-- Remove '.min' to develop/debug and then
+     Minify with https://javascript-minifier.com/
+     And add '.min' back in
+    -->
 
 <script src="config.js"></script>
 <link href="static/css/external.css" rel="stylesheet">
+<!-- <link href="static/css/hoaxy_styles.css" rel="stylesheet"> -->
+
 <script type="text/javascript" src="./static/js/graph.js"></script>
 <script type="text/javascript" src="./static/js/timeline.js"></script>
 <script type="text/javascript" src="./static/js/twitter_search_timeline.js"></script>
