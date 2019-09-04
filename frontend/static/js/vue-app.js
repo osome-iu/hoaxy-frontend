@@ -104,7 +104,8 @@ var colors = {
 
 var app = new Vue({
     el: '#vue-app',
-    data: {
+    data: function() {
+      return {
         //  ######
         //  #     #   ##   #####   ##
         //  #     #  #  #    #    #  #
@@ -179,6 +180,9 @@ var app = new Vue({
         show_authenticate_modal: false,
         show_edge_modal: false,
         show_node_modal: false,
+        show_tutorial_link: true,
+        show_tutorial_modal: false,
+
         modal_opacity: false,
         edge_modal_content: {
             edge: {},
@@ -233,6 +237,8 @@ var app = new Vue({
                 "Organization":"organization"
             }
         },
+
+        source_dropdown_open: false,
         colors: colors,
         searchBy: 'Hoaxy',
         searchedBy: '',
@@ -290,12 +296,16 @@ var app = new Vue({
             show: false,
             // hiddenByCookie: false
         },
+        menu_open: false,
 
         nodes_filtered_by_score: false
-
+      };
     },
     computed: {
-        botscoreCount: function() {
+      all_selected: function(){
+        return this.checked_articles.length === 20;
+    },
+    botscoreCount: function() {
             return function(min, max) {
                 var scores = Object.values(this.graph.botscores());
                 var filtered_scores = scores.filter(function(val){
@@ -389,6 +399,42 @@ var app = new Vue({
 // ##     ## ##          ##    ##     ## ##     ## ##     ## ##    ## 
 // ##     ## ########    ##    ##     ##  #######  ########   ######  
     methods: {
+        logIn: function()
+        {
+          var v = this;
+          var p = this.twitterLogIn();
+          p.then(function(response)
+          {
+            v.twitter_account_info = userData;
+            v.profile.image = userData.profile_image_url_https;
+            v.profile.name = "@" + userData.screen_name;
+          })
+        },
+        logOut: function()
+        {
+          var v = this;
+          var p = this.twitterLogOut();
+
+          p.then(function(response)
+          {
+            v.profile.name = "";
+            // delete this.me;
+            v.profile.image = defaultProfileImage;
+          })
+        },
+        checkPOSTData()
+        {
+          /*
+          this.imported_data = JSON.parse(document.getElementById("post_data").innerHTML);
+          console.debug(this.imported_data);
+
+          //VISUALIZE
+          if (this.imported_data)
+          {
+            visualizeImportedData();
+          }*/
+        },
+
         fileUploadHandler: function(evt)
         {
           // Start with Visualize button disabled.
@@ -576,6 +622,23 @@ var app = new Vue({
           }, 250);
         },
 
+        selectTop20: function(){
+            var articles = this.getSubsetOfArticles();
+            var is_checked = this.all_selected;
+
+            this.checked_articles = [];
+            if(!is_checked)
+            {
+                for(var i = 0; i < 20; i+=1)
+                {
+                    if(i >= articles.length)
+                    {
+                        break;
+                    }
+                    this.checked_articles.push(articles[i].url_id);
+                }
+            }
+        },
 
 
         tutorialNextSlide: function(){
@@ -1412,7 +1475,7 @@ var app = new Vue({
             var v = this;
             var response = undefined;
             // Ensuring that the search encoding follows Twitter search standards: https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
-            // Query string is already being URI encoded so we don't explicitly encode it
+            // Query string is already being URI encoded but the getTweets function re-encodes it, so we need to unencode it first so it's not double encoded
             var query_string = decodeURIComponent(query);
             // Will later be used for pagination
             var max_id = "";
@@ -1784,6 +1847,8 @@ var app = new Vue({
             me.then(
                 function(response){
                     v.twitter_account_info = response;
+                    v.profile.image = response.profile_image_url_https;
+                    v.profile.name = "@" + response.screen_name;
                 },
                 function(error){
                     v.twitter_account_info = {};
@@ -1841,7 +1906,7 @@ var app = new Vue({
 
                   try {
                       var score = 0;
-                      if(response.data.user.lang == 'en' || response.data.user.lang == 'en-gb')
+                      if(v.lang == 'en' || v.lang == 'en-gb')
                       {
                         score = response.data.scores.english;
                       }
@@ -1870,6 +1935,10 @@ var app = new Vue({
         twitterLogOut: function(){
             var p = this.twitter.logOut();
             this.twitter_account_info = {};
+            this.profile.name = "";
+            // delete this.me;
+            this.profile.image = defaultProfileImage;
+            return p;
         },
         buildJSONContent: function()
         {
@@ -2077,12 +2146,6 @@ var app = new Vue({
             this.show_full_articles_list = false;
             this.$nextTick(function(){
                 this.scrollToElement("article_list");
-                if(this.checked_articles.length > 20)
-                {
-                    this.displayError("You can visualize a maximum of 20 articles.");
-                    this.spinStop(true);
-                    return false;
-                }
                 if(this.checked_articles.length <= 0)
                 {
                     this.displayError("Select at least one article to visualize.");
@@ -2108,6 +2171,9 @@ var app = new Vue({
         },
         toggleErrorModal: function(force){
             this.toggleModal('error', force);
+        },
+        toggleTutorialModal: function(force){
+            this.toggleModal('tutorial', force);
         },
         toggleModal: function(modal, force)
         {
@@ -2208,6 +2274,21 @@ var app = new Vue({
       this.getPopularArticles();
       // Retrieving top trending articles to show them in the dashboard
       this.getTopUsaArticles();
+      
+      try
+      {
+        this.imported_data = JSON.parse(document.getElementById("post_data").innerHTML);
+        this.imported_data = JSON.parse(this.imported_data);
+      }
+      catch(e)
+      {
+        console.warn(e);
+        if(this.imported_data != "")
+        {
+          // location.href = 'https://hoaxy.iuni.iu.edu/';
+        }
+      }
+
     },
     mounted: function(){
         this.mounted = true;
@@ -2219,6 +2300,10 @@ var app = new Vue({
         //this.imported_data = /*JSON.parse(*/document.getElementById("post_data").innerHTML/*)*/;
 
         //VISUALIZE
+        if (this.imported_data != "")
+        {
+          this.visualizeImportedData();
+        }
 
         //create hourglass loading spinner
         var v = this;
