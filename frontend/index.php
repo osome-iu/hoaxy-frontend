@@ -578,53 +578,29 @@
 										</div>
 										<div class="align-items-center text-center" v-show="copiedWidgetText">Copied text to clipboard</div>
 										<div class="align-items-center text-center mt-1">
-												<button type="button" class="btn btn-secondary" @click="copyWidgetCodeToClipboard">Copy to Clipboard</button>
-												<button type="button" class="btn btn-secondary" @click="resetWidgetContent();">Close</button>
+												<button type="button" class="btn btn-secondary" @click.stop="copyWidgetCodeToClipboard()">Copy to Clipboard</button>
+												<button type="button" class="btn btn-secondary" @click.stop="resetWidgetContent();">Close</button>
 										</div>
 										<div class="mt-2">
 											<div class="pl-1">
 												What you will see
 											</div>
-
-											<!-- <div style="box-sizing:border-box;color:black;background-color:white;border:solid;border-width:thin;border-color:gray;border-radius:10px;width:625px;height:250px;"><div style="float:left;width:250px;height:250px;display:inline-block;margin-right:0px;"><div style="box-sizing:inherit;text-align:center;vertical-align:middle;color:blue;font-size:35px;font-weight:bold;height:120px;padding-top:30px;padding-bottom:30px">HOAXY</div><div style="overflow:hidden;word-break:break-word;box-sizing:inherit;padding:5px;font-size:16px">Use Hoaxy to see how this spreads online: <a href="" target="_blank">{{ this.shortenArticleText(this.searched_query_text, 70) }}</a></div></div><div style="margin-left:0px;float:left;width:370px;height:250px;display:inline-block;border-left:1px solid;border-color:#D3D3D3;"><img style="box-sizing:inherit;width:370px;height:240px;padding-top:5px;padding-right:5px;" v-bind:src="this.widgetScreenshotDataUrl"></img></div></div> -->
-<!-- <div class="hoaxy-widget">
-	<div class="hoaxy-widget-leftdiv">
-		<div class="hoaxy-widget-leftdiv-toplogo">
-			<img src="static/widget_images/HoaxyLogo.png">
-		</div>
-		<div class="hoaxy-widget-leftdiv-bottominfo">
-			Use Hoaxy to see how this spreads online:
-			<a href="" target="_blank">{{ this.shortenArticleText(this.searched_query_text, 100) }}</a>
-		</div>
-	</div>
-	<div class="hoaxy-widget-rightdiv">
-		<img class="hoaxy-widget-rightdiv-imgvis" v-bind:src="this.widgetScreenshotDataUrl">
-	</div>
-</div> -->
 											<div v-html="embeddedWidgetCode"></div>
-
 										</div>
 									</div>
 							</div>
 					</div>
 			</div>
-
         <div id="infoModal"
 			:class="{'modal-show': info_text!==''}"
 			@click.stop="info_text=''"
 			class="modal " tabindex="-1"
 			role="dialog"
 			aria-labelledby="infoModalLabel"
-			style="opacity: 1"
+			style="opacity: 1;"
 			aria-labelledby="nodeModalLabel">
             <div class="modal-dialog" role="document">
                 <div @click.stop="" class="alert m-5 alert-info">
-                    <!-- <div class="modal-header">
-                        <h4 class="modal-title text-center" id="infoModalLabel" >
-							An Error Occurred
-                        </h4>
-						<button type="button" class="close float-right"  @click="toggleErrorModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div> -->
                     <div class="modal-body" id="infoModalBody" >
 						<div class="d-flex align-items-center">
 							<i class="float-left mr-4 fa fa-3x fa-question-circle" aria-hidden="true"></i>
@@ -637,8 +613,47 @@
                 </div>
             </div>
         </div>
-
-
+        <div id="tutorialModal" :class="{'modal-show': show_tutorial_modal}" @click.stop="toggleTutorialModal()" class="modal" tabindex="-1"
+		role="dialog" aria-labelledby="tutorialModalLabel" :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
+            <div class="modal-dialog" role="document">
+                <div @click.stop="" class="alert m-5 alert-info">
+                    <div class="modal-border-bottom">
+                        <h4 class="modal-title text-center" id="tutorialModalLabel">Tutorial</h4>
+						<button type="button" class="close float-right"  @click="toggleTutorialModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body text-center" id="tutorial_modalBody">
+                    </div>
+                    <div class="modal-border-top">
+                        <button type="button" class="btn btn-secondary" @click="toggleTutorialModal()">Close</button>
+                    </div>
+                </div>
+            </div>
+		</div>
+        <div id="authenticateModal" :class="{'modal-show': show_authenticate_modal}" @click.stop="toggleModal('authenticate')" class="modal " tabindex="-1" role="dialog" aria-labelledby="authenticateModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
+            <div class="modal-dialog" role="document">
+                <div @click.stop="" class="alert m-5 alert-info">
+                    <div class="modal-header">
+                        <h4 class="modal-title text-center" id="authenticateModalLabel" >
+							Twitter Error
+                        </h4>
+						<button type="button" class="close float-right"  @click="toggleModal('authenticate')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body" id="authenticateModalBody" >
+						<div class="">
+							<p>
+								There was an issue contacting Twitter.  Please try again by clicking the button below and re-authenticate with Twitter if necessary.
+							</p>
+							<p>
+								<button class="btn btn-success btn-lg" @click="submitForm(true); toggleModal('authenticate')">Retry Query</button>
+							</p>
+						</div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @click="toggleModal('authenticate')">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div id="errorModal" :class="{'modal-show': show_error_modal}" @click.stop="toggleErrorModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
             <div class="modal-dialog" role="document">
@@ -661,37 +676,6 @@
                 </div>
             </div>
 		</div>
-		
-		
-
-        <div id="authenticateModal" :class="{'modal-show': show_authenticate_modal}" @click.stop="toggleModal('authenticate')" class="modal " tabindex="-1" role="dialog" aria-labelledby="authenticateModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
-            <div class="modal-dialog" role="document">
-                <div @click.stop="" class="alert m-5 alert-info">
-                    <div class="modal-header">
-                        <h4 class="modal-title text-center" id="authenticateModalLabel" >
-							Twitter Error
-                        </h4>
-						<button type="button" class="close float-right"  @click="toggleModal('authenticate')" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body" id="authenticateModalBody" >
-						<div class="">
-							<!-- <i class="float-left m-2 fa fa-3x fa-exclamation-triangle" aria-hidden="true"></i> -->
-							<p>
-								There was an issue contacting Twitter.  Please try again by clicking the button below and re-authenticate with Twitter if necessary.
-							</p>
-							<p>
-								<button class="btn btn-success btn-lg" @click="submitForm(true); toggleModal('authenticate')">Retry Query</button>
-							</p>
-						</div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="toggleModal('authenticate')">Close</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
 		<div id="edgeModal" :class="{'modal-show': show_edge_modal}" @click.stop="toggleEdgeModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="edgeModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog" role="document">
 				<div @click.stop="" class="modal-content">
@@ -699,19 +683,14 @@
 						<button type="button" class="close"  @click="toggleEdgeModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
 						<h4 class="modal-title text-center" id="edgeModalLabel" >
 							<a target="_blank" :href="'https://twitter.com/intent/user?user_id='+ edge_modal_content.edge.source">@{{edge_modal_content.edge.source_screenName}}</a>
-
 							{{ edge_modal_content.label_string }}
-
 							<a target="_blank" :href="'https://twitter.com/intent/user?user_id='+ edge_modal_content.edge.target">@{{edge_modal_content.edge.target_screenName}}</a>
-
 						</h4>
 					</div>
 					<div class="modal-body" id="edgeModalBody" >
 						<template v-for="(id, index) in edge_modal_content.edge.outgoing_ids">
 							{{edge_modal_content.edge.titles[index]}}
-
 							<div class="modal_links">See <a target="_blank" :href="edge_modal_content.tweet_urls[id]">tweet</a><template v-if="searchedBy == 'Hoaxy'">  or  <a target="_blank" :href="edge_modal_content.edge.url_raws[index]">article</a></template></div>
-
 						</template>
 					</div>
 					<div class="modal-footer">
@@ -720,7 +699,6 @@
 				</div>
 			</div>
 		</div>
-
 		<div id="nodeModal"  :class="{'modal-show': show_node_modal}" @click.stop="toggleNodeModal()" class="modal "  tabindex="-1" role="dialog" :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog"  role="document">
 				<div class="modal-content" @click.stop="">
@@ -732,7 +710,6 @@
 					</div>
 					<div class="modal-body" >
 						<div>
-							<!-- <h5>Botometer Score (<a v-on:click.prevent="checkAccountDetails(node_modal_content.user_id, node_modal_content.screenName)" href="#" target="_blank">details</a>): <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5> -->
 							<h5>Botometer Score: <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
 								<div class="text-center" v-if="node_modal_content.botscore > 0">
 									<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'black':'black' }">
@@ -745,11 +722,8 @@
 										</div>
 									</div>
                 </div>
-
-
 								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this account's timeline is set to private or has been deleted entirely.</span>
 								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
-
 								<div class="alert bg-warning" v-if="twitterRateLimitReachedObj.isReached">Warning: New scores cannot be retrieved. Twitter rate limit reached, try again in 15 minutes.</div>
 								<div class="alert bg-warning"
 										 v-if="node_modal_content.showStaleContent && !getting_bot_scores.running && node_modal_content.staleAcctInfo.isStale">
@@ -777,15 +751,12 @@
 										 v-else-if="node_modal_content.staleAcctInfo.isStale && node_modal_content.showStaleContent && !getting_bot_scores.running">
 										 We estimate a {{ node_modal_content.completeAutomationProbability }}% probability that this account is completely automated. Click <a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">here</a> for more details from Botometer.
 								</div>
-
 							<p class="my-2" v-if="">
 								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.user_id)" class="btn btn-primary" id="">Update</button>
 								<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
 								<button v-if="node_modal_content.botscore > 0" class="btn btn-primary" @click="feedback_form.display = !feedback_form.display" >Feedback</button>
 							</p>
-
 							<div v-if="node_modal_content.botscore > 0">
-
 								<form class="form" v-if="feedback_form.display" @submit.prevent="submitFeedbackForm">
 									<br />
 									<div class="form-group">
@@ -812,8 +783,6 @@
 									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
-
-
 						<h2>was quoted by: <span v-if="node_modal_content.is_quoted_by_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.is_quoted_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
@@ -854,7 +823,6 @@
 									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
-
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" @click.stop="toggleNodeModal()">Close</button>
