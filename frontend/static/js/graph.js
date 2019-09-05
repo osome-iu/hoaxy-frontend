@@ -528,7 +528,7 @@ function HoaxyGraph(options)
 	{
 		var sn = user_object.user.screen_name;
 		var id = user_object.user.id_str;
-		console.debug(user_object);
+		//console.debug(user_object);
 		var botscore = axios({
 			method: 'post',
 			url: configuration.botometer_url,
@@ -542,7 +542,11 @@ function HoaxyGraph(options)
 			var newId = response.data.user.id_str;
 			var newScore = 0;
 			if(lang == 'en' || lang == 'en-gb')
+<<<<<<< HEAD
 			{	
+=======
+						{	
+>>>>>>> update-master
 				newScore = response.data.scores.english;
 			}
 			else
