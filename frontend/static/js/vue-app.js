@@ -2285,7 +2285,7 @@ var app = new Vue({
       }
       catch(e)
       {
-        console.warn(e);
+        console.warn("Error with data import. Don't panic.", e);
         if(this.imported_data != "")
         {
           // location.href = 'https://hoaxy.iuni.iu.edu/';
