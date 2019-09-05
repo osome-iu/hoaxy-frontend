@@ -541,12 +541,13 @@ function HoaxyGraph(options)
 			// Storing the consistent account info for this given bot score retrieval
 			var newId = response.data.user.id_str;
 			var newScore = 0;
-			if(response.data.user.lang == 'en' || response.data.user.lang == 'en-gb')
-			{	
+			if(lang == 'en' || lang == 'en-gb')
+						{	
 				newScore = response.data.scores.english;
 			}
 			else
 			{
+				console.log("hit universal: " + response.data.scores);
 				newScore = response.data.scores.universal;
 			}
 

@@ -1,29 +1,19 @@
 <?php
-
 	$post_data = '';
-
-	if(isset($_POST) && isset($_POST["data"]))
-	{
-		$post_data = ($_POST["data"]);
-	}
-
-
+	if(isset($_POST) && isset($_POST["data"])){$post_data = ($_POST["data"]);}
 ?>
-
-
-
 <!DOCTYPE html>
 <html>
-
 <head>
 	<title>Claim and Fact Checking Spreading Visualization</title>
 	<?php include("./includes/includes.html"); ?>
-</head>
 
+
+
+</head>
 <body>
-	<!-- Could remove json_encode to bring it in as just a string -->
-	<!--<div style="display: none" id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>-->
-	<div id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>
+
+<div id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>
 	<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
 		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
 			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
@@ -33,8 +23,6 @@
 				<div>{{spinner_notices.graph}}</div>
 			</div>
 		</div>
-
-
 		<?php include("./includes/header.html" ); ?>
 
 		<!--
@@ -55,25 +43,22 @@
 			<div class="container">
 				<form v-if="import_or_search == 'search'" @submit.stop.prevent="submitForm()">
 					<div class="col-12 text-center">
-
 					<div class="col-12 text-center d-md-flex align-items-center">
-						<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
                             <div class="pr-2 text-nowrap">Search by:</div>
                             <div class="">
                                 <div class="btn-group btn-group-toggle pr-2">
                                     <button id="searchByTwitter" data-toggle="tooltip" data-delay="0" title="search Twitter content from the past 7 days" type="button"
                                     class="btn btn-primary"
+									v-on:click="twitterSearch()"
 									@mouseOver="hoverTooltip"
 									@mouseOut="hideTooltip"
-									v-on:click="twitterSearch()"
-                                    v-bind:class="{ 'active': twitterSearchSelected}">Twitter</button>
-
+                                    v-bind:class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">Twitter</button>
                                     <button id="searchByHoaxy" data-toggle="tooltip" title="search articles from misinformation and fact-checking sources" type="button"
                                     class="btn btn-primary"
 									@mouseOver="hoverTooltip"
 									@mouseOut="hideTooltip"
                                     v-on:click="hoaxySearch()"
-                                    v-bind:class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
+                                    v-bind:class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">Hoaxy</button>
                                 </div>
                             </div>
                             <input id="query" class="form-control my-2 my-md-0" type="text" ref="searchBox" data-toggle="tooltip" v-bind:title="searchByDependencyTitle"
@@ -94,12 +79,15 @@
 									<select class="form-control" style="width: auto" v-if="twitterSearchSelected" v-model="lang">
 										<option value="ar">Arabic (العربية)</option>
 										<option value="bn">Bengali (বাংলা)</option>
+										<option value="bg">Bulgarian (български език)</option>
+										<option value="zh">Chinese (中文, 汉语, 漢語)</option>
 										<option value="en">English</option>
 										<option value="fr">French (français)</option>
 										<option value="de">German (Deutsch)</option>
 										<option value="hi">Hindi (हिन्दी)</option>
 										<option value="it">Italian (Italiano)</option>
 										<option value="ja">Japanese (日本語)</option>
+
 										<option value="ms">Malay (بهاس ملايو‎)</option>
 										<option value="pt">Portuguese (Português)</option>
 										<option value="ru">Russian (русский)</option>
@@ -142,20 +130,17 @@
 						
                         
 					</div>
-
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-						<button class="btn btn-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
+						<button class="btn btn-outline-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
 						<button class="btn btn-secondary ml-3 btn-sm" 
-							@click="import_or_search=(import_or_search=='import'?'search':'import')">Or Import Data</button>
+							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Import Data</button>
 					</div>
 					
 				</form>
-				
 				<div v-if="import_or_search == 'import'" class="">
-					<div class="col-12 text-center ">
+					<div class="col-12 text-center">
 						<div class="col-12 text-center d-md-flex align-items-center">
-							<!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
 							<div class="pr-2 text-nowrap">Visualize Existing Data:</div>
 							<input type="file" id="import_file" name="import_file" 
 								@change="fileUploadHandler" 
@@ -166,9 +151,9 @@
 					
 					<div class="col-12 text-center mt-3">
 							<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-							<button class="btn btn-primary btn-blue" @click="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
+							<button class="btn btn-primary btn-blue" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
 							<button class="btn btn-secondary ml-3 btn-sm" 
-							@click="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
+							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
 					</div>
 				</div>
 				
@@ -178,10 +163,8 @@
 				<div class="clearfix"></div>
 			</div>
 		</section>
-
-        <!-- TOP ARTICLES DASHBOARD -->
-
-        <section class="text-center mb-3">
+		<!-- TOP ARTICLES DASHBOARD -->
+		<section id="dashboard" class="text-center mb-3">
             <div class="col-md-3 d-inline-block align-top m-0 p-0">
                 <div class="table-responsive m-0 p-0">
                     <table class="table table-borderless m-0 p-0">
@@ -213,7 +196,6 @@
 															<span>{{ claim.shortened_source }} | {{ claim.shortened_headline }} <a :href="claim.canonical_url" target="_blank"><i @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to read the article in a new window" class="fa fa-external-link"></i></a></span>
 															<br>
 															<span class="tight-span my-0 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(claim.title,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article title, then click search">Search Title</a></span>
-															<!-- <span class="tight-span my-0 mx-2 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(claim.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article link, then click search">Search Link</a></span> -->
 														</td>
 												</tr>
                         <tr v-if="top_claim_articles.length == 0">
@@ -233,7 +215,6 @@
 															<span>{{ fact.shortened_source }} | {{ fact.shortened_headline }} <a :href="fact.canonical_url" target="_blank"><i @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to read the article in a new window" class="fa fa-external-link"></i></a></span>
 															<br>
 															<span class="tight-span my-0 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article title, then click search">Search Title</a></span>
-															<!-- <span class="tight-span my-0 mx-2 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(fact.canonical_url,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article link, then click search">Search Link</a></span> -->
                             </td>
                         </tr>
                         <tr v-if="top_fact_checking_articles.length == 0">
@@ -243,8 +224,6 @@
                 </div>
             </div>
         </section>
-
-
         <section id="secondary_form" v-if="show_graphs">
 
             <div class="container pt-5">
@@ -252,7 +231,6 @@
                     <input v-model="query_sort" type="hidden" name="sort_by" :disabled="input_disabled" />
                     <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true2" value="true"  :disabled="input_disabled" />
                     <div class="d-block d-md-flex justify-content-center align-items-center">
-                        <!-- <div id="searchByLabel" class="p-2 float-left text-secondary rounded-right">Search by:</div> -->
                         <div class="btn-group btn-group-toggle mr-md-2 mb-2 mb-md-0 d-md-flex justify-content-md-center d-inline-block">
                             <button id="searchByTwitter2"
 								type="button"
@@ -260,7 +238,7 @@
                                 title="select to search for chatter on twitter"
                                 class="btn btn-primary"
                                 @click.prevent.stop="twitterSearch()"
-                                :class="{ 'active': twitterSearchSelected}">Twitter</button>
+                                :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">Twitter</button>
 
                             <button id="searchByHoaxy2"
 								type="button"
@@ -268,7 +246,7 @@
                                 title="select to search for claims and fact-checks"
                                 class="btn btn-primary"
                                 @click.prevent.stop="hoaxySearch()"
-                                :class="{ 'active': hoaxySearchSelected}">Hoaxy</button>
+                                :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">Hoaxy</button>
                         </div>
                         <input class="form-control mr-md-2 mb-2 mb-md-0 "
                             type="text"
@@ -281,16 +259,9 @@
                             v-bind:placeholder="searchPlaceholder"
                             :disabled="input_disabled || show_full_articles_list == true" />
                         <button type="submit" v-if="!show_articles || !show_full_articles_list" class="btn btn-primary btn-blue" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
-
-
-
                         <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-secondary ml-md-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
                         <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-secondary ml-md-2" v-if="show_articles && show_full_articles_list">Cancel</button>
-
-
-
                     </div>
-
 <transition name="slide_in">
                     <div id="article_list_container" v-show="show_articles && show_full_articles_list">
                         <div class="card p-2">
@@ -317,7 +288,6 @@
 	                                                <i class="fa fa-square-o fw" aria-hidden="true"></i>
 	                                                <i class="fa fa-check-square-o fw" aria-hidden="true"></i>
 	                                            </div>
-
 	                                            <div class="col-sm-11 col-10">
 	                                                <span class="article_title"><a :href="article.url_raw" target="_blank">{{article.title}}</a></span>
 	                                                <span class=""><span class="article_domain">From <a :href="'http://' + article.site_domain" target="_blank">{{article.site_domain}}</a></span>
@@ -344,113 +314,10 @@
                         </div>
                     </div>
 </transition>
-
-
                 </form>
             </div>
-
-                <!-- <div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
-                    <span class="radio-container">
-                        <label class="">Show:
-                            <input v-model="query_sort" type="radio" name="sort_by" id='sort_by_relevant' checked value="relevant"  :disabled="input_disabled" /> Relevant
-                        </label>
-                    </span>
-                    <span class="radio-container">    value="relevant"   :disabled="input_disabled"
-                <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-                            <input v-model="query_sort" type="radio" name="sort_by" id="sort_by_recent" value="recent"  :disabled="input_disabled" /> Recent
-                        </label>
-                    </span>
-                </div>
-                <div v-else class="col-12 text-center form-group">
-                    <span class="radio-container">
-                        <label class="">Show:
-                            <input v-model="twitter_result_type" type="radio" name="result_type" id='search_by_recent' value="recent"  :disabled="input_disabled" /> Recent
-                        </label>
-                    </span>
-                    <span class="radio-container">
-                        <label class="">
-                            <input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_popular" value="popular"  :disabled="input_disabled" /> Popular
-                        </label>
-                    </span>
-                    <span class="radio-container">
-                        <label class="">
-                            <input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_mixed" checked value="mixed"  :disabled="input_disabled" /> Mixed
-                        </label>
-                    </span>
-                </div> -->
-
-                <!-- <div class="col-12 text-center">
-                    <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-                    <button class="btn btn-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
-                </div>
-                <div class="clearfix"></div> -->
-
     </section>
 
-
-        <!--
-            #
-           # #   #####  ##### #  ####  #      ######  ####
-          #   #  #    #   #   # #    # #      #      #
-         #     # #    #   #   # #      #      #####   ####
-         ####### #####    #   # #      #      #           #
-         #     # #   #    #   # #    # #      #      #    #
-         #     # #    #   #   #  ####  ###### ######  ####
-          -->
-    <!-- <section id="articles" v-bind:class="{'hidden': !show_articles}" class="container-fluid mb-0">
-		<div>
-			<div id="articles_bookmark" style="position: absolute; margin-left: -20rem; visibility: hidden; margin-top: -6rem">Visualize Bookmark</div>
-			<div class="container">
-				<div class=" col-3 text-center d-flex flex-column align-items-center float-right"  style="position: relative" id="articles_controls" :style=" {'margin-top': controls_margin_top }">
-					<button v-if="show_full_articles_list" :disabled="checked_articles.length <= 0 || checked_articles.length > 20"  @click.stop.prevent="visualizeSelectedArticles()" class="mb-1 btn btn-primary d-block" id="visualize_top">Visualize Selected Articles</button>
-					<button @click.stop.prevent="show_full_articles_list = true" v-if="!show_full_articles_list" class="btn btn-primary d-block" id="visualize_top">Show All {{getSubsetOfArticles().length}} Articles</button> -->
-					<!-- <button @click.stop.prevent="show_full_articles_list = false" v-if="show_full_articles_list" class="btn btn-primary d-block" id="visualize_top">Show Only Selected Articles</button> -->
-
-					<!-- <div v-if="show_full_articles_list" class="text-left mt-3">
-						Select up to 20 articles from the list on the left and click "Visualize Selected Articles" to generate a timeline and network graph based on your selection.
-					</div>
-				</div>
-
-				<div class="d-flex row">
-					<div class="col-12">
-						<ul class="list-unstyled d-block" id="article_list">
-							<li v-for="article, index in getSubsetOfArticles()" :class="article.site_type"
-							class="rounded d-block" v-if="checked_articles.indexOf(article.url_id) > -1 || show_full_articles_list ">
-							<label class="row p-3">
-								<input type="checkbox" :id="article.url_id" :value="article.url_id" v-model="checked_articles" />
-								<div class="check_icons col-1 text-center d-flex align-items-center">
-									<i class="fa fa-square-o fw" aria-hidden="true"></i>
-									<i class="fa fa-check-square-o fw" aria-hidden="true"></i>
-								</div>
-
-								<div class="col-11">
-									<span class="article_title"><a :href="article.url_raw" target="_blank">{{article.title}}</a></span>
-									<span class=""><span class="article_domain">From <a :href="'http://' + article.site_domain" target="_blank">{{article.site_domain}}</a></span>
-									<span class="article_date">on {{getDateline(article.date_published)}}</span></span>
-									<span class="article_stats"><span><b>{{article.number_of_tweets}}</b> Tweets</span></span>
-									<div class="clearfix"></div>
-								</div>
-							</label>
-						</li>
-					</ul>
-					<div class="" v-if="show_full_articles_list">
-						<div class="text-center">
-							<button @click.stop.prevent="visualizeSelectedArticles()" class="btn btn-primary btn-blue" id="visualize">Visualize</button>
-
-							<span class="text-center" id="load_more">
-								<button class="btn btn-warning" :disabled="articles_to_show >= articles.length" @click="loadMore()"> Load More Articles </button>
-								<div v-if="articles_to_show >= 100 && articles.length >= 100" class="text-muted">Your query has found too many matches for us to load. Please narrow down your query and try again to get more articles.</div>
-								<div v-if="articles_to_show >= articles.length && articles.length < 100" class="text-muted">We couldn't find any more articles for this query.</div>
-							</span>
-						</div>
-					</div>
-				</div>
-
-
-			</div>
-
-		</div>
-	</section> -->
 
 <!--
   #####
@@ -464,9 +331,6 @@
 
 
     <section id="graphs" v-bind:class="{'hidden': !show_graphs}" class="container-fluid row no-gutters pt-3">
-
-
-
         <div id="timeline"
             class="col-12 card"
             :style="graph_column_size <= 0 ? 'display: none' : ''"
@@ -477,7 +341,6 @@
             </div>
             <div id="focus_label" class="text-center small" v-if="!failed_to_get_network">Select and drag a time frame of interest below:</div>
         </div>
-
         <div class="col-md-1 col-12 text-center ">
             <div class="d-none d-md-block d-md-flex flex-md-column justify-content-center align-items-center">
 				<p class="m-0 text-center ">Layout</p>
@@ -518,7 +381,6 @@
 							data-size="large">
 							Tweet</a>
 					</span>
-
 					<span id="fb-button">
 							<span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
 									<a class="fb-xfbml-parse-ignore" target="_blank"
@@ -530,41 +392,31 @@
 				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" v-on:click="prepareAndShowWidgetCode()" data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip" :disabled="failed_to_get_network" title="add this visualization to your site">Embed</button>
 			</div>
 			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='downloadCSV(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a CSV file">Export - CSV</button>
+				<button class="btn btn-primary ml-1 mr-1 text-nowrap" style="z-index: 0; font-size: .75rem" type="button" @click='downloadCSV(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a CSV file">Export - CSV</button>
 			</div>
 			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" @click='downloadJSON(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a JSON file">Export - JSON</button>
+				<button class="btn btn-primary ml-1 mr-1 text-nowrap" style="z-index: 0; font-size: .75rem" type="button" @click='downloadJSON(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a JSON file">Export - JSON</button>
 			</div>
-			<!-- <div class="d-block p-2 mt-5 text-center d-md-flex flex-column justify-content-center align-items-center" v-if="searchBy == 'Hoaxy'">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" id="expandHoaxySearch" @click="scrollToElement('articles_bookmark')">Expand<br />Search</button>
-			</div> -->
 		</div>
-
         <div id="sigmagraph"
             class="col-12 card"
             :style="graph_column_size >= 12 ? 'display: none' : ''"
             :class="'col-md-' + (12-graph_column_size-1)">
-
             <p class="text-center">Diffusion Network</p>
             <div id="graph_error" class="p-5 d-flex flex-column justify-content-center" v-if="failed_to_get_network">
                 There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
             </div>
             <div id="graph-container" style="width: 100%; height: 80vh; margin: 0 auto;">
-
             </div>
 						<div>
 	            <div class="d-block p-2" v-if="show_zoom_buttons" id="graph_help_text">
 	                Click on network nodes and edges for details. Click on color scale to filter nodes by color.
 	            </div>
-
 						</div>
-
 	        <div class="d-flex-inline flex-column align-items-end " id="zoom_buttons" v-if="show_zoom_buttons">
-
 				<div class="rounded graph_legend">
 					<div class="bg-light bg-semi-transparent"></div>
 					<div class="d-flex p-2 flex-row justify-content-center ">
-
 		                <button class="btn btn-primary ml-1 mr-1" type="button" value ="-" id="zoom-out" v-if="show_zoom_buttons" @click="zoomOutGraph"><i class="fa fa-minus" aria-hidden="true"></i></button>
 		                <button class="btn btn-primary ml-1 mr-1" type="button" value ="+" id="zoom-in" v-if="show_zoom_buttons" @click="zoomInGraph"><i class="fa fa-plus" aria-hidden="true"></i></button>
 		            </div>
@@ -578,7 +430,6 @@
 								{{graph.score_stats.found - graph.score_stats.old}} {{graph.score_stats.found - graph.score_stats.old == 1?'is':'are'}} fresh.
 							</div>
 		                    <div v-if="graph.score_stats.unavailable > 0">{{graph.score_stats.unavailable}} could not be updated.</div>
-                            <!-- <div><small v-if="getting_bot_scores.running"></small></div> -->
                         </div>
                     </div>
                     <div class="mt-2 p-2 text-center">
@@ -590,7 +441,6 @@
                             <div class="p-1 text-left col-6">
 								<i class="float-right pr-2 info-button fa fa-question-circle" aria-hidden="true"></i>
                                 Accounts
-
                             </div>
                         </div>
                         <div class="row"  style="cursor: pointer" @click="info_text='The edges that connect the nodes represent tweets that connect accounts through retweets or mentions.  The direction of the arrow indicates the flow of information. The color of the edge indicates whether the tweet contains a link to a claim or a link to a fact-checking article'">
@@ -605,8 +455,6 @@
                         </div>
 										</div>
                 </div>
-				
-				<!-- @click="info_text='The color of a node indicates the twitter account\'s likelihood of being either a bot or a human.  Scores are calculated using Botometer\'s algorithms and information from a account\'s twitter timeline.  For more information, see the FAQ.'" -->
                 <div style="cursor: pointer"
 					v-if="show_zoom_buttons"
 					id="bot_legend"
@@ -616,9 +464,7 @@
 							<span class="d-flex justify-content-center">Bot</span>
 							<span class="d-flex justify-content-center">Like</span>
 						</div>
-						<div
-							class="rounded d-flex flex-column"
-							>
+						<div class="rounded d-flex flex-column" >
 								<div @click="filterNodesByScore(.8, 1.1)" 
 									class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '1.1 0.8'}"
@@ -657,19 +503,16 @@
 					</div>
 				</div>
 	        </div>
-    <!-- <button id="shrink_right_button"  :disabled="graph_column_size >= 12"  class="btn btn-primary" @click="shrinkGraph">&gt;</button> -->
     </div>
-
-
     </section>
-
 <transition name="fade">
-	<div id="tutorial" class="d-flex align-items-center justify-content-center" v-if="tutorial.show">
+	<div id="tutorial" class="d-flex align-items-center justify-content-center" style="display: none; position: relative;"
+	:style="tutorial.show?'display: block; position: fixed;':''"
+	v-if="tutorial.show">
 		<div id="tutorial-content" class="d-flex text-center align-items-center justify-content-center">
 			<div id="tutorial-carousel" class="carousel slide h-100 pt-5">
 			  <ol class="carousel-indicators">
-			    <li
-					v-for="number, index in [ 1, 2, 3, 4, 5]"
+			    <li v-for="number, index in [ 1, 2, 3, 4, 5]"
 					@click="tutorialGotoSlide(number)"
 					:class="{'active':tutorial.active_slide == number}"
 				></li>
@@ -688,16 +531,15 @@
 			  </div>
 			    </div>
 			  </div>
-
-			  <a v-if="tutorial.active_slide > 1" @click="tutorialPreviousSlide()" class="carousel-control-prev" role="button" >
+			  <a v-if="tutorial.active_slide > 1" @click="tutorialPreviousSlide()" class="carousel-control-prev" role="button">
 			    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
 			    <span class="sr-only">Previous</span>
 			  </a>
-			  <a v-if="tutorial.active_slide < 5" @click="tutorialNextSlide()" class="carousel-control-next" role="button" >
+			  <a v-if="tutorial.active_slide < 5" @click="tutorialNextSlide()" class="carousel-control-next" role="button">
 			    <span class="carousel-control-next-icon" aria-hidden="true"></span>
 			    <span class="sr-only">Next</span>
 			  </a>
-			  <a v-if="tutorial.active_slide == 5" @click="tutorialHide()" class="carousel-control-next" role="button" >
+			  <a v-if="tutorial.active_slide == 5" @click="tutorialHide()" class="carousel-control-next" role="button">
 			    <span class="carousel-control-next-icon" aria-hidden="true"></span>
 			    <span class="sr-only">Finish</span>
 			  </a>
@@ -706,7 +548,6 @@
 	</div>
 </transition>
 
-		<?php include("./includes/footer.html"); ?>
 
 
 		<!--
@@ -1034,7 +875,10 @@
 			</div>
 		</div>
 	</div>
-
+	<?php include("./includes/footer.html"); ?>
 	<script src="/static/js/vue-app.js"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 </body>
 </html>

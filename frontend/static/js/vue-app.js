@@ -182,7 +182,6 @@ var app = new Vue({
         show_node_modal: false,
         show_tutorial_link: true,
         show_tutorial_modal: false,
-
         modal_opacity: false,
         edge_modal_content: {
             edge: {},
@@ -434,7 +433,6 @@ var app = new Vue({
             visualizeImportedData();
           }*/
         },
-
         fileUploadHandler: function(evt)
         {
           // Start with Visualize button disabled.
@@ -622,6 +620,8 @@ var app = new Vue({
           }, 250);
         },
 
+
+
         selectTop20: function(){
             var articles = this.getSubsetOfArticles();
             var is_checked = this.all_selected;
@@ -639,8 +639,6 @@ var app = new Vue({
                 }
             }
         },
-
-
         tutorialNextSlide: function(){
             if(this.tutorial.active_slide < 5)
             {
@@ -1470,14 +1468,19 @@ var app = new Vue({
           }
         },
         getTwitterSearchResults: function(query){
+
+
             this.spinStart("getTwitterSearchResults");
             this.spinner_notices.timeline = "Searching Twitter...";
             var v = this;
             var response = undefined;
             // Ensuring that the search encoding follows Twitter search standards: https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators
+  
             // Query string is already being URI encoded but the getTweets function re-encodes it, so we need to unencode it first so it's not double encoded
             var query_string = decodeURIComponent(query);
             // Will later be used for pagination
+    
+    
             var max_id = "";
 
             var query_limit = 10;
@@ -2288,7 +2291,6 @@ var app = new Vue({
           // location.href = 'https://hoaxy.iuni.iu.edu/';
         }
       }
-
     },
     mounted: function(){
         this.mounted = true;
@@ -2430,6 +2432,10 @@ var app = new Vue({
         // this.displayError("Test Error");
 
         this.spinStop("initialLoad");
+
+
+
+        
         // this.spinStart();
 
         // console.debug(this.query_text);
