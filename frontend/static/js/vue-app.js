@@ -2286,7 +2286,7 @@ var app = new Vue({
         console.warn(e);
         if(this.imported_data != "")
         {
-          // location.href = 'https://hoaxy.iuni.iu.edu/';
+          location.href = 'https://hoaxy.iuni.iu.edu/';
         }
       }
     },
