@@ -2276,11 +2276,6 @@ var app = new Vue({
       this.getPopularArticles();
       // Retrieving top trending articles to show them in the dashboard
       this.getTopUsaArticles();
-<<<<<<< HEAD
-
-=======
-      
->>>>>>> update-master
       try
       {
         this.imported_data = JSON.parse(document.getElementById("post_data").innerHTML);

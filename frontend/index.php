@@ -7,7 +7,6 @@
 <head>
 	<title>Hoaxy&reg; by OSoMe</title>
 	<?php include("./includes/includes.html"); ?>
-<<<<<<< HEAD
 	<meta charset="iso-639">
   	<meta http-equiv="X-UA-Compatible" content="IE=edge">
   	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -24,48 +23,20 @@
 					<div>{{spinner_notices.graph}}</div>
 				</div>
 			</div>
-=======
-
-
-
-</head>
-<body>
-
-<div id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>
-	<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
-		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
-			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
-			<div :style="'display: block'">
-				<div>{{spinner_notices.articles}}</div>
-				<div>{{spinner_notices.timeline}}</div>
-				<div>{{spinner_notices.graph}}</div>
-			</div>
-		</div>
->>>>>>> update-master
 		<?php include("./includes/header.html" ); ?>
 		<section id="form" class="container-fluid">
 			<div class="container">
 				<form v-if="import_or_search == 'search'" @submit.stop.prevent="submitForm()">
 					<div class="col-12 text-center">
 					<div class="col-12 text-center d-md-flex align-items-center">
-<<<<<<< HEAD
 						<div class="pr-2 text-nowrap">Search by:</div>
-=======
-                            <div class="pr-2 text-nowrap">Search by:</div>
->>>>>>> update-master
                             <div class="">
                                 <div class="btn-group btn-group-toggle mr-2 rounded">
                                     <button id="searchByTwitter" data-toggle="tooltip" data-delay="0" title="search Twitter content from the past 7 days" type="button"
                                     class="btn btn-primary"
-<<<<<<< HEAD
                                     v-on:click="twitterSearch()"
                                     @mouseOver="hoverTooltip"
                                     @mouseOut="hideTooltip"
-=======
-									v-on:click="twitterSearch()"
-									@mouseOver="hoverTooltip"
-									@mouseOut="hideTooltip"
->>>>>>> update-master
                                     v-bind:class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">Twitter</button>
                                     <button id="searchByHoaxy" data-toggle="tooltip" title="search articles from misinformation and fact-checking sources" type="button"
                                     class="btn btn-primary"
@@ -75,7 +46,6 @@
                                     v-bind:class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">Hoaxy</button>
                                 </div>
                             </div>
-<<<<<<< HEAD
                             <input id="query" class="form-control my-2 my-md-0" type="text" ref="searchBox" data-toggle="tooltip" v-bind:title="searchByDependencyTitle" @focus="focusSearchBox();" @mouseOver="hoverTooltip" @mouseOut="hideTooltip" v-model="query_text" v-bind:placeholder="searchPlaceholder" :disabled="input_disabled" />&nbsp; &nbsp; &nbsp; &nbsp;
 								<div for="name" class="control-label" v-if="twitterSearchSelected">
 									Language:&nbsp;
@@ -98,41 +68,6 @@
 									<option value="es">Spanish (Español)</option>
 									<option value="tr">Turkish (Türkçe)</option>
 								</select>
-=======
-                            <input id="query" class="form-control my-2 my-md-0" type="text" ref="searchBox" data-toggle="tooltip" v-bind:title="searchByDependencyTitle"
-																@focus="focusSearchBox();"
-																@mouseOver="hoverTooltip"
-																@mouseOut="hideTooltip"
-																v-model="query_text"
-                                v-bind:placeholder="searchPlaceholder"
-								:disabled="input_disabled" />
-								
-								
-
-								
-									&nbsp; &nbsp; &nbsp; &nbsp;
-								    <div for="name" class="control-label" v-if="twitterSearchSelected">
-										Language:&nbsp;
-									</div>
-									<select class="form-control" style="width: auto" v-if="twitterSearchSelected" v-model="lang">
-										<option value="ar">Arabic (العربية)</option>
-										<option value="bn">Bengali (বাংলা)</option>
-										<option value="bg">Bulgarian (български език)</option>
-										<option value="zh">Chinese (中文, 汉语, 漢語)</option>
-										<option value="en">English</option>
-										<option value="fr">French (français)</option>
-										<option value="de">German (Deutsch)</option>
-										<option value="hi">Hindi (हिन्दी)</option>
-										<option value="it">Italian (Italiano)</option>
-										<option value="ja">Japanese (日本語)</option>
-
-										<option value="ms">Malay (بهاس ملايو‎)</option>
-										<option value="pt">Portuguese (Português)</option>
-										<option value="ru">Russian (русский)</option>
-										<option value="es">Spanish (Español)</option>
-										<option value="tr">Turkish (Türkçe)</option>
-									</select>
->>>>>>> update-master
 						</div>
 					</div>
 					<div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
@@ -166,20 +101,11 @@
 					</div>
 					<div class="col-12 text-center">
 						<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-<<<<<<< HEAD
 						<button class="btn btn-outline-primary" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
 						<button class="btn btn-primary ml-3" 
 							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Import Data</button>
 					</div>					
 				</form>				
-=======
-						<button class="btn btn-outline-primary btn-blue" id="submit" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
-						<button class="btn btn-secondary ml-3 btn-sm" 
-							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Import Data</button>
-					</div>
-					
-				</form>
->>>>>>> update-master
 				<div v-if="import_or_search == 'import'" class="">
 					<div class="col-12 text-center">
 						<div class="col-12 text-center d-md-flex align-items-center">
@@ -193,13 +119,8 @@
 					
 					<div class="col-12 text-center mt-3">
 							<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-<<<<<<< HEAD
 							<button class="btn btn-outline-primary" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
 							<button class="btn btn-primary ml-3" 
-=======
-							<button class="btn btn-primary btn-blue" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
-							<button class="btn btn-secondary ml-3 btn-sm" 
->>>>>>> update-master
 							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
 					</div>
 				</div>
@@ -210,12 +131,7 @@
 				<div class="clearfix"></div>
 			</div>
 		</section>
-<<<<<<< HEAD
         <section id="dashboard" class="text-center">
-=======
-		<!-- TOP ARTICLES DASHBOARD -->
-		<section id="dashboard" class="text-center mb-3">
->>>>>>> update-master
             <div class="col-md-3 d-inline-block align-top m-0 p-0">
                 <div class="table-responsive m-0 p-0">
                     <table class="table table-borderless m-0 p-0">
@@ -244,19 +160,11 @@
                         </tr>
                         <tr v-for="claim in top_claim_articles">
                             <td class="text-left m-2 p-2">
-<<<<<<< HEAD
 								<span>{{ claim.shortened_source }} | {{ claim.shortened_headline }} <a :href="claim.canonical_url" target="_blank"><i @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to read the article in a new window" class="fa fa-external-link"></i></a></span>
 								<br>
 								<span class="tight-span my-0 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(claim.title,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article title, then click search">Search Title</a></span>
 							</td>
 						</tr>
-=======
-															<span>{{ claim.shortened_source }} | {{ claim.shortened_headline }} <a :href="claim.canonical_url" target="_blank"><i @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to read the article in a new window" class="fa fa-external-link"></i></a></span>
-															<br>
-															<span class="tight-span my-0 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(claim.title,'hoaxy');" rel="noreferrer noopener" :href="claim.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article title, then click search">Search Title</a></span>
-														</td>
-												</tr>
->>>>>>> update-master
                         <tr v-if="top_claim_articles.length == 0">
                             <td colspan="3">Could not find any articles</td>
                         </tr>
@@ -271,17 +179,10 @@
                         </tr>
                         <tr v-for="fact in top_fact_checking_articles">
                             <td class="text-left m-2 p-2">
-<<<<<<< HEAD
 								<span>{{ fact.shortened_source }} | {{ fact.shortened_headline }} <a :href="fact.canonical_url" target="_blank"><i @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to read the article in a new window" class="fa fa-external-link"></i></a></span>
 								<br>
 								<span class="tight-span my-0 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article title, then click search">Search Title</a></span>
 							</td>
-=======
-															<span>{{ fact.shortened_source }} | {{ fact.shortened_headline }} <a :href="fact.canonical_url" target="_blank"><i @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to read the article in a new window" class="fa fa-external-link"></i></a></span>
-															<br>
-															<span class="tight-span my-0 p-0"><a class="text-primary" v-on:click.prevent="changeAndFocusSearchQuery(fact.title,'hoaxy');" rel="noreferrer noopener" :href="fact.canonical_url" target="_blank" @mouseOver="hoverTooltip"	@mouseOut="hideTooltip"  data-toggle="tooltip" title="click to fill the search box with the article title, then click search">Search Title</a></span>
-                            </td>
->>>>>>> update-master
                         </tr>
                         <tr v-if="top_fact_checking_articles.length == 0">
                             <td colspan="3">Could not find any articles</td>
@@ -297,11 +198,7 @@
                     <input v-model="query_sort" type="hidden" name="sort_by" :disabled="input_disabled" />
                     <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true2" value="true"  :disabled="input_disabled" />
                     <div class="d-block d-md-flex justify-content-center align-items-center">
-<<<<<<< HEAD
                         <div class="btn-group btn-group-toggle mr-md-2 rounded mb-2 mb-md-0 d-md-flex justify-content-md-center d-inline-block">
-=======
-                        <div class="btn-group btn-group-toggle mr-md-2 mb-2 mb-md-0 d-md-flex justify-content-md-center d-inline-block">
->>>>>>> update-master
                             <button id="searchByTwitter2"
 								type="button"
                                 data-toggle="tooltip"
@@ -329,13 +226,8 @@
                             v-bind:placeholder="searchPlaceholder"
                             :disabled="input_disabled || show_full_articles_list == true" />
                         <button type="submit" v-if="!show_articles || !show_full_articles_list" class="btn btn-primary btn-blue" :disabled="search_disabled" >{{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} </button>
-<<<<<<< HEAD
                         <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-primary ml-md-2 text-nowrap" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
                         <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-primary ml-md-2" v-if="show_articles && show_full_articles_list">Cancel</button>
-=======
-                        <button @click.stop.prevent="show_full_articles_list = true" class="btn btn-secondary ml-md-2" v-if="show_articles && !show_full_articles_list">{{checked_articles.length}} article{{checked_articles.length!=1?"s":""}} visualized &bull;&bull;&bull;</button>
-                        <button @click.stop.prevent="show_full_articles_list = false" :disabled="checked_articles.length <= 0" class="btn btn-secondary ml-md-2" v-if="show_articles && show_full_articles_list">Cancel</button>
->>>>>>> update-master
                     </div>
 <transition name="slide_in">
                     <div id="article_list_container" v-show="show_articles && show_full_articles_list">
@@ -397,26 +289,8 @@
                 </form>
             </div>
     </section>
-<<<<<<< HEAD
     <section id="graphs" v-bind:class="{'hidden': !show_graphs}"class="container-fluid row no-gutters pt-1">
 		<div id="timeline"
-=======
-
-
-<!--
-  #####
- #     # #####    ##   #####  #    #  ####
- #       #    #  #  #  #    # #    # #
- #  #### #    # #    # #    # ######  ####
- #     # #####  ###### #####  #    #      #
- #     # #   #  #    # #      #    # #    #
-  #####  #    # #    # #      #    #  ####
--->
-
-
-    <section id="graphs" v-bind:class="{'hidden': !show_graphs}" class="container-fluid row no-gutters pt-3">
-        <div id="timeline"
->>>>>>> update-master
             class="col-12 card"
             :style="graph_column_size <= 0 ? 'display: none' : ''"
             :class="'col-md-' + (graph_column_size === 12? 11: graph_column_size )">
@@ -493,19 +367,11 @@
             </div>
             <div id="graph-container" style="width: 100%; height: 80vh; margin: 0 auto;">
             </div>
-<<<<<<< HEAD
 				<div>
 					<div class="d-block p-2" v-if="show_zoom_buttons" id="graph_help_text">
 						Click on network nodes and edges for details. Click on color scale to filter nodes by color.
 					</div>
 				</div>
-=======
-						<div>
-	            <div class="d-block p-2" v-if="show_zoom_buttons" id="graph_help_text">
-	                Click on network nodes and edges for details. Click on color scale to filter nodes by color.
-	            </div>
-						</div>
->>>>>>> update-master
 	        <div class="d-flex-inline flex-column align-items-end " id="zoom_buttons" v-if="show_zoom_buttons">
 				<div class="rounded graph_legend">
 					<div class="bg-light bg-semi-transparent"></div>
@@ -548,11 +414,7 @@
                         </div>
 					</div>
                 </div>
-<<<<<<< HEAD
 				<div style="cursor: pointer"
-=======
-                <div style="cursor: pointer"
->>>>>>> update-master
 					v-if="show_zoom_buttons"
 					id="bot_legend"
 					class="text-right p-2">
@@ -561,14 +423,8 @@
 							<span class="d-flex justify-content-center">Bot</span>
 							<span class="d-flex justify-content-center">Like</span>
 						</div>
-<<<<<<< HEAD
 						<div class="rounded d-flex flex-column">
 								<div @click="filterNodesByScore(.8, 1.1)" class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" 
-=======
-						<div class="rounded d-flex flex-column" >
-								<div @click="filterNodesByScore(.8, 1.1)" 
-									class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" 
->>>>>>> update-master
 									:class="{'selected_node_filter': nodes_filtered_by_score == '1.1 0.8'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
 										<span v-text="botscoreCount(.8, 1.1)">100</span>
@@ -605,24 +461,12 @@
     </section>
 <transition name="fade">
 	<div id="tutorial" class="d-flex align-items-center justify-content-center" style="display: none; position: relative;"
-<<<<<<< HEAD
 		:style="tutorial.show?'display: block; position: fixed;':''"
 		v-if="tutorial.show">
 		<div id="tutorial-content" class="d-flex text-center align-items-center justify-content-center">
 			<div id="tutorial-carousel" class="carousel slide h-100 pt-5">
 			  <ol class="carousel-indicators">
 			    <li v-for="number, index in [ 1, 2, 3, 4, 5]" @click="tutorialGotoSlide(number)" :class="{'active':tutorial.active_slide == number}"></li>
-=======
-	:style="tutorial.show?'display: block; position: fixed;':''"
-	v-if="tutorial.show">
-		<div id="tutorial-content" class="d-flex text-center align-items-center justify-content-center">
-			<div id="tutorial-carousel" class="carousel slide h-100 pt-5">
-			  <ol class="carousel-indicators">
-			    <li v-for="number, index in [ 1, 2, 3, 4, 5]"
-					@click="tutorialGotoSlide(number)"
-					:class="{'active':tutorial.active_slide == number}"
-				></li>
->>>>>>> update-master
 			  </ol>
 			  <div class="text-center small btn-sm btn btn-link close-tutorial-button" @click="tutorialHideWithCookie">
 				  Click to close tutorial. We use a cookie so that this won’t pop up again the next time you use Hoaxy.
@@ -650,7 +494,6 @@
 		</div>
 	</div>
 </transition>
-<<<<<<< HEAD
 		<div id="widgetModal" :class="{'modal-show': showWidgetModal}" @click.stop="resetWidgetContent()" class="modal" tabindex="-1" role="dialog"
 		aria-labelledby="infoModalLabel" style="opacity: 1" aria-labelledby="nodeModalLabel">
 			<div id="modalDialogWidget" class="modal-dialog" style="pointer-events: auto;" role="document">
@@ -669,57 +512,10 @@
 							<div class="pl-1">What you will see:</div>
 							<div v-html="embeddedWidgetCode"></div>
 						</div>
-=======
-
-
-
-		<!--
-		#     #
-		##   ##  ####  #####    ##   #       ####
-		# # # # #    # #    #  #  #  #      #
-		#  #  # #    # #    # #    # #       ####
-		#     # #    # #    # ###### #           #
-		#     # #    # #    # #    # #      #    #
-		#     #  ####  #####  #    # ######  ####
-		-->
-
-			<!-- Widget Modal -->
-			<div id="widgetModal"
-		:class="{'modal-show': showWidgetModal}"
-		@click.stop="resetWidgetContent();"
-		class="modal" tabindex="-1"
-		role="dialog"
-		aria-labelledby="infoModalLabel"
-		style="opacity: 1"
-		aria-labelledby="nodeModalLabel">
-					<div id="modalDialogWidget" class="modal-dialog" role="document">
-							<div @click.stop="" class="alert m-5 alert-info">
-									<div class="modal-body" id="infoModalBody" >
-										<div class="d-flex flex-column">
-											<span class="pl-1">Add the below code to your site</span>
-											<textarea class="w-100" rows="5" ref="widgetCodeTextArea" id="widgetCodeTextArea">{{ embeddedWidgetCode }}</textarea>
-										</div>
-										<div class="align-items-center text-center" v-show="copiedWidgetText">Copied text to clipboard</div>
-										<div class="align-items-center text-center mt-1">
-												<button type="button" class="btn btn-secondary" @click.stop="copyWidgetCodeToClipboard()">Copy to Clipboard</button>
-												<button type="button" class="btn btn-secondary" @click.stop="resetWidgetContent();">Close</button>
-										</div>
-										<div class="mt-2">
-											<div class="pl-1">
-												What you will see
-											</div>
-											<div v-html="embeddedWidgetCode"></div>
-										</div>
-									</div>
-							</div>
->>>>>>> update-master
 					</div>
 				</div>
 			</div>
-<<<<<<< HEAD
 		</div>
-=======
->>>>>>> update-master
         <div id="infoModal"
 			:class="{'modal-show': info_text!==''}"
 			@click.stop="info_text=''"
@@ -730,11 +526,7 @@
 			aria-labelledby="nodeModalLabel">
             <div class="modal-dialog" role="document">
                 <div @click.stop="" class="alert m-5 alert-info">
-<<<<<<< HEAD
                     <div class="modal-body" id="infoModalBody">
-=======
-                    <div class="modal-body" id="infoModalBody" >
->>>>>>> update-master
 						<div class="d-flex align-items-center">
 							<i class="float-left mr-4 fa fa-3x fa-question-circle" aria-hidden="true"></i>
 							<span class="pl-2">{{info_text}}</span>
@@ -762,11 +554,7 @@
                 </div>
             </div>
 		</div>
-<<<<<<< HEAD
 		<div id="authenticateModal" :class="{'modal-show': show_authenticate_modal}" @click.stop="toggleModal('authenticate')" class="modal " tabindex="-1" role="dialog" aria-labelledby="authenticateModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
-=======
-        <div id="authenticateModal" :class="{'modal-show': show_authenticate_modal}" @click.stop="toggleModal('authenticate')" class="modal " tabindex="-1" role="dialog" aria-labelledby="authenticateModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
->>>>>>> update-master
             <div class="modal-dialog" role="document">
                 <div @click.stop="" class="alert m-5 alert-info">
                     <div class="modal-border-bottom">
@@ -777,17 +565,8 @@
                     </div>
                     <div class="modal-body" id="authenticateModalBody" >
 						<div class="">
-<<<<<<< HEAD
 							<p>There was an issue contacting Twitter.  Please try again by clicking the button below and re-authenticate with Twitter if necessary.</p>
 							<p><button class="btn btn-success btn-lg" @click="submitForm(true); toggleModal('authenticate')">Retry Query</button></p>
-=======
-							<p>
-								There was an issue contacting Twitter.  Please try again by clicking the button below and re-authenticate with Twitter if necessary.
-							</p>
-							<p>
-								<button class="btn btn-success btn-lg" @click="submitForm(true); toggleModal('authenticate')">Retry Query</button>
-							</p>
->>>>>>> update-master
 						</div>
                     </div>
                     <div class="modal-border-top">
@@ -796,7 +575,6 @@
                 </div>
             </div>
         </div>
-<<<<<<< HEAD
 		<div id="errorModal" :class="{'modal-show': show_error_modal}" @click.stop="toggleErrorModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog" role="document">
 				<div @click.stop="" class="alert m-5 alert-danger">
@@ -805,38 +583,16 @@
 						<button type="button" class="close float-right"  @click="toggleErrorModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
 					</div>
 					<div class="modal-body" id="errorModalBody" >
-=======
-
-        <div id="errorModal" :class="{'modal-show': show_error_modal}" @click.stop="toggleErrorModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="errorModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
-            <div class="modal-dialog" role="document">
-                <div @click.stop="" class="alert m-5 alert-danger">
-                    <div class="modal-header">
-                        <h4 class="modal-title text-center" id="errorModalLabel" >
-							An Error Occurred
-                        </h4>
-						<button type="button" class="close float-right"  @click="toggleErrorModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body" id="errorModalBody" >
->>>>>>> update-master
 						<div class="d-flex align-items-center">
 							<i class="float-left m-2 fa fa-3x fa-exclamation-triangle" aria-hidden="true"></i>
 							<span>{{error_message}}</span>
 						</div>
-<<<<<<< HEAD
 					</div>
 					<div class="modal-border-top">
 						<button type="button" class="btn btn-secondary" @click="toggleErrorModal()">Close</button>
 					</div>
 				</div>
 			</div>
-=======
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" @click="toggleErrorModal()">Close</button>
-                    </div>
-                </div>
-            </div>
->>>>>>> update-master
 		</div>
 		<div id="edgeModal" :class="{'modal-show': show_edge_modal}" @click.stop="toggleEdgeModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="edgeModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog" role="document">
@@ -861,11 +617,7 @@
 				</div>
 			</div>
 		</div>
-<<<<<<< HEAD
 		<div id="nodeModal"  :class="{'modal-show': show_node_modal}" @click.stop="toggleNodeModal()" class="modal"  tabindex="-1" role="dialog" :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
-=======
-		<div id="nodeModal"  :class="{'modal-show': show_node_modal}" @click.stop="toggleNodeModal()" class="modal "  tabindex="-1" role="dialog" :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
->>>>>>> update-master
 			<div class="modal-dialog"  role="document">
 				<div class="modal-content" @click.stop="">
 					<div class="modal-border-bottom">
@@ -885,17 +637,10 @@
 										<div class="botimages">
 											<div class="images-nots"><div :style="'width: '+node_modal_content.botscore+'%'" class="images-bots"></div></div>
 
-<<<<<<< HEAD
                                     </div>
                                 </div>
                             </div>
                                 <span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this account's timeline is set to private or has been deleted entirely.</span>
-=======
-										</div>
-									</div>
-                </div>
-								<span v-if="node_modal_content.botscore < 0">Could not be retrieved.  It is possible that this account's timeline is set to private or has been deleted entirely.</span>
->>>>>>> update-master
 								<div v-if="node_modal_content.botscore > 0">Last calculated: {{formatTime(node_modal_content.timestamp)}}</div>
 								<div class="alert bg-warning" v-if="twitterRateLimitReachedObj.isReached">Warning: New scores cannot be retrieved. Twitter rate limit reached, try again in 15 minutes.</div>
 								<div class="alert bg-warning"
@@ -1012,11 +757,7 @@
 		</div>
 	</div>
 	<?php include("./includes/footer.html"); ?>
-<<<<<<< HEAD
 	<script src="./static/js/vue-app.min.js"></script>
-=======
-	<script src="/static/js/vue-app.js"></script>
->>>>>>> update-master
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

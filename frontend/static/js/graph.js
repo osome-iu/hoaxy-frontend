@@ -542,11 +542,7 @@ function HoaxyGraph(options)
 			var newId = response.data.user.id_str;
 			var newScore = 0;
 			if(lang == 'en' || lang == 'en-gb')
-<<<<<<< HEAD
 			{	
-=======
-						{	
->>>>>>> update-master
 				newScore = response.data.scores.english;
 			}
 			else
