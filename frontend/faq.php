@@ -130,7 +130,7 @@
 								and related fact checking in a limited corpus of articles from
 								low-credibility and fact-checking sources, dating back to 2016. 
 								This mode leverages the
-								<a href="https://market.mashape.com/truthy/hoaxy"
+								<a href="https://rapidapi.com/truthy/api/hoaxy"
 									 target="_blank">Hoaxy API</a>
 								to retrieve relevant articles, accounts, and
 								tweets. <b>Twitter</b> search lets users track articles from any
@@ -321,9 +321,9 @@
         			<dt id="faq-q17">Do you provide an API to the data you collect?</dt>
         			<dd class="faq-element-contents">
         				Yes, check out the free
-								<a href="https://market.mashape.com/truthy/hoaxy"
+								<a href="https://rapidapi.com/truthy/api/hoaxy"
 								   target="_blank">Hoaxy API</a>
-							  available on Mashape.
+							  available on Rapid API.
         			</dd>
 
 
