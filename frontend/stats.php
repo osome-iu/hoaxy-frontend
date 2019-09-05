@@ -121,6 +121,9 @@
 			active_tab: "popular_articles",
 			mounted: false,
 
+			tutorial: false,
+			twitter: false,
+
 			popular_articles: {
 				claim: [],
 				fact_checking: [],
@@ -140,6 +143,9 @@
 			spin_timer: null,
 			spinner_state: 0,
 			spinner_rotate: 0,
+
+			show_tutorial_link: undefined,
+            menu_open: false
 		},
 		methods: {
 			formatArticleType: function(type){
@@ -265,6 +271,10 @@
 	        		v.spinStop(true);
 	        	}, 90000);
 	        },
+			show_tutorial: function(){
+    				document.cookie="HideHoaxyTutorial=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+                    location.href = "./";
+                }
 		},
 		mounted: function(){
 			var v = this;
