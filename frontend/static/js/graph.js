@@ -469,6 +469,7 @@ function HoaxyGraph(options)
 		return prom;
 	}
 	function twitterResponseFail(error){
+		console.error(error&&error.error&&error.error.status);
 		console.warn(error);
 	}
 	function getNewBotometerScore(user_id)
@@ -479,31 +480,55 @@ function HoaxyGraph(options)
 		botScoreA = new Promise(function(resolve, reject){
 			// Bulking user data and mentions promises together as they need
 			// To happen sequentially
-			var user_data_and_mentions = new Promise(function(resolve, reject) {
-				var user_data = twitter.getUserDataById(user_id);
-				user_data.then(function(response){
-					user.user = response;
-					var user_mentions = twitter.getUserMentions(user.user.screen_name);
-					user_mentions.then(function(responseMentions){
-										if(responseMentions.statuses)
-												user.mentions = responseMentions.statuses;
-										else
-												user.mentions = responseMentions;
-										// Both user data and mentions was retrieved, so resolving
-										// user_data_and_mentions promise
-										resolve();
-					}, function(){})
-					.catch(twitterResponseFail);
-				}, function(){})
-				.catch(twitterResponseFail);
-			}, function(){})
-			.catch(twitterResponseFail);
-			// Can happen asynchronously
-			var user_timeline = twitter.getUserTimelineById(user_id);
-			user_timeline.then(function(response){
-				user.timeline = response;
-			}, function(){})
-			.catch(twitterResponseFail);
+			var user_data_and_mentions = new Promise(
+                function(resolve, reject) {
+                    var user_data = twitter.getUserDataById(user_id);
+                    user_data
+                        .then(
+                            function(response) {
+                                user.user = response;
+                                var user_mentions = twitter.getUserMentions(user.user.screen_name);
+                                user_mentions
+                                    .then(
+                                        function(responseMentions) {
+                                            if (responseMentions.statuses) user.mentions = responseMentions.statuses;
+                                            else user.mentions = responseMentions;
+                                            // Both user data and mentions was retrieved, so resolving
+                                            // user_data_and_mentions promise
+                                            resolve();
+                                        },
+                                        function(error) {
+                                            twitterResponseFail(error);
+											reject(error);
+                                        }
+                                    );
+                                    // .catch(twitterResponseFail);
+                            },
+                            function(error) {
+                                twitterResponseFail(error);
+								reject(error);
+                            }
+                        );
+                        // .catch(twitterResponseFail);
+                }
+                // function(error) {
+                //     twitterResponseFail(error);
+				// 	reject(error);
+                // }
+			);
+			// .catch(twitterResponseFail);
+            // Can happen asynchronously
+            var user_timeline = twitter.getUserTimelineById(user_id);
+            user_timeline
+                .then(
+                    function(response) {
+                        user.timeline = response;
+                    },
+                    function(error) {
+                        twitterResponseFail(error);
+                    }
+                );
+                // .catch(twitterResponseFail);
 
 
 			var got_from_twitter = Promise.all([user_data_and_mentions, user_timeline]);
@@ -511,7 +536,12 @@ function HoaxyGraph(options)
 				var botScore = getBotScore(user, screen_name);
 				botScore.then(resolve, reject);
 			}, function(error){
-				console.warn("Could not get bot score for " + screen_name + ": ", error);
+				console.warn("Could not get bot score for " + screen_name + ": ", error, error&&error.error&&error.error.status);
+				
+				if(error&&error.error&&error.error.status == 429)
+				{
+					twitterRateLimitReached.isReached = true;
+				}
 				// score_stats.recompute();
 				// botscores[screen_name] = {
 				// 	score: -1,
@@ -521,14 +551,14 @@ function HoaxyGraph(options)
 				// updateNodeColor(screen_name, botscores[screen_name].score);
 				reject(error);
 			});
-		}, twitterResponseFail)
+		});
 		return botScoreA;
 	}
 	function getBotScore(user_object, potentially_old_sn)
 	{
 		var sn = user_object.user.screen_name;
 		var id = user_object.user.id_str;
-		console.debug(user_object);
+		//console.debug(user_object);
 		var botscore = axios({
 			method: 'post',
 			url: configuration.botometer_url,

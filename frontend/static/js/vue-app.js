@@ -442,7 +442,6 @@ var app = new Vue({
           var appFileType = file.type;
           // Cut off "application/" section of file type.
           appFileType = appFileType.substr(12);
-
           var textFileType = file.type;
           textFileType = textFileType.substr(5);
 
@@ -2277,7 +2276,6 @@ var app = new Vue({
       this.getPopularArticles();
       // Retrieving top trending articles to show them in the dashboard
       this.getTopUsaArticles();
-
       try
       {
         this.imported_data = JSON.parse(document.getElementById("post_data").innerHTML);
@@ -2285,7 +2283,7 @@ var app = new Vue({
       }
       catch(e)
       {
-        console.warn(e);
+        console.warn("Error with data import. Don't panic.", e);
         if(this.imported_data != "")
         {
           location.href = 'https://hoaxy.iuni.iu.edu/';
@@ -2432,10 +2430,10 @@ var app = new Vue({
         // this.displayError("Test Error");
 
         this.spinStop("initialLoad");
-        // this.spinStart("testing");
-        // this.spinner_notices.graph = "TESTING TEXT";
-        //console.debug("Vue Mounted.");
 
+
+
+        
         // this.spinStart();
 
         // console.debug(this.query_text);

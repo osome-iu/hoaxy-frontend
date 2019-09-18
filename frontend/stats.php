@@ -271,7 +271,7 @@
 	        		v.spinStop(true);
 	        	}, 90000);
 	        },
-                show_tutorial: function(){
+			show_tutorial: function(){
     				document.cookie="HideHoaxyTutorial=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
                     location.href = "./";
                 }
