@@ -802,7 +802,7 @@ var app = new Vue({
           return "";
         },
         shortenArticleText: function(text, text_length) {
-          if (text.length > parseInt(text_length)) {
+          if (text && text.length > parseInt(text_length)) {
             shortened_text = text.substr(0, parseInt(text_length)-1) + "..."
             return(shortened_text)
           } else {
