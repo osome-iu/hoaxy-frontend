@@ -41,8 +41,8 @@
 					<template slot="button-content"><img :src="profile.image"><span class="profile-name" style="color: white" v-text="profile.name"></span>
 					</template>
 					
-					<b-dropdown-item style="color: black" v-if="!twitter_account_info.name" class="dropdown-item" @click.prevent.stop="twitterLogIn()">Log In</b-dropdown-item>
-					<b-dropdown-item style="color: black" v-if="twitter_account_info.name" class="dropdown-item" @click.prevent.stop="twitterLogOut()">Log Out</b-dropdown-item>
+					<b-dropdown-item v-if="!twitter_account_info.name" class="dropdown-item" @click.prevent.stop="twitterLogIn()"><span style="color: black">Log In</span></b-dropdown-item>
+					<b-dropdown-item v-if="twitter_account_info.name" class="dropdown-item" @click.prevent.stop="twitterLogOut()"><span style="color: black">Log Out</span></b-dropdown-item>
 				</b-dropdown>
 			</div>	
 		</div>
