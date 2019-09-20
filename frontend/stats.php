@@ -157,7 +157,9 @@
         },
         methods: {
           /**
-           * @todo
+           * Set text in column headers based on article type
+           * @param  {String} type Type of article (claim or fact_checking)
+           * @return {String} Gramatically formatted type of article
            */
           formatArticleType: function(type){
             if(type == "claim")
@@ -167,13 +169,15 @@
             return "";
           },
           /**
-           * @todo
+           * Build the URL to search for the article title in Hoaxy
+           * @param  {String} title Title of the article
+           * @return {String} URI-encoded URL for searching Hoaxy
            */
           createSearchUrl: function(title){
             return "./#query=" + encodeURIComponent(title) + "&sort=relevant&type=Hoaxy"
           },
           /**
-           * @todo
+           * Get popular articles from the database
            */
           getArticles: function(){
             this.spinStart();
@@ -193,6 +197,7 @@
                 for(var i in articles)
                 {
                   var a = articles[i];
+                  // The capture_date is the first half of the ISO String before 'T'
                   a.capture_date = a.date_captured.split('T')[0];
                   local_popular_articles[a.site_type].push(a);
                 }
@@ -206,7 +211,7 @@
             );
           },
           /**
-           * @todo
+           * Get influential users from the database
            */
           getUsers: function(){
               this.spinStart();
@@ -257,13 +262,8 @@
             );
           },
           /**
-           * @todo
-           */
-          activate_tab: function(tab_name){
-            this.active_tab = tab_name;
-          },
-          /**
-           * @todo
+           * Stop the loading spinner
+           * @param {Boolean} reset Resets the spin counter to 0, if true
            */
           spinStop: function(reset){
             this.spin_counter --;
@@ -278,28 +278,29 @@
               clearTimeout(this.spin_timer);
               this.spin_timer = null;
             }
-
           },
           /**
-           * @todo
+           * Start the loading spinner
            */
           spinStart: function(){
             this.spin_counter ++;
             this.loading = true;
-            //timeout after 90 seconds so we're not stuck in an endless spinning loop.
+
             if(this.spin_timer)
             {
               clearTimeout(this.spin_timer);
               this.spin_timer = null;
             }
-              var v = this;
+            
+            var v = this;
+            // Timeout after 90 seconds so we're not stuck in an endless spinning loop.
             this.spin_timer = setTimeout(function(){
               alert("The app is taking too long to respond.  Please try again later.");
               v.spinStop(true);
             }, 90000);
           },
           /**
-           * @todo
+           * Show the Hoaxy tutorial slides depending on cookies
            */
           show_tutorial: function(){
             document.cookie="HideHoaxyTutorial=; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
@@ -314,13 +315,11 @@
           this.show_articles = false;
           this.show_graphs = false;
 
-          //create hourglass loading spinner
+          // Create hourglass loading spinner
           var f = function(){
             var counter = 0;
             setInterval(function(){
-              // console.debug("out", counter);
               if(v.loading){
-                // console.debug("in", counter);
                 counter ++;
                 if(counter < 4)
                   v.spinner_rotate = (v.spinner_state = counter)*0;
