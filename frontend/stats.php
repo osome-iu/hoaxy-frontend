@@ -211,7 +211,7 @@
             );
           },
           /**
-           * Get influential users from the database
+           * Get influential and active accounts from the database
            */
           getUsers: function(){
               this.spinStart();

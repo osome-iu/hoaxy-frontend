@@ -1,8 +1,6 @@
 function HoaxyGraph(options)
 {
-    //background: linear-gradient(to bottom, rgb(44,123,182) 0%,rgb(171,217,233) 30%,rgb(255,255,191) 50%,rgb(253,174,97) 70%,rgb(215,25,28) 100%);
-
-	var returnObj = {};
+  var returnObj = {};
 
 	var spinStart = options.spinStart || function(){ console.log("HoaxyGraph.spinStart is undefined."); };
 	var spinStop = options.spinStop || function(){ console.log("HoaxyGraph.spinStop is undefined."); };
@@ -31,13 +29,7 @@ function HoaxyGraph(options)
 		unavailable: 0,
 
     /**
-     * @todo
-     */
-		reset: function(){
-			this.total = this.found = this.old = this.unavailable = 0;
-    },
-    /**
-     * @todo
+     * Figure out the total number of botscores collected
      */
 		recompute: function(){
 			this.found = this.old = this.unavailable = 0;
@@ -62,12 +54,10 @@ function HoaxyGraph(options)
 			}
 			this.total = this.user_list.length;
 		}
-
 	};
 
 
 	var s = null; //sigma instance
-	// getNodeColor(.25);
 	var graph = {};
 	var edges = [];
 	var user_id_list = [];
@@ -76,39 +66,16 @@ function HoaxyGraph(options)
 	var numSigmaInstancesLaunched = 0;
 
   /**
-   * @todo
+   * Update edges on the graph
+   * @param  {Object[]} newEdges The edges to be placed on the graph
+   * @return {Object[]} The edges that are on the graph at the end of the function
    */
-	function UpdateEdges(new_edges){
-		edges = new_edges;
-		//console.debug("Edges updated.");
-		var g = this;
+	function UpdateEdges(newEdges){
+		edges = newEdges;
 		if(edges.length === 0)
 		{
 			KillGraph();
 			return edges;
-		}
-		try{
-			// twitter.me().then(function(response){
-			// 	twitter_account_info = response;
-			// 	if(twitter_account_info.id)
-			// 	{
-					// score_stats.reset();
-					// botscores = {};
-					// getBotCacheScores();
-
-					// var prom = this.graph.getBotCacheScores();
-					// var v = this;
-					// var func = function(){
-					// 	v.graph.updateGraph(starting_time, ending_time);
-					// 	v.show_zoom_buttons = true;
-					// 	v.scrollToElement("graphs");
-					// };
-					// prom.then();
-
-			// 	}
-			// });
-		} catch(e){
-			console.debug("Not signed into twitter.");
 		}
 		return edges;
 	}
@@ -116,31 +83,27 @@ function HoaxyGraph(options)
 
   // Used when importing bot scores from CSV/JSON/etc.
   /**
-   * @todo
+   * Handles imported bot scores
+   * @param  {String} importedID The imported ID of the user
+   * @param  {Number} importedBotscore The imported botscore of the user
    */
 	function setBotScore(importedID, importedBotscore)
 	{
 		botscores[importedID] = {score: importedBotscore, user_id: importedID};
 	}
   /**
-   * @todo
+   * Get bot scores from the cache
    */
 	function getBotCacheScores()
     {
-		//console.debug("Querying bot cache.");
 		if(graph.nodes === undefined)
 		{
 			setTimeout(function(){getBotCacheScores();}, 100);
-			//console.debug("No nodes, wait a sec");
 			return false;
 		}
 		getting_bot_scores.running = true;
-		// spinStart("getBotCacheScores");
 		score_stats.user_list.length = 0;
 		user_id_list.length = 0;
-		// user_list = [];
-		//build list of users found in the edge list
-		// console.table(edges[0]);
 		for(var i in edges)
 		{
 			var edge = edges[i],
@@ -166,22 +129,9 @@ function HoaxyGraph(options)
 			}
 		}
 
-		// var botcache_chunk_size = 200;
-
-		// for(i=0; i<Math.floor(user_id_list.length/botcache_chunk_size)+1; i++)
-
 		var botcache_chunk_sizes = configuration.botcache_chunk_sizes;
 		start_index = 0;
 		end_index = 0;
-
-		// console.debug(graph.nodes);
-
-		// var new_user_list = [];
-		// for(var index in graph.nodes)
-		// {
-		// 	var node = graph.nodes[index];
-		// 	new_user_list.push({id: node.id, size: node.orig_size});
-		// }
 
 		var sorted_nodes = graph.nodes.sort(function(gifford, carell){
 			if(gifford.orig_size > carell.orig_size)
@@ -197,13 +147,13 @@ function HoaxyGraph(options)
 				return 0;
 			}
 		});
-		// console.debug(sorted_nodes);
-		var sorted_user_ids = [];
+    var sorted_user_ids = [];
+    
 		for(var i in graph.nodes)
 		{
 			sorted_user_ids.push(graph.nodes[i].id);
-		}
-		// console.debug(sorted_user_ids);
+    }
+    
 		for(i=0; i < botcache_chunk_sizes.length; i++)
 		{
 			var chunk_size = botcache_chunk_sizes[i];
@@ -211,13 +161,12 @@ function HoaxyGraph(options)
 			start_index = end_index;
 			end_index = end_index + chunk_size;
 
-			var user_id_list_chunk = sorted_user_ids.slice(start_index, end_index);
-			// console.debug(user_id_list_chunk);
+      var user_id_list_chunk = sorted_user_ids.slice(start_index, end_index);
 			if(user_id_list_chunk.length === 0)
 			{
 				break;
-			}
-			// console.debug("UserID LIST CHUNK: ", user_id_list_chunk);
+      }
+      
 			var botcache_request = axios({
 				method: 'post',
 				url: configuration.botcache_url,
@@ -231,8 +180,6 @@ function HoaxyGraph(options)
 			.then(
 				function(response)
 				{
-					spinStop("getBotCacheScores");
-					console.debug("Got botcache: ", response.data);
 					var results = response.data.result;
 					for(var i in results)
 					{
@@ -255,7 +202,6 @@ function HoaxyGraph(options)
 							updateNodeColor(id, score);
 						}
 					}
-					//score_stats.recompute();
 
 					score_stats.unavailable = 0;
 					score_stats.old = 0;
@@ -268,37 +214,35 @@ function HoaxyGraph(options)
 
 					score_stats.user_list = [];
 
-					for (var i in graph.nodes)// i is index
+					for (var i in graph.nodes)
 					{
 						var score = botscores[graph.nodes[i].id];
 						if(score && score.score)
-					{
+					  {
 							if(score.score === -1)
-						{
+						  {
 								scores_never_computed_to_compute.push(graph.nodes[i].id);
 								score_stats.unavailable += 1;
 							}
 							else if(score.old === true)
-						{
+						  {
 								stale_scores_to_compute.push(graph.nodes[i].id);
-								// account_list_to_compute.push(nodes[i].id);
 								score_stats.old += 1;
 								score_stats.found += 1;
-						}
+						  }
 							else
-						{
+						  {
 								already_computed_account_list.push(graph.nodes[i].id);
 								score_stats.found += 1;
-						}
+						  }
 							score = score.score;
-					}
+					  }
 						else
-					{
+					  {
 							scores_never_computed_to_compute.push(graph.nodes[i].id);
-							// account_list_to_compute.push(nodes[i].id);
 							score = false;
-					}
-				}
+					  }
+				  }
 
 					// We now order and prioritize the scores that need to be computed first
 					// First we compute scores that have not ever been computed before
@@ -328,11 +272,6 @@ function HoaxyGraph(options)
 
 					score_stats.total = graph.nodes.length;
 					getting_bot_scores.running = false;
-
-					//when we get the cache, go through cache and update botscores:
-					//botscore[sn] = {score: xx, old: false/true};
-
-					// spinStop("getBotCacheScores");
 			},
 			function (error) {
 					getting_bot_scores.running = false;
@@ -345,15 +284,12 @@ function HoaxyGraph(options)
 						if(retry_count < 5)
 						{
 							retry_count += 1;
-							//console.info("Retry bot score cache request #", retry_count);
 							getBotCacheScores();
 						}
 					}
 					catch(e){
 						console.warn(e);
 					}
-
-					spinStop("getBotCacheScores");
 				}
 			);
 		}
@@ -363,7 +299,7 @@ function HoaxyGraph(options)
 	var counter = 0;
 
   /**
-   * @todo
+   * Get fresh bot scores, 20 per batch
    */
   function getNewScores()
   {
@@ -374,14 +310,14 @@ function HoaxyGraph(options)
 
 	//space out the requests so that we don't hit the rate limit so quickly
   /**
-   * @todo
+   * Gets a new botscore every second to avoid quickly hitting the rate limit
+   * @param  {Number} index The index for the botscores; avoids repeat score queries
    */
   function getBotScoreTimer(index)
 	{
 		if(counter <= 0)
 		{
 			score_stats.current_index = index;
-			//console.debug("got some botscores:", botscores);
 			getting_bot_scores.running = false;
 			return false;
 		}
@@ -415,22 +351,22 @@ function HoaxyGraph(options)
 			if (response === "Error: rate limit reached") {
 				twitterRateLimitReached.isReached = true;
 			} else {
-				// Resuming the rate limit as we have successfully
-				// retrieved a bot score
+        // Assuming the rate limit wasn't reached
+        // as we have successfully retrieved a bot score
 				twitterRateLimitReached.isReached = false;
 			}
-		});
-
-		// console.debug(user);
+    });
+    
 		index++;
 		return setTimeout(function(){
-			// console.debug("get Another one");
 			getBotScoreTimer(index);
 		}, 1000);
 	}
 
   /**
-   * @todo
+   * Update an individual, specific user's botscore
+   * @param  {Object} user The user to update the botscore for
+   * @return {Promise} Successful botscore update (or not)
    */
 	function updateUserBotScore(user)
 	{
@@ -564,13 +500,6 @@ function HoaxyGraph(options)
 				{
 					twitterRateLimitReached.isReached = true;
 				}
-				// score_stats.recompute();
-				// botscores[screen_name] = {
-				// 	score: -1,
-				// 	old: true
-				// }
-				// console.debug(botscores[screen_name]);
-				// updateNodeColor(screen_name, botscores[screen_name].score);
 				reject(error);
 			});
 		});
@@ -592,7 +521,6 @@ function HoaxyGraph(options)
 			data: user_object
 		});
 		botscore.then(function(response){
-			// score_stats.recompute();
 			// Storing the consistent account info for this given bot score retrieval
 			var newId = response.data.user.id_str;
 			var newScore = 0;
@@ -1817,8 +1745,4 @@ function HoaxyGraph(options)
 	returnObj.getRenderer = getRenderer;
 
 	return returnObj;
-
-
-
-
 }
