@@ -86,7 +86,7 @@
 			<section class="tab-pane container-fluid" role="tabpanel" id="" v-if="active_tab=='active_users'" >
 				<div class="row">
                     <div class="col-md-6" v-for="(spreaders, type) in active_users">
-						<p>Most active accounts sharing <span class="">{{formatArticleType(type)}}</span> articles in the last month</p>
+						<p>Most active accounts sharing <span class="">{{formatArticleType(type)}}</span> in the last month</p>
 						<div class="table-responsive" :id="'influential_users_' + type">
 							<table class="table table-striped">
 								<tr>
