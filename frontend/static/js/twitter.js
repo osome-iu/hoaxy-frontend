@@ -12,6 +12,9 @@ var Twitter = function(initialize_key){
     OAuth.initialize(initialize_key);
     OAuth.setOAuthdURL(OAUTH_URL);
 
+    /**
+     * @todo
+     */
     function getCachedToken(){
         if(!_token){
             var keys = JSON.parse(localStorage.getItem(tokenCacheKey)),
@@ -31,6 +34,9 @@ var Twitter = function(initialize_key){
         return _token
     }
 
+    /**
+     * @todo
+     */
     function cacheToken(token){
         // console.debug(token);
         _token = token;
@@ -44,6 +50,9 @@ var Twitter = function(initialize_key){
         });
     }
 
+    /**
+     * @todo
+     */
     function verifyMe(token){
         if(!_me){
             // var dfd = $q.defer();
@@ -67,6 +76,9 @@ var Twitter = function(initialize_key){
         return _me
     }
 
+    /**
+     * @todo
+     */
     function getToken(force_refresh){
         // var dfd = $q.defer(),
         var dfd = new Promise(function(resolve, reject){
@@ -98,6 +110,9 @@ var Twitter = function(initialize_key){
         return dfd;
     }
 
+    /**
+     * @todo
+     */
     function apiCall(method, url, params, errMsg){
         // var dfd = $q.defer();
         var dfd = new Promise(function(resolve, reject){
@@ -122,6 +137,9 @@ var Twitter = function(initialize_key){
     }
 
     var followerCursor = {}, friendCursor = {};
+    /**
+     * @todo
+     */
     function getNeighbors(relationship, screenName, count){
         var dfd = new Promise(function(resolve, reject){
             var cursorObj = relationship.startsWith('follower') ? followerCursor : friendCursor,
@@ -153,55 +171,62 @@ var Twitter = function(initialize_key){
         return dfd;
     }
 
-    // TO-DO Remove once the ById methods below work robustly and we don't
-    // decide to switch back
-    // obj.getUserData = function(screenName){
-    //     return apiCall('GET', '/1.1/users/show.json', {screen_name: screenName},
-    //     "Twitter was unable to retrieve information for this user, is there a typo?")
-    // }
-    //
-    // obj.getUserTimeline = function(screenName){
-    //     return apiCall('GET', '/1.1/statuses/user_timeline.json', {screen_name: screenName, count:200},
-    //     "Twitter was unable to retrieve a timeline for this user, is there a typo?")
-    // }
-    //
+    /**
+     * @todo
+     */
     obj.getUserMentions = function(screenName){
         return apiCall('GET', '/1.1/search/tweets.json', {q: '@'+screenName, count:100},
         "Twitter was unable to retrieve mentions of this user, is there a typo?")
     }
 
+    /**
+     * @todo
+     */
     obj.getUserDataById = function(user_id){
         return apiCall('GET', '/1.1/users/show.json', {user_id: user_id},
         "Twitter was unable to retrieve information for this user, is there a typo?")
     }
 
+    /**
+     * @todo
+     */
     obj.getUserTimelineById = function(user_id){
         return apiCall('GET', '/1.1/statuses/user_timeline.json', {user_id: user_id, count:200},
         "Twitter was unable to retrieve a timeline for this user, is there a typo?")
     }
 
-    // obj.getUserMentionsById = function(user_id){
-    //     return apiCall('GET', '/1.1/search/tweets.json', {q: user_id, count:100},
-    //     "Twitter was unable to retrieve mentions of this user, is there a typo?")
-    // }
-
+    /**
+     * @todo
+     */
     obj.getFollowers = function(screenName, count){
         return getNeighbors('followers', screenName, count);
     }
 
+    /**
+     * @todo
+     */
     obj.getFollowing = function(screenName, count){
         return getNeighbors('friends', screenName, count);
     }
 
+    /**
+     * @todo
+     */
     obj.getUserLanguage = function(lang){
         return apiCall('GET', '/1.1/search/tweets.json', lang)
     }
 
+    /**
+     * @todo
+     */
     obj.getTweets = function(query, lang, max_id, result_type){
       return apiCall('GET', '/1.1/search/tweets.json', {q: query, lang: lang, max_id: max_id, result_type: result_type, count: 100, include_entities: 1},
       "Twitter was unable to retrieve mentions of this user, is there a typo?");
     }
 
+    /**
+     * @todo
+     */
     obj.blockUser = function(userId){
         return apiCall('POST', '/1.1/blocks/create.json', {
             user_id: userId
@@ -210,6 +235,9 @@ var Twitter = function(initialize_key){
         })
     }
 
+    /**
+     * @todo
+     */
     obj.unblockUser = function(userId){
         return apiCall('POST', '/1.1/blocks/destroy.json', {
             user_id: userId
@@ -218,16 +246,28 @@ var Twitter = function(initialize_key){
         })
     }
 
+    /**
+     * @todo
+     */
     obj.followUser = function(userId){
         return apiCall('POST', '/1.1/friendships/create.json', {user_id:userId})
     }
 
+    /**
+     * @todo
+     */
     obj.unfollowUser = function(userId){
         return apiCall('POST', '/1.1/friendships/destroy.json', {user_id:userId})
     }
 
+    /**
+     * @todo
+     */
     obj.me = function(){return _me};
 
+    /**
+     * @todo
+     */
     obj.verifyMe = function(){
         var dfd = new Promise(function(resolve, reject){
             getToken().then(function(token){
@@ -237,6 +277,9 @@ var Twitter = function(initialize_key){
         return dfd
     };
 
+    /**
+     * @todo
+     */
     obj.logOut = function(){
         _token = undefined;
         _me = undefined;

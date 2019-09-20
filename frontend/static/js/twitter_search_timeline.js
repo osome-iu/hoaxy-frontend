@@ -13,7 +13,10 @@ function TwitterSearchTimeline(settings){
 		.useInteractiveGuideline(true);
 
 	// Including interactive tooltips that contain the time period date
-	// Along with the new tweets on that time period
+  // Along with the new tweets on that time period
+  /**
+   * @todo
+   */
 	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
 			var currentTimeStepIndex;
 			// In Twitter case, we convert data from: MM/DD/YYYY HH:MM:DD (AM/PM)
@@ -86,6 +89,9 @@ function TwitterSearchTimeline(settings){
 
 	chart.color([colors.edge_colors.claim, "#00ff00"]); //color match with those of nodes
 
+  /**
+   * @todo
+   */
 	function redraw(){
 		if(chart)
 		{
@@ -101,16 +107,25 @@ function TwitterSearchTimeline(settings){
 			.attr("transform", "translate(0, -10)");
 			
 		}
-	}
+  }
+  /**
+   * @todo
+   */
 	function removeUpdateDateRangeCallback(){
 		chart.dispatch.on("brush", null);
 	}
 
+  /**
+   * @todo
+   */
 	function dateFormatter(d) {
 		// console.debug(d);
 		return d3.time.format('%m/%d/%Y %H:%M:%S %p')(new Date(d))
 	}
 
+  /**
+   * @todo
+   */
 	function calculateTweetRates(chartData) {
 		// Deep copy of the chart data as any shallow copy will mess up
 		// The timeline itself, we only use this new copy for the
@@ -135,6 +150,9 @@ function TwitterSearchTimeline(settings){
 		}, 200);
 	};
 
+  /**
+   * @todo
+   */
 	function _updateDateRange(extent){
 		if(document.getElementById("extent-0"))
 		document.getElementById("extent-0").innerHTML = extent.extent[0];
@@ -235,6 +253,9 @@ function TwitterSearchTimeline(settings){
 		}
 	}
 
+  /**
+   * @todo
+   */
 	function triggerUpdateRange(){
 		try{
 			d3.select('#chart svg')
@@ -252,6 +273,9 @@ function TwitterSearchTimeline(settings){
 		}
 	}
 
+  /**
+   * @todo
+   */
 	function UpdateTimestamp(){
 		// console.log('CALLING CHART DATA UPDATE TIMESTAMP PRE');
 		// console.log(chartData);

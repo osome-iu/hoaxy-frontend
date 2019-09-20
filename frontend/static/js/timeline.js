@@ -13,7 +13,10 @@ function HoaxyTimeline(settings){
 		.useInteractiveGuideline(true);
 
 	// Including interactive tooltips that contain the time period date
-	// Along with the new claims and fact checks for that period
+  // Along with the new claims and fact checks for that period
+  /**
+   * @todo
+   */
 	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
 			var currentTimeStepIndex;
 			// Date comes from Hoaxy as MM/DD/YYYY in this timeline as local time zone
@@ -77,6 +80,9 @@ function HoaxyTimeline(settings){
 
 	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking, "#00ff00"]); //color match with those of nodes
 
+  /**
+   * @todo
+   */
 	function redraw(){
 		if(chart)
 		{
@@ -90,15 +96,24 @@ function HoaxyTimeline(settings){
 			d3.select('#chart svg .nvd3 > g')
 			.attr("transform", "translate(0, -10)");
 		}
-	}
+  }
+  /**
+   * @todo
+   */
 	function removeUpdateDateRangeCallback(){
 		chart.dispatch.on("brush", null);
 	}
 
+  /**
+   * @todo
+   */
 	function dateFormatter(d) {
 		return d3.time.format('%x')(new Date(d))
 	}
 
+  /**
+   * @todo
+   */
 	function calculateTweetRates(chartData) {
 		// Deep copy of the chart data as any shallow copy will mess up
 		// The timeline itself, we only use this new copy for the
@@ -143,6 +158,9 @@ function HoaxyTimeline(settings){
 		}, 200);
 	};
 
+  /**
+   * @todo
+   */
 	function _updateDateRange(extent){
 		if(document.getElementById("extent-0"))
 		document.getElementById("extent-0").innerHTML = extent.extent[0];
@@ -271,6 +289,9 @@ function HoaxyTimeline(settings){
 		// console.log(chart);
 	}
 
+  /**
+   * @todo
+   */
 	function triggerUpdateRange(){
 		try{
 			d3.select('#chart svg')
@@ -282,6 +303,9 @@ function HoaxyTimeline(settings){
 		}
 	}
 
+  /**
+   * @todo
+   */
 	function UpdateTimestamp(){
 		if(graphAnimation.current_timestamp)
 		{

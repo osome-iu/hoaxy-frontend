@@ -30,9 +30,15 @@ function HoaxyGraph(options)
 		old: 0,
 		unavailable: 0,
 
+    /**
+     * @todo
+     */
 		reset: function(){
 			this.total = this.found = this.old = this.unavailable = 0;
-		},
+    },
+    /**
+     * @todo
+     */
 		recompute: function(){
 			this.found = this.old = this.unavailable = 0;
 			for(var i in botscores)
@@ -69,6 +75,9 @@ function HoaxyGraph(options)
 
 	var numSigmaInstancesLaunched = 0;
 
+  /**
+   * @todo
+   */
 	function UpdateEdges(new_edges){
 		edges = new_edges;
 		//console.debug("Edges updated.");
@@ -105,12 +114,17 @@ function HoaxyGraph(options)
 	}
 	var retry_count = 0;
 
-	// Used when importing bot scores from CSV/JSON/etc.
+  // Used when importing bot scores from CSV/JSON/etc.
+  /**
+   * @todo
+   */
 	function setBotScore(importedID, importedBotscore)
 	{
 		botscores[importedID] = {score: importedBotscore, user_id: importedID};
 	}
-
+  /**
+   * @todo
+   */
 	function getBotCacheScores()
     {
 		//console.debug("Querying bot cache.");
@@ -151,13 +165,6 @@ function HoaxyGraph(options)
 				user_id_list.push(to_user_id);
 			}
 		}
-
-
-
-
-
-
-
 
 		// var botcache_chunk_size = 200;
 
@@ -355,6 +362,9 @@ function HoaxyGraph(options)
 
 	var counter = 0;
 
+  /**
+   * @todo
+   */
   function getNewScores()
   {
 		getting_bot_scores.running = true;
@@ -363,7 +373,10 @@ function HoaxyGraph(options)
   }
 
 	//space out the requests so that we don't hit the rate limit so quickly
-	function getBotScoreTimer(index)
+  /**
+   * @todo
+   */
+  function getBotScoreTimer(index)
 	{
 		if(counter <= 0)
 		{
@@ -416,6 +429,9 @@ function HoaxyGraph(options)
 		}, 1000);
 	}
 
+  /**
+   * @todo
+   */
 	function updateUserBotScore(user)
 	{
 		function initiateBotScoreCouldNotBeRetrieved() {
@@ -467,11 +483,17 @@ function HoaxyGraph(options)
 		})
 		.then(function(response){ return response; }, function(error){ return error; });
 		return prom;
-	}
+  }
+  /**
+   * @todo
+   */
 	function twitterResponseFail(error){
 		console.error(error&&error.error&&error.error.status);
 		console.warn(error);
-	}
+  }
+  /**
+   * @todo
+   */
 	function getNewBotometerScore(user_id)
 	{
 		var user = {};
@@ -553,7 +575,10 @@ function HoaxyGraph(options)
 			});
 		});
 		return botScoreA;
-	}
+  }
+  /**
+   * @todo
+   */
 	function getBotScore(user_object, potentially_old_sn)
 	{
 		var sn = user_object.user.screen_name;
@@ -641,7 +666,10 @@ function HoaxyGraph(options)
 
 		});
 		return botscore;
-	}
+  }
+  /**
+   * @todo
+   */
 	function updateNodeColor(node_id, score)
 	{
         // setTimeout(function(){
@@ -670,6 +698,9 @@ function HoaxyGraph(options)
 		}, 100);
     }
 
+  /**
+   * @todo
+   */
 	function getBaseColor(score){
 		if(score ===  undefined || score === null)
 		{
@@ -688,33 +719,8 @@ function HoaxyGraph(options)
 		score = score * 100;
 		var color1 = { red: 0, green: 255, blue: 0};
 		var color2 = { red: 102, green: 0, blue: 0};
-		// var node_colors = [
-		// 	{red: 215, green: 25, blue: 28} , //"#d7191c",
-		// 	{red: 253, green: 174, blue: 97} , //"#fdae61",
-		// 	{red: 255, green: 255, blue: 191} , //"#ffffbf",
-		// 	{red: 171, green: 221, blue: 164} , //"#abdda4",
-		// 	{red: 43, green: 131, blue: 186} //"#2b83ba",
-		// ];
+
 		var node_colors = colors.node_colors.botscores;
-		// var node_colors = colors.node_colors.botscores;
-		// var node_colors = [
-		// 	{red: 255, green: 0, blue: 0} ,
-		// 	{red: 255, green: 128, blue: 200} ,
-		// 	{red: 0, green: 0, blue: 255},
-		// ];
-		// var node_colors = [
-		// 	{red: 85, green: 0, blue: 0} ,
-		// 	{red: 170, green: 221, blue: 0} ,
-		// 	{red: 136, green: 136, blue: 255}
-		// ];
-
-		// var node_colors = [
-		// 	{red: 127, green: 0, blue: 0} ,
-		// 	{red: 164, green: 173, blue: 0} ,
-		// 	{red: 157, green: 162, blue: 224} ,
-		// 	{red: 175, green: 255, blue: 187}
-		// ];
-
 
 
 		score2 = 0;
@@ -746,92 +752,19 @@ function HoaxyGraph(options)
 		color.b = color.blue;
 
 		return color;
-
-
-        //
-		// // score2 = 0
-		// if(score < 15)
-		// {
-		// 	color1 = node_colors[2];
-		// 	color2 = node_colors[2];
-        //
-		// 	score2 = 0; //(score - 0) / (20 - 0);
-		// }
-		// else if(score >= 15 && score < 50)
-		// {
-		// 	color1 = node_colors[2];
-		// 	color2 = node_colors[1];
-		// 	score2 = (score - 15) / (50 - 15)
-		// }
-		// else if(score >= 50 && score < 85)
-		// {
-		// 	color1 = node_colors[1];
-		// 	color2 = node_colors[0];
-		// 	score2 = (score - 50) / (85 - 50);
-		// }
-		// else
-		// {
-		// 	color1 = node_colors[0];
-		// 	color2 = node_colors[0];
-		// 	score2 = 0; //(score - 80) / (100 - 80);
-		// }
-        //
-		// // if(score < 50)
-		// // {
-		// // 	color1 = node_colors[2];
-		// // 	color2 = node_colors[1];
-		// //
-		// // 	score2 = (score - 0) / (50 - 0);
-		// // }
-		// // else
-		// // {
-		// // 	color1 = node_colors[1];
-		// // 	color2 = node_colors[0];
-		// // 	score2 = (score - 50) / (100 - 50)
-		// // }
-        //
-		// // if(score < 33)
-		// // {
-		// // 	color1 = node_colors[3];
-		// // 	color2 = node_colors[2];
-		// //
-		// // 	score2 = (score - 0) / (33 - 0);
-		// // }
-		// // else if(score < 66)
-		// // {
-		// // 	color1 = node_colors[2];
-		// // 	color2 = node_colors[1];
-		// //
-		// // 	score2 = (score - 33) / (66 - 33);
-		// // }
-		// // else
-		// // {
-		// // 	color1 = node_colors[1];
-		// // 	color2 = node_colors[0];
-		// // 	score2 = (score - 66) / (100 - 66)
-		// // }
-		// // console.debug(score, score2);
-        //
-		// score2 = score2;
-		// var r = Math.floor(color1.red + score2 * (color2.red - color1.red))//.toString(16);
-		// var g = Math.floor(color1.green + score2 * (color2.green - color1.green))//.toString(16);
-		// var b = Math.floor(color1.blue + score2 * (color2.blue - color1.blue))//.toString(16);
-		// // if(r.length < 2) r = "0"+r;
-		// // if(g.length < 2) g = "0"+g;
-		// // if(b.length < 2) b = "0"+b;
-		// // var color = "#"+r+g+b;
-		// var color = {r: r, g: g, b: b};
-		// // console.debug(color);
-		// return color;
-
-
 	}
-	//Used for taking snapshot of graph
+  //Used for taking snapshot of graph
+  /**
+   * @todo
+   */
 	function getRenderer()
 	{
 		return s.renderers[0];
 	}
 
+  /**
+   * @todo
+   */
 	function getNodeColor(score)
 	{
 		var base = getBaseColor(score);
@@ -839,10 +772,11 @@ function HoaxyGraph(options)
 		return color;
 	}
 
+  /**
+   * @todo
+   */
 	function getBorderColor(score)
 	{
-
-
 		var darken = 120;
 		if(score === false)
 		{
@@ -858,11 +792,10 @@ function HoaxyGraph(options)
 
 		var color = "rgb("+base.r+", "+base.g+", "+base.b+")"
 		return color;
-
-	}
-
-
-
+  }
+  /**
+   * @todo
+   */
 	function KillGraph()
 	{
 		if(s)
@@ -883,6 +816,9 @@ function HoaxyGraph(options)
  // #     # #      #    # #    #   #   #         #     # #   #  #    # #      #    #
  //  #####  #      #####  #    #   #   ######     #####  #    # #    # #      #    #
 
+  /**
+   * @todo
+   */
 	function UpdateGraph(start_time, end_time)
 	{
 		clearTimeout(animationTimeout);
@@ -1037,17 +973,6 @@ function HoaxyGraph(options)
                     min_size = nodes[i].size;
                 }
             }
-
-
-			// g.nodes.push({
-			//
-			// 	x: 0,
-			// 	y: 0,
-			// 	size: 10, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
-			// 	id: "fake_node", //nodes[i].screenName,
-			// 	node_id: "fake_node",
-			// 	color: "#ffffff",//nodes[i].color,
-			// });
 
 			var nodes_id = {};
 			var cnt = 0;
@@ -1212,6 +1137,9 @@ function HoaxyGraph(options)
  // #     # #    # #      #   #     #     # #    # #    # #    # #
  //  #####   ####  ###### #    #    #     #  ####  #####  #    # ######
 
+  /**
+   * @todo
+   */
 	function GenerateUserModal(e)
 	{
 		var node = e.data.node.data;
@@ -1328,6 +1256,9 @@ function HoaxyGraph(options)
  // #     # #   #  #    # ##  ##    #     # #   #  #    # #      #    #
  // ######  #    # #    # #    #     #####  #    # #    # #      #    #
 
+  /**
+   * @todo
+   */
 	function drawGraph() {
 
 		// Used for tracking when to stop sigma rendering as to not stop too soon
@@ -1518,6 +1449,9 @@ function HoaxyGraph(options)
 		});
 	}
 
+  /**
+   * @todo
+   */
 	function zoomIn(){
 		var c = s.camera;
 		// Zoom in - animation :
@@ -1529,7 +1463,10 @@ function HoaxyGraph(options)
 		c.goTo({
 			ratio: c.ratio / c.settings('zoomingRatio')
 		});
-	}
+  }
+  /**
+   * @todo
+   */
 	function zoomOut(){
 		var c = s.camera;
 		// Zoom out - animation :
@@ -1541,7 +1478,10 @@ function HoaxyGraph(options)
 		c.goTo({
 			ratio: c.ratio * c.settings('zoomingRatio')
 		});
-	}
+  }
+  /**
+   * @todo
+   */
 	function redraw(){
         if(s && s.camera)
         {
@@ -1556,7 +1496,9 @@ function HoaxyGraph(options)
         }
 	}
 
-
+  /**
+   * @todo
+   */
 	(function(undefined) {
 
 		/**
@@ -1602,6 +1544,9 @@ function HoaxyGraph(options)
  // #       # #        #   #      #   #
  // #       # ######   #   ###### #    #
 
+  /**
+   * @todo
+   */
 	function FilterEdges(filterTimestamp){
 
 		// if(!filterTimestamp)
@@ -1621,44 +1566,6 @@ function HoaxyGraph(options)
 			"fact_checking": colors.edge_colors.fact_checking,
 			"claim": colors.edge_colors.claim,
 		};
-
-
-
-
-
-		// g.nodes.push({
-		//
-		// 	x: 0,
-		// 	y: 0,
-		// 	size: 10, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
-		// 	id: "fake_node", //nodes[i].screenName,
-		// 	node_id: "fake_node",
-		// 	color: "#ffffff",//nodes[i].color,
-		// });
-
-		// var nodes_id = {};
-		// var cnt = 0;
-		// for (var i in nodes)// i is index
-		// {
-		// 	var percent = Math.sqrt(nodes[i].size) / Math.sqrt(max_size);
-		// 	var new_size = (percent * 1000) + 1;
-		// 	if(new_size < 300)
-		// 	{
-		// 		new_size = 300;
-		// 	}
-		// 	var score = botscores[nodes[i].screenName];
-		// 	if(score && score.score)
-		// 	{
-		// 		score = score.score;
-		// 	}
-		// 	else
-		// 	{
-		// 		score = false;
-		// 	}
-		// 	var color = getNodeColor(score);
-        //
-		// 	node_count = node_count / 2;
-		// 	var new_x, new_y;
 
 		var unfiltered_node_edge_counts = {};
 		var max_size = 0;
@@ -1756,7 +1663,10 @@ function HoaxyGraph(options)
 	graphAnimation.playing = false;
 	graphAnimation.paused = false;
 	graphAnimation.increment = 0;
-	var animationTimeout = 0;
+  var animationTimeout = 0;
+  /**
+   * @todo
+   */
 	function AnimateFilter(timestamp)
 	{
 		graphAnimation.current_timestamp = timestamp;
@@ -1783,7 +1693,10 @@ function HoaxyGraph(options)
 			graphAnimation.increment += 1;
 			AnimateFilter(new_timestamp);
 		}, 120);
-	}
+  }
+  /**
+   * @todo
+   */
 	function StartAnimation()
 	{
 		console.debug(timespan);
@@ -1794,6 +1707,9 @@ function HoaxyGraph(options)
 		//console.debug(graphAnimation.current_timestamp);
 	}
 
+  /**
+   * @todo
+   */
 	function StopAnimation(){
 		clearTimeout(animationTimeout);
 		// If the timeline has been animated before we want to bring the tick to the end and show all edges
@@ -1804,20 +1720,28 @@ function HoaxyGraph(options)
 		graphAnimation.playing  = false;
 		graphAnimation.paused = false;
 		//console.debug(graphAnimation.current_timestamp);
-	}
+  }
+  /**
+   * @todo
+   */
 	function PauseAnimation(){
 		clearTimeout(animationTimeout);
 		graphAnimation.paused = true;
 		// console.debug(graphAnimation.current_timestamp);
 		// console.debug("PAUSE");
-	}
+  }
+  /**
+   * @todo
+   */
 	function UnpauseAnimation(){
 		graphAnimation.paused = false;
 		AnimateFilter(graphAnimation.current_timestamp);
 		// console.debug(graphAnimation.current_timestamp);
 	}
 
-
+  /**
+   * @todo
+   */
 	function filterNodesByScore(max, min){
 		var nodes = s.graph.nodes();
 		for(var node_id in nodes)
