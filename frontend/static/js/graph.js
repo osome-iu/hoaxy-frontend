@@ -308,10 +308,10 @@ function HoaxyGraph(options)
 		getBotScoreTimer(score_stats.current_index);
   }
 
-	//space out the requests so that we don't hit the rate limit so quickly
   /**
    * Gets a new botscore every second to avoid quickly hitting the rate limit
    * @param  {Number} index The index for the botscores; avoids repeat score queries
+   * @return {Boolean | Function} Returns setTimeout(), or false if no scores left
    */
   function getBotScoreTimer(index)
 	{
@@ -380,14 +380,13 @@ function HoaxyGraph(options)
 		}
 
 		var prom = new Promise(function(resolve, reject){
-			// var prom = null;
-			//if exists and fresh
+			// if exists and fresh
 			if(user.score)
 			{
 				updateNodeColor(user.user_id, user.score);
 				resolve();
 			}
-			//if score is stale or does not exist
+			// if score is stale or does not exist
 			if(!user.score || user.old)
 			{
 				var botProm = getNewBotometerScore(user.user_id);
@@ -421,14 +420,18 @@ function HoaxyGraph(options)
 		return prom;
   }
   /**
-   * @todo
+   * If the twitter promise in getNewBotometerScore fails,
+   * warn in the console with a detailed error.
+   * @param  {Object} error The twitter error
    */
 	function twitterResponseFail(error){
 		console.error(error&&error.error&&error.error.status);
 		console.warn(error);
   }
   /**
-   * @todo
+   * Get individual scores from Botometer based on user_id
+   * @param  {Number} user_id The twitter user's user ID
+   * @return {Promise} The botscore of the user
    */
 	function getNewBotometerScore(user_id)
 	{
@@ -439,61 +442,53 @@ function HoaxyGraph(options)
 			// Bulking user data and mentions promises together as they need
 			// To happen sequentially
 			var user_data_and_mentions = new Promise(
-                function(resolve, reject) {
-                    var user_data = twitter.getUserDataById(user_id);
-                    user_data
-                        .then(
-                            function(response) {
-                                user.user = response;
-                                var user_mentions = twitter.getUserMentions(user.user.screen_name);
-                                user_mentions
-                                    .then(
-                                        function(responseMentions) {
-                                            if (responseMentions.statuses) user.mentions = responseMentions.statuses;
-                                            else user.mentions = responseMentions;
-                                            // Both user data and mentions was retrieved, so resolving
-                                            // user_data_and_mentions promise
-                                            resolve();
-                                        },
-                                        function(error) {
-                                            twitterResponseFail(error);
-											reject(error);
-                                        }
-                                    );
-                                    // .catch(twitterResponseFail);
-                            },
-                            function(error) {
-                                twitterResponseFail(error);
-								reject(error);
-                            }
-                        );
-                        // .catch(twitterResponseFail);
-                }
-                // function(error) {
-                //     twitterResponseFail(error);
-				// 	reject(error);
-                // }
+        function(resolve, reject) {
+          var user_data = twitter.getUserDataById(user_id);
+          user_data
+          .then(
+            function(response) {
+              user.user = response;
+              var user_mentions = twitter.getUserMentions(user.user.screen_name);
+              user_mentions
+              .then(
+                  function(responseMentions) {
+                    if (responseMentions.statuses) user.mentions = responseMentions.statuses;
+                    else user.mentions = responseMentions;
+                    // Both user data and mentions was retrieved, so resolving
+                    // user_data_and_mentions promise
+                    resolve();
+                  },
+                  function(error) {
+                    twitterResponseFail(error);
+                    reject(error);
+                  }
+              );
+            },
+            function(error) {
+              twitterResponseFail(error);
+              reject(error);
+            }
+          );
+        }
 			);
-			// .catch(twitterResponseFail);
-            // Can happen asynchronously
-            var user_timeline = twitter.getUserTimelineById(user_id);
-            user_timeline
-                .then(
-                    function(response) {
-                        user.timeline = response;
-                    },
-                    function(error) {
-                        twitterResponseFail(error);
-                    }
-                );
-                // .catch(twitterResponseFail);
-
+      // Can happen asynchronously
+      var user_timeline = twitter.getUserTimelineById(user_id);
+      user_timeline
+      .then(
+        function(response) {
+          user.timeline = response;
+        },
+        function(error) {
+          twitterResponseFail(error);
+        }
+      );
 
 			var got_from_twitter = Promise.all([user_data_and_mentions, user_timeline]);
 			got_from_twitter.then(function(values){
 				var botScore = getBotScore(user, screen_name);
 				botScore.then(resolve, reject);
-			}, function(error){
+      }, 
+      function(error){
 				console.warn("Could not get bot score for " + screen_name + ": ", error, error&&error.error&&error.error.status);
 				
 				if(error&&error.error&&error.error.status == 429)
@@ -506,7 +501,10 @@ function HoaxyGraph(options)
 		return botScoreA;
   }
   /**
-   * @todo
+   * Get the botscore (and maybe fresh screenname) of the user
+   * @param  {Object} user_object The user object (containing ID, screenname, etc.)
+   * @param  {String} potentially_old_sn The user's screenname
+   * @return {Number} The botscore of the user
    */
 	function getBotScore(user_object, potentially_old_sn)
 	{
@@ -547,15 +545,6 @@ function HoaxyGraph(options)
 			var completeAutomationProbability =
 				Math.round(response.data.cap.english * 100);
 
-
-			// The following contents should only be actualized once we have
-			// A robust way of showing the user that modal is constantly changing
-			// When we get new bot scores
-			// node_modal_content.botscore = Math.floor(newScore * 100);
-			// node_modal_content.botcolor = newScore != 0 ? getNodeColor(newScore/100) : "";
-			// node_modal_content.completeAutomationProbability =
-			// 	completeAutomationProbability;
-
 			// Storing consistent account information to the global modal content
 			node_modal_content.staleAcctInfo.newId = newId;
 			node_modal_content.staleAcctInfo.oldSn = oldSn;
@@ -583,51 +572,39 @@ function HoaxyGraph(options)
 
 			node_modal_content.showStaleContent = true;
 			updateNodeColor(id, botscores[id].score);
-
-			// Updating user that was retrieved for showing opened modal content
-			// getting_bot_scores.accountJustRetrieved = response.data.user.id_str;
-
 		},
 		function(error){
 			console.debug("Could not get bot score for " + sn + ": ", error);
-
-
 		});
-		return botscore;
+
+    return botscore;
   }
   /**
-   * @todo
+   * Update an individual node's color
+   * @param  {Number} node_id The id of the node
+   * @param  {Number} score The botscore of the account for that node
    */
 	function updateNodeColor(node_id, score)
 	{
-        // setTimeout(function(){
-            color = getNodeColor(score);
-    		//change node color on graph based on botscore
-            if(s && s.graph)
-            {
-    			var node = s.graph.nodes(node_id);
-    			// console.debug(screen_name, score,color, node);
-    			if(node)
-    			{
-    	    		s.graph.nodes(node_id).color = color;
-    	    		s.graph.nodes(node_id).borderColor = getBorderColor(score);
-					refreshGraph();
-    			}
-            }
-        // },500);
+    color = getNodeColor(score);
+    //change node color on graph based on botscore
+    if(s && s.graph)
+    {
+      var node = s.graph.nodes(node_id);
+      if(node)
+      {
+        s.graph.nodes(node_id).color = color;
+        s.graph.nodes(node_id).borderColor = getBorderColor(score);
+        refreshGraph();
+      }
+    }
 	}
 
-
-	var refreshGraph_debounce_timer = 0;
-    function refreshGraph(){
-        clearTimeout(refreshGraph_debounce_timer);
-		refreshGraph_debounce_timer = setTimeout(function(){
-			s.refresh({skipIndexation: true});
-		}, 100);
-    }
-
   /**
-   * @todo
+   * Sets up base colors to allow for calling r, g, b of color
+   * Helper function for getNodeColor() and getBorderColor()
+   * @param  {Number} score The botscore used to get the correct color
+   * @return {Object} The color of the node with r, g, b properties
    */
 	function getBaseColor(score){
 		if(score ===  undefined || score === null)
@@ -639,19 +616,15 @@ function HoaxyGraph(options)
 			return {r: 255, g: 255, b: 255};
 		}
 
-		if(score < 0)
+    // Grey color for scores unable to be found, given value -1
+    if(score < 0)
 		{
 			return {r: 230, g: 230, b: 230};
 		}
-		var score2 = score;
 		score = score * 100;
-		var color1 = { red: 0, green: 255, blue: 0};
-		var color2 = { red: 102, green: 0, blue: 0};
 
 		var node_colors = colors.node_colors.botscores;
 
-
-		score2 = 0;
 		var color = {};
 
 		if(score < 20)
@@ -681,9 +654,10 @@ function HoaxyGraph(options)
 
 		return color;
 	}
-  //Used for taking snapshot of graph
+  
   /**
-   * @todo
+   * Used to take a snapshot of the graph
+   * @return {Object} The render of the graph
    */
 	function getRenderer()
 	{
@@ -691,7 +665,9 @@ function HoaxyGraph(options)
 	}
 
   /**
-   * @todo
+   * Get the node's color based on botscore
+   * @param  {Number} score The botscore
+   * @return {Object} The color of the node
    */
 	function getNodeColor(score)
 	{
@@ -701,7 +677,9 @@ function HoaxyGraph(options)
 	}
 
   /**
-   * @todo
+   * Get the node's border's color
+   * @param  {Number} score The botscore
+   * @return {Object} The color of the node's border
    */
 	function getBorderColor(score)
 	{
