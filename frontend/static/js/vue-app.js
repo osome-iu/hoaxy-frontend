@@ -2373,12 +2373,10 @@ var app = new Vue({
         }
     },
 
-
-    //  #     #
-    //  ##   ##  ####  #    # #    # ##### ###### #####
-    //  # # # # #    # #    # ##   #   #   #      #    #
-    //  #  #  # #    # #    # # #  #   #   #####  #    #
-    //  #     # #    # #    # #  # #   #   #      #    #
+    //  #     #  ####  #    # #    # ##### ###### #####
+    //  ##   ## #    # #    # ##   #   #   #      #    #
+    //  # # # # #    # #    # # #  #   #   #####  #    #
+    //  #  #  # #    # #    # #  # #   #   #      #    #
     //  #     # #    # #    # #   ##   #   #      #    #
     //  #     #  ####   ####  #    #   #   ###### #####
     
@@ -2483,42 +2481,42 @@ var app = new Vue({
         // Callbacks allow for modal manipulation and loading spinner to be handled
         // by Vue.
         this.graph = new HoaxyGraph({
-            spinStart: this.spinStart,
-            spinStop: this.spinStop,
-            toggle_edge_modal: this.toggleEdgeModal,
-            toggle_node_modal: this.toggleNodeModal,
-            node_modal_content: this.node_modal_content,
-            edge_modal_content: this.edge_modal_content,
-            getting_bot_scores: this.getting_bot_scores,
-            spinner_notices: this.spinner_notices,
-            twitter: this.twitter,
-            graphAnimation: this.graphAnimation,
-            twitterRateLimitReached: this.twitterRateLimitReachedObj
+          spinStart: this.spinStart,
+          spinStop: this.spinStop,
+          toggle_edge_modal: this.toggleEdgeModal,
+          toggle_node_modal: this.toggleNodeModal,
+          node_modal_content: this.node_modal_content,
+          edge_modal_content: this.edge_modal_content,
+          getting_bot_scores: this.getting_bot_scores,
+          spinner_notices: this.spinner_notices,
+          twitter: this.twitter,
+          graphAnimation: this.graphAnimation,
+          twitterRateLimitReached: this.twitterRateLimitReachedObj
         });
 
         this.spinStop("initialLoad");
 
         if(!this.query_text)
         {
-            var cookies = document.cookie.split("; ");
-            if(cookies.indexOf("HideHoaxyTutorial=true") == -1)
-            {
-                this.tutorial.show = true;
-            }
+          var cookies = document.cookie.split("; ");
+          if(cookies.indexOf("HideHoaxyTutorial=true") == -1)
+          {
+            this.tutorial.show = true;
+          }
         }
         //if we prepopulated the form with query string data, submit the form right away
         if(this.query_text)
         {
-            this.submitForm(true);
+          this.submitForm(true);
         }
 
         var debounce_timer = 0;
         window.addEventListener('scroll', function(){
-            clearTimeout(debounce_timer);
-            debounce_timer = 0;
-            debounce_timer = setTimeout( function(){
-                v.scrollTop = window.pageYOffset;
-            }, 50);
+          clearTimeout(debounce_timer);
+          debounce_timer = 0;
+          debounce_timer = setTimeout( function(){
+              v.scrollTop = window.pageYOffset;
+          }, 50);
         });
 
     }

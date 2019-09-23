@@ -29,13 +29,21 @@ function HoaxyGraph(options)
 		unavailable: 0,
 
     /**
+     * Reset all botscore counts to 0
+     */
+    reset: function(){
+			this.total = this.found = this.old = this.unavailable = 0;
+    },
+    
+    /**
      * Figure out the total number of botscores collected
      */
 		recompute: function(){
 			this.found = this.old = this.unavailable = 0;
 			for(var i in botscores)
 			{
-				if (this.user_list.indexOf(i) > -1) {
+        if (this.user_list.indexOf(i) > -1) 
+        {
 					var score = botscores[i];
 					if(score.score === -1)
 					{
@@ -57,7 +65,7 @@ function HoaxyGraph(options)
 	};
 
 
-	var s = null; //sigma instance
+	var sigmaInstance = null;
 	var graph = {};
 	var edges = [];
 	var user_id_list = [];
@@ -81,16 +89,16 @@ function HoaxyGraph(options)
 	}
 	var retry_count = 0;
 
-  // Used when importing bot scores from CSV/JSON/etc.
   /**
-   * Handles imported bot scores
+   * Handles imported bot scores from CSV/JSON
    * @param  {String} importedID The imported ID of the user
    * @param  {Number} importedBotscore The imported botscore of the user
    */
 	function setBotScore(importedID, importedBotscore)
 	{
 		botscores[importedID] = {score: importedBotscore, user_id: importedID};
-	}
+  }
+  
   /**
    * Get bot scores from the cache
    */
@@ -335,7 +343,7 @@ function HoaxyGraph(options)
 		}
 
 		var id = score_stats.user_list[index];
-		var node = s.graph.nodes(id);
+		var node = sigmaInstance.graph.nodes(id);
 		var sn = node.data.screenName;
 		var user = {screen_name: sn, user_id: id};
 		if(botscores[id])
@@ -419,6 +427,7 @@ function HoaxyGraph(options)
 		.then(function(response){ return response; }, function(error){ return error; });
 		return prom;
   }
+
   /**
    * If the twitter promise in getNewBotometerScore fails,
    * warn in the console with a detailed error.
@@ -428,6 +437,7 @@ function HoaxyGraph(options)
 		console.error(error&&error.error&&error.error.status);
 		console.warn(error);
   }
+
   /**
    * Get individual scores from Botometer based on user_id
    * @param  {Number} user_id The twitter user's user ID
@@ -436,7 +446,7 @@ function HoaxyGraph(options)
 	function getNewBotometerScore(user_id)
 	{
 		var user = {};
-		var node = s.graph.nodes(user_id);
+		var node = sigmaInstance.graph.nodes(user_id);
 		var screen_name = node.data.screenName;
 		botScoreA = new Promise(function(resolve, reject){
 			// Bulking user data and mentions promises together as they need
@@ -500,6 +510,7 @@ function HoaxyGraph(options)
 		});
 		return botScoreA;
   }
+
   /**
    * Get the botscore (and maybe fresh screenname) of the user
    * @param  {Object} user_object The user object (containing ID, screenname, etc.)
@@ -579,6 +590,23 @@ function HoaxyGraph(options)
 
     return botscore;
   }
+
+  /**
+   * Timer used in refreshGraph() for debouncing
+   * @type {Number}
+   */
+  var updateTimer = 0;
+
+  /**
+   * Refresh the graph no more than 30 times per second
+   */
+  function refreshGraph(){
+    clearTimeout(updateTimer);
+		updateTimer = setTimeout(function(){
+			sigmaInstance.refresh({skipIndexation: true});
+    }, 33);
+  }
+
   /**
    * Update an individual node's color
    * @param  {Number} node_id The id of the node
@@ -588,20 +616,20 @@ function HoaxyGraph(options)
 	{
     color = getNodeColor(score);
     //change node color on graph based on botscore
-    if(s && s.graph)
+    if(sigmaInstance && sigmaInstance.graph)
     {
-      var node = s.graph.nodes(node_id);
+      var node = sigmaInstance.graph.nodes(node_id);
       if(node)
       {
-        s.graph.nodes(node_id).color = color;
-        s.graph.nodes(node_id).borderColor = getBorderColor(score);
+        sigmaInstance.graph.nodes(node_id).color = color;
+        sigmaInstance.graph.nodes(node_id).borderColor = getBorderColor(score);
         refreshGraph();
       }
     }
 	}
 
   /**
-   * Sets up base colors to allow for calling r, g, b of color
+   * Set up base colors to allow for calling r, g, b of color  \
    * Helper function for getNodeColor() and getBorderColor()
    * @param  {Number} score The botscore used to get the correct color
    * @return {Object} The color of the node with r, g, b properties
@@ -661,7 +689,7 @@ function HoaxyGraph(options)
    */
 	function getRenderer()
 	{
-		return s.renderers[0];
+		return sigmaInstance.renderers[0];
 	}
 
   /**
@@ -699,21 +727,21 @@ function HoaxyGraph(options)
 		var color = "rgb("+base.r+", "+base.g+", "+base.b+")"
 		return color;
   }
+
   /**
-   * @todo
+   * Removes all information from the graph to start over
    */
 	function KillGraph()
 	{
-		if(s)
+		if(sigmaInstance)
 		{
-			s.kill();
-			s = null;
-			// console.debug("Killed Existing Sigma");
+			sigmaInstance.kill();
+			sigmaInstance = null;
 		}
 
 		document.getElementById("graph-container").innerHTML = "";
-	}
- //
+  }
+  
  // #     #                                       #####
  // #     # #####  #####    ##   ##### ######    #     # #####    ##   #####  #    #
  // #     # #    # #    #  #  #    #   #         #       #    #  #  #  #    # #    #
@@ -723,162 +751,138 @@ function HoaxyGraph(options)
  //  #####  #      #####  #    #   #   ######     #####  #    # #    # #      #    #
 
   /**
-   * @todo
+   * Create the graph
+   * @param  {Date} start_time The earliest tweet, leftmost date on graph
+   * @param  {Date} end_time   The latest tweet, rightmost date on graph
    */
 	function UpdateGraph(start_time, end_time)
 	{
 		clearTimeout(animationTimeout);
-		// if(graph.nodes){
-		// 	graph.nodes = [];
-		// }
-
-		// spinStart("updateNetwork");
-		// console.debug("Updating Graph");
 		KillGraph();
 
-		// console.debug(edges);
 		if(!edges || !edges.length)
 		{
 			throw "Tried to make graph, but there is no data.";
 		}
 
-		var TWEET_URL = "https://twitter.com/%0/status/%1";
-		var g = {nodes: [], edges: []},
-		//set all nodes color to grey (#BDBDBD); 11/02/2016
-		 node_colors = colors.node_colors,
-		edge_colors = {
-			"fact_checking": colors.edge_colors.fact_checking,
-			"claim": colors.edge_colors.claim,
-		},
-	    nodes = {},
-		count,
-		edgeCount = {};
+		var emptyGraph = {nodes: [], edges: []},
+      node_colors = colors.node_colors,
+      edge_colors = {
+        "fact_checking": colors.edge_colors.fact_checking,
+        "claim": colors.edge_colors.claim,
+      },
+      nodes = {},
+      edgeCount = {};
 		
-		graph = g;
+		graph = emptyGraph;
 
 		timespan.start_time = 0;
 		timespan.end_time = 0;
-		var node_count = 0, edge_count=0;
-	    try
-	    {
-			//create nodes[] data structure to hold info.
-	        for (var i in edges)
-	        {
+    var node_count = 0;
+    
+    try
+    {
+      // create nodes[] data structure to hold info.
+      for (var i in edges)
+      {
+        var edge = edges[i],
+        from_user_id = edge.from_user_id,
+        to_user_id = edge.to_user_id,
+        tweet_id = edge.tweet_id,
+        tweet_type = edge.tweet_type,
+        is_mention = edge.is_mention,
+        tweet_created_at = (new Date(edge.tweet_created_at)).getTime();
 
-	            var edge = edges[i],
-					// from_user_id = edge.from_user_screen_name,
-					// to_user_id = edge.to_user_screen_name,
-					from_user_id = edge.from_user_id,
-					to_user_id = edge.to_user_id,
-					tweet_id = edge.tweet_id,
-					tweet_type = edge.tweet_type,
-					is_mention = edge.is_mention,
-					// tweet_created_at = (new Date(edge.tweet_created_at.substring(0, 10))).getTime();
-					tweet_created_at = (new Date(edge.tweet_created_at)).getTime();
-// console.debug(edge);
+        if(start_time && tweet_created_at < start_time)
+        {
+          continue;
+        }
+        if(end_time && tweet_created_at > end_time)
+        {
+          continue;
+        }
 
-					//filter edges not fall into [start_time, end_time]
-					// if (tweet_created_at < start_time || tweet_created_at > end_time)
-					// 	continue;
+        if(!timespan.start_time || tweet_created_at < timespan.start_time)
+        {
+          timespan.start_time = tweet_created_at;
+        }
+        if(!timespan.end_time || tweet_created_at > timespan.end_time)
+        {
+          timespan.end_time = tweet_created_at;
+        }
 
-					if(start_time && tweet_created_at < start_time)
-					{
-						continue;
-					}
-					if(end_time && tweet_created_at > end_time)
-					{
-						continue;
-					}
+        if (start_time && end_time) 
+        {
+          timespan.start_time = start_time;
+          timespan.end_time = end_time;
+        }
 
-					if(!timespan.start_time || tweet_created_at < timespan.start_time)
-					{
-						timespan.start_time = tweet_created_at;
-					}
-					if(!timespan.end_time || tweet_created_at > timespan.end_time)
-					{
-						timespan.end_time = tweet_created_at;
-					}
+        var url_raw = edge.url_raw, title = edge.title;
 
-					if (start_time && end_time) {
-					       // console.log('BOTH TIMES EXIST');
-					       timespan.start_time = start_time;
-					       timespan.end_time = end_time;
-					}
+        // sanity check
+        // if -1, dump it since no out edge
+        if (-1 == to_user_id)
+          continue;
 
-					var url_raw = edge.url_raw, title = edge.title;
+        nodes[from_user_id] = nodes[from_user_id] || {id:"", size:1, color: "", incomingCount: 0, outgoingCount: 0, screenName:"", incoming: {}, outgoing: {}, edges: []};
+        nodes[from_user_id].id = from_user_id;
+        nodes[from_user_id].size++;
+        nodes[from_user_id].color = node_colors[edge.site_type];
+        nodes[from_user_id].screenName = edge.from_user_screen_name;
+        nodes[from_user_id].edges.push("e" + i);
 
-				//sanity check
-	            //if -1, dump it since no  out edge
-	            if (-1 == to_user_id)
-	                continue;
-				nodes[from_user_id] = nodes[from_user_id] || {id:"", size:1, color: "", incomingCount: 0, outgoingCount: 0, screenName:"", incoming: {}, outgoing: {}, edges: []};
-				nodes[from_user_id].id = from_user_id;
-	            nodes[from_user_id].size++;
-				nodes[from_user_id].color = node_colors[edge.site_type];
-				nodes[from_user_id].screenName = edge.from_user_screen_name;
-				nodes[from_user_id].edges.push("e" + i);
+        nodes[from_user_id].outgoing[to_user_id] = nodes[from_user_id].outgoing[to_user_id] || {type:"", fact_checking: 0, claim: 0, screenName:"", count: 0, min_tweet_created_at: (new Date()).getTime(), max_tweet_created_at: 0, is_mentions: [], tweet_types: [], ids: [], url_raws:[], titles:[]};
+        nodes[from_user_id].outgoing[to_user_id][edge.site_type] ++;
+        nodes[from_user_id].outgoing[to_user_id].type = (nodes[from_user_id].outgoing[to_user_id].fact_checking > nodes[from_user_id].outgoing[to_user_id].claim ? "fact_checking" : "claim");
+        nodes[from_user_id].outgoing[to_user_id].screenName = edge.to_user_screen_name;
+        nodes[from_user_id].outgoing[to_user_id].count ++;
+        nodes[from_user_id].outgoing[to_user_id].min_tweet_created_at = Math.min(tweet_created_at, nodes[from_user_id].outgoing[to_user_id].min_tweet_created_at);
+        nodes[from_user_id].outgoing[to_user_id].max_tweet_created_at = Math.max(tweet_created_at, nodes[from_user_id].outgoing[to_user_id].max_tweet_created_at);
+        nodes[from_user_id].outgoing[to_user_id].is_mentions.push(is_mention);
+        nodes[from_user_id].outgoing[to_user_id].tweet_types.push(tweet_type);
+        nodes[from_user_id].outgoing[to_user_id].ids.push(tweet_id);
+        nodes[from_user_id].outgoing[to_user_id].url_raws.push(url_raw);
+        nodes[from_user_id].outgoing[to_user_id].titles.push(title);
+        nodes[from_user_id].outgoingCount ++;
 
-				nodes[from_user_id].outgoing[to_user_id] = nodes[from_user_id].outgoing[to_user_id] || {type:"", fact_checking: 0, claim: 0, screenName:"", count: 0, min_tweet_created_at: (new Date()).getTime(), max_tweet_created_at: 0, is_mentions: [], tweet_types: [], ids: [], url_raws:[], titles:[]};
-				nodes[from_user_id].outgoing[to_user_id][edge.site_type] ++;
-				nodes[from_user_id].outgoing[to_user_id].type = (nodes[from_user_id].outgoing[to_user_id].fact_checking > nodes[from_user_id].outgoing[to_user_id].claim ? "fact_checking" : "claim");
+        nodes[to_user_id] = nodes[to_user_id] || {id:"", size:1, color: "", incomingCount: 0, outgoingCount: 0, screenName:"", incoming: {}, outgoing: {}, edges: []};
+        nodes[to_user_id].id = to_user_id;
+        nodes[to_user_id].color = node_colors[edge.site_type];
+        nodes[to_user_id].screenName = edge.to_user_screen_name;
+        nodes[to_user_id].edges.push("e"+i);
 
-				nodes[from_user_id].outgoing[to_user_id].screenName = edge.to_user_screen_name;
-				nodes[from_user_id].outgoing[to_user_id].count ++;
+        nodes[to_user_id].incoming[from_user_id] = nodes[to_user_id].incoming[from_user_id] || {type:"", fact_checking: 0, claim: 0,screenName:"", count: 0, is_mentions: [], tweet_types: [], ids:[], url_raws:[], titles:[]};
+        nodes[to_user_id].incoming[from_user_id][edge.site_type] ++;
+        nodes[to_user_id].incoming[from_user_id].type = (nodes[to_user_id].incoming[from_user_id].fact_checking > nodes[to_user_id].incoming[from_user_id].claim ? "fact_checking" : "claim");
+        nodes[to_user_id].incoming[from_user_id].screenName = edge.from_user_screen_name;
+        nodes[to_user_id].incoming[from_user_id].count ++;
+        nodes[to_user_id].incoming[from_user_id].is_mentions.push(is_mention);
+        nodes[to_user_id].incoming[from_user_id].tweet_types.push(tweet_type);
+        nodes[to_user_id].incoming[from_user_id].ids.push(tweet_id);
+        nodes[to_user_id].incoming[from_user_id].url_raws.push(url_raw);
+        nodes[to_user_id].incoming[from_user_id].titles.push(title);
+        nodes[to_user_id].incomingCount ++;
 
-				nodes[from_user_id].outgoing[to_user_id].min_tweet_created_at = Math.min(tweet_created_at, nodes[from_user_id].outgoing[to_user_id].min_tweet_created_at);
-				nodes[from_user_id].outgoing[to_user_id].max_tweet_created_at = Math.max(tweet_created_at, nodes[from_user_id].outgoing[to_user_id].max_tweet_created_at);
+        edgeCount[from_user_id + " " + to_user_id] = edgeCount[from_user_id + " " + to_user_id]  || 0;
+        edgeCount[from_user_id + " " + to_user_id] += 1;
+      }
+			// put nodes into sigma
 
-				nodes[from_user_id].outgoing[to_user_id].is_mentions.push(is_mention);
-				nodes[from_user_id].outgoing[to_user_id].tweet_types.push(tweet_type);
-				nodes[from_user_id].outgoing[to_user_id].ids.push(tweet_id);
-				nodes[from_user_id].outgoing[to_user_id].url_raws.push(url_raw);
-				nodes[from_user_id].outgoing[to_user_id].titles.push(title);
-				nodes[from_user_id].outgoingCount ++;
-
-
-				nodes[to_user_id] = nodes[to_user_id] || {id:"", size:1, color: "", incomingCount: 0, outgoingCount: 0, screenName:"", incoming: {}, outgoing: {}, edges: []};
-				nodes[to_user_id].id = to_user_id;
-				nodes[to_user_id].color = node_colors[edge.site_type];
-				nodes[to_user_id].screenName = edge.to_user_screen_name;
-				nodes[to_user_id].edges.push("e"+i);
-
-				nodes[to_user_id].incoming[from_user_id] = nodes[to_user_id].incoming[from_user_id] || {type:"", fact_checking: 0, claim: 0,screenName:"", count: 0, is_mentions: [], tweet_types: [], ids:[], url_raws:[], titles:[]};
-				nodes[to_user_id].incoming[from_user_id][edge.site_type] ++;
-				nodes[to_user_id].incoming[from_user_id].type = (nodes[to_user_id].incoming[from_user_id].fact_checking > nodes[to_user_id].incoming[from_user_id].claim ? "fact_checking" : "claim");
-
-				nodes[to_user_id].incoming[from_user_id].screenName = edge.from_user_screen_name;
-				nodes[to_user_id].incoming[from_user_id].count ++;
-
-				nodes[to_user_id].incoming[from_user_id].is_mentions.push(is_mention);
-				nodes[to_user_id].incoming[from_user_id].tweet_types.push(tweet_type);
-				nodes[to_user_id].incoming[from_user_id].ids.push(tweet_id);
-				nodes[to_user_id].incoming[from_user_id].url_raws.push(url_raw);
-				nodes[to_user_id].incoming[from_user_id].titles.push(title);
-				nodes[to_user_id].incomingCount ++;
-
-				edgeCount[from_user_id + " " + to_user_id] = edgeCount[from_user_id + " " + to_user_id]  || 0;
-				edgeCount[from_user_id + " " + to_user_id] += 1;
-
-				count = edgeCount[from_user_id + " " + to_user_id];
-	        }
-			// console.debug(nodes);
-			//put nodes into sigma
-
-            var max_size = 0;
-            var min_size = 0;
+      var max_size = 0;
+      var min_size = 0;
 			var node_count = 0;
-            for(var i in nodes)
-            {
+      for(var i in nodes)
+      {
 				node_count ++;
-                if(nodes[i].size > max_size)
-                {
-                    max_size = nodes[i].size;
-                }
-                if(nodes[i].size < min_size)
-                {
-                    min_size = nodes[i].size;
-                }
-            }
+        if(nodes[i].size > max_size)
+        {
+          max_size = nodes[i].size;
+        }
+        if(nodes[i].size < min_size)
+        {
+          min_size = nodes[i].size;
+        }
+      }
 
 			var nodes_id = {};
 			var cnt = 0;
@@ -894,7 +898,7 @@ function HoaxyGraph(options)
 
 			score_stats.user_list = [];
 
-      for (var i in nodes)// i is index
+      for (var i in nodes)
       {
         var percent = Math.sqrt(nodes[i].size) / Math.sqrt(max_size);
         var new_size = (percent * 1000) + 1;
@@ -914,7 +918,6 @@ function HoaxyGraph(options)
 					else if(score.old === true)
 					{
 						stale_scores_to_compute.push(nodes[i].id);
-						//account_list_to_compute.push(nodes[i].id);
 						score_stats.old += 1;
 						score_stats.found += 1;
 					}
@@ -928,32 +931,31 @@ function HoaxyGraph(options)
 				else
 				{
 					scores_never_computed_to_compute.push(nodes[i].id);
-					//account_list_to_compute.push(nodes[i].id);
 					score = false;
 				}
 				var color = getNodeColor(score);
 
 				var new_x, new_y;
 				// Using x=cos(2pi*fraction), y=sin(2pi*fraction) and the fraction increases
-				// Deterministically with the node counter, essentially placing the
-				// Nodes on a circle regardless of node count, this ensures that
-				// Force atlas will produce the same graph for a given query every time
+				// deterministically with the node counter, essentially placing the
+				// nodes on a circle regardless of node count, this ensures that
+				// force atlas will produce the same graph for a given query every time
 				new_x = Math.cos(2*Math.PI*(cnt/node_count));
-				new_y = Math.sin(2*Math.PI*(cnt/node_count));
-// console.debug(i);
-				g.nodes.push({
+        new_y = Math.sin(2*Math.PI*(cnt/node_count));
+        
+				graph.nodes.push({
 					x: new_x,
 					y: new_y,
-					// We can also initialize Force Atlas with a randomized graph
-					// But this will make visualizations look different every time
+					// We can also initialize Force Atlas with a randomized graph,
+					// but this will make visualizations look different every time
 					// x: Math.random() * 10,
 					// y: Math.random() * 10,
 					orig_size: nodes[i].size,
 					size: new_size, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
 					label: nodes[i].screenName,
-					id: i, //nodes[i].screenName,
+					id: i,
 					node_id: cnt,
-					color: color,//nodes[i].color,
+					color: color,
 					data: nodes[i]
 				});
 				nodes_id[i] = cnt;
@@ -963,76 +965,76 @@ function HoaxyGraph(options)
 			// We now order and prioritize the scores that need to be computed first
 			// First we compute scores that have not ever been computed before
 			var neverComputedLength = scores_never_computed_to_compute.length;
-			for (var i = 0; i < neverComputedLength; i++) {
-			    account_list_to_compute.push(scores_never_computed_to_compute[i]);
+      for (var i = 0; i < neverComputedLength; i++)
+      {
+			  account_list_to_compute.push(scores_never_computed_to_compute[i]);
 			}
 
 	    // Then we compute stale scores
 	    var staleLength = stale_scores_to_compute.length;
-			for (var i = 0; i < staleLength; i++) {
-			    account_list_to_compute.push(stale_scores_to_compute[i]);
+      for (var i = 0; i < staleLength; i++)
+      {
+			  account_list_to_compute.push(stale_scores_to_compute[i]);
 			}
 
 			// Populating bot update list with already updated scores first
 			// Update bot update index to the point after this list
 			score_stats.current_index = already_computed_account_list.length;
-			for (var i = 0; i<score_stats.current_index; i++){
-			    score_stats.user_list.push(already_computed_account_list[i])
+      for (var i = 0; i<score_stats.current_index; i++)
+      {
+			  score_stats.user_list.push(already_computed_account_list[i])
 			}
 
 			// Then we add the bot scores that are stale or never obtained
 			toComputeLen = account_list_to_compute.length;
-			for (var i = 0; i<toComputeLen; i++){
-			    score_stats.user_list.push(account_list_to_compute[i])
+      for (var i = 0; i<toComputeLen; i++)
+      {
+			  score_stats.user_list.push(account_list_to_compute[i])
 			}
 
-			node_count = g.nodes.length;
+			node_count = graph.nodes.length;
 			score_stats.total = node_count;
 
-			//put edges into sigma
+			// put edges into sigma
 			var edgeIndex = 0;
 			for (var i in nodes)
 			{
 				for (var j in nodes[i].outgoing)
 				{
-					g.edges.push({
-							id: "e" + edgeIndex,
-							source: i,
-							target: j,
+					graph.edges.push({
+            id: "e" + edgeIndex,
+            source: i,
+            target: j,
 
-							source_screenName: nodes[i].screenName,
-							target_screenName: nodes[j].screenName,
+            source_screenName: nodes[i].screenName,
+            target_screenName: nodes[j].screenName,
 
-							from_node_id: nodes_id[i],
-							to_node_id: nodes_id[j],
-							size: (Number(nodes[i].outgoing[j].count)),
-							type: "arrow",
-							edge_type: nodes[i].outgoing[j].type,
-							color: edge_colors[nodes[i].outgoing[j].type],//Giovanni said use a third color
-							count: edgeIndex,
-							min_tweet_created_at: nodes[i].outgoing[j].min_tweet_created_at,
-							max_tweet_created_at: nodes[i].outgoing[j].max_tweet_created_at,
-							outgoing_ids: nodes[i].outgoing[j].ids,
-							incoming_ids: nodes[j].incoming[i].ids,
-							url_raws: nodes[i].outgoing[j].url_raws,
-							titles: nodes[i].outgoing[j].titles,
-							tweet_types: nodes[i].outgoing[j].tweet_types
-						});
+            from_node_id: nodes_id[i],
+            to_node_id: nodes_id[j],
+            size: (Number(nodes[i].outgoing[j].count)),
+            type: "arrow",
+            edge_type: nodes[i].outgoing[j].type,
+            color: edge_colors[nodes[i].outgoing[j].type], // Giovanni said use a third color
+            count: edgeIndex,
+            min_tweet_created_at: nodes[i].outgoing[j].min_tweet_created_at,
+            max_tweet_created_at: nodes[i].outgoing[j].max_tweet_created_at,
+            outgoing_ids: nodes[i].outgoing[j].ids,
+            incoming_ids: nodes[j].incoming[i].ids,
+            url_raws: nodes[i].outgoing[j].url_raws,
+            titles: nodes[i].outgoing[j].titles,
+            tweet_types: nodes[i].outgoing[j].tweet_types
+          });
 					++edgeIndex;
 				}
-			}
-
-
-			edge_count = g.edges.length;
-	    }
-	    catch(e)
-	    {
-	        console.debug(e);
-	    }
-
-		graph = g;
+      }
+    }
+    catch(e)
+    {
+      console.debug(e);
+    }
+      
 		drawGraph();
-	    return graph;
+    return graph;
 	}
 
  // #     #                         #     #
@@ -1044,13 +1046,13 @@ function HoaxyGraph(options)
  //  #####   ####  ###### #    #    #     #  ####  #####  #    # ######
 
   /**
-   * @todo
+   * Generates the modal that pops up when clicking on a node
+   * @param  {Object} e `clickNode` type containing data pertinent to the Twitter account
    */
 	function GenerateUserModal(e)
 	{
-		var node = e.data.node.data;
+    var node = e.data.node.data;
 
-		//new incoming edges, could be is_mentioned_by, has_quoted, has_retweeted
 		var tweets = {
 			is_mentioned_by: {},
 			has_quoted: {},
@@ -1070,16 +1072,17 @@ function HoaxyGraph(options)
 
 		for (var i in node.incoming)
 		{
-			var fromURL = 'https://twitter.com/intent/user?user_id='+String(i), //i,
-				toURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id;
+			var fromURL = 'https://twitter.com/intent/user?user_id='+String(i),
+				  toURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id;
 
 			for (var j in node.incoming[i].ids)
 			{
 				var tweetURL = TWEET_URL.replace("%0", i).replace("%1", node.incoming[i].ids[j]);
 				if (true != node.incoming[i].is_mentions[j] && false != node.incoming[i].is_mentions[j])
 					console.log("GenerateUserModal Parse incoming.is_mentions error!!");
-				var tweet_type = "";
-				//if is_mention == true, or "reply"==tweet type, then must be a mention,
+
+        var tweet_type = "";
+        
 				if(true == node.incoming[i].is_mentions[j] || "reply" == node.incoming[i].tweet_types[j])
 				{
 					tweet_type = "is_mentioned_by";
@@ -1091,21 +1094,20 @@ function HoaxyGraph(options)
 				else if("retweet" == node.incoming[i].tweet_types[j])
 				{
 					tweet_type = "has_retweeted";
-				}
+        }
+        
 				tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: fromURL, screenName: node.incoming[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
 				tweets[tweet_type][i].article_titles.push(node.incoming[i].titles[j]);
 				tweets[tweet_type][i].tweet_urls.push(tweetURL);
 				tweets[tweet_type][i].article_urls.push(node.incoming[i].url_raws[j]);
 				counts[tweet_type + "_count"] ++;
-
 			}
 		}
 
-		//new outgoing edges, could be has_mentioned, is_quoted_by, is_retweeted_by
 		for (var i in node.outgoing)
 		{
 			var fromURL = 'https://twitter.com/intent/user?user_id='+e.data.node.id,
-				toURL = 'https://twitter.com/intent/user?user_id='+String(i);
+				  toURL = 'https://twitter.com/intent/user?user_id='+String(i);
 
 			for (var j in node.outgoing[i].ids)
 			{
@@ -1115,7 +1117,6 @@ function HoaxyGraph(options)
 				
 				var tweet_type = "";
 
-				//if is_mention == true, or "reply"==tweet type, then must be a mention
 				if(true == node.outgoing[i].is_mentions[j] || "reply" == node.outgoing[i].tweet_types[j])
 				{
 					tweet_type = "has_mentioned";
@@ -1127,30 +1128,33 @@ function HoaxyGraph(options)
 				else if("retweet" == node.outgoing[i].tweet_types[j])
 				{
 					tweet_type = "is_retweeted_by";
-				}
+        }
+        
 				tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: toURL, screenName: node.outgoing[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
 				tweets[tweet_type][i].article_titles.push(node.outgoing[i].titles[j]);
 				tweets[tweet_type][i].tweet_urls.push(tweetURL);
 				tweets[tweet_type][i].article_urls.push(node.outgoing[i].url_raws[j]);
 				counts[tweet_type + "_count"] ++;
 			}
-		}
-		node_modal_content.is_mentioned_by = tweets.is_mentioned_by;
-		node_modal_content.has_quoted = tweets.has_quoted;
-		node_modal_content.has_retweeted = tweets.has_retweeted;
-		node_modal_content.has_mentioned = tweets.has_mentioned;
+    }
+    
+    node_modal_content.has_quoted = tweets.has_quoted;
+    node_modal_content.has_quoted_count = counts.has_quoted_count;
 
-		node_modal_content.is_quoted_by = tweets.is_quoted_by;
+    node_modal_content.is_quoted_by = tweets.is_quoted_by;
+    node_modal_content.is_quoted_by_count = counts.is_quoted_by_count;
+    
+    node_modal_content.has_mentioned = tweets.has_mentioned;
+    node_modal_content.has_mentioned_count = counts.has_mentioned_count;
+
+    node_modal_content.is_mentioned_by = tweets.is_mentioned_by;
+    node_modal_content.is_mentioned_by_count = counts.is_mentioned_by_count;
+
+    node_modal_content.has_retweeted = tweets.has_retweeted;
+    node_modal_content.has_retweeted_count = counts.has_retweeted_count;
+    
 		node_modal_content.is_retweeted_by = tweets.is_retweeted_by;
-
-		node_modal_content.is_mentioned_by_count = counts.is_mentioned_by_count;
-		node_modal_content.has_quoted_count = counts.has_quoted_count;
-		node_modal_content.has_retweeted_count = counts.has_retweeted_count;
-		node_modal_content.has_mentioned_count = counts.has_mentioned_count;
-		node_modal_content.is_quoted_by_count = counts.is_quoted_by_count;
-		node_modal_content.is_retweeted_by_count = counts.is_retweeted_by_count;
-
-
+    node_modal_content.is_retweeted_by_count = counts.is_retweeted_by_count;
 	}
 
 
@@ -1163,153 +1167,123 @@ function HoaxyGraph(options)
  // ######  #    # #    # #    #     #####  #    # #    # #      #    #
 
   /**
-   * @todo
+   * Draws the Sigma graph
    */
 	function drawGraph() {
 
 		// Used for tracking when to stop sigma rendering as to not stop too soon
 		numSigmaInstancesLaunched++;
 
-		// console.log("Drawing Sigma");
-		// $('#graph-container').empty();
-
-		// if(!graph || !graph.nodes || !graph.edges)
-		// {
-		// 	setTimeout(function(){drawGraph()}, 100);
-		// 	return false;
-		// }
-
-		s = new sigma({
+		sigmaInstance = new sigma({
 			graph:graph,
-	        container: 'graph-container',
-	        renderer: {
-	            // IMPORTANT:
-	            // This works only with the canvas renderer, so the
-	            // renderer type set as "canvas" is necessary here.
-	            container: document.getElementById('graph-container'),
-	            type: 'canvas'
-	        },
-	        settings: {
+      container: 'graph-container',
+      renderer: {
+        // IMPORTANT:
+        // This works only with the canvas renderer, so the
+        // renderer type set as "canvas" is necessary here.
+        container: document.getElementById('graph-container'),
+        type: 'canvas'
+      },
+      settings: {
 				autoRescale: true,
 				scalingMode: "inside",
-	            edgeHoverExtremities: true,
-	            borderSize: 1,
-	            minArrowSize: 6,
-	            labelThreshold: 8,
-	            enableEdgeHovering: true,
-	            edgeHoverSizeRatio: 2,
-	            singleHover: true,
+        edgeHoverExtremities: true,
+        borderSize: 1,
+        minArrowSize: 6,
+        labelThreshold: 8,
+        enableEdgeHovering: true,
+        edgeHoverSizeRatio: 2,
+        singleHover: true,
 				rescaleIgnoreSize: true,
 				defaultNodeType: 'border',
-                zoomingRatio: 1.2
-	        }
-	    });
-		var jiggle_compensator = Math.floor(Math.sqrt(graph.edges.length)) *600;
-		s.refresh({skipIndexation: true});
-		s.startForceAtlas2({
-	        slowDown: 100,
-	        gravity: 2
-	    });
-		// console.debug(botscores);
+        zoomingRatio: 1.2
+      }
+    });
+
+		var jiggle_compensator = Math.floor(Math.sqrt(graph.edges.length)) * 600;
+		sigmaInstance.refresh({skipIndexation: true});
+		sigmaInstance.startForceAtlas2({
+      slowDown: 100,
+      gravity: 2
+    });
+
 		for(var i in botscores)
 		{
 			updateNodeColor(i, botscores[i].score);
 		}
 
-		// var that = this;
-		// spinStart("ForceAtlas");
-
 		spinStop("generateNetwork");
 
 		setTimeout(function () {
-            // getBotCacheScores();
-
-			// If more sigma graphs are undergoing this timeout, do not stop
+      // If more sigma graphs are undergoing this timeout, do not stop
 			// the latter graph from a previous graph's timeout, using this
 			// mechanism which normalizes the sigma graph to 1, and when that
 			// happens, the visualization rendering is stopped with full time
 			// to render
-		  if (numSigmaInstancesLaunched < 2) {
-				s.stopForceAtlas2();
-				s.camera.goTo({x:0, y:0, ratio:1});
+      if (numSigmaInstancesLaunched < 2) 
+      {
+				sigmaInstance.stopForceAtlas2();
+				sigmaInstance.camera.goTo({x:0, y:0, ratio:1});
 				spinStop("ForceAtlas");
-				// spinStop("updateNetwork");
 				spinner_notices.graph = "";
 				numSigmaInstancesLaunched--;
-			} else {
+      } 
+      else 
+      {
 				numSigmaInstancesLaunched--;
 			}
-			// FilterEdges();
-
 		}, 2000 + jiggle_compensator);
 
-	    s.bind('clickNode', function (e) {
-			var node = e.data.node.data;
+    sigmaInstance.bind('clickNode', function (e) {
+      var node = e.data.node.data;
 
+      node_modal_content.user_id = e.data.node.id;
+      node_modal_content.screenName = node.screenName;
 
-			// console.debug(e.data);
-	        //the following /**/ is for twitter user widget.
-			// $('#myModalLabel').html('User:  <a target="_blank" href="https://twitter.com/intent/user?user_id='+e.data.node.id+'">@'+ node.screenName +'</a>');
-			node_modal_content.user_id = e.data.node.id;
-			node_modal_content.screenName = node.screenName;
+      node_modal_content.staleAcctInfo.openedModalWhileFetchingScores = getting_bot_scores.running;
 
-			node_modal_content.staleAcctInfo.openedModalWhileFetchingScores = getting_bot_scores.running;
+      var score = false;
+      if(botscores[node.id])
+      {
+        score = botscores[node.id].score;
+        score = Math.floor(score * 100);
+        node_modal_content.botcolor = score != 0 ? getNodeColor(score/100) : "";
+        node_modal_content.botscore = score;
+        node_modal_content.timestamp = botscores[node.id].time;
 
-			var score = false;
-			// console.debug(node.screenName, botscores[node.screenName], botscores);
-			/*
-			console.debug(node);
-			console.debug(botscores);
-			*/
-			if(botscores[node.id])
-			{
-				var bs = botscores[node.id];
-				// console.debug(bs);
-				score = botscores[node.id].score;
-				score = Math.floor(score * 100);
-				node_modal_content.botcolor = score != 0 ? getNodeColor(score/100) : "";
-				node_modal_content.botscore = score;
-				node_modal_content.timestamp = botscores[node.id].time;
+        // Right now these results are not cached so there are instances
+        // where the botscores exist but stale account info does not.
+        // We provide proper checks here so that model content can be generated
+        if(botscores[node.id].hasOwnProperty('staleAcctInfo') && botscores[node.id].hasOwnProperty('completeAutomationProbability'))
+        {
+          node_modal_content.staleAcctInfo.isStale = botscores[node.id].staleAcctInfo.isStale;
+          node_modal_content.staleAcctInfo.newId = botscores[node.id].staleAcctInfo.newId;
+          node_modal_content.staleAcctInfo.oldSn = botscores[node.id].staleAcctInfo.oldSn;
+          node_modal_content.staleAcctInfo.newSn = botscores[node.id].staleAcctInfo.newSn;
 
-				// Right now these results are not cached so there are instances
-				// Where the botscores exist but stale account info does not
-				// We provite proper checks here so that model content can be generated
-				if(botscores[node.id].hasOwnProperty('staleAcctInfo') && botscores[node.id].hasOwnProperty('completeAutomationProbability')){
-						node_modal_content.staleAcctInfo.isStale = botscores[node.id].staleAcctInfo.isStale;
-						node_modal_content.staleAcctInfo.newId = botscores[node.id].staleAcctInfo.newId;
-						node_modal_content.staleAcctInfo.oldSn = botscores[node.id].staleAcctInfo.oldSn;
-						node_modal_content.staleAcctInfo.newSn = botscores[node.id].staleAcctInfo.newSn;
+          // updating the CAP score
+          node_modal_content.completeAutomationProbability = botscores[node.id].completeAutomationProbability;
+          node_modal_content.showStaleContent = true;
+        } 
+        else 
+        {
+          node_modal_content.showStaleContent = false;
+        }
+      }
+      else
+      {
+        node_modal_content.showStaleContent = false;
+        node_modal_content.botscore = false;
+        node_modal_content.botcolor = "";
+      }
 
-						// updating the CAP score
-						node_modal_content.completeAutomationProbability = botscores[node.id].completeAutomationProbability;
-						node_modal_content.showStaleContent = true;
-				} else {
-						node_modal_content.showStaleContent = false;
-				}
+      // insert tweets into modal body, grouped by individual to_user_id
+      GenerateUserModal(e);
 
-			}
-			else
-			{
-				node_modal_content.showStaleContent = false;
-				node_modal_content.botscore = false;
-				node_modal_content.botcolor = "";
-			}
+      toggle_node_modal();
+    });
 
-			//insert tweets into modal body, grouped by individual to_user_id
-			GenerateUserModal(e);
-
-			//
-			// $("#nodeModal").off('shown.bs.modal show.bs.modal');
-			// $("#nodeModal").on("shown.bs.modal show.bs.modal", function(){
-			// 	$(".modal-dialog").scrollTop(0);
-			// });
-			// // console.debug($("#myModal"));
-			// $('#nodeModal').modal('toggle');
-			toggle_node_modal();
-
-	    });
-
-		s.bind('clickEdge', function(e){
+		sigmaInstance.bind('clickEdge', function(e){
 			var edge = e.data.edge;
 			edge_modal_content.edge = edge;
 			var tweet_urls = {};
@@ -1326,7 +1300,7 @@ function HoaxyGraph(options)
 
 			edge_modal_content.tweet_urls = tweet_urls;
 
-			//show modal header, like  User A mentions, quotes, and labels B
+			// show modal header, like User A mentions, quotes, and labels B
 			var label_string = "";
 			var elemNum = 0;
 			for (var key in tweet_types_hashtable)
@@ -1344,79 +1318,60 @@ function HoaxyGraph(options)
 			}
 
 			edge_modal_content.label_string = label_string;
-			// $("#edgeModal").off('shown.bs.modal show.bs.modal');
-			// $("#edgeModal").on("shown.bs.modal show.bs.modal", function(){
-			// 	$(".modal-dialog").scrollTop(0);
-			// });
-			//
-			// $('#edgeModal').modal('toggle');
 			toggle_edge_modal();
-
 		});
 	}
 
   /**
-   * @todo
+   * Zoom in on the graph
    */
-	function zoomIn(){
-		var c = s.camera;
-		// Zoom in - animation :
-		sigma.misc.animation.camera(c, {
-			ratio: c.ratio / c.settings('zoomingRatio')
-		}, {
-			duration: 200
-		});
-		c.goTo({
-			ratio: c.ratio / c.settings('zoomingRatio')
-		});
+  function zoomIn()
+  {
+		var c = sigmaInstance.camera;
+    sigma.misc.animation.camera(c, 
+      {ratio: c.ratio / c.settings('zoomingRatio')}, 
+      {duration: 200}
+    );
+		c.goTo({ratio: c.ratio / c.settings('zoomingRatio')});
   }
+
   /**
-   * @todo
+   * Zoom out on the graph
    */
-	function zoomOut(){
-		var c = s.camera;
-		// Zoom out - animation :
-		sigma.misc.animation.camera(c, {
-			ratio: c.ratio * c.settings('zoomingRatio')
-		}, {
-			duration: 200
-		});
-		c.goTo({
-			ratio: c.ratio * c.settings('zoomingRatio')
-		});
+  function zoomOut()
+  {
+		var c = sigmaInstance.camera;
+    sigma.misc.animation.camera(c, 
+      {ratio: c.ratio * c.settings('zoomingRatio')}, 
+      {duration: 200}
+    );
+		c.goTo({ratio: c.ratio * c.settings('zoomingRatio')});
   }
+
   /**
-   * @todo
+   * Draw the graph
    */
-	function redraw(){
-        if(s && s.camera)
-        {
-    		var c = s.camera;
-    		// Zoom out - animation :
-    		sigma.misc.animation.camera(c, {
-    			ratio: c.ratio
-    		}, {});
-    		c.goTo({
-    			ratio: c.ratio
-    		});
-        }
+  function redraw()
+  {
+    if(sigmaInstance && sigmaInstance.camera)
+    {
+      var sigmaCamera = sigmaInstance.camera;
+      sigma.misc.animation.camera(sigmaCamera, 
+        {ratio: sigmaCamera.ratio}, 
+        {} // duration left blank
+      );
+      sigmaCamera.goTo({ratio: sigmaCamera.ratio});
+    }
 	}
 
-  /**
-   * @todo
-   */
-	(function(undefined) {
-
-		/**
-		* Sigma Node Border Custom Renderer
-		* ==================================
-		*
-		* The aim of this simple node renderer is to enable the user to display
-		* colored node borders.
-		*
-		* Author: Guillaume Plique (Yomguithereal)
-		* Version: 0.0.1
-		*/
+  ( /**
+      * Sigma Node Border Custom Renderer
+      * =================================
+      * Allows for colored node borders
+      * @author  Guillaume Plique (Yomguithereal)
+      * @version 0.0.1
+      */
+    function(undefined) {
 
 		sigma.canvas.nodes.border = function(node, context, settings) {
 			var prefix = settings('prefix') || '';
@@ -1435,38 +1390,31 @@ function HoaxyGraph(options)
 			context.closePath();
 			context.fill();
 
-			context.lineWidth = 0.5; //node.borderWidth || .5;
+			context.lineWidth = 0.5;
 			context.strokeStyle = node.borderColor || getBorderColor(false)
 			context.stroke();
 		};
 	}).call(this);
 
-
- // #######
- // #       # #      ##### ###### #####
+ // ####### # #      ##### ###### #####
  // #       # #        #   #      #    #
- // #####   # #        #   #####  #    #
- // #       # #        #   #      #####
+ // #       # #        #   #####  #    #
+ // #####   # #        #   #      #####
  // #       # #        #   #      #   #
  // #       # ######   #   ###### #    #
 
   /**
-   * @todo
+   * Filter edges shown based on timestamp window chosen in timeline
+   * @param  {Date} filterTimestamp The beginning date/time of the window
    */
-	function FilterEdges(filterTimestamp){
-
-		// if(!filterTimestamp)
-		// {
-		// 	var filterDate = new Date();
-		// 	filterTimestamp = filterDate.getTime();
-		// }
+  function FilterEdges(filterTimestamp)
+  {
+    console.log(filterTimestamp)
 		filterTimestamp = filterTimestamp || timespan.end_time;
-		var count = 0;
-		var filtered_count = 0;
 		var unfiltered_nodes = [];
 
-		var edges = s.graph.edges();
-		var nodes = s.graph.nodes();
+		var edges = sigmaInstance.graph.edges();
+		var nodes = sigmaInstance.graph.nodes();
 
 		var edge_colors = {
 			"fact_checking": colors.edge_colors.fact_checking,
@@ -1476,7 +1424,6 @@ function HoaxyGraph(options)
 		var unfiltered_node_edge_counts = {};
 		var max_size = 0;
 		var min_size = 0;
-		var node_count = 0;
 
 		for(var i in edges)
 		{
@@ -1507,7 +1454,6 @@ function HoaxyGraph(options)
 
 		for(var i in unfiltered_node_edge_counts)
 		{
-			node_count ++;
 			if(unfiltered_node_edge_counts[i] > max_size)
 			{
 				max_size = unfiltered_node_edge_counts[i];
@@ -1559,10 +1505,8 @@ function HoaxyGraph(options)
 					score = botscores[node.id].score;
 				}
 				updateNodeColor(node.id, score);
-				// console.debug(node.id, botscores[node.id]);
 			}
 		}
-		// console.debug("filter", filterTimestamp);
 		refreshGraph();
 	}
 
@@ -1570,6 +1514,7 @@ function HoaxyGraph(options)
 	graphAnimation.paused = false;
 	graphAnimation.increment = 0;
   var animationTimeout = 0;
+
   /**
    * @todo
    */
@@ -1649,7 +1594,7 @@ function HoaxyGraph(options)
    * @todo
    */
 	function filterNodesByScore(max, min){
-		var nodes = s.graph.nodes();
+		var nodes = sigmaInstance.graph.nodes();
 		for(var node_id in nodes)
 		{
 			var node = nodes[node_id];
@@ -1708,18 +1653,34 @@ function HoaxyGraph(options)
 	returnObj.updateUserBotScore = updateUserBotScore;
 	returnObj.zoomIn = zoomIn;
 	returnObj.zoomOut = zoomOut;
-	returnObj.redraw = redraw;
-	returnObj.getEdges = function(){ return edges; };
-	returnObj.botscores = function(){ return botscores; };
-	returnObj.resetBotscores = function(){ botscores = {}; };
+  returnObj.redraw = redraw;
+
+  /**
+   * Gets the edges of the graph
+   * @return The graph's edges
+   */
+  returnObj.getEdges = function(){ return edges; };
+
+  /**
+   * Gets the botscores from the graph
+   * @return The graph's botscores
+   */
+  returnObj.botscores = function(){ return botscores; };
+  
+  /**
+   * Resets the botscores on the graph
+   */
+  returnObj.resetBotscores = function(){ botscores = {}; };
+  
+  /**
+   * Sets the language to be used on the graph, determining botscores
+   * @param  {String} passedLang The language the tweets are in
+   */
 	returnObj.setLang = function(passedLang){lang = passedLang};
 
 	returnObj.setBotScore = setBotScore;
-
 	returnObj.filterNodesByScore = filterNodesByScore;
-
-	returnObj.score_stats = score_stats;
-	//Used for taking snapshot of graph
+  returnObj.score_stats = score_stats;
 	returnObj.getRenderer = getRenderer;
 
 	return returnObj;
