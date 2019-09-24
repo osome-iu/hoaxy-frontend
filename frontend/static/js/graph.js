@@ -741,12 +741,11 @@ function HoaxyGraph(options)
 
 		document.getElementById("graph-container").innerHTML = "";
   }
-  
- // #     #                                       #####
- // #     # #####  #####    ##   ##### ######    #     # #####    ##   #####  #    #
- // #     # #    # #    #  #  #    #   #         #       #    #  #  #  #    # #    #
- // #     # #    # #    # #    #   #   #####     #  #### #    # #    # #    # ######
- // #     # #####  #    # ######   #   #         #     # #####  ###### #####  #    #
+                                         
+ // #     # #####  #####    ##   ##### ######     #####  #####    ##   #####  #    #
+ // #     # #    # #    #  #  #    #   #         #     # #    #  #  #  #    # #    #
+ // #     # #    # #    # #    #   #   #####     #       #    # #    # #    # ######
+ // #     # #####  #    # ######   #   #         #  #### #####  ###### #####  #    #
  // #     # #      #    # #    #   #   #         #     # #   #  #    # #      #    #
  //  #####  #      #####  #    #   #   ######     #####  #    # #    # #      #    #
 
@@ -951,7 +950,7 @@ function HoaxyGraph(options)
 					// x: Math.random() * 10,
 					// y: Math.random() * 10,
 					orig_size: nodes[i].size,
-					size: new_size, //Math.sqrt(Math.sqrt(nodes[i].size*10)),
+					size: new_size, // Math.sqrt(Math.sqrt(nodes[i].size*10)),
 					label: nodes[i].screenName,
 					id: i,
 					node_id: cnt,
@@ -1037,11 +1036,10 @@ function HoaxyGraph(options)
     return graph;
 	}
 
- // #     #                         #     #
- // #     #  ####  ###### #####     ##   ##  ####  #####    ##   #
- // #     # #      #      #    #    # # # # #    # #    #  #  #  #
- // #     #  ####  #####  #    #    #  #  # #    # #    # #    # #
- // #     #      # #      #####     #     # #    # #    # ###### #
+ // #     #  ####  ###### #####     #     #  ####  #####    ##   #
+ // #     # #      #      #    #    ##   ## #    # #    #  #  #  #
+ // #     #  ####  #####  #    #    # # # # #    # #    # #    # #
+ // #     #      # #      #####     #  #  # #    # #    # ###### #
  // #     # #    # #      #   #     #     # #    # #    # #    # #
  //  #####   ####  ###### #    #    #     #  ####  #####  #    # ######
 
@@ -1157,12 +1155,10 @@ function HoaxyGraph(options)
     node_modal_content.is_retweeted_by_count = counts.is_retweeted_by_count;
 	}
 
-
- // ######                           #####
- // #     # #####    ##   #    #    #     # #####    ##   #####  #    #
- // #     # #    #  #  #  #    #    #       #    #  #  #  #    # #    #
- // #     # #    # #    # #    #    #  #### #    # #    # #    # ######
- // #     # #####  ###### # ## #    #     # #####  ###### #####  #    #
+ // ######  #####    ##   #    #     #####  #####    ##   #####  #    #
+ // #     # #    #  #  #  #    #    #     # #    #  #  #  #    # #    #
+ // #     # #    # #    # #    #    #       #    # #    # #    # ######
+ // #     # #####  ###### # ## #    #  #### #####  ###### #####  #    #
  // #     # #   #  #    # ##  ##    #     # #   #  #    # #      #    #
  // ######  #    # #    # #    #     #####  #    # #    # #      #    #
 
@@ -1405,11 +1401,11 @@ function HoaxyGraph(options)
 
   /**
    * Filter edges shown based on timestamp window chosen in timeline
-   * @param  {Date} filterTimestamp The beginning date/time of the window
+   * @param  {Number} filterTimestamp The timestamp that counts as  \
+   * `timespan.end_time` during timelapse animation
    */
   function FilterEdges(filterTimestamp)
   {
-    console.log(filterTimestamp)
 		filterTimestamp = filterTimestamp || timespan.end_time;
 		var unfiltered_nodes = [];
 
@@ -1429,11 +1425,9 @@ function HoaxyGraph(options)
 		{
 			var edge = edges[i];
 
-			count ++;
 			if(edge.min_tweet_created_at >= filterTimestamp)
 			{
 				//filtered
-				filtered_count ++;
 				edge.color =  "rgba(0,0,0,.05)";
 			}
 			else
@@ -1448,7 +1442,6 @@ function HoaxyGraph(options)
 				edge.color = edge_colors[edge.edge_type];
 				unfiltered_nodes.push(edge.target);
 				unfiltered_nodes.push(edge.source);
-
 			}
 		}
 
@@ -1467,8 +1460,6 @@ function HoaxyGraph(options)
 		for(var i in nodes)
 		{
 			var node = nodes[i];
-
-
 
 			if(unfiltered_nodes.indexOf(node.id) === -1)
 			{
@@ -1510,13 +1501,15 @@ function HoaxyGraph(options)
 		refreshGraph();
 	}
 
+  // Animation-related global variables
 	graphAnimation.playing = false;
 	graphAnimation.paused = false;
 	graphAnimation.increment = 0;
   var animationTimeout = 0;
 
   /**
-   * @todo
+   * Animates graph from beginning to end (or paused location to end)
+   * @param  {Number} timestamp The current timestamp of the animation
    */
 	function AnimateFilter(timestamp)
 	{
@@ -1533,90 +1526,87 @@ function HoaxyGraph(options)
 		}
 
 		var increment = (timespan.end_time - timespan.start_time) / graphAnimation.total_increments;
-		// if(increment < 86400000)
-		// {
-		// 	increment = 86400000; //min resolution is one day.
-		// }
 
-		var new_timestamp = timestamp + increment; //(86400 * 1000); //decrement one day
+		var new_timestamp = timestamp + increment;
 
 		animationTimeout = setTimeout(function(){
 			graphAnimation.increment += 1;
 			AnimateFilter(new_timestamp);
-		}, 120);
+		}, 50);
   }
+
   /**
-   * @todo
+   * Start the graph animation (show tweets as they happened)
    */
 	function StartAnimation()
 	{
-		console.debug(timespan);
 		graphAnimation.increment = 1;
 		graphAnimation.playing  = true;
 		graphAnimation.paused = false;
 		AnimateFilter(timespan.start_time);
-		//console.debug(graphAnimation.current_timestamp);
 	}
 
   /**
-   * @todo
+   * Stop the graph animation and show all nodes and edges again
    */
-	function StopAnimation(){
+  function StopAnimation()
+  {
 		clearTimeout(animationTimeout);
 		// If the timeline has been animated before we want to bring the tick to the end and show all edges
-		if (graphAnimation.current_timestamp > timespan.start_time) {
+    if (graphAnimation.current_timestamp > timespan.start_time) 
+    {
 			FilterEdges((new Date()).getTime());
 		}
 
 		graphAnimation.playing  = false;
 		graphAnimation.paused = false;
-		//console.debug(graphAnimation.current_timestamp);
   }
+
   /**
-   * @todo
+   * Pause the graph animation
    */
-	function PauseAnimation(){
+  function PauseAnimation()
+  {
 		clearTimeout(animationTimeout);
 		graphAnimation.paused = true;
-		// console.debug(graphAnimation.current_timestamp);
-		// console.debug("PAUSE");
   }
+
   /**
-   * @todo
+   * Resume the graph animation from a paused state
    */
-	function UnpauseAnimation(){
+  function UnpauseAnimation()
+  {
 		graphAnimation.paused = false;
 		AnimateFilter(graphAnimation.current_timestamp);
 		// console.debug(graphAnimation.current_timestamp);
 	}
 
   /**
-   * @todo
+   * Filter nodes by botscore (e.g. between 3.0 and 4.0)
+   * @param  {Number} max The high end botscore to filter nodes by
+   * @param  {Number} min The low end botscore to filter nodes by
    */
-	function filterNodesByScore(max, min){
+  function filterNodesByScore(max, min)
+  {
 		var nodes = sigmaInstance.graph.nodes();
 		for(var node_id in nodes)
 		{
 			var node = nodes[node_id];
-			
-			var score = false;
+      var score = false;
+      
 			if(botscores[node.id])
 			{
 				score = botscores[node.id].score;
-			}
-			// var node_color = getNodeColor(score);
-			// console.debug(score);
+      }
+      
 			if(max)
 			{
 				if(score !== false && score >= min && score < max)
 				{
 					updateNodeColor(node.id, score);
-					// console.debug("colorize");
 				}
 				else
 				{
-					// console.debug("hide");
-					// updateNodeColor(node.id, false);
 					node.color = "rgba(0,0,0,.05)";
 					node.borderColor = "rgba(0,0,0,.05)";
 				}
@@ -1630,13 +1620,13 @@ function HoaxyGraph(options)
 	}
 
 
- // ######
- // #     # ###### ##### #    # #####  #    #
+ 
+ // ######  ###### ##### #    # #####  #    #
  // #     # #        #   #    # #    # ##   #
- // ######  #####    #   #    # #    # # #  #
- // #   #   #        #   #    # #####  #  # #
- // #    #  #        #   #    # #   #  #   ##
- // #     # ######   #    ####  #    # #    #
+ // #     # #####    #   #    # #    # # #  #
+ // ######  #        #   #    # #####  #  # #
+ // #   #   #        #   #    # #   #  #   ##
+ // #    #  ######   #    ####  #    # #    #
 
 
 	returnObj.filter = FilterEdges;
