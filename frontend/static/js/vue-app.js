@@ -265,15 +265,18 @@ var app = new Vue({
     /**
      * @todo
      */
-    all_selected: function(){
+    all_selected: function()
+    {
       return this.checked_articles.length === 20;
     },
 
     /**
      * @todo
      */
-    botscoreCount: function() {
-      return function(min, max) {
+    botscoreCount: function() 
+    {
+      return function(min, max) 
+      {
         var scores = Object.values(this.graph.botscores());
         var filtered_scores = scores.filter(function(val){
           if(val.score >= min && val.score < max)

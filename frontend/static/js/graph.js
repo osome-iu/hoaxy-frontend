@@ -1618,8 +1618,6 @@ function HoaxyGraph(options)
 		}
 		refreshGraph();
 	}
-
-
  
  // ######  ###### ##### #    # #####  #    #
  // #     # #        #   #    # #    # ##   #
