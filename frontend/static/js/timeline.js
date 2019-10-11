@@ -81,7 +81,7 @@ function HoaxyTimeline(settings){
 	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking, "#00ff00"]); //color match with those of nodes
 
   /**
-   * @todo
+   * Redraw the timeline
    */
 	function redraw(){
 		if(chart)
@@ -90,29 +90,30 @@ function HoaxyTimeline(settings){
 			d3.select('#chart svg')
 			.call(chart);
 			chart.dispatch.on("brush", updateDateRange);
-			// chart.interactiveLayer.dispatch.on("elementClick", function(e){ console.debug(new Date(e.pointXValue)) });
 
-			
 			d3.select('#chart svg .nvd3 > g')
 			.attr("transform", "translate(0, -10)");
 		}
   }
   /**
-   * @todo
+   * Initialize the timeline
    */
 	function removeUpdateDateRangeCallback(){
 		chart.dispatch.on("brush", null);
 	}
 
   /**
-   * @todo
+   * Formats the date using d3.time
+   * @param  {String} d The date to be formatted
+   * @return {String} The formatted time
    */
 	function dateFormatter(d) {
 		return d3.time.format('%x')(new Date(d))
 	}
 
   /**
-   * @todo
+   * Shows how many new tweets of a particular type occurred at a point in time
+   * @param  {Object} chartData The data that the timeline was drawn with
    */
 	function calculateTweetRates(chartData) {
 		// Deep copy of the chart data as any shallow copy will mess up
@@ -159,7 +160,8 @@ function HoaxyTimeline(settings){
 	};
 
   /**
-   * @todo
+   * Updates the date range if the user selected a different one
+   * @param  {Object} extent The timeframe selection by the user
    */
 	function _updateDateRange(extent){
 		if(document.getElementById("extent-0"))
@@ -196,7 +198,13 @@ function HoaxyTimeline(settings){
 		}
 	}
 
-	var max = 0;
+  var max = 0;
+  
+  /**
+   * Updates the timeline with new data
+   * @param  {Object} data The data to update the timeline with
+   * @return {Boolean} Will only return false if there's no data
+   */
 	var Update = function(data){
 		max = 0;
 		lastData = data;
@@ -261,26 +269,11 @@ function HoaxyTimeline(settings){
 	}
 
   /**
-   * @todo
-   */
-	function triggerUpdateRange(){
-		try{
-			d3.select('#chart svg')
-			.datum(chartData)
-			.call(chart);
-		}
-		catch(e){
-			console.debug("Error in triggerUpdataRange.", e);
-		}
-	}
-
-  /**
-   * @todo
+   * Update timestamp based on the graph's timestamp
    */
 	function UpdateTimestamp(){
 		if(graphAnimation.current_timestamp)
 		{
-
 			chartData[2] = {
 				key: 'Time',
 				values: [
@@ -300,14 +293,12 @@ function HoaxyTimeline(settings){
 		.datum(chartData)
 		.call(chart);
 		chart.dispatch.on("brush", updateDateRange);
-
 	}
 
 	returnObj.removeUpdateDateRangeCallback = removeUpdateDateRangeCallback;
 	returnObj.update = Update;
 	returnObj.chart = chart;
 	returnObj.redraw = redraw;
-	returnObj.updateDateRange = triggerUpdateRange;
 	returnObj.updateTimestamp = UpdateTimestamp;
 	return returnObj;
 }
