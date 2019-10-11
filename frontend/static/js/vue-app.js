@@ -1013,7 +1013,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Get the offset of an HTML element (specifically used for the graph)
+     * @param  {Object} element The HTML element to check
+     * @return {Object} The offset of the element
      */
     getOffset: function(element)
     {
@@ -1039,7 +1041,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Scroll the window to the element (specifically the graph)
+     * @param  {String} id The id of the element
      */
     scrollToElement: function(id)
     {
@@ -1053,7 +1056,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Directly searches if clicking "Search Link" icon or "Search Title"
+     * @param  {String} article The article title/link clicked to search Hoaxy for
+     * @param  {String} dashSource The section of the dashboard the article was under
      */
     directSearchDashboard: function(article, dashSource) 
     {
@@ -1063,7 +1068,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Auto-selects Hoaxy or Twitter search and focuses the searchbox
+     * @param  {String} article The title/link of the article
+     * @param  {String} dashSource The section of the dashboard the article was under 
      */
     changeAndFocusSearchQuery: function(article, dashSource) 
     {
@@ -1093,7 +1100,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Sets the URL parameters if searching by Hoaxy
+     * @return {String} The full query string (to be appended after #)
+     * @todo Consider refactoring this and changeURLParamsTwitter() into 1 function
      */
     changeURLParamsHoaxy: function()
     {
@@ -1103,7 +1112,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Sets the URL parameters if searching by Twitter
+     * @return {String} The full query string (to be appended after #)
+     * @todo Consider refactoring this and changeURLParamsHoaxy() into 1 function
      */
     changeURLParamsTwitter: function()
     {
@@ -1113,7 +1124,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Stops the loading spinner
+     * @param  {String}  key The key of the function in the spin_key_table
+     * @param  {Boolean} reset Whether to reset the spinner timeout
      */
     spinStop: function(key, reset)
     {
@@ -1132,7 +1145,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Start the loading spinner
+     * @param  {String} key The key of the function in the spin_key_table
      */
     spinStart: function(key)
     {
@@ -1152,7 +1166,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Formats the date for the timeline
+     * @param  {String} unFormattedDate The incoming date
+     * @return {String} The date formatted to 'MM/DD/YYYY hh:mm:ss AM/PM'
      */
     formatDate: function(unFormattedDate) 
     {
@@ -1175,7 +1191,10 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Determine which date is first, or if they're the same date
+     * @param  {String} dateOne The first date
+     * @param  {String} dateTwo The second date
+     * @return {Number} dateOne is 1: greater than, -1: less than, 0: equal to dateTwo
      */
     sortDates: function(dateOne, dateTwo) 
     {
@@ -1192,7 +1211,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Create the points in time to check number of tweets
+     * @param  {Object[]} dates The dates where tweets occurred
      */
     createTwitterDateBins: function(dates) 
     {
@@ -1280,7 +1300,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Clear out graph details related to Twitter search
      */
     resetTwitterSearchResults: function() 
     {
@@ -1305,7 +1325,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Clear out graph details related to Hoaxy search
      */
     resetHoaxySearchResults: function() 
     {
@@ -1315,7 +1335,11 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Build Twitter Timeline and Edges: \
+     * Prepares the timeline and graph to be displayed
+     * @param  {Object} twitterEntities
+     * @todo Deeply inspect this function and buildTwitterGraph() \
+     * There may be ways to refactor/remove code
      */
     buildTwitterEdgesTimeline: function(twitterEntities)
     {
@@ -1559,7 +1583,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Visualizes the graph with data gathered in buildTwitterEdgesTimeline()
+     * @param  {Boolean} dont_reset If true, doesn't reset botscores, cache, or language
      */
     buildTwitterGraph: function(dont_reset) {
       var v = this;
@@ -1644,7 +1669,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Get Twitter search results
+     * @param  {String} query What to search on Twitter
      */
     getTwitterSearchResults: function(query)
     {
@@ -1726,9 +1752,10 @@ var app = new Vue({
     // #    #  ####  #    # #    #    #       ####  #    #  ####    #   #  ####  #    #  ####
 
     /**
-     * @todo
+     * Get articles from database
+     * @return  {Promise} The articles asked for
      */
-    getArticles: function(dontScroll)
+    getArticles: function()
     {
       this.spinStart("getArticles");
       this.spinner_notices.articles = "Fetching articles...";
@@ -1763,10 +1790,6 @@ var app = new Vue({
           });
           v.articles = urls_model.urls;
           v.articles_to_show = max_articles;
-          if(!dontScroll)
-          {
-              // v.scrollToElement("articles");
-          }
 
           // Visualizing only the first claim by default
           v.checked_articles.push(v.articles[0].url_id);
@@ -1785,7 +1808,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Get the timeline based on articles
+     * @param  {Object}  article_ids The list of article IDs
+     * @return {Promise} The timeline is populated with articles
      */
     getTimeline: function(article_ids)
     {
@@ -1828,7 +1853,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Get the network graph based on articles
+     * @param  {Object}  article_ids The list of article IDs
+     * @return {Promise} The network graph is populated with info from the articles
      */
     getNetwork: function(article_ids){
       this.spinStart("getNetwork");
@@ -1879,7 +1906,7 @@ var app = new Vue({
               y.original_query = urlString.substr(1);
               return y;
             });
-            // Adding hoaxy edges to memory in case user wants to download the restuls as csv
+            // Adding hoaxy edges to memory in case user wants to download the results as csv
             v.hoaxyEdges = edge_list;
             v.graph.updateEdges(edge_list);
             v.updateGraph();
@@ -1919,7 +1946,7 @@ var app = new Vue({
     // #     #  ####    #   #  ####  #    #  ####  #       ######   ####    #     #    ####  #    #     #####  ###### #  ####  #    #  ####
 
     /**
-     * @todo
+     * Submit feedback on Botometer score
      */
     submitFeedbackForm: function()
     {
@@ -1943,7 +1970,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Send data from the user feedback on Botometer \
+     * This is in the node modal after updating a score
      */
     sendFeedbackData: function()
     {
@@ -1981,7 +2009,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Sets the graph column sizes
+     * @param  {Number} x The graph column size
      */
     resizeGraphs: function(x)
     {
@@ -1994,7 +2023,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Shrink the graph
      */
     shrinkGraph: function()
     {
@@ -2003,7 +2032,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Shrink the timeline
      */
     shrinkTimeline: function()
     {
@@ -2012,16 +2041,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
-     */
-    filterGraph: function()
-    {
-        var tstamp = (new Date(2017, 5, 15)).getTime();
-        this.graph.filter(tstamp);
-    },
-
-    /**
-     * @todo
+     * Starts the animation necessary for tweet timeline playback
      */
     startGraphAnimation: function()
     {
@@ -2029,7 +2049,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Stops the tweet timeline playback and resets its cursor to the beginning
      */
     stopGraphAnimation: function()
     {
@@ -2038,7 +2058,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Pauses the tweet timeline playback
      */
     pauseGraphAnimation: function()
     {
@@ -2046,7 +2066,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Resumes the tweet timeline playback
      */
     unpauseGraphAnimation: function()
     {
@@ -2056,6 +2076,7 @@ var app = new Vue({
     /**
      * Helper for: 
      * @function logIn()
+     * @return  {Promise} Logged in to Twitter
      */
     twitterLogIn: function()
     {
@@ -2076,7 +2097,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Update Botscores button functionality \
+     * If logged in, gets up to 20 botscores
      */
     getMoreBotScores: function()
     {
@@ -2092,7 +2114,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Get a single botscore of the user's choosing
+     * @param  {String} user_id The twitter user's ID
      */
     getSingleBotScore: function(user_id)
     {
@@ -2173,7 +2196,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Builds JSON Content for downloading JSON/CSV
+     * @return {String} The graph edgelist as a JSON string
      */
     buildJSONContent: function()
     {
@@ -2235,7 +2259,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Download the graph in JSON format
+     * @param  {String} dataStr The JSON-formatted edgelist, typically from buildJSONContent()
      */
     downloadJSON: function(dataStr)
     {
@@ -2259,7 +2284,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Download the graph in CSV format
+     * @param  {String} dataStr The JSON-formatted edgelist, typically from buildJSONContent()
      */
     downloadCSV: function(dataStr)
     {
@@ -2288,9 +2314,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Starts the search query to graph building process
      */
-    submitForm: function(dontScroll)
+    submitForm: function()
     {
       // Resets any results from any previous queries
       this.stopGraphAnimation();
@@ -2324,7 +2350,7 @@ var app = new Vue({
         // new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
         // Adding a url querystring so that user can replicate a query by copy/pasting the url
         this.changeURLParamsHoaxy();
-        this.getArticles(dontScroll);
+        this.getArticles();
         this.spinStop();
       }
       else if(this.searchBy == 'Twitter') 
@@ -2373,7 +2399,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Disable option for tweet timeline playback if there aren't at least 2 dates
+     * @param  {Object} edges The edgelist for the network graph
      */
     checkIfShouldDisableAnimation: function(edges) 
     {
@@ -2396,7 +2423,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Visualizes a network graph based off of 1 or more selected articles
+     * @return  {Boolean} Only in an error case, return false
      */
     visualizeSelectedArticles: function()
     {
@@ -2418,7 +2446,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Toggle an edge's modal to show more data \
+     * Such as which accounts are interacting and in what way
+     * @param  {Boolean} force Force a modal to be toggled
      */
     toggleEdgeModal: function(force)
     {
@@ -2426,7 +2456,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Toggle an node's modal to show more data \
+     * Such as which accounts are interacting and in what way
+     * @param  {Boolean} force Force a modal to be toggled
      */
     toggleNodeModal: function(force)
     {
@@ -2435,7 +2467,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Display an error modal with a message
+     * @param  {String} message The error message
      */
     displayError: function(message)
     {
@@ -2444,7 +2477,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Display an error modal forcibly
      */
     toggleErrorModal: function(force)
     {
@@ -2452,7 +2485,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Toggle the tutorial modal
+     * @param  {Boolean} force Force a modal to be toggled
      */
     toggleTutorialModal: function(force)
     {
@@ -2460,7 +2494,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Helper function that toggles visibility of a modal
+     * @param  {String}  modal The type of modal to toggle
+     * @param  {Boolean} force Force a modal to be toggled
      */
     toggleModal: function(modal, force)
     {
@@ -2487,7 +2523,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Show more articles unless the limit has been reached
      */
     loadMore: function()
     {
@@ -2502,7 +2538,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Zoom in on the network graph
      */
     zoomInGraph: function()
     {
@@ -2510,7 +2546,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Zoom out on the network graph
      */
     zoomOutGraph: function()
     {
@@ -2518,7 +2554,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * 
      */
     updateGraph: function(starting_time, ending_time)
     {
