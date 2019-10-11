@@ -263,7 +263,8 @@ var app = new Vue({
   },
   computed: {
     /**
-     * @todo
+     * Helper function to prepare top 20 articles to be checked
+     * @return {Boolean} Whether there are 20 checked articles or not
      */
     all_selected: function()
     {
@@ -271,7 +272,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Return botscore count within a specified score range  \
+     * (between 0 and .9, 1 and 1.9, etc.)
+     * @return {Number} The number of botscores in the range
      */
     botscoreCount: function() 
     {
@@ -293,34 +296,12 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Places HTML with Vue variables into a widget modal \
+     * Contains "Embed" functionality
+     * @return {String} HTML that will create the "Embed" widget modal
      */
-    controls_margin_top: function(){
-      var h = document.getElementById('articles_controls') && document.getElementById('articles_controls').offsetHeight;
-      var lh = document.getElementById('article_list') && document.getElementById('article_list').offsetHeight;
-      try{
-        if( this.getOffset('articles').top + lh - h <= this.scrollTop  + 20)
-        {
-          var r = lh - h;
-          return r + 'px';
-        }
-        else if ( this.scrollTop > this.getOffset('articles').top - 20)
-        {
-          return (this.scrollTop - this.getOffset('articles').top  + 20) + 'px';
-        }
-        else
-        {
-          return 0;
-        }
-      }catch(er){
-        return 0;
-      }
-    },
-
-    /**
-     * @todo
-     */
-    embeddedWidgetCode: function () {
+    embeddedWidgetCode: function () 
+    {
       return ''
         + '<link rel="stylesheet" href="' + location.origin + (location.pathname !== '/'?location.pathname:'') + '/static/css/widget.css" />'
         + '<div class="hoaxy-widget">'
@@ -341,9 +322,12 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Decides what the tooltip will say depending \
+     * on whether it's searching via Twitter/Hoaxy
+     * @return {String} The tooltip's text
      */
-    searchByDependencyTitle: function () {
+    searchByDependencyTitle: function () 
+    {
       return (this.searchBy == "Hoaxy") ? "enter any phrase": "enter any phrase or link";
     }
   },
@@ -357,7 +341,7 @@ var app = new Vue({
   // ##     ## ########    ##    ##     ##  #######  ########   ######  
   methods: {
     /**
-     * @todo
+     * Login to Twitter for connected functionality
      */
     logIn: function()
     {
@@ -372,7 +356,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Logout of Twitter
      */
     logOut: function()
     {
@@ -387,7 +371,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Prepares uploaded file for visualization import
+     * @param  {Object} evt The file upload event
      */
     fileUploadHandler: function(evt)
     {
@@ -400,13 +385,14 @@ var app = new Vue({
       appFileType = appFileType.substr(12);
       
       var textFileType = file.type;
+      // Cut off "text/" section of file type.
       textFileType = textFileType.substr(5);
 
       var reader = new FileReader();
       var vm = this;
 
       // Check file type, and if valid, remember it.
-      // Un-disable Visualize button.
+      // Enable the Visualize button.
       // Parse file appropriately.
       if(appFileType == "json")
       {
@@ -449,7 +435,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Parse the imported CSV to prep for visualization
+     * @param  {String} csv_string The imported .CSV file
+     * @return {Object} The object containing the rows of data
      */
     parseCSV: function(csv_string)
     {
@@ -472,7 +460,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Visualize the imported .CSV or .JSON file
      */
     visualizeImportedData: function()
     {
@@ -577,7 +565,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Selects the top 20 articles to prep for visualization
      */
     selectTop20: function()
     {
@@ -599,7 +587,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Move to the next tutorial slide \
+     * and keep an index of the current slide
      */
     tutorialNextSlide: function()
     {
@@ -610,7 +599,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Move to the previous tutorial slide \
+     * and keep an index of the current slide
      */
     tutorialPreviousSlide: function()
     {
@@ -621,7 +611,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Move to a specific tutorial slide
      */
     tutorialGotoSlide: function(slide_number)
     {
@@ -629,7 +619,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Hide the tutorial
      */
     tutorialHide: function()
     {
@@ -637,7 +627,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Hide the tutorial and make sure it does not show up next visit
      */
     tutorialHideWithCookie: function()
     {
@@ -646,7 +636,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Custom hover tooltip showing functionality
+     * @param  {Object} e the mouse hover event
+     * @todo   Replace with Bootstrap-Vue
      */
     hoverTooltip: function(e)
     {
@@ -660,7 +652,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Custom hover tooltip hiding functionality
+     * @param  {Object} e the mouse hover event
+     * @todo   Replace with Bootstrap-Vue
      */
     hideTooltip: function(e)
     {
@@ -673,7 +667,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Only color nodes within a score range
+     * @param  {Number} min bottom of the score range
+     * @param  {Number} max top of the score range
      */
     filterNodesByScore: function(min, max)
     {
@@ -683,7 +679,6 @@ var app = new Vue({
         // display all nodes
         this.graph.filterNodesByScore();
         this.nodes_filtered_by_score = false;
-          
       }
       else
       {
@@ -702,7 +697,7 @@ var app = new Vue({
     //  ######  ######## ##     ## ##     ##  ######  ##     ##    ##        #######  ##    ##  ######     ##    ####  #######  ##    ##  ######  
 
     /**
-     * @todo
+     * Used to set variables to handle a Twitter search
      */
     twitterSearch: function() 
     {
@@ -714,7 +709,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Used to set variables to handle a Hoaxy search
      */
     hoaxySearch: function() 
     {
@@ -726,7 +721,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Prepares the graph for visualization
+     * @todo   Check for redundant code
      */
     initializeHoaxyTimeline: function() 
     {
@@ -745,7 +741,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Prepares the graph for visualization
+     * @todo   Check for redundant code
      */
     initializeTwitterTimeline: function() 
     {
@@ -764,7 +761,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Formats time to 'MMM D YYYY h:mm a' format
+     * @param  {String} time The timestamp from the node modal
+     * @return {String} The formatted time
      */
     formatTime: function(time)
     {
@@ -772,7 +771,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Strips a url of 'www.'
+     * @param  {String} url
+     * @return {String} The formatted url without 'www.'
      */
     stripWwwIfPresent: function(url) 
     {
@@ -787,13 +788,13 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Prepares the embed screenshot and widget modal
      */
     prepareAndShowWidgetCode: function() 
     {
       var graphRenderer = this.graph.getRenderer();
       this.widgetScreenshotDataUrl = graphRenderer.snapshot({
-        format: 'jpg',
+        format: 'png',
         background: 'white',
         labels: true
       });
@@ -801,7 +802,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Copies the html embed widget to the user's clipboard
      */
     copyWidgetCodeToClipboard: function() 
     {
@@ -811,7 +812,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Hides the html embed widget modal \
+     * and sets copiedWidgetText flag to false
      */
     resetWidgetContent: function() 
     {
@@ -820,7 +822,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * If the search box is focused, enable searching
      */
     focusSearchBox: function() 
     {
@@ -828,7 +830,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Stringifies the article type
+     * @param  {String} type The type of the article
+     * @return {String} The extended string representing the article type
      */
     formatArticleType: function(type)
     {
@@ -840,7 +844,10 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Truncates article text with an added elipses.
+     * @param  {String} text The text from the headline of the article
+     * @param  {Number} text_length The desired length to truncate to
+     * @return {String} The truncated text
      */
     shortenArticleText: function(text, text_length) 
     {
@@ -856,7 +863,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Retrieve the top 3 articles for "Trending News"
      */
     getTopUsaArticles: function()
     {
@@ -887,7 +894,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Retrieve the top 3 "Popular Claims" and "Popular Fact-Checks"
      */
     getPopularArticles: function(){
       this.spinStart();
@@ -944,7 +951,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Gets a subset of articles up to @articles_to_show
      */
     getSubsetOfArticles: function()
     {
@@ -952,7 +959,10 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Formats the date published field of an article to: \
+     * 'MMM D, YYYY' with moment
+     * @param  {String} url_pub_date The date the article was published
+     * @return {String} The formatted date published
      */
     getDateline: function(url_pub_date)
     {
@@ -962,7 +972,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Extracts the hostname of the URL, if possible
+     * @param  {String} url The article link
+     * @return {String} The hostname of the article link
      */
     attemptToGetUrlHostName: function(url){
       var urlLink = document.createElement("a");
@@ -980,7 +992,9 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Extracts the article path of the URL, if possible
+     * @param  {String} url The article link
+     * @return {String} The full path to the article
      */
     attemptToGetUrlHostPath: function(url)
     {
@@ -2040,7 +2054,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Helper for: 
+     * @function logIn()
      */
     twitterLogIn: function()
     {
@@ -2145,7 +2160,8 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Helper function for:
+     * @function logOut()
      */
     twitterLogOut: function()
     {
