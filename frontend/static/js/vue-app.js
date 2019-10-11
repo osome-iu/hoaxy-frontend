@@ -2554,7 +2554,10 @@ var app = new Vue({
     },
 
     /**
-     * 
+     * Prepare graph size, timeline, etc. using a function from:
+     * @file graph.js
+     * @param  {String} starting_time Passed to graph.js.updateGraph()
+     * @param  {String} ending_time   Passed to graph.js.updateGraph()
      */
     updateGraph: function(starting_time, ending_time)
     {
@@ -2569,7 +2572,7 @@ var app = new Vue({
     },
 
     /**
-     * @todo
+     * Load the Twitter and Facebook share buttons
      */
     loadShareButtons: function()
     {
@@ -2588,22 +2591,23 @@ var app = new Vue({
       } 
       catch(e) 
       {
-        console.warn("error loading facbook widgets", e);
+        console.warn("error loading facebook widgets", e);
       }
     }
   },
   watch: {
     /**
-     * @todo
+     * Watches query_sort changes so that it can refocus the search box
+     * @member query_sort Sort by relevancy or recency on Hoaxy search
      */
     query_sort: function() 
     {
-      // Checking if value is changed and refocusing on the search box
       this.$refs.searchBox.focus();
     },
 
     /**
-     * @todo
+     * Watches twitter_result_type changes so that it can refocus the search box
+     * @member twitter_result_type Show recent, relevant, or mixed results
      */
     twitter_result_type: function () 
     {
@@ -2611,13 +2615,20 @@ var app = new Vue({
       this.$refs.searchBox.focus();
     },
 
-    "show_graphs": function(){},
-
+    /**
+     * Updates the timeline's timestamp if the graph's timestamp changes
+     */
     "graphAnimation.current_timestamp": function()
     {
       this.timeline.updateTimestamp();
     },
 
+    /**
+     * Watches searchBy to switch lang to the default Hoaxy language
+     * @member searchBy Searching by Twitter or Hoaxy
+     * @member lang The search language
+     * @member defaultHoaxyLang The language Hoaxy is deployed in
+     */
     "searchBy": function()
     {
       if(this.searchBy == "Hoaxy")
@@ -2635,7 +2646,8 @@ var app = new Vue({
   //  #     #  ####   ####  #    #   #   ###### #####
   
   /**
-   * @todo
+   * Typical Vue beforeMount() function \
+   * Ours retrieves the article lists and checks for imported data
    */
   beforeMount: function() 
   {
@@ -2659,7 +2671,9 @@ var app = new Vue({
     }
   },
   /**
-   * @todo
+   * Typical Vue mounted() function \
+   * Ours initializes variables and prepares visualization \
+   * if there was an import from BotSlayer
    */
   mounted: function()
   {

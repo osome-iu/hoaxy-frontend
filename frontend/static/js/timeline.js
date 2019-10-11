@@ -40,33 +40,33 @@ function HoaxyTimeline(settings){
 												+ "<div style='display:flex;\
 																			 justify-content:left;\
 																			 align-items:center;'>\
-													    <div style='display:inline-block;\
-																					margin:5px;\
-																					width:10px;\
-																					height:10px;\
-																					background-color:"
-																					+ String(colors.edge_colors.claim)
-																					+ ";'>\
-															</div>\
-															<div>New Claims: "
-															+ String(chartDataWithTweetRates[0].values[currentTimeStepIndex].y)
-															+ "</div>\
+													  <div style='display:inline-block;\
+                                        margin:5px;\
+                                        width:10px;\
+                                        height:10px;\
+                                        background-color:"
+                                        + String(colors.edge_colors.claim)
+                                        + ";'>\
+                            </div>\
+                            <div>New Claims: "
+                            + String(chartDataWithTweetRates[0].values[currentTimeStepIndex].y)
+                            + "</div>\
 						  						</div>"
-													+ "<div style='display:flex;\
-																				 justify-content:left;\
-																				 align-items:center;'>\
-																<div style='display:inline-block;\
-																						margin:5px;\
-																						width:10px;\
-																						height:10px;\
-																						background-color:"
-																						+ String(colors.edge_colors.fact_checking)
-																						+ ";'>\
-																</div>\
-																<div>New Fact-Checks: "
-																+ String(chartDataWithTweetRates[1].values[currentTimeStepIndex].y)
-																+ "</div>\
-														</div>";
+                        + "<div style='display:flex;\
+                                        justify-content:left;\
+                                        align-items:center;'>\
+                            <div style='display:inline-block;\
+                                        margin:5px;\
+                                        width:10px;\
+                                        height:10px;\
+                                        background-color:"
+                                        + String(colors.edge_colors.fact_checking)
+                                        + ";'>\
+                            </div>\
+                            <div>New Fact-Checks: "
+                            + String(chartDataWithTweetRates[1].values[currentTimeStepIndex].y)
+                            + "</div>\
+                          </div>";
 	});
 
 	chart.margin({right: 50, bottom: 75});
@@ -163,23 +163,20 @@ function HoaxyTimeline(settings){
    */
 	function _updateDateRange(extent){
 		if(document.getElementById("extent-0"))
-		document.getElementById("extent-0").innerHTML = extent.extent[0];
+		  document.getElementById("extent-0").innerHTML = extent.extent[0];
 		if(document.getElementById("extent-1"))
-		document.getElementById("extent-1").innerHTML = extent.extent[1];
+		  document.getElementById("extent-1").innerHTML = extent.extent[1];
 
 		if(document.getElementById("extent-00"))
-		document.getElementById("extent-00").innerHTML = new Date(extent.extent[0]).toISOString();
+		  document.getElementById("extent-00").innerHTML = new Date(extent.extent[0]).toISOString();
 		if(document.getElementById("extent-11"))
-		document.getElementById("extent-11").innerHTML = new Date(extent.extent[1]).toISOString();
+		  document.getElementById("extent-11").innerHTML = new Date(extent.extent[1]).toISOString();
 
 		var starting_time = extent.extent[0],
 		ending_time = extent.extent[1];
 
-		//only proceed when s.graph is ready
-		// if (edges)
 		try
 		{
-			// console.debug("timeline");
 			updateDateRangeCallback(starting_time, ending_time);
 		}
 		catch(e)
@@ -197,14 +194,12 @@ function HoaxyTimeline(settings){
 				updateDateRange(extent);
 			}, 500);
 		}
-
 	}
 
 	var max = 0;
 	var Update = function(data){
 		max = 0;
 		lastData = data;
-		// var min_time = new Date().getTime();
 		var max_time = 0;
 		if(!data)
 		{
@@ -225,24 +220,16 @@ function HoaxyTimeline(settings){
 			{
 				max = volume_fake[i];
 			}
-			// if(ts < min_time)
-			// {
-			// 	min_time = ts;
-			// }
 			if(ts > max_time)
 			{
 				max_time = ts;
 			}
-			// console.debug(time[i], max_time);
 
 			factChecking_values.push({x: new Date(time[i]), y: volume_factchecking[i]});
 			fake_values.push({x: new Date(time[i]), y: volume_fake[i]});
 		}
 
-// console.debug("Max:", max);
-// console.debug("Time:", min_time, min_time + Math.floor((max_time - min_time)/2), max_time);
-
-		chartData.length = 0;
+    chartData.length = 0;
 		if(!!chart.update){
 			chart.update();
 		}
@@ -258,26 +245,12 @@ function HoaxyTimeline(settings){
 			c:colors.edge_colors.claim
 		};
 
-		// app.show_zoom_buttons = true;
-
 		chartData.push(fake_series);
 		chartData.push(factChecking_series);
 		calculateTweetRates(chartData);
-		// console.debug(factChecking_series);
-
-		// chartData.push({
-		// 	key: 'Time',
-		// 	values: [
-		// 		{ x: new Date(max_time), y: 0},
-		// 		{ x: new Date(max_time), y: max}
-		// 	],
-		// 	// c: "#00ff00"
-        //
-		// });
 
 		// This adds an event handler to the focus chart
 		try {
-			// chart.dispatch.on("brush", updateDateRange);
 			d3.select('#chart svg')
 			.datum(chartData)
 			.call(chart);
@@ -285,8 +258,6 @@ function HoaxyTimeline(settings){
 		catch(e){
 			console.debug(e);
 		}
-
-		// console.log(chart);
 	}
 
   /**
@@ -317,14 +288,7 @@ function HoaxyTimeline(settings){
 					{ x: new Date(graphAnimation.current_timestamp), y: max}
 				],
 				disableTooltip: true
-				// disabled: true
-				// c: "#00ff00"
-
 			};
-			// chartData[2].values = [
-			// 		{ x: new Date(graphAnimation.current_timestamp), y: 0},
-			// 		{ x: new Date(graphAnimation.current_timestamp), y: max}
-			// 	];
 		}
 		else
 		{
@@ -345,6 +309,5 @@ function HoaxyTimeline(settings){
 	returnObj.redraw = redraw;
 	returnObj.updateDateRange = triggerUpdateRange;
 	returnObj.updateTimestamp = UpdateTimestamp;
-	// returnObj.getLastData = function(){ return lastData };
 	return returnObj;
 }
