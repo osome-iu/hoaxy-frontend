@@ -153,18 +153,6 @@ var Twitter = function(initialize_key){
         return dfd;
     }
 
-    // TO-DO Remove once the ById methods below work robustly and we don't
-    // decide to switch back
-    // obj.getUserData = function(screenName){
-    //     return apiCall('GET', '/1.1/users/show.json', {screen_name: screenName},
-    //     "Twitter was unable to retrieve information for this user, is there a typo?")
-    // }
-    //
-    // obj.getUserTimeline = function(screenName){
-    //     return apiCall('GET', '/1.1/statuses/user_timeline.json', {screen_name: screenName, count:200},
-    //     "Twitter was unable to retrieve a timeline for this user, is there a typo?")
-    // }
-    //
     obj.getUserMentions = function(screenName){
         return apiCall('GET', '/1.1/search/tweets.json', {q: '@'+screenName, count:100},
         "Twitter was unable to retrieve mentions of this user, is there a typo?")
@@ -180,11 +168,6 @@ var Twitter = function(initialize_key){
         "Twitter was unable to retrieve a timeline for this user, is there a typo?")
     }
 
-    // obj.getUserMentionsById = function(user_id){
-    //     return apiCall('GET', '/1.1/search/tweets.json', {q: user_id, count:100},
-    //     "Twitter was unable to retrieve mentions of this user, is there a typo?")
-    // }
-
     obj.getFollowers = function(screenName, count){
         return getNeighbors('followers', screenName, count);
     }
@@ -197,7 +180,13 @@ var Twitter = function(initialize_key){
         return apiCall('GET', '/1.1/search/tweets.json', lang)
     }
 
-    obj.getTweets = function(query, lang, max_id, result_type){
+    obj.getTweets = function(query, max_id, result_type, lang){
+      if (!lang || lang == '')
+      {
+        return apiCall('GET', '/1.1/search/tweets.json', {q: query, max_id: max_id, result_type: result_type, count: 100, include_entities: 1},
+        "Twitter was unable to retrieve mentions of this user, is there a typo?");
+      }
+
       return apiCall('GET', '/1.1/search/tweets.json', {q: query, lang: lang, max_id: max_id, result_type: result_type, count: 100, include_entities: 1},
       "Twitter was unable to retrieve mentions of this user, is there a typo?");
     }

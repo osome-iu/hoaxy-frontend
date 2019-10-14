@@ -245,7 +245,7 @@ var app = new Vue({
         hoaxySearchSelected: true,
         twitterSearchSelected: false,
 
-        lang: defaultHoaxyLang,
+        lang: '',
 
         // Edge lists
         twitterEdges: [],
@@ -1478,9 +1478,16 @@ var app = new Vue({
 
             // This function will paginate tweet search requests and is recursive
             function paginateTwitterRequests() {
-              tweetsReponse = v.twitter.getTweets(query_string, lang, max_id, v.twitter_result_type);
+              if(lang && lang != undefined && lang != '' && lang != 'any')
+              {
+                tweetsResponse = v.twitter.getTweets(query_string, max_id, v.twitter_result_type, lang);
+              }
+              else
+              {
+                tweetsResponse = v.twitter.getTweets(query_string, max_id, v.twitter_result_type);
+              }
               // Handling the get Tweets response
-              tweetsReponse.then(function(response){
+              tweetsResponse.then(function(response){
                 query_limit -= 1; 
                 if (response.search_metadata.next_results) {
                   // Retrieving the maximum id for which the next result we must return tweets smaller than, hence older than this tweet
