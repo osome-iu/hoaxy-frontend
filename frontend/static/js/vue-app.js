@@ -421,18 +421,6 @@ var app = new Vue({
             v.profile.image = defaultProfileImage;
           })
         },
-        checkPOSTData()
-        {
-          /*
-          this.imported_data = JSON.parse(document.getElementById("post_data").innerHTML);
-          console.debug(this.imported_data);
-
-          //VISUALIZE
-          if (this.imported_data)
-          {
-            visualizeImportedData();
-          }*/
-        },
         fileUploadHandler: function(evt)
         {
           // Start with Visualize button disabled.
@@ -661,13 +649,11 @@ var app = new Vue({
         },
         tutorialHide: function(){
             this.tutorial.show = false;
-            // document.cookie="HideHoaxyTutorial=true;max-age=31536000";
         },
         tutorialHideWithCookie: function(){
             this.tutorial.show = false;
             document.cookie="HideHoaxyTutorial=true;max-age=31536000";
         },
-
         hoverTooltip: function(e){
             var element = e.target;
             var element_offset = this.getOffset(element);
@@ -2308,6 +2294,7 @@ var app = new Vue({
         if (this.imported_data != "")
         {
           this.visualizeImportedData();
+          this.tutorialHideWithCookie();
         }
 
         //create hourglass loading spinner
