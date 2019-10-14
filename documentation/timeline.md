@@ -29,19 +29,16 @@
 ## redraw()
 Redraw the timeline
 
-**Kind**: global function  
 <a name="removeUpdateDateRangeCallback"></a>
 
 ## removeUpdateDateRangeCallback()
 Initialize the timeline
 
-**Kind**: global function  
 <a name="dateFormatter"></a>
 
 ## dateFormatter(d) ⇒ <code>String</code>
 Formats the date using d3.time
-
-**Kind**: global function  
+ 
 **Returns**: <code>String</code> - The formatted time  
 
 | Param | Type | Description |
@@ -53,8 +50,6 @@ Formats the date using d3.time
 ## calculateTweetRates(chartData)
 Shows how many new tweets of a particular type occurred at a point in time
 
-**Kind**: global function  
-
 | Param | Type | Description |
 | --- | --- | --- |
 | chartData | <code>Object</code> | The data that the timeline was drawn with |
@@ -63,8 +58,6 @@ Shows how many new tweets of a particular type occurred at a point in time
 
 ## \_updateDateRange(extent)
 Updates the date range if the user selected a different one
-
-**Kind**: global function  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -75,7 +68,6 @@ Updates the date range if the user selected a different one
 ## Update(data) ⇒ <code>Boolean</code>
 Updates the timeline with new data
 
-**Kind**: global function  
 **Returns**: <code>Boolean</code> - Will only return false if there's no data  
 
 | Param | Type | Description |
@@ -86,5 +78,3 @@ Updates the timeline with new data
 
 ## UpdateTimestamp()
 Update timestamp based on the graph's timestamp
-
-**Kind**: global function  
