@@ -552,8 +552,6 @@ var app = new Vue({
           v.searchedBy = urlKeyValues[5];
           v.lang = urlKeyValues[7];
 
-          console.log('urlKeyValues = ' + urlKeyValues);
-
           // Commenting out since query_sort can't work without "Search" context
           // We're in "Import" context when this function runs.
           // Switching conditionally with Vue seems to make the search bar disappear entirely.
