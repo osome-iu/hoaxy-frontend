@@ -550,6 +550,9 @@ var app = new Vue({
           v.searched_query_text = urlKeyValues[1];
           v.searchBy = urlKeyValues[5];
           v.searchedBy = urlKeyValues[5];
+          v.lang = urlKeyValues[7];
+
+          console.log('urlKeyValues = ' + urlKeyValues);
 
           // Commenting out since query_sort can't work without "Search" context
           // We're in "Import" context when this function runs.
@@ -561,12 +564,14 @@ var app = new Vue({
             v.hoaxySearchSelected = true;
             v.twitterSearchSelected = false;
             v.hoaxyEdges.original_query = data[0].original_query;
+            v.changeURLParamsHoaxy();
           }
           else
           {
             v.hoaxySearchSelected = false;
             v.twitterSearchSelected = true;
             v.twitterEdges.original_query = data[0].original_query;
+            v.changeURLParamsTwitter();
           }
           
           // Loop filling twitterEdge data with imported_data
@@ -990,12 +995,12 @@ var app = new Vue({
           this.$refs.searchBox.focus();
         },
         changeURLParamsHoaxy: function(){
-            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort + "&type=" + this.searchBy;
+            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.query_sort + "&type=" + this.searchBy + "&lang=" + defaultHoaxyLang;
             location.hash = query_string;
             return query_string;
         },
         changeURLParamsTwitter: function(){
-            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.twitter_result_type + "&type=" + this.searchBy;
+            var query_string = "query=" + encodeURIComponent(this.query_text) + "&sort=" + this.twitter_result_type + "&type=" + this.searchBy + "&lang=" + this.lang;
             location.hash = query_string;
             return query_string;
         },
@@ -2327,7 +2332,7 @@ var app = new Vue({
         // First character is a #, so we must remove this in order to properly parse the query string
         var params = location.hash.substring(1, location.hash.length).split("&");
 
-        // Note that this logic currently requires the query, sort, and type parameters to come in that exact order.
+        // Note that this logic currently requires the query, sort, type, and language parameters to come in that exact order.
         // If this order is changed, the code will no longer work
         var discerningSortBasedOnHoaxyOrTwitter = "";
         for (var i in params)
@@ -2359,6 +2364,10 @@ var app = new Vue({
                 this.twitter_result_type = discerningSortBasedOnHoaxyOrTwitter;
               }
             }
+            if(key == "lang")
+            {
+              this.lang = value;
+            }
         }
 
         this.twitter = new Twitter(configuration.twitter_key);
@@ -2381,64 +2390,8 @@ var app = new Vue({
             twitterRateLimitReached: this.twitterRateLimitReachedObj
         });
 
-        //TEMPORARILY KEEPING THIS BLOCK OF CODE IN CASE WE NEED TO REVERT. CURRENTLY MOST FUNCTIONALITY WAS MOVED TO THE
-        //initializeHoaxyTimeline AND initializeTwitterTimeline BUT IF WE MISSED SOMETHING WE WANT THIS CODE TO REVERT
-        //create the chart that is used to visualize the timeline
-        // the updateGraph function is a callback when the timeline interval is adjusted
-        // this.globalHoaxyTimeline = new HoaxyTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
-        // this.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: this.updateGraph, graphAnimation: this.graphAnimation});
-        // this.timeline = this.globalHoaxyTimeline
-        //
-        //
-        // // this.timeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
-        // //
-        // //     v.pauseGraphAnimation();
-        // //     v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
-        // //     v.graphAnimation.increment = 0;
-    		// // v.graphAnimation.playing  = true;
-    		// // v.graphAnimation.paused = true;
-        // //     v.unpauseGraphAnimation();
-        // //     v.pauseGraphAnimation();
-        // //
-        // //     // console.debug(new Date(e.pointXValue))
-        // // });
-        //
-        // this.globalHoaxyTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
-        //
-        //     v.pauseGraphAnimation();
-        //     v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
-        //     v.graphAnimation.increment = 0;
-        //     v.graphAnimation.playing  = true;
-        //     v.graphAnimation.paused = true;
-        //     v.unpauseGraphAnimation();
-        //     v.pauseGraphAnimation();
-        //
-        //     // console.debug(new Date(e.pointXValue))
-        // });
-        //
-        // this.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
-        //
-        //     v.pauseGraphAnimation();
-        //     v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
-        //     v.graphAnimation.increment = 0;
-        //     v.graphAnimation.playing  = true;
-        //     v.graphAnimation.paused = true;
-        //     v.unpauseGraphAnimation();
-        //     v.pauseGraphAnimation();
-        //
-        //     // console.debug(new Date(e.pointXValue))
-        // });
-
-        // this.displayError("Test Error");
-
         this.spinStop("initialLoad");
 
-
-
-        
-        // this.spinStart();
-
-        // console.debug(this.query_text);
         if(!this.query_text)
         {
             var cookies = document.cookie.split("; ");
