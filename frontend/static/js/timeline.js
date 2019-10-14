@@ -14,9 +14,6 @@ function HoaxyTimeline(settings){
 
 	// Including interactive tooltips that contain the time period date
   // Along with the new claims and fact checks for that period
-  /**
-   * @todo
-   */
 	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
 			var currentTimeStepIndex;
 			// Date comes from Hoaxy as MM/DD/YYYY in this timeline as local time zone
