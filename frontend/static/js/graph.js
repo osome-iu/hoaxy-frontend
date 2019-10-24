@@ -1257,7 +1257,8 @@ function HoaxyGraph(options)
 				else if("retweet" == node.incoming[i].tweet_types[j])
 				{
 					tweet_type = "has_retweeted";
-				}
+        }
+        // Create another conditional branch for no edges
 				tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: fromURL, screenName: node.incoming[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
 				tweets[tweet_type][i].article_titles.push(node.incoming[i].titles[j]);
 				tweets[tweet_type][i].tweet_urls.push(tweetURL);
