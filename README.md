@@ -42,3 +42,10 @@ The graph visualization uses Sigma.js, and it was tested with v1.2.0. The timeli
 ### Configuration
 
 API endpoints must be defined in a `frontend/config.js`.  An example config file - `config.example.js` - has been provided to show you the correct format.  It features endpoints from the [public Hoaxy Rapid-API](https://rapidapi.com/truthy/api/hoaxy).  These endpoints should be modified to point to your own implementation of the [Hoaxy Backend](https://github.com/IUNetSci/hoaxy-backend).
+
+## Build hoaxy frontend with Docker
+
+Make sure you have installed docker-compose. 
+* Update the config in `frontend/config.js` to reflect rapidapi endpoints. 
+* Run `docker-compose up`
+* Go to your browser and run http://localhost:8080/
