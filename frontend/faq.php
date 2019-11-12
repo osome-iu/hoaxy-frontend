@@ -341,8 +341,8 @@
 
 								<p>[2] Chengcheng Shao, Giovanni Luca Ciampaglia, Onur Varol, Kaicheng Yang, 
 									 Alessandro Flammini, and Filippo Menczer (2018). The spread
-									 of low-credibility content by social bots. Technical Report arXiv
-									 1707.07592. https://arxiv.org/abs/1707.07592
+									 of low-credibility content by social bots.  Nature Communications,
+									 9:4787. https://doi.org/10.1038/s41467-018-06930-7
 								</p>
 
 								<p>[3] Chengcheng Shao, Giovanni Luca Ciampaglia, Alessandro
@@ -465,8 +465,8 @@
 									<a href="https://osome.iuni.iu.edu/contact/"
 										 target="_blank">contact information</a>
 									found at the OSoMe website. You can also tweet us at
-									<a href="https://twitter.com/truthyatindiana"
-										 target="_blank">@TruthyAtIndiana</a>
+									<a href="https://twitter.com/OSoMe_IU"
+										 target="_blank">@OSoMe_IU</a>
 									but we cannot promise to monitor Twitter at all times.
 								</dd>
 
