@@ -187,7 +187,7 @@ var Twitter = function(initialize_key){
         "Twitter was unable to retrieve mentions of this user, is there a typo?");
       }
 
-      return apiCall('GET', '/1.1/search/tweets.json', {q: query, lang: lang, max_id: max_id, result_type: result_type, count: 100, include_entities: 1},
+      return apiCall('GET', '/1.1/search/tweets.json', {q: query, max_id: max_id, result_type: result_type, lang: lang, count: 100, include_entities: 1},
       "Twitter was unable to retrieve mentions of this user, is there a typo?");
     }
 

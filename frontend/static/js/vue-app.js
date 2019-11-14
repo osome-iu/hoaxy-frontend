@@ -504,110 +504,113 @@ var app = new Vue({
 
           v.spinStart("visualizeImportedData");
 
-          setTimeout(function(){
-          v.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: v.updateGraph, graphAnimation: v.graphAnimation});
-          v.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
-              v.pauseGraphAnimation();
-              v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
-              v.graphAnimation.increment = 0;
-              v.graphAnimation.playing  = true;
-              v.graphAnimation.paused = true;
-              v.unpauseGraphAnimation();
-              v.pauseGraphAnimation();
-              // console.debug(new Date(e.pointXValue))
-          });
-          v.timeline = v.globalTwitterSearchTimeline;
-
-          var data = v.imported_data;
-          // Removing header row from CSV file
-          if(v.imported_file_type == "csv")
-          {
-            data.shift();
-          }       
-
           v.resetTwitterSearchResults();
           v.resetHoaxySearchResults();
 
-          // Using the original search URL to restore search terms into search box
-          var urlHash = decodeURI(data[0].original_query);
-          var urlVars = String(urlHash).split('&');
-          var urlKeyValues = String(urlVars).split('=');
-          var urlKeyValues = String(urlKeyValues).split(',');
+          setTimeout(function(){
+            v.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: v.updateGraph, graphAnimation: v.graphAnimation});
+            v.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+                v.pauseGraphAnimation();
+                v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+                v.graphAnimation.increment = 0;
+                v.graphAnimation.playing  = true;
+                v.graphAnimation.paused = true;
+                v.unpauseGraphAnimation();
+                v.pauseGraphAnimation();
+                // console.debug(new Date(e.pointXValue))
+            });
+            v.timeline = v.globalTwitterSearchTimeline;
 
-          v.query_text = urlKeyValues[1];
-          v.searched_query_text = urlKeyValues[1];
-          v.searchBy = urlKeyValues[5];
-          v.searchedBy = urlKeyValues[5];
-          v.lang = urlKeyValues[7];
-
-          // Commenting out since query_sort can't work without "Search" context
-          // We're in "Import" context when this function runs.
-          // Switching conditionally with Vue seems to make the search bar disappear entirely.
-          // v.query_sort = urlKeyValues[3];
-
-          if(v.searchBy == 'Hoaxy')
-          {
-            v.hoaxySearchSelected = true;
-            v.twitterSearchSelected = false;
-            v.hoaxyEdges.original_query = data[0].original_query;
-            v.changeURLParamsHoaxy();
-          }
-          else
-          {
-            v.hoaxySearchSelected = false;
-            v.twitterSearchSelected = true;
-            v.twitterEdges.original_query = data[0].original_query;
-            v.changeURLParamsTwitter();
-          }
-          
-          // Loop filling twitterEdge data with imported_data
-          for(var i in data)
-          {
-            var edge = data[i];
-            
-            edge.date_published = edge.tweet_created_at;
-            edge.pub_date = edge.tweet_created_at;
-            
-            var newdate = new Date(edge.pub_date);
-            if(!(newdate instanceof Date && !isNaN(newdate)))
+            var data = v.imported_data;
+            // Removing header row from CSV file
+            if(v.imported_file_type == "csv")
             {
-              continue;
+              data.shift();
+            } 
+
+            // Using the original search URL to restore search terms into search box
+            var urlHash = decodeURI(data[0].original_query);
+            var urlVars = String(urlHash).split('&');
+            var urlKeyValues = String(urlVars).split('=');
+            var urlKeyValues = String(urlKeyValues).split(',');
+
+            v.query_text = urlKeyValues[1];
+            v.searched_query_text = urlKeyValues[1];
+            v.searchBy = urlKeyValues[5];
+            v.searchedBy = urlKeyValues[5];
+            v.lang = urlKeyValues[7];
+
+            // Commenting out since query_sort can't work without "Search" context
+            // We're in "Import" context when this function runs.
+            // Switching conditionally with Vue seems to make the search bar disappear entirely.
+            // v.query_sort = urlKeyValues[3];
+
+            if(v.searchBy == 'Hoaxy')
+            {
+              v.hoaxySearchSelected = true;
+              v.twitterSearchSelected = false;
+              v.changeURLParamsHoaxy();
             }
-
-            if(edge.from_user_botscore != "")
+            else
             {
-              v.graph.setBotScore(edge.from_user_id, edge.from_user_botscore);
-            }
-            if(edge.to_user_botscore != "")
-            {
-              v.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
+              v.hoaxySearchSelected = false;
+              v.twitterSearchSelected = true;
+              v.changeURLParamsTwitter();
             }
             
-            // Coming in as strings from CSV when they should be booleans
-            if(edge.is_mention.toString().toUpperCase() == "TRUE")
+            // Loop filling twitterEdge data with imported_data
+            for(var i in data)
             {
-              edge.is_mention = true;
+              var edge = data[i];
+              // if(!edge.tweet_created_at)
+              // {
+              //   continue;
+              // }
+
+              edge.date_published = edge.tweet_created_at;
+              edge.pub_date = edge.tweet_created_at;
+              
+              var newdate = new Date(edge.pub_date);
+              if(!(newdate instanceof Date && !isNaN(newdate)))
+              {
+                continue;
+              }
+
+              if(edge.from_user_botscore != "")
+              {
+                v.graph.setBotScore(edge.from_user_id, edge.from_user_botscore);
+              }
+              if(edge.to_user_botscore != "")
+              {
+                v.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
+              }
+              
+              // Coming in as strings from CSV when they should be booleans
+              if(edge.is_mention.toString().toUpperCase() == "TRUE")
+              {
+                edge.is_mention = true;
+              }
+              if(edge.is_mention.toString().toUpperCase() == "FALSE")
+              {
+                edge.is_mention = false;
+              }
+
+              v.twitterEdges.push(edge);
+              v.twitterDates.push(newdate);
+              v.twitterUserSet.add(edge.from_user_id);
+              v.twitterUserSet.add(edge.to_user_id);
             }
-            if(edge.is_mention.toString().toUpperCase() == "FALSE")
-            {
-              edge.is_mention = false;
-            }
 
-            v.twitterEdges.push(edge);
-            v.twitterDates.push(newdate);
-            v.twitterUserSet.add(edge.from_user_id);
-            v.twitterUserSet.add(edge.to_user_id);
-          }
+            // <div>{{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.</div>
 
-          // <div>{{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.</div>
+            // true meaning we won't reset scores
+            // v.buildTwitterGraph(true);
+            v.buildTwitterGraph(false);
 
-          // true meaning we won't reset scores
-          v.buildTwitterGraph(true);
+            // Check if animation should be disabled or not
+            v.checkIfShouldDisableAnimation(v.twitterEdges);
 
-          // Check if animation should be disabled or not
-          v.checkIfShouldDisableAnimation(v.twitterEdges);
-
-          v.spinStop("visualizeImportedData");
+            v.spinStop("visualizeImportedData");
           }, 250);
         },
 
@@ -1439,6 +1442,7 @@ var app = new Vue({
                 // console.log("POST EDGES:");
                 // console.log(v.twitterEdges);
                 // console.log(typeof(v.twitterEdges));
+                console.log(v.twitterEdges)
                 v.graph.updateEdges(v.twitterEdges);
                 v.updateGraph();
                 v.graph.score_stats.reset();
@@ -1862,7 +1866,17 @@ var app = new Vue({
             if(!this.twitter_account_info.id)
             {
                 var prom = this.twitterLogIn();
-                prom.then( this.graph.getNewScores, function(error){console.warn(error);  v.spinStop(null, true);} );
+                prom.then( 
+                  (response) =>
+                  {
+                    this.graph.getNewScores();
+                  },
+                  (error) =>
+                  {
+                    console.warn(error); 
+                    v.spinStop(null, true);
+                  }
+                );
             }
             else
             {
@@ -1889,7 +1903,7 @@ var app = new Vue({
                 else
                 {
                     v.graph.updateUserBotScore({user_id: user_id})
-                    .then(resolve, reject)
+                    .then(resolve, reject).catch( error =>  console.log(error) );
                 }
             });
             success.then(function(response){
