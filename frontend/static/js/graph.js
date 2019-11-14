@@ -342,10 +342,29 @@ function HoaxyGraph(options)
 			return false;
 		}
 
-		var id = score_stats.user_list[index];
-		var node = sigmaInstance.graph.nodes(id);
-		var sn = node.data.screenName;
-		var user = {screen_name: sn, user_id: id};
+    var id = ""
+    var node = ""
+    var sn = ""
+    var user = ""
+
+    console.log(score_stats.user_list)
+    
+    if(score_stats.user_list[index] && score_stats.user_list[index] != undefined)
+    {
+      id = score_stats.user_list[index];
+      node = s.graph.nodes(id);
+      sn = node.data.screenName;
+		  user = {screen_name: sn, user_id: id};
+    }
+    else
+    {
+      index++;
+      return setTimeout(function(){
+        // console.debug("get Another one");
+        getBotScoreTimer(index);
+      }, 1000);
+    }
+    
 		if(botscores[id])
 		{
 			user.score = botscores[id].score;
@@ -353,20 +372,22 @@ function HoaxyGraph(options)
 		}
 
 		var success = new Promise(function(resolve, reject){
-			updateUserBotScore(user).then(resolve, reject);
+			updateUserBotScore(user).then(resolve, reject).catch( error =>  console.log(error) );
 		});
 		success.then(function(response){
 			if (response === "Error: rate limit reached") {
 				twitterRateLimitReached.isReached = true;
 			} else {
-        // Assuming the rate limit wasn't reached
-        // as we have successfully retrieved a bot score
+				// Resuming the rate limit as we have successfully
+				// retrieved a bot score
 				twitterRateLimitReached.isReached = false;
 			}
-    });
-    
+		}).catch( error =>  console.log(error) );
+
+		// console.debug(user);
 		index++;
 		return setTimeout(function(){
+			// console.debug("get Another one");
 			getBotScoreTimer(index);
 		}, 1000);
 	}
@@ -866,6 +887,7 @@ function HoaxyGraph(options)
         edgeCount[from_user_id + " " + to_user_id] += 1;
       }
 			// put nodes into sigma
+      console.log(nodes, "nodes")
 
       var max_size = 0;
       var min_size = 0;
@@ -1094,11 +1116,18 @@ function HoaxyGraph(options)
 					tweet_type = "has_retweeted";
         }
         // Create another conditional branch for no edges
-				tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: fromURL, screenName: node.incoming[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
-				tweets[tweet_type][i].article_titles.push(node.incoming[i].titles[j]);
-				tweets[tweet_type][i].tweet_urls.push(tweetURL);
-				tweets[tweet_type][i].article_urls.push(node.incoming[i].url_raws[j]);
-				counts[tweet_type + "_count"] ++;
+        if(tweet_type == "")
+        {
+          
+        }
+        else
+        {
+          tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: fromURL, screenName: node.incoming[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
+          tweets[tweet_type][i].article_titles.push(node.incoming[i].titles[j]);
+          tweets[tweet_type][i].tweet_urls.push(tweetURL);
+          tweets[tweet_type][i].article_urls.push(node.incoming[i].url_raws[j]);
+          counts[tweet_type + "_count"] ++;
+        }
 			}
 		}
 
@@ -1127,12 +1156,18 @@ function HoaxyGraph(options)
 				{
 					tweet_type = "is_retweeted_by";
         }
-        
-				tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: toURL, screenName: node.outgoing[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
-				tweets[tweet_type][i].article_titles.push(node.outgoing[i].titles[j]);
-				tweets[tweet_type][i].tweet_urls.push(tweetURL);
-				tweets[tweet_type][i].article_urls.push(node.outgoing[i].url_raws[j]);
-				counts[tweet_type + "_count"] ++;
+				if(tweet_type == "")
+        {
+          
+        }
+        else
+        {
+          tweets[tweet_type][i] = tweets[tweet_type][i] || {user_url: toURL, screenName: node.outgoing[i].screenName, article_titles: [], tweet_urls: [], article_urls: []};
+          tweets[tweet_type][i].article_titles.push(node.outgoing[i].titles[j]);
+          tweets[tweet_type][i].tweet_urls.push(tweetURL);
+          tweets[tweet_type][i].article_urls.push(node.outgoing[i].url_raws[j]);
+          counts[tweet_type + "_count"] ++;
+        }
 			}
     }
     

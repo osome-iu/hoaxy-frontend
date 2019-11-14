@@ -531,38 +531,119 @@ var app = new Vue({
 
         if(edge.from_user_botscore != "")
         {
-          v.graph.setBotScore(edge.from_user_id, edge.from_user_botscore);
-        }
-        if(edge.to_user_botscore != "")
-        {
-          v.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
-        }
-        
-        // Coming in as strings from CSV when they should be booleans
-        if(edge.is_mention.toString().toUpperCase() == "TRUE")
-        {
-          edge.is_mention = true;
-        }
-        if(edge.is_mention.toString().toUpperCase() == "FALSE")
-        {
-          edge.is_mention = false;
-        }
+          var v = this;
 
-        v.twitterEdges.push(edge);
-        v.twitterDates.push(newdate);
-        v.twitterUserSet.add(edge.from_user_id);
-        v.twitterUserSet.add(edge.to_user_id);
-      }
+          v.spinStart("visualizeImportedData");
 
-      // true meaning we won't reset scores
-      v.buildTwitterGraph(true);
+          v.resetTwitterSearchResults();
+          v.resetHoaxySearchResults();
 
-      // Check if animation should be disabled or not
-      v.checkIfShouldDisableAnimation(v.twitterEdges);
+          setTimeout(function(){
+            v.globalTwitterSearchTimeline = new TwitterSearchTimeline({updateDateRangeCallback: v.updateGraph, graphAnimation: v.graphAnimation});
+            v.globalTwitterSearchTimeline.chart.interactiveLayer.dispatch.on("elementClick", function(e){
+                v.pauseGraphAnimation();
+                v.graphAnimation.current_timestamp = Math.floor(e.pointXValue);
+                v.graphAnimation.increment = 0;
+                v.graphAnimation.playing  = true;
+                v.graphAnimation.paused = true;
+                v.unpauseGraphAnimation();
+                v.pauseGraphAnimation();
+                // console.debug(new Date(e.pointXValue))
+            });
+            v.timeline = v.globalTwitterSearchTimeline;
 
-      v.spinStop("visualizeImportedData");
-      }, 250);
-    },
+            var data = v.imported_data;
+            // Removing header row from CSV file
+            if(v.imported_file_type == "csv")
+            {
+              data.shift();
+            } 
+
+            // Using the original search URL to restore search terms into search box
+            var urlHash = decodeURI(data[0].original_query);
+            var urlVars = String(urlHash).split('&');
+            var urlKeyValues = String(urlVars).split('=');
+            var urlKeyValues = String(urlKeyValues).split(',');
+
+            v.query_text = urlKeyValues[1];
+            v.searched_query_text = urlKeyValues[1];
+            v.searchBy = urlKeyValues[5];
+            v.searchedBy = urlKeyValues[5];
+            v.lang = urlKeyValues[7];
+
+            // Commenting out since query_sort can't work without "Search" context
+            // We're in "Import" context when this function runs.
+            // Switching conditionally with Vue seems to make the search bar disappear entirely.
+            // v.query_sort = urlKeyValues[3];
+
+            if(v.searchBy == 'Hoaxy')
+            {
+              v.hoaxySearchSelected = true;
+              v.twitterSearchSelected = false;
+              v.changeURLParamsHoaxy();
+            }
+            else
+            {
+              v.hoaxySearchSelected = false;
+              v.twitterSearchSelected = true;
+              v.changeURLParamsTwitter();
+            }
+            
+            // Loop filling twitterEdge data with imported_data
+            for(var i in data)
+            {
+              var edge = data[i];
+              // if(!edge.tweet_created_at)
+              // {
+              //   continue;
+              // }
+
+              edge.date_published = edge.tweet_created_at;
+              edge.pub_date = edge.tweet_created_at;
+              
+              var newdate = new Date(edge.pub_date);
+              if(!(newdate instanceof Date && !isNaN(newdate)))
+              {
+                continue;
+              }
+
+              if(edge.from_user_botscore != "")
+              {
+                v.graph.setBotScore(edge.from_user_id, edge.from_user_botscore);
+              }
+              if(edge.to_user_botscore != "")
+              {
+                v.graph.setBotScore(edge.to_user_id, edge.to_user_botscore);
+              }
+              
+              // Coming in as strings from CSV when they should be booleans
+              if(edge.is_mention.toString().toUpperCase() == "TRUE")
+              {
+                edge.is_mention = true;
+              }
+              if(edge.is_mention.toString().toUpperCase() == "FALSE")
+              {
+                edge.is_mention = false;
+              }
+
+              v.twitterEdges.push(edge);
+              v.twitterDates.push(newdate);
+              v.twitterUserSet.add(edge.from_user_id);
+              v.twitterUserSet.add(edge.to_user_id);
+            }
+
+            // <div>{{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.</div>
+
+            // true meaning we won't reset scores
+            // v.buildTwitterGraph(true);
+            v.buildTwitterGraph(false);
+
+            // Check if animation should be disabled or not
+            v.checkIfShouldDisableAnimation(v.twitterEdges);
+
+            v.spinStop("visualizeImportedData");
+          }, 250);
+        },
 
     /**
      * Selects the top 20 articles to prep for visualization
@@ -2117,55 +2198,84 @@ var app = new Vue({
      * Get a single botscore of the user's choosing
      * @param  {String} user_id The twitter user's ID
      */
-    getSingleBotScore: function(user_id)
-    {
-      var v = this;
-      this.getting_bot_scores.running = true;
-      var success = new Promise(function(resolve, reject){
-        if(!v.twitter_account_info.id)
-        {
-          v.twitterLogIn()
-          .then(function(){
-            v.graph.updateUserBotScore({user_id: user_id})
-            .then(resolve, reject);
-          },function(error){
-            console.warn(error);
-            reject(error)
-          })
-        }
-        else
-        {
-          v.graph.updateUserBotScore({user_id: user_id})
-          .then(resolve, reject)
-        }
-      });
-      success.then(function(response){
-        if (response === "Error: rate limit reached") 
-        {
-          v.twitterRateLimitReachedObj.isReached = true;
-          v.getting_bot_scores.running = false;
-        } 
-        else 
-        {
-          // Resuming the rate limit as we have successfully
-          // retrieved a bot score
-          v.twitterRateLimitReachedObj.isReached = false;
-          v.getting_bot_scores.running = false;
+        getSingleBotScore: function(user_id){
+            //console.debug(user_id);
+            var v = this;
+            this.getting_bot_scores.running = true;
+            var success = new Promise(function(resolve, reject){
+                if(!v.twitter_account_info.id)
+                {
+                    v.twitterLogIn()
+                    .then(function(){
+                        v.graph.updateUserBotScore({user_id: user_id})
+                        .then(resolve, reject);
 
-          try 
+                    },function(error){
+                        console.warn(error);
+                        reject(error)
+                    })
+                }
+                else
+                {
+                    v.graph.updateUserBotScore({user_id: user_id})
+                    .then(resolve, reject).catch( error =>  console.log(error) );
+                }
+            });
+            success.then(function(response){
+                if (response === "Error: rate limit reached") {
+                  v.twitterRateLimitReachedObj.isReached = true;
+                  v.getting_bot_scores.running = false;
+                } else {
+                  // Resuming the rate limit as we have successfully
+                  // retrieved a bot score
+                  v.twitterRateLimitReachedObj.isReached = false;
+                  // console.debug(response);
+                  v.getting_bot_scores.running = false;
+
+                  try {
+                      var score = 0;
+                      if(v.lang == 'en' || v.lang == 'en-gb')
+                      {
+                        score = response.data.scores.english;
+                      }
+                      else
+                      {
+                        score = response.data.scores.universal;
+                      }
+                      v.node_modal_content.botscore = Math.floor(score * 100);
+                      v.node_modal_content.botcolor = v.graph.getNodeColor(score);
+                      v.node_modal_content.timestamp = new Date();
+                  }
+                  catch (e)
+                  {
+                      console.warn(e);
+                      v.node_modal_content.botscore = -1;
+                      v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
+                  }
+                }
+            }, function(){
+                  v.getting_bot_scores.running = false;
+                  v.node_modal_content.botscore = -1;
+                  v.node_modal_content.botcolor = v.graph.getNodeColor(-1);
+            })
+
+        },
+        twitterLogOut: function(){
+            var p = this.twitter.logOut();
+            this.twitter_account_info = {};
+            this.profile.name = "";
+            // delete this.me;
+            this.profile.image = defaultProfileImage;
+            return p;
+        },
+        buildJSONContent: function()
+        {
+          var edgeList = {};
+
+          if (this.hoaxyEdges.length > 0) 
           {
-            var score = 0;
-            if(v.lang == 'en' || v.lang == 'en-gb')
-            {
-              score = response.data.scores.english;
-            }
-            else
-            {
-              score = response.data.scores.universal;
-            }
-            v.node_modal_content.botscore = Math.floor(score * 100);
-            v.node_modal_content.botcolor = v.graph.getNodeColor(score);
-            v.node_modal_content.timestamp = new Date();
+            // Creating Hoaxy JSON
+            edgeList = this.hoaxyEdges;
           }
           catch (e)
           {
