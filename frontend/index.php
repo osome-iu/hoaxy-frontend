@@ -86,6 +86,7 @@
                 Language:&nbsp;
               </div>
               <select class="form-control" style="width: auto" v-if="twitterSearchSelected" v-model="lang">
+                <option value="">Any</option>
                 <option value="ar">Arabic (العربية)</option>
                 <option value="bn">Bengali (বাংলা)</option>
                 <option value="bg">Bulgarian (български език)</option>
