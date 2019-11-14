@@ -1,0 +1,10 @@
+hoaxy_botometer_flowchart.png
+*.pdf
+*.doc
+*.txt
+.git
+.git/
+.git/*
+.git/**
+docker-compose.*
+config.example.js

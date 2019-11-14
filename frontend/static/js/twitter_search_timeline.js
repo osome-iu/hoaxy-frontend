@@ -13,7 +13,7 @@ function TwitterSearchTimeline(settings){
 		.useInteractiveGuideline(true);
 
 	// Including interactive tooltips that contain the time period date
-	// Along with the new tweets on that time period
+  // Along with the new tweets on that time period
 	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
 			var currentTimeStepIndex;
 			// In Twitter case, we convert data from: MM/DD/YYYY HH:MM:DD (AM/PM)
@@ -86,6 +86,9 @@ function TwitterSearchTimeline(settings){
 
 	chart.color([colors.edge_colors.claim, "#00ff00"]); //color match with those of nodes
 
+  /**
+   * Redraw the timeline
+   */
 	function redraw(){
 		if(chart)
 		{
@@ -99,18 +102,28 @@ function TwitterSearchTimeline(settings){
 			.attr("transform", "translate(0, 12)");
 			d3.select('#chart svg .nvd3 > g')
 			.attr("transform", "translate(0, -10)");
-			
 		}
-	}
+  }
+  /**
+   * Initialize the timeline
+   */
 	function removeUpdateDateRangeCallback(){
 		chart.dispatch.on("brush", null);
 	}
 
+  /**
+   * Formats the date using d3.time
+   * @param  {String} d The date to be formatted
+   * @return {String} The formatted time
+   */
 	function dateFormatter(d) {
-		// console.debug(d);
 		return d3.time.format('%m/%d/%Y %H:%M:%S %p')(new Date(d))
 	}
 
+  /**
+   * Shows how many new tweets of a particular type occurred at a point in time
+   * @param  {Object} chartData The data that the timeline was drawn with
+   */
 	function calculateTweetRates(chartData) {
 		// Deep copy of the chart data as any shallow copy will mess up
 		// The timeline itself, we only use this new copy for the
@@ -135,6 +148,10 @@ function TwitterSearchTimeline(settings){
 		}, 200);
 	};
 
+  /**
+   * Updates the date range if the user selected a different one
+   * @param  {Object} extent The timeframe selection by the user
+   */
 	function _updateDateRange(extent){
 		if(document.getElementById("extent-0"))
 		document.getElementById("extent-0").innerHTML = extent.extent[0];
@@ -235,6 +252,11 @@ function TwitterSearchTimeline(settings){
 		}
 	}
 
+  /**
+   * Updates the range of dates on graph \
+   * Seen outside twitter_search_timeline as updateDateRange() \
+   * (May be deprecated)
+   */
 	function triggerUpdateRange(){
 		try{
 			d3.select('#chart svg')
@@ -252,12 +274,12 @@ function TwitterSearchTimeline(settings){
 		}
 	}
 
+  /**
+   * Update timestamp based on the graph's timestamp
+   */
 	function UpdateTimestamp(){
-		// console.log('CALLING CHART DATA UPDATE TIMESTAMP PRE');
-		// console.log(chartData);
 		if(graphAnimation.current_timestamp)
 		{
-
 			chartData[1] = {
 				key: 'Time',
 				values: [
@@ -283,20 +305,6 @@ function TwitterSearchTimeline(settings){
 		d3.select('#chart svg .nvd3 > g')
 		.attr("transform", "translate(0, -10)");
 		chart.dispatch.on("brush", updateDateRange);
-
-
-		// The twitter tooltip only contains tweets and time, so we must hide the second element (time) from the tooltip
-		// This is set up here (adding class twitter_tooltip) and executed in the external.css file
-		// try {
-		// 	var twitter_tooltip = document.querySelector('[id^="nvtooltip-"]');
-		// 	twitter_tooltip.className += " twitter_tooltip";
-		// }
-		// catch(err) {
-	  //   // In the current design, the chart keeps getting re-drawn so we must keep having to hide this tooltip. However,
-		// 	// Sometimes the nvtooltip element is not found so we have a catch block for this. When time allows, a better
-		// 	// Design for hiding this tooltip can be implemented.
-		// }
-
 	}
 
 	returnObj.removeUpdateDateRangeCallback = removeUpdateDateRangeCallback;
