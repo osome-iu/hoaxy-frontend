@@ -236,7 +236,7 @@ li label
 }
 li
 {
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
 
 .claim_label, .fact_checking_label
