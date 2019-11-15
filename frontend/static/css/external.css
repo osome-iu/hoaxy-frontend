@@ -236,7 +236,7 @@ li label
 }
 li
 {
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
 
 .claim_label, .fact_checking_label
@@ -302,7 +302,7 @@ li
     width: 150px;
     margin-left: -75px;
     margin-top: -75px;
-    /* vertical-align: middle; */
+    /*vertical-align: middle;*/
     text-align: center;
 
     /*font-size: 6rem;*/

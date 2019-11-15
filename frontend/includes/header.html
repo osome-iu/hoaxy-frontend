@@ -1,7 +1,65 @@
+<nav class="navbar navbar-expand fixed-top text-center text-md-left">
+	<div class="container flex-column d-flex flex-wrap flex-sm-row align-items-center justify-content-between">
+		<!-- <a href="https://github.com/IUNetSci" style="position: fixed; bottom: 0; left: 0; border: 0;" ><img src="./static/assets/forkme.png" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_white_ffffff.png"></a> -->
+		<div class="d-flex flex-row justify-content-between align-items-center p-0 col-12 col-sm">
+			<div class="navbar-brand hoaxy-logo align-items-center"><a class="" href="./"><i class="fa fa-retweet"></i> <span class="reg">HOAXY</span></a></div>
+			<div class="d-block d-sm-none align-items-center">
+				<button class="btn btn-primary text-dark" type="button" aria-expanded="false" aria-label="Toggle navigation" @click="menu_open = !menu_open">
+			    	<i class="fa fa-bars" aria-hidden="true"></i>
+			    </button>
+			</div>
+		</div>
+		<div class="navbar-nav float-sm-right text-right justify-content-around align-items-center d-none d-sm-flex"
+			:class="{'d-block':menu_open}"
+		id="">
+			<span id="help_dropdown" class="nav-item d-none d-sm-inline">
+				<a class="nav-link" href="#" @click.prevent="">Help</a>
+				<ul class="pb-0 list-unstyled" >
+					<li class=""><a href="./faq.php">FAQ</a></li>
+					<li v-if="tutorial" class=""><a href="./" @click.prevent.stop="tutorial.show = true; tutorial.active_slide = 1;" >Tutorial</a></li>
+					<li v-else class=""><a href="./" @click.prevent.stop="show_tutorial" >Tutorial</a></li>
+				</ul>
+			</span>
+				<a class="nav-link nav-item d-sm-none" href="./faq.php">FAQ</a>
+				<a class="nav-item nav-link d-sm-none" v-if="tutorial" href="./" @click.prevent.stop="tutorial.show = true; tutorial.active_slide = 1;" >Tutorial</a>
+				<a class="nav-item nav-link d-sm-none" v-else href="./" @click.prevent.stop="show_tutorial" >Tutorial</a>
+			<a class="nav-item nav-link" href="./stats.php">Dashboard</a>
+			<a class="nav-item nav-link" href="https://rapidapi.com/truthy/api/hoaxy" target="_blank">Data</a>
+			<span id="source_dropdown" class="nav-item d-none d-sm-inline">
+				<a class="nav-link" href="#" @click.prevent="source_dropdown_open = !source_dropdown_open" target="_blank">Software</a>
+				<ul class="pb-0 list-unstyled" >
+					<li class=""><a href="https://github.com/IUNetSci/hoaxy-frontend" target="_blank">Hoaxy Front-end Open Source Code</a></li>
+					<li class=""><a href="https://github.com/IUNetSci/hoaxy-backend" target="_blank">Hoaxy Back-end Open Source Code</a></li>
+				</ul>
+			</span>
+			<a class="nav-link nav-item d-sm-none" href="https://github.com/IUNetSci/hoaxy-frontend" target="_blank">Hoaxy Front-end Open Source Code</a>
+			<a class="nav-link nav-item d-sm-none" href="https://github.com/IUNetSci/hoaxy-backend" target="_blank">Hoaxy Back-end Open Source Code</a>
+			<a class="nav-item nav-link" href="http://osome.iuni.iu.edu/" target="_blank">OSoMe</a>
+
+			<div v-if="twitter">
+				<b-dropdown class="nav-item" variant="link" size="md" no-caret>
+					<template slot="button-content"><img :src="profile.image"><span class="profile-name" style="color: white" v-text="profile.name"></span>
+					</template>
+					
+					<b-dropdown-item v-if="!twitter_account_info.name" class="dropdown-item" @click.prevent.stop="twitterLogIn()"><span style="color: black">Log In</span></b-dropdown-item>
+					<b-dropdown-item v-if="twitter_account_info.name" class="dropdown-item" @click.prevent.stop="twitterLogOut()"><span style="color: black">Log Out</span></b-dropdown-item>
+				</b-dropdown>
+			</div>	
+		</div>
+	</div>
+</nav>
+
+
+
 <header class="container-fluid">
 	<div class="container">
 		<div class="text-center">
-			<h1><a href="/">Claim and Fact Check Spreading</a></h1>
+			<h1 class="hoaxy-logo"><a href="/"><i class="fa fa-retweet"></i> <span class="reg">HOAXY</span></a><sup class="d-none d-sm-inline"><small>beta</small></sup></h1>
+			<p class="" id="subtitle">
+				Visualize the spread of claims and fact checking.
+			</p>
+
+			<h2 id="hoaxy_subtitle"><!--#echo var="subtitle" --></h2>
 		</div>
 	</div>
 	<nav class="text-center">

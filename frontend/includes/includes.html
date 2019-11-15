@@ -1,12 +1,25 @@
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-1262144-6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-1262144-6');
+</script>
+
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<!-- VueJS -->
+<!-- Vue for dev
+<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+-->
+<!-- Vue for deployment -->
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.10/dist/vue.min.js"></script>
 <script src="https://unpkg.com/vuex@3.1.0/dist/vuex.min.js"></script>
 
 <!-- MomentJS for formatting dates-->
+<!--<script src="./static/js/moment@2.18.1.js"></script>-->
 <script src="./static/js/moment.min.js"></script>
 
 <!-- Javascript Promise Polyfill for IE -->
@@ -48,7 +61,7 @@
 <!-- D3 -->
 <script src="./static/js/d3.v3.min.js"></script>
 <script src="./static/js/nv.d3.min.js "></script>
-<link rel="stylesheet" href="./static/css/nv.d3.css" />
+<link rel="stylesheet" href="./static/css/nv.d3.min.css" />
 
 <!-- Hoaxy -->
 <!-- Remove '.min' to develop/debug and then
@@ -58,7 +71,7 @@
 
 <script src="config.js"></script>
 <link href="static/css/external.css" rel="stylesheet">
-<!-- <link href="static/css/hoaxy_styles.css" rel="stylesheet"> -->
+<link href="static/css/hoaxy_styles.css" rel="stylesheet">
 
 <script type="text/javascript" src="./static/js/graph.js"></script>
 <script type="text/javascript" src="./static/js/timeline.js"></script>
@@ -66,10 +79,30 @@
 <script type="text/javascript" src="./static/js/index.js"></script>
 
 <!-- facebook -->
+<meta property="og:title" content="Hoaxy: How claims spread online" />
+<meta property="og:url" content="http://hoaxy.iuni.iu.edu/" />
+<meta property="og:image"
+content="http://hoaxy.iuni.iu.edu/static/assets/default.png" />
+<meta property="og:type" content="website" />
+<meta property="og:description" content="Visualize the online spread of fake news, hoaxes, rumors, conspiracy theories, satire, fact checking, and the occasional accurate claim." />
+<meta property="fb:app_id" content="350021671841699" />
+
 <script src="//connect.facebook.net/en_US/all.js#xfbml=1"></script>
+
+<!-- Widget Style sheet -->
+<!-- <link rel="stylesheet" href="./static/css/widget.css"></link> -->
 
 <!-- Twitter widgets -->
 <script type="text/javascript" async src="https://platform.twitter.com/widgets.js"></script>
+
+<!-- Favicons -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="manifest" href="/site.webmanifest">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+<meta name="msapplication-TileColor" content="#2b5797">
+<meta name="theme-color" content="#ffffff">
 
 <!-- Papa Parse (for CSV parsing) -->
 <script src="./static/js/papaparse.min.js"></script>

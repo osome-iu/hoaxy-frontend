@@ -1,5 +1,4 @@
 ;(function(undefined) {
-
   /**
    * Sigma Renderer Snapshot Utility
    * ================================

@@ -3,7 +3,7 @@ var max_articles = 20;
 
 var defaultProfileImage = "static/assets/Twitter_logo_blue_32-cropped.png";
 
-var defaultHoaxyLang = "en";
+var defaultHoaxyLang = "";
 
 var papa_parse_config =
 {

@@ -887,7 +887,6 @@ function HoaxyGraph(options)
         edgeCount[from_user_id + " " + to_user_id] += 1;
       }
 			// put nodes into sigma
-      console.log(nodes, "nodes")
 
       var max_size = 0;
       var min_size = 0;

@@ -8,7 +8,9 @@ frontend/node_modules
 frontend/gulpfile.js
 frontend/package.json
 frontend/config.js
+frontend/config.min.js
 frontend/.htaccess
 frontend/sampledata
 frontend/package-lock.json
 frontend/news_sources/top-news-usa.json
+frontend/index_commented.php
