@@ -8,7 +8,7 @@
 <dd><p>Handles imported bot scores from CSV/JSON</p>
 </dd>
 <dt><a href="#getBotCacheScores">getBotCacheScores()</a></dt>
-<dd><p>Get bot scores from the cache url specified in `config.js`</p>
+  <dd><p>Get bot scores from the cache url specified in <code>config.js</code></p>
 </dd>
 <dt><a href="#getNewScores">getNewScores()</a></dt>
 <dd><p>Get fresh bot scores, 20 per batch</p>
