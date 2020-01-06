@@ -357,7 +357,7 @@ function HoaxyGraph(options)
     var sn = ""
     var user = ""
 
-    console.log(score_stats.user_list)
+    // console.log(score_stats.user_list)
     
     if(score_stats.user_list[index] && score_stats.user_list[index] != undefined)
     {
