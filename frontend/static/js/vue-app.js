@@ -510,14 +510,22 @@ var app = new Vue({
       {
         v.hoaxySearchSelected = true;
         v.twitterSearchSelected = false;
-        v.hoaxyEdges.original_query = data[0].original_query;
+        // v.hoaxyEdges.original_query = data[0].original_query;
+        for (edge in v.hoaxyEdges)
+        {
+          v.hoaxyEdges[edge].original_query = data[0].original_query;
+        }
         v.changeURLParamsHoaxy();
       }
       else
       {
         v.hoaxySearchSelected = false;
         v.twitterSearchSelected = true;
-        v.twitterEdges.original_query = data[0].original_query;
+        // v.twitterEdges.original_query = data[0].original_query;
+        for (edge in v.twitterEdges)
+        {
+          v.hoaxyEdges[edge].original_query = data[0].original_query;
+        }
         v.changeURLParamsTwitter();
       }
       
