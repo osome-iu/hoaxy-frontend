@@ -524,7 +524,7 @@ var app = new Vue({
         // v.twitterEdges.original_query = data[0].original_query;
         for (edge in v.twitterEdges)
         {
-          v.hoaxyEdges[edge].original_query = data[0].original_query;
+          v.twitterEdges[edge].original_query = data[0].original_query;
         }
         v.changeURLParamsTwitter();
       }
