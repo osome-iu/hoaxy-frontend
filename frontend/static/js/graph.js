@@ -173,15 +173,25 @@ function HoaxyGraph(options)
 			if(user_id_list_chunk.length === 0)
 			{
 				break;
-      }
+			}
+			  
+			var fixedChunk = user_id_list_chunk.filter(function(item){
+				if (item != "undefined")
+				{
+					return item;
+				}
+			});
+			
+			var dataToSend = {"user_id": fixedChunk.join(",")};
       
 			var botcache_request = axios({
 				method: 'post',
 				url: configuration.botcache_url,
 				responseType: "json",
-				data: {
-					"user_id": user_id_list_chunk.join(",")
-				}
+				data: dataToSend
+				// {
+				// 	"user_id": user_id_list_chunk.join(",")
+				// }
 			});
 
 			botcache_request
