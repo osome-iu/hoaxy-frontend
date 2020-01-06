@@ -154,11 +154,6 @@ function HoaxyGraph(options)
 
 
 
-
-
-
-
-
 		// var botcache_chunk_size = 200;
 
 		// for(i=0; i<Math.floor(user_id_list.length/botcache_chunk_size)+1; i++)
@@ -211,13 +206,18 @@ function HoaxyGraph(options)
 				break;
 			}
 			// console.debug("UserID LIST CHUNK: ", user_id_list_chunk);
+
+			var dataToSend = {"user_id": user_id_list_chunk.join(",")};
+			console.log(dataToSend);
+
 			var botcache_request = axios({
 				method: 'post',
 				url: configuration.botcache_url,
 				responseType: "json",
-				data: {
-					"user_id": user_id_list_chunk.join(",")
-				}
+				data: dataToSend
+				// data: {
+				// 	"user_id": user_id_list_chunk.join(",")
+				// }
 			});
 
 			botcache_request
