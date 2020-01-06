@@ -175,12 +175,12 @@ function HoaxyGraph(options)
 				break;
 			}
 			  
-			var fixedChunk = user_id_list_chunk//.filter(function(item){
-			// 	if (item != "undefined")
-			// 	{
-			// 		return item;
-			// 	}
-			// });
+			var fixedChunk = user_id_list_chunk.filter(function(item){
+				if (item != "undefined")
+				{
+					return item;
+				}
+			});
 			
 			var dataToSend = {"user_id": fixedChunk.join(",")};
       
