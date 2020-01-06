@@ -206,18 +206,14 @@ function HoaxyGraph(options)
 				break;
 			}
 			// console.debug("UserID LIST CHUNK: ", user_id_list_chunk);
-
-			var dataToSend = {"user_id": user_id_list_chunk.join(",")};
-			console.log(dataToSend);
-
+			
 			var botcache_request = axios({
 				method: 'post',
 				url: configuration.botcache_url,
 				responseType: "json",
-				data: dataToSend
-				// data: {
-				// 	"user_id": user_id_list_chunk.join(",")
-				// }
+				data: {
+					"user_id": user_id_list_chunk.join(",")
+				}
 			});
 
 			botcache_request
