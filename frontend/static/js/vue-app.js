@@ -201,7 +201,7 @@ var app = new Vue({
 
       source_dropdown_open: false,
       colors: colors,
-      searchBy: 'Hoaxy',
+      searchBy: 'Twitter',
       searchedBy: '',
       searchPlaceholder: 'Example: vaccines',
       hoaxySearchSelected: true,
