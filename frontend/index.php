@@ -66,7 +66,7 @@
 									@mouseOut="hideTooltip"
                   v-on:click="hoaxySearch()"
                   v-bind:class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
-                  Hoaxy
+                  Articles
                 </button>
               </div>
 
