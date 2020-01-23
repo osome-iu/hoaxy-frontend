@@ -335,7 +335,7 @@
                 class="btn btn-primary"
                 @click.prevent.stop="hoaxySearch()"
                 :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
-                Hoaxy
+                Articles
               </button>
             </div>
             <input class="form-control mr-md-2 mb-2 mb-md-0 "
