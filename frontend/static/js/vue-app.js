@@ -204,8 +204,8 @@ var app = new Vue({
       searchBy: 'Twitter',
       searchedBy: '',
       searchPlaceholder: 'Example: vaccines',
-      hoaxySearchSelected: true,
-      twitterSearchSelected: false,
+      hoaxySearchSelected: false,
+      twitterSearchSelected: true,
 
       lang: '',
 
