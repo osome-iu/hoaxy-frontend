@@ -899,19 +899,28 @@ function HoaxyGraph(options)
 			// put nodes into sigma
 
       var max_size = 0;
-      var min_size = 0;
+	  var min_size = 0;
+	  var max_edge_size = 0;
 			var node_count = 0;
       for(var i in nodes)
       {
-				node_count ++;
-        if(nodes[i].size > max_size)
-        {
-          max_size = nodes[i].size;
-        }
-        if(nodes[i].size < min_size)
-        {
-          min_size = nodes[i].size;
-        }
+		node_count ++;
+		if(nodes[i].size > max_size)
+		{
+		max_size = nodes[i].size;
+		}
+		if(nodes[i].size < min_size)
+		{
+		min_size = nodes[i].size;
+		}
+
+		for (var j in nodes[i].outgoing)
+		{
+			if (nodes[i].outgoing[j].count > max_edge_size)
+			{
+				max_edge_size = nodes[i].outgoing[j].count;
+			}
+		}
       }
 
 			var nodes_id = {};
@@ -1025,12 +1034,25 @@ function HoaxyGraph(options)
 			node_count = graph.nodes.length;
 			score_stats.total = node_count;
 
+			// Trial calc for edge weight
+			var percent = Math.sqrt(nodes[i].outgoing[j].count) / Math.sqrt(max_edge_size);
+			var new_size = (percent * 1000) + 1;
+			if(new_size < 300)
+			{
+				new_size = 300;
+			}
+
+			node.size = new_size;
+			
 			// put edges into sigma
 			var edgeIndex = 0;
 			for (var i in nodes)
 			{
 				for (var j in nodes[i].outgoing)
 				{
+					var edgeWeight = Math.log(Number(nodes[i].outgoing[j].count));
+					console.log(edgeWeight);
+					console.log(new_size);
 					graph.edges.push({
 						id: "e" + edgeIndex,
 						source: i,
@@ -1041,7 +1063,7 @@ function HoaxyGraph(options)
 
 						from_node_id: nodes_id[i],
 						to_node_id: nodes_id[j],
-						size: edgeIndex, //(Number(nodes[i].outgoing[j].count)),
+						size: new_size,
 						type: "arrow",
 						edge_type: nodes[i].outgoing[j].type,
 						color: edge_colors[nodes[i].outgoing[j].type], // Giovanni said use a third color
@@ -1229,7 +1251,9 @@ function HoaxyGraph(options)
 				scalingMode: "inside",
         edgeHoverExtremities: true,
         borderSize: 1,
-        minArrowSize: 6,
+		minArrowSize: 6,
+		minEdgeSize: 0.1,
+		maxEdgeSize: 2,
         labelThreshold: 8,
         enableEdgeHovering: true,
         edgeHoverSizeRatio: 2,
