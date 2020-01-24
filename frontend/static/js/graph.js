@@ -1033,16 +1033,6 @@ function HoaxyGraph(options)
 
 			node_count = graph.nodes.length;
 			score_stats.total = node_count;
-
-			// Trial calc for edge weight
-			var percent = Math.sqrt(nodes[i].outgoing[j].count) / Math.sqrt(max_edge_size);
-			var new_size = (percent * 1000) + 1;
-			if(new_size < 300)
-			{
-				new_size = 300;
-			}
-
-			node.size = new_size;
 			
 			// put edges into sigma
 			var edgeIndex = 0;
@@ -1052,7 +1042,6 @@ function HoaxyGraph(options)
 				{
 					var edgeWeight = Math.log(Number(nodes[i].outgoing[j].count));
 					console.log(edgeWeight);
-					console.log(new_size);
 					graph.edges.push({
 						id: "e" + edgeIndex,
 						source: i,
@@ -1063,7 +1052,7 @@ function HoaxyGraph(options)
 
 						from_node_id: nodes_id[i],
 						to_node_id: nodes_id[j],
-						size: new_size,
+						size: edgeWeight,
 						type: "arrow",
 						edge_type: nodes[i].outgoing[j].type,
 						color: edge_colors[nodes[i].outgoing[j].type], // Giovanni said use a third color
@@ -1252,7 +1241,7 @@ function HoaxyGraph(options)
         edgeHoverExtremities: true,
         borderSize: 1,
 		minArrowSize: 6,
-		minEdgeSize: 0.1,
+		minEdgeSize: 0.25,
 		maxEdgeSize: 2,
         labelThreshold: 8,
         enableEdgeHovering: true,
