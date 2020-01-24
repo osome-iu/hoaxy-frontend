@@ -1041,7 +1041,7 @@ function HoaxyGraph(options)
 
             from_node_id: nodes_id[i],
             to_node_id: nodes_id[j],
-            size: 500, //(Number(nodes[i].outgoing[j].count)),
+            size: (Number(nodes[i].outgoing[j].count)),
             type: "arrow",
             edge_type: nodes[i].outgoing[j].type,
             color: edge_colors[nodes[i].outgoing[j].type], // Giovanni said use a third color
