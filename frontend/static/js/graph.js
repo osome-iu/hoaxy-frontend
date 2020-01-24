@@ -1032,28 +1032,28 @@ function HoaxyGraph(options)
 				for (var j in nodes[i].outgoing)
 				{
 					graph.edges.push({
-            id: "e" + edgeIndex,
-            source: i,
-            target: j,
+						id: "e" + edgeIndex,
+						source: i,
+						target: j,
 
-            source_screenName: nodes[i].screenName,
-            target_screenName: nodes[j].screenName,
+						source_screenName: nodes[i].screenName,
+						target_screenName: nodes[j].screenName,
 
-            from_node_id: nodes_id[i],
-            to_node_id: nodes_id[j],
-            size: (Number(nodes[i].outgoing[j].count)),
-            type: "arrow",
-            edge_type: nodes[i].outgoing[j].type,
-            color: edge_colors[nodes[i].outgoing[j].type], // Giovanni said use a third color
-            count: edgeIndex,
-            min_tweet_created_at: nodes[i].outgoing[j].min_tweet_created_at,
-            max_tweet_created_at: nodes[i].outgoing[j].max_tweet_created_at,
-            outgoing_ids: nodes[i].outgoing[j].ids,
-            incoming_ids: nodes[j].incoming[i].ids,
-            url_raws: nodes[i].outgoing[j].url_raws,
-            titles: nodes[i].outgoing[j].titles,
-            tweet_types: nodes[i].outgoing[j].tweet_types
-          });
+						from_node_id: nodes_id[i],
+						to_node_id: nodes_id[j],
+						size: edgeIndex, //(Number(nodes[i].outgoing[j].count)),
+						type: "arrow",
+						edge_type: nodes[i].outgoing[j].type,
+						color: edge_colors[nodes[i].outgoing[j].type], // Giovanni said use a third color
+						count: edgeIndex,
+						min_tweet_created_at: nodes[i].outgoing[j].min_tweet_created_at,
+						max_tweet_created_at: nodes[i].outgoing[j].max_tweet_created_at,
+						outgoing_ids: nodes[i].outgoing[j].ids,
+						incoming_ids: nodes[j].incoming[i].ids,
+						url_raws: nodes[i].outgoing[j].url_raws,
+						titles: nodes[i].outgoing[j].titles,
+						tweet_types: nodes[i].outgoing[j].tweet_types
+          			});
 					++edgeIndex;
 				}
       }
