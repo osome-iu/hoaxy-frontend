@@ -1041,7 +1041,6 @@ function HoaxyGraph(options)
 				for (var j in nodes[i].outgoing)
 				{
 					var edgeWeight = Math.log(Number(nodes[i].outgoing[j].count));
-					console.log(edgeWeight);
 					graph.edges.push({
 						id: "e" + edgeIndex,
 						source: i,
