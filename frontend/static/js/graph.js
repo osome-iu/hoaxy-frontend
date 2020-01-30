@@ -1235,8 +1235,8 @@ function HoaxyGraph(options)
         type: 'canvas'
       },
       settings: {
-				autoRescale: true,
-				scalingMode: "inside",
+		autoRescale: true,
+		scalingMode: "inside",
         edgeHoverExtremities: true,
         borderSize: 1,
 		minArrowSize: 6,
@@ -1246,8 +1246,8 @@ function HoaxyGraph(options)
         enableEdgeHovering: true,
         edgeHoverSizeRatio: 2,
         singleHover: true,
-				rescaleIgnoreSize: true,
-				defaultNodeType: 'border',
+		rescaleIgnoreSize: true,
+		defaultNodeType: 'border',
         zoomingRatio: 1.2
       }
     });

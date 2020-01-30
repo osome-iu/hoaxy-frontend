@@ -1156,7 +1156,7 @@ var app = new Vue({
       {
         this.loading = false;
         this.input_disabled = false;
-        this.search_disabled = true;
+        // this.search_disabled = true;
         clearTimeout(this.spin_timer);
       }
     },
