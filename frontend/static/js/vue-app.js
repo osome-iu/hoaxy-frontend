@@ -1170,7 +1170,7 @@ var app = new Vue({
       this.spin_key_table.push(key);
       this.loading = true;
       this.input_disabled = true;
-      this.search_disabled = true;
+      // this.search_disabled = true;
       // timeout after 90 seconds so we're not stuck in an endless spinning loop.
       var v = this;
       clearTimeout(this.spin_timer);
