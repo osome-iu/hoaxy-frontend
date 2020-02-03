@@ -1707,7 +1707,7 @@ var app = new Vue({
 
       var lang = this.lang;
 
-      console.log(lang);
+      // console.log(lang);
 
       // This function will paginate tweet search requests and is recursive
       function paginateTwitterRequests() {

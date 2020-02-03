@@ -11,8 +11,17 @@
 	<title>Hoaxy&reg; by OSoMe</title>
 	<?php include("./includes/includes.html"); ?>
 	<meta charset="iso-639">
-  	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script>
+    handleBackPress(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      $('.modal').modal('hide');
+      $('.modal-backdrop').remove();
+    }
+  </script>
 </head>
 <body>
 	<div id="fb-root"></div>
