@@ -346,6 +346,12 @@ var app = new Vue({
     hashChange: function()
     {
       this.modal_opacity = false;
+      this.showWidgetModal = false;
+      this.show_error_modal = false;
+      this.show_authenticate_modal = false;
+      this.show_edge_modal = false;
+      this.show_node_modal = false;
+      this.show_tutorial_modal = false;
     },
     
     /**
