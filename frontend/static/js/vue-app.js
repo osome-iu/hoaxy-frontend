@@ -341,6 +341,15 @@ var app = new Vue({
   // ##     ## ########    ##    ##     ##  #######  ########   ######  
   methods: {
     /**
+     * Listens to window.location.hash changes (to close modals)
+     */
+    hashChange: function(event)
+    {
+      console.log("Testing hash change");
+      console.log(event);
+    },
+    
+    /**
      * Login to Twitter for connected functionality
      */
     logIn: function()
@@ -2705,6 +2714,8 @@ var app = new Vue({
     this.mounted = true;
     this.show_articles = false;
     this.show_graphs = false;
+
+    window.addEventListener("hashchange", this.hashChange, false);
 
     //if there is posted imported data, it should be in an element called "post_data"
     //Can choose to not use JSON.parse to read the string (already comma-sep) to have it POSTed like that
