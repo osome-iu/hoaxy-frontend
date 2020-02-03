@@ -2659,6 +2659,11 @@ var app = new Vue({
       {
         this.lang = defaultHoaxyLang;
       }
+    },
+
+    "window.location.hash": function()
+    {
+      alert("Works!");
     }
   },
 
