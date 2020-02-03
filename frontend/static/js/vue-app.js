@@ -346,6 +346,7 @@ var app = new Vue({
     hashChange: function()
     {
       this.modal_opacity = false;
+      window.location.assign("https://hoaxy.iuni.iu.edu/");
     },
     
     /**
