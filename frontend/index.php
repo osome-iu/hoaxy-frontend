@@ -142,7 +142,9 @@
 
           <div class="col-12 text-center">
             <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-            <button class="btn btn-outline-primary" id="submit" :disabled="search_disabled" >
+            <!-- Removed disable since it's not used. 
+                 :disabled="search_disabled"-->
+            <button class="btn btn-outline-primary" id="submit">
               {{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }}
             </button>
             <button class="btn btn-primary ml-3" 
@@ -348,12 +350,12 @@
               v-model="query_text"
               v-bind:placeholder="searchPlaceholder"
               :disabled="input_disabled || show_full_articles_list == true" />
-            <!-- Search button class was "btn btn-primary btn-blue" -->
+            <!-- Removed disable since it's not used. 
+                 :disabled="search_disabled"-->
             <button 
               type="submit" 
               v-if="!show_articles || !show_full_articles_list" 
-              class="btn btn-outline-primary"
-              :disabled="search_disabled" >
+              class="btn btn-outline-primary">
               {{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} 
             </button>
             <button 
