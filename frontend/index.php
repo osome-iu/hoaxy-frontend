@@ -348,10 +348,11 @@
               v-model="query_text"
               v-bind:placeholder="searchPlaceholder"
               :disabled="input_disabled || show_full_articles_list == true" />
+            <!-- Search button class was "btn btn-primary btn-blue" -->
             <button 
               type="submit" 
               v-if="!show_articles || !show_full_articles_list" 
-              class="btn btn-primary btn-blue" 
+              class="btn btn-outline-primary"
               :disabled="search_disabled" >
               {{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} 
             </button>
