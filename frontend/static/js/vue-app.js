@@ -343,10 +343,9 @@ var app = new Vue({
     /**
      * Listens to window.location.hash changes (to close modals)
      */
-    hashChange: function(event)
+    hashChange: function()
     {
-      console.log("Testing hash change");
-      console.log(event);
+      this.modal_opacity = false;
     },
     
     /**
