@@ -122,6 +122,7 @@ function HoaxyTimeline(settings){
 	function dateFormatter(d) {
 		var date = new Date(d);
 		var formattedDate = d3.time.format('%x %H:%M')(date);
+		console.log(formattedDate);
 		return formattedDate;
 	}
 
