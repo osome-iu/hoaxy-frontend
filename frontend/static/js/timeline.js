@@ -185,9 +185,9 @@ function HoaxyTimeline(settings){
 		  document.getElementById("extent-1").innerHTML = extent.extent[1];
 
 		if(document.getElementById("extent-00"))
-		  document.getElementById("extent-00").innerHTML = new Date(extent.extent[0]).toISOString();
+		  document.getElementById("extent-00").innerHTML = dateFormatter(new Date(extent.extent[0]).toISOString());
 		if(document.getElementById("extent-11"))
-		  document.getElementById("extent-11").innerHTML = new Date(extent.extent[1]).toISOString();
+		  document.getElementById("extent-11").innerHTML = dateFormatter(new Date(extent.extent[1]).toISOString());
 
 		var starting_time = extent.extent[0],
 		ending_time = extent.extent[1];
