@@ -120,7 +120,7 @@ function HoaxyTimeline(settings){
    * @return {String} The formatted timer
    */
 	function dateFormatter(d) {
-		return d3.time.format('%x %H')(new Date(d))
+		return d3.time.format('%x')(new Date(d))
 	}
 
   /**
