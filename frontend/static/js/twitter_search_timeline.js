@@ -117,7 +117,10 @@ function TwitterSearchTimeline(settings){
    * @return {String} The formatted time
    */
 	function dateFormatter(d) {
-		return d3.time.format('%m/%d/%Y %H:%M:%S %p')(new Date(d))
+		// return d3.time.format('%m/%d/%Y %H:%M:%S %p')(new Date(d))
+		var date = new Date(d);
+		var formattedDate = d3.time.format('%x %H:%M')(date);
+		return formattedDate;
 	}
 
   /**
