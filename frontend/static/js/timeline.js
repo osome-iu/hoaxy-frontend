@@ -117,10 +117,12 @@ function HoaxyTimeline(settings){
   /**
    * Formats the date using d3.time
    * @param  {String} d The date to be formatted
-   * @return {String} The formatted timer
+   * @return {String} The formatted time
    */
 	function dateFormatter(d) {
-		return d3.time.format('%x')(new Date(d))
+		var date = new Date(d);
+		var formattedDate = d3.time.format('%x %H:%M')(date);
+		return formattedDate;
 	}
 
   /**
