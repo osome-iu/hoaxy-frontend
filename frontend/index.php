@@ -1,6 +1,9 @@
 <?php
-	$post_data = '';
-	if(isset($_POST) && isset($_POST["data"])){$post_data = ($_POST["data"]);}
+  $post_data = '';
+  if(isset($_POST) && isset($_POST["data"]))
+  {
+    $post_data = ($_POST["data"]);
+  }
 ?>
 <!DOCTYPE html>
 <html>
@@ -109,7 +112,9 @@
 				<div v-if="import_or_search == 'import'" class="">
 					<div class="col-12 text-center">
 						<div class="col-12 text-center d-md-flex align-items-center">
-							<div class="pr-2 text-nowrap">Visualize Existing Data:</div>
+							<div class="pr-2 text-nowrap">
+                Visualize Existing Data:
+              </div>
 							<input type="file" id="import_file" name="import_file" 
 								@change="fileUploadHandler" 
 								class="form-control form-control-file" />
@@ -124,11 +129,6 @@
 							@click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
 					</div>
 				</div>
-				
-				<div class="container">
-				</div>
-				
-				<div class="clearfix"></div>
 			</div>
 		</section>
         <section id="dashboard" class="text-center">
@@ -201,13 +201,15 @@
                         <div class="btn-group btn-group-toggle mr-md-2 rounded mb-2 mb-md-0 d-md-flex justify-content-md-center d-inline-block">
                             <button id="searchByTwitter2"
 								type="button"
-                                data-toggle="tooltip"
-                                title="select to search for chatter on twitter"
-                                class="btn btn-primary"
-                                @click.prevent.stop="twitterSearch()"
-                                :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">Twitter</button>
+                data-toggle="tooltip"
+                title="select to search for chatter on twitter"
+                class="btn btn-primary"
+                @click.prevent.stop="twitterSearch()"
+                :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
+                Twitter
+              </button>
 
-                            <button id="searchByHoaxy2"
+              <button id="searchByHoaxy2"
 								type="button"
                                 data-toggle="tooltip"
                                 title="select to search for claims and fact-checks"
@@ -300,72 +302,199 @@
             </div>
             <div id="focus_label" class="text-center small" v-if="!failed_to_get_network">Select and drag a time frame of interest below:</div>
         </div>
-        <div class="col-md-1 col-12 text-center ">
-            <div class="d-none d-md-block d-md-flex flex-md-column justify-content-center align-items-center">
-				<p class="m-0 text-center ">Layout</p>
-	            <button id=""  :disabled="graph_column_size >= 12"  class=" layout-button layout-button-timeline btn btn-primary" @click="resizeGraphs(12)">
-					<span><i class="fa fa-line-chart" aria-hidden="true"></i></span></button>
-	            <button id=""  :disabled="graph_column_size == 3"  class=" layout-button layout-button-split btn btn-primary" @click="resizeGraphs(3)">
-					<span><i class="fa fa-line-chart" aria-hidden="true"></i></span><span><i class="fa fa-share-alt" aria-hidden="true"></i></span></button>
-	            <button id=""  :disabled="graph_column_size <= 0"  class=" layout-button layout-button-graph btn btn-primary" @click="resizeGraphs(0)">
-					<span><i class="fa fa-share-alt" style="height: 2rem; width: 1.8rem; padding-top: .05rem;" aria-hidden="true"></i>
-						<i class="fa fa-rotate-180 fa-share-alt" style="height: 1rem; width: .7rem" aria-hidden="true"></i></span></button>
-			</div>
-			<div class="mt-3 text-center" id="legend">
-				<template v-if="searchedBy == 'Hoaxy'">
-					<label class="d-inline-block d-md-block"><span class=" line claim_label">&nbsp;</span><br /> Claims</label>
-					<label class="d-inline-block d-md-block"><span class=" line fact_checking_label">&nbsp;</span><br /> Fact-Checks</label>
-				</template>
-				<template v-else>
-					<label class="d-inline-block d-md-block"><span class=" line claim_label">&nbsp;</span><br /> Tweets</label>
-				</template>
-			</div>
-			<div class="mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<p class="m-0 text-center" >Play</p>
-				<div class="mt-1 d-inline-block d-md-block">
-					<button @click="startGraphAnimation" :disabled="!animationAvailable || failed_to_get_network" v-if="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
-					<button @click="unpauseGraphAnimation" v-if="graphAnimation.playing && graphAnimation.paused" class="animation-control btn btn-primary"><i class="fa fa-play" aria-hidden="true"></i></button>
-					<button @click="pauseGraphAnimation" v-if="!graphAnimation.paused && graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-pause" aria-hidden="true"></i></button>
-				</div>
-				<div class="mt-1 d-inline-block d-md-block">
-					<button @click="stopGraphAnimation" :disabled="!graphAnimation.playing" class="animation-control btn btn-primary"><i class="fa fa-stop" aria-hidden="true"></i></button>
-				</div>
-			</div>
-			<div id="sharing_buttons" class="mt-4 d-flex flex-column justify-content-center align-items-center" v-if="show_graphs">
-	<p class="m-0 text-center mb-1">Share</p>
+        <div id="focus_label" class="text-center small" v-if="!failed_to_get_network">
+          Select and drag a time frame of interest below:
+        </div>
+      </div> <!-- End 'Timeline' Section -->
+
+      <div class="col-md-1 col-12 text-center ">
+        <div class="d-none d-md-block d-md-flex flex-md-column justify-content-center align-items-center">
+				  <p class="m-0 text-center ">Layout</p>
+	        <button :disabled="graph_column_size >= 12"
+            class=" layout-button layout-button-timeline btn btn-primary"
+            @click="resizeGraphs(12)">
+					  <span><i class="fa fa-line-chart" aria-hidden="true"></i></span>
+          </button>
+	        <button :disabled="graph_column_size == 3"
+            class=" layout-button layout-button-split btn btn-primary"
+            @click="resizeGraphs(3)">
+					  <span><i class="fa fa-line-chart" aria-hidden="true"></i></span>
+            <span><i class="fa fa-share-alt" aria-hidden="true"></i></span>
+          </button>
+	        <button :disabled="graph_column_size <= 0"
+            class=" layout-button layout-button-graph btn btn-primary" 
+            @click="resizeGraphs(0)">
+					  <span>
+              <i class="fa fa-share-alt" style="height: 2rem; width: 1.8rem; padding-top: .05rem;" aria-hidden="true"></i>
+						  <i class="fa fa-rotate-180 fa-share-alt" style="height: 1rem; width: .7rem" aria-hidden="true"></i>
+            </span>
+          </button>
+			  </div>
+			  <div class="mt-3 text-center" id="legend">
+				  <template v-if="searchedBy == 'Hoaxy'">
+					  <label class="d-inline-block d-md-block">
+              <span class=" line claim_label">&nbsp;</span><br /> Claims
+            </label>
+					  <label class="d-inline-block d-md-block">
+              <span class=" line fact_checking_label">&nbsp;</span><br /> Fact-Checks
+            </label>
+				  </template>
+				  <template v-else>
+					  <label class="d-inline-block d-md-block">
+              <span class=" line claim_label">&nbsp;</span><br /> Tweets
+            </label>
+				  </template>
+			  </div>
+			  <div class="mt-3 text-center d-md-flex flex-column justify-content-center align-items-center">
+				  <p class="m-0 text-center" >Play</p>
+				  <div class="mt-1 d-inline-block d-md-block">
+            <button @click="startGraphAnimation" 
+              :disabled="!animationAvailable || failed_to_get_network" 
+              v-if="!graphAnimation.playing" 
+              class="animation-control btn btn-primary">
+              <i class="fa fa-play" aria-hidden="true"></i>
+            </button>
+            <button @click="unpauseGraphAnimation" 
+              v-if="graphAnimation.playing && graphAnimation.paused" 
+              class="animation-control btn btn-primary">
+              <i class="fa fa-play" aria-hidden="true"></i>
+            </button>
+            <button @click="pauseGraphAnimation" 
+              v-if="!graphAnimation.paused && graphAnimation.playing" 
+              class="animation-control btn btn-primary">
+              <i class="fa fa-pause" aria-hidden="true"></i>
+            </button>
+				  </div>
+				  <div class="mt-1 d-inline-block d-md-block">
+					  <button @click="stopGraphAnimation" 
+              :disabled="!graphAnimation.playing" 
+              class="animation-control btn btn-primary">
+              <i class="fa fa-stop" aria-hidden="true"></i>
+            </button>
+				  </div>
+			  </div>
+			  <div id="sharing_buttons" 
+          class="mt-4 d-flex flex-column justify-content-center align-items-center" 
+          v-if="show_graphs">
+	        <p class="m-0 text-center mb-1">Share</p>
 					<span id="twitter-button">
-							<a class="twitter-share-button"
-							href="https://twitter.com/share"
-							data-text="Hoaxy: How claims spread online"
-							data-size="large">
-							Tweet</a>
+            <a class="twitter-share-button"
+            href="https://twitter.com/share"
+            data-text="Hoaxy: How claims spread online"
+            data-size="large">
+            Tweet</a>
 					</span>
 					<span id="fb-button">
-							<span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
-									<a class="fb-xfbml-parse-ignore" target="_blank"
-									href="">Share</a>
-							</span>
+						<span class="fb-share-button" data-href="" data-layout="button" data-size="large" data-mobile-iframe="true">
+							<a class="fb-xfbml-parse-ignore" target="_blank" href="">Share</a>
+						</span>
 					</span>
-			</div>
-			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1" style="z-index: 0; font-size: .75rem" type="button" v-on:click="prepareAndShowWidgetCode()" data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip" :disabled="failed_to_get_network" title="add this visualization to your site">Embed</button>
-			</div>
-			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1 text-nowrap" style="z-index: 0; font-size: .75rem" type="button" @click='downloadCSV(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a CSV file">Export - CSV</button>
-			</div>
-			<div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
-				<button class="btn btn-primary ml-1 mr-1 text-nowrap" style="z-index: 0; font-size: .75rem" type="button" @click='downloadJSON(buildJSONContent())' data-toggle="tooltip" @mouseOver="hoverTooltip" @mouseOut="hideTooltip"  :disabled="failed_to_get_network" title="download data as a JSON file">Export - JSON</button>
-			</div>
-		</div>
-        <div id="sigmagraph"
-            class="col-12 card"
-            :style="graph_column_size >= 12 ? 'display: none' : ''"
-            :class="'col-md-' + (12-graph_column_size-1)">
-            <p class="text-center">Diffusion Network</p>
-            <div id="graph_error" class="p-5 d-flex flex-column justify-content-center" v-if="failed_to_get_network">
-                There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
+			  </div>
+        <div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
+          <button 
+            class="btn btn-primary ml-1 mr-1" 
+            style="z-index: 0; font-size: .75rem" 
+            type="button" 
+            v-on:click="prepareAndShowWidgetCode()" 
+            data-toggle="tooltip" 
+            @mouseOver="hoverTooltip" 
+            @mouseOut="hideTooltip" 
+            :disabled="failed_to_get_network" 
+            title="add this visualization to your site">
+            Embed
+          </button>
+        </div>
+        <div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
+          <button class="btn btn-primary ml-1 mr-1 text-nowrap" 
+            style="z-index: 0; font-size: .75rem" 
+            type="button" 
+            @click='downloadCSV(buildJSONContent())' 
+            data-toggle="tooltip" 
+            @mouseOver="hoverTooltip" 
+            @mouseOut="hideTooltip"
+            :disabled="failed_to_get_network" 
+            title="download data as a CSV file">
+            Export - CSV
+          </button>
+        </div>
+        <div class="d-block p-2 text-center d-md-flex flex-column justify-content-center align-items-center">
+          <button class="btn btn-primary ml-1 mr-1 text-nowrap" 
+            style="z-index: 0; font-size: .75rem" 
+            type="button" 
+            @click='downloadJSON(buildJSONContent())' 
+            data-toggle="tooltip" 
+            @mouseOver="hoverTooltip" 
+            @mouseOut="hideTooltip"  
+            :disabled="failed_to_get_network" 
+            title="download data as a JSON file">
+            Export - JSON
+          </button>
+        </div>
+		  </div> <!-- End 'Layout' Section -->
+
+      <div id="sigmagraph"
+        class="col-12 card"
+        :style="graph_column_size >= 12 ? 'display: none' : ''"
+        :class="'col-md-' + (12-graph_column_size-1)">
+        
+        <p class="text-center">Diffusion Network</p>
+        <div id="graph_error" class="p-5 d-flex flex-column justify-content-center" v-if="failed_to_get_network">
+          There was not enough data to create a network graph.  Try selecting more popular articles and trying again.
+        </div>
+        
+        <div id="graph-container" style="width: 100%; height: 80vh; margin: 0 auto;">
+        </div>
+
+        <div>
+          <div class="d-block p-2" v-if="show_zoom_buttons" id="graph_help_text">
+            Click on network nodes and edges for details. Click on color scale to filter nodes by color.
+          </div>
+        </div>
+
+	      <div class="d-flex-inline flex-column align-items-end " id="zoom_buttons" v-if="show_zoom_buttons">
+				  <div class="rounded graph_legend">
+					  <div class="bg-light bg-semi-transparent"></div>
+					  <div class="d-flex p-2 flex-row justify-content-center ">
+              <button class="btn btn-primary ml-1 mr-1" 
+                type="button" 
+                value ="-" 
+                id="zoom-out" 
+                v-if="show_zoom_buttons" 
+                @click="zoomOutGraph">
+                <i class="fa fa-minus" aria-hidden="true"></i>
+              </button>
+              <button class="btn btn-primary ml-1 mr-1" 
+                type="button" 
+                value ="+" 
+                id="zoom-in" 
+                v-if="show_zoom_buttons" 
+                @click="zoomInGraph">
+                <i class="fa fa-plus" aria-hidden="true"></i>
+              </button>
             </div>
-            <div id="graph-container" style="width: 100%; height: 80vh; margin: 0 auto;">
+		        <div class="mt-2 p-2 text-center">
+							<div class="alert bg-warning m-1 p-1 text-wrap" v-if="twitterRateLimitReachedObj.isReached">
+                New scores cannot be retrieved.</br>Twitter rate limit reached, </br>try again in 15 minutes.
+              </div>
+              <button v-if="!getting_bot_scores.running" @click.stop.prevent="getMoreBotScores" class="btn btn-primary">
+                Update Bot Scores
+              </button>
+              <button v-if="getting_bot_scores.running" disabled class="disabled btn btn-primary">
+                Fetching Scores...
+              </button>
+		          <div class="text-right pt-1">
+		            <div>
+                  {{graph.score_stats.found}} of {{graph.score_stats.total}} scores found.
+                </div>
+		            <div v-if="graph.score_stats.found > 0" 
+                  style="cursor: pointer" 
+                  @click="info_text='Fresh indicates that the bot score was calculated relatively recently.'">
+								  {{graph.score_stats.found - graph.score_stats.old}} {{graph.score_stats.found - graph.score_stats.old == 1?'is':'are'}} fresh.
+							  </div>
+		            <div v-if="graph.score_stats.unavailable > 0">
+                  {{graph.score_stats.unavailable}} could not be updated.
+                </div>
+              </div>
             </div>
 				<div>
 					<div class="d-block p-2" v-if="show_zoom_buttons" id="graph_help_text">
@@ -427,27 +556,27 @@
 								<div @click="filterNodesByScore(.8, 1.1)" class="d-flex justify-content-center align-items-center bot_legend_section rounded-top" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '1.1 0.8'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
-										<span v-text="botscoreCount(.8, 1.1)">100</span>
+									<span v-text="botscoreCount(.8, 1.1)">100</span>
 								</div>
 								<div @click="filterNodesByScore(.6, .8)" class="d-flex justify-content-center align-items-center bot_legend_section" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '0.8 0.6'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ','+ colors.node_colors.botscores[1].blue + ', .9)'">
-										<span v-text="botscoreCount(.6, .8)">200</span>
+									<span v-text="botscoreCount(.6, .8)">200</span>
 								</div>
 								<div @click="filterNodesByScore(.4, .6)" class="d-flex justify-content-center align-items-center bot_legend_section" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '0.6 0.4'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ','+ colors.node_colors.botscores[2].blue + ', .9)'">
-										<span v-text="botscoreCount(.4, .6)">500</span>
+									<span v-text="botscoreCount(.4, .6)">500</span>
 								</div>
 								<div @click="filterNodesByScore(.2, .4)" class="d-flex justify-content-center align-items-center bot_legend_section" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '0.4 0.2'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ','+ colors.node_colors.botscores[3].blue + ', .9)'">
-										<span v-text="botscoreCount(.2, .4)">300</span>
+									<span v-text="botscoreCount(.2, .4)">300</span>
 								</div>
 								<div @click="filterNodesByScore(0, .20)" class="d-flex justify-content-center align-items-center bot_legend_section rounded-bottom" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '0.2 0'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ', .9)'">
-										<span v-text="botscoreCount(0, .20)">100</span>
+									<span v-text="botscoreCount(0, .20)">100</span>
 								</div>
 							</div>
 							<div>
@@ -538,21 +667,41 @@
                 </div>
             </div>
         </div>
-        <div id="tutorialModal" :class="{'modal-show': show_tutorial_modal}" @click.stop="toggleTutorialModal()" class="modal" tabindex="-1"
-		role="dialog" aria-labelledby="tutorialModalLabel" :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
-            <div class="modal-dialog" role="document">
-                <div @click.stop="" class="alert m-5 alert-info">
-                    <div class="modal-border-bottom">
-                        <h4 class="modal-title text-center" id="tutorialModalLabel">Tutorial</h4>
-						<button type="button" class="close float-right"  @click="toggleTutorialModal()"aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body text-center" id="tutorial_modalBody">
-                    </div>
-                    <div class="modal-border-top">
-                        <button type="button" class="btn btn-secondary" @click="toggleTutorialModal()">Close</button>
-                    </div>
-                </div>
-            </div>
+      </div>
+    </div>
+
+    <!-- Tutorial Modal -->
+    <div id="tutorialModal" 
+      :class="{'modal-show': show_tutorial_modal}" 
+      @click.stop="toggleTutorialModal()" 
+      class="modal" 
+      tabindex="-1"
+		  role="dialog" 
+      aria-labelledby="tutorialModalLabel" 
+      :style="modal_opacity?'opacity: 1;':'opacity: 0;'" 
+      aria-labelledby="nodeModalLabel">
+      <div class="modal-dialog" role="document">
+        <div @click.stop="" class="alert m-5 alert-info">
+          <div class="modal-border-bottom">
+            <h4 class="modal-title text-center" id="tutorialModalLabel">Tutorial</h4>
+						<button type="button" 
+              class="close float-right"  
+              @click="toggleTutorialModal()"
+              aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body text-center" id="tutorial_modalBody">
+          </div>
+          <div class="modal-border-top">
+            <button type="button"
+              class="btn btn-secondary" 
+              @click="toggleTutorialModal()">
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
 		</div>
 		<div id="authenticateModal" :class="{'modal-show': show_authenticate_modal}" @click.stop="toggleModal('authenticate')" class="modal " tabindex="-1" role="dialog" aria-labelledby="authenticateModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
             <div class="modal-dialog" role="document">
@@ -594,7 +743,17 @@
 				</div>
 			</div>
 		</div>
-		<div id="edgeModal" :class="{'modal-show': show_edge_modal}" @click.stop="toggleEdgeModal()" class="modal " tabindex="-1" role="dialog" aria-labelledby="edgeModalLabel"  :style="modal_opacity?'opacity: 1;':'opacity: 0;'" aria-labelledby="nodeModalLabel">
+
+    <!-- Edge Modal -->
+		<div id="edgeModal" 
+      :class="{'modal-show': show_edge_modal}" 
+      @click.stop="toggleEdgeModal()" 
+      class="modal" 
+      tabindex="-1" 
+      role="dialog" 
+      aria-labelledby="edgeModalLabel"
+      :style="modal_opacity?'opacity: 1;':'opacity: 0;'" 
+      aria-labelledby="nodeModalLabel">
 			<div class="modal-dialog" role="document">
 				<div @click.stop="" class="modal-content">
 					<div class="modal-border-bottom">
@@ -608,7 +767,12 @@
 					<div class="modal-body" id="edgeModalBody" >
 						<template v-for="(id, index) in edge_modal_content.edge.outgoing_ids">
 							{{edge_modal_content.edge.titles[index]}}
-							<div class="modal_links">See <a target="_blank" :href="edge_modal_content.tweet_urls[id]">tweet</a><template v-if="searchedBy == 'Hoaxy'">  or  <a target="_blank" :href="edge_modal_content.edge.url_raws[index]">article</a></template></div>
+							<div class="modal_links">
+                See <a target="_blank" :href="edge_modal_content.tweet_urls[id]">tweet</a>
+                <template v-if="searchedBy == 'Hoaxy'">
+                  or  <a target="_blank" :href="edge_modal_content.edge.url_raws[index]">article</a>
+                </template>
+              </div>
 						</template>
 					</div>
 					<div class="modal-border-top">
@@ -626,7 +790,7 @@
 							Account:  <a target="_blank" v-bind:href="'https://twitter.com/intent/user?user_id=' + node_modal_content.user_id">@{{node_modal_content.screenName}}</a>
 						</h4>
 					</div>
-					<div class="modal-body" >
+					<div class="modal-body">
 						<div>
 							<h5>Botometer Score: <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
 								<div class="text-center" v-if="node_modal_content.botscore > 0">
@@ -669,14 +833,26 @@
 										 v-else-if="node_modal_content.staleAcctInfo.isStale && node_modal_content.showStaleContent && !getting_bot_scores.running">
 										 We estimate a {{ node_modal_content.completeAutomationProbability }}% probability that this account is completely automated. Click <a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">here</a> for more details from Botometer.
 								</div>
-							<p class="my-2" v-if="">
-								<button v-if="!getting_bot_scores.running" @click.stop.prevent="getSingleBotScore(node_modal_content.user_id)" class="btn btn-primary" id="">Update</button>
-								<button v-if="getting_bot_scores.running" class="btn btn-primary disabled" disabled id="">Getting Bot Score...</button>
-								<button v-if="node_modal_content.botscore > 0" class="btn btn-primary" @click="feedback_form.display = !feedback_form.display" >Feedback</button>
+							<p class="my-2">
+								<button v-if="!getting_bot_scores.running" 
+                  @click.stop.prevent="getSingleBotScore(node_modal_content.user_id)"
+                  class="btn btn-primary" id="">
+                  Update
+                </button>
+								<button v-if="getting_bot_scores.running" 
+                  class="btn btn-primary disabled" 
+                  disabled id="">
+                  Getting Bot Score...
+                </button>
+								<button v-if="node_modal_content.botscore > 0"
+                  class="btn btn-primary" 
+                  @click="feedback_form.display = !feedback_form.display">
+                  Feedback
+                </button>
 							</p>
 							<div v-if="node_modal_content.botscore > 0">
 								<form class="form" v-if="feedback_form.display" @submit.prevent="submitFeedbackForm">
-									<br />
+									<br/>
 									<div class="form-group">
 										<label>The account @{{node_modal_content.screenName}} is a :</label>
 										<select v-model="feedback_form.type" class="form-control">
@@ -688,7 +864,7 @@
 										<textarea v-model="feedback_form.comment" class="form-control"></textarea>
 									</div>
 									<div class="form-group">
-										<input type="submit" class="btn btn-primary" value="Submit Feedback" />
+										<input type="submit" class="btn btn-primary" value="Submit Feedback"/>
 									</div>
 								</form>
 							</div>
@@ -697,48 +873,48 @@
 						<template v-for="user in node_modal_content.has_quoted">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a> </h3>
 							<template v-for="(title, index) in user.article_titles">
-									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+                <div class='article_headline'>{{title}}</div>
+                <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 						<h2>was quoted by: <span v-if="node_modal_content.is_quoted_by_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.is_quoted_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
-									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+                <div class='article_headline'>{{title}}</div>
+                <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 						<h2>has mentioned: <span v-if="node_modal_content.has_mentioned_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.has_mentioned">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
-									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+                <div class='article_headline'>{{title}}</div>
+                <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 						<h2>was mentioned by: <span v-if="node_modal_content.is_mentioned_by_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.is_mentioned_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
-									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+                <div class='article_headline'>{{title}}</div>
+                <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 						<h2>has retweeted: <span v-if="node_modal_content.has_retweeted_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.has_retweeted">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
-									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+                <div class='article_headline'>{{title}}</div>
+                <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 						<h2>was retweeted by: <span v-if="node_modal_content.is_retweeted_by_count == 0">nobody</span></h2>
 						<template v-for="user in node_modal_content.is_retweeted_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
-									<div class='article_headline'>{{title}}</div>
-									<div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
+                <div class='article_headline'>{{title}}</div>
+                <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
 					</div>
