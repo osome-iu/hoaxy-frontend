@@ -28,11 +28,11 @@
 								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q10')"
 									  class="mb-0 pb-0">
-										<a href="#faq-q10">What is the difference between Hoaxy search and Twitter search?</a>
+										<a href="#faq-q10">What is the difference between Articles search and Twitter search?</a>
 								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q2')"
 										class="mb-0 pb-0">
-										<a href="#faq-q2">How does Hoaxy search work?</a>
+										<a href="#faq-q2">How does Articles search work?</a>
 								</li>
 								<li v-on:click="changeFaqContentsColor('faq-twitter-search')"
 										class="mb-0 pb-0">
@@ -122,7 +122,7 @@
         			</dd>
 
 
-							<dt id="faq-q10">What is the difference between Hoaxy search and Twitter
+							<dt id="faq-q10">What is the difference between Articles search and Twitter
 									search?
 							</dt>
 							<dd class="faq-element-contents">
@@ -149,7 +149,7 @@
 								At most, Hoaxy is capable of visualizing the top 1000 accounts and in the case of a Twitter search, this will be the most recently active 1000 accounts if sorted by <em>Recent</em>.
 							</dd>
 							
-        			<dt id="faq-q2">How does Hoaxy search work?</dt>
+        			<dt id="faq-q2">How does Articles search work?</dt>
         			<dd class="faq-element-contents">
         				The Hoaxy corpus tracks the social sharing of links to
 								stories published by two types of websites: (1) Low-credibility
@@ -279,7 +279,7 @@
 								We then fetch the page linked in the tweet and store the URL
 								and the text of the page of the article, adding them to our
 								corpus together with the tweet. When the user submits a query
-								in Hoaxy search mode, we match the most relevant or recent
+								in Articles search mode, we match the most relevant or recent
 								articles (claims and fact checks) and select all the tweets
 								that linked to them.
         			</dd>

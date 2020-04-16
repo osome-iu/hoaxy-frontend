@@ -236,7 +236,7 @@ li label
 }
 li
 {
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
 
 .claim_label, .fact_checking_label
@@ -438,6 +438,10 @@ li
     left: 0;
     right: 0;
     margin: auto;
+}
+.modal-dialog > .alert
+{
+    pointer-events: auto;
 }
 /*.modal-dialog.modal-dialog-fade
 {
