@@ -439,6 +439,10 @@ li
     right: 0;
     margin: auto;
 }
+.modal-dialog > .alert
+{
+    pointer-events: auto;
+}
 /*.modal-dialog.modal-dialog-fade
 {
     opacity: .5;
