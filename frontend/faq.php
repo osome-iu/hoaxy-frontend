@@ -126,7 +126,8 @@
 									search?
 							</dt>
 							<dd class="faq-element-contents">
-								There are two search modes. <b>Hoaxy</b> search finds claims
+								There are two search modes.
+                                                                <b>Articles</b> search finds claims
 								and related fact checking in a limited corpus of articles from
 								low-credibility and fact-checking sources, dating back to 2016. 
 								This mode leverages the
