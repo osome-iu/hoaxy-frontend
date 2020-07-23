@@ -301,7 +301,7 @@
 								similar to the one in the popup.
         			</dd>
 
-							<dt id="faq-q15">Can I download the results of a story on my own computer?</dt>
+					<dt id="faq-q15">Can I download the results of a story on my own computer?</dt>
         			<dd class="faq-element-contents">
 								Yes! Click the “Export” button, found at the bottom of the
 								middle navigation menu.  This should download or ask you
