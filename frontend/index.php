@@ -151,6 +151,7 @@
               @click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">
               Or Import Data
             </button>
+            <a href="/faq.php#faq-q30"><i aria-hidden="true" class="pl-2 info-button fa fa-question-circle"></i></a>
           </div>
 				</form>
 
@@ -158,7 +159,8 @@
 					<div class="col-12 text-center">
 						<div class="col-12 text-center d-md-flex align-items-center">
 							<div class="pr-2 text-nowrap">
-                Visualize Existing Data:
+                Visualize Existing Data
+            <a href="/faq.php#faq-q30"><i aria-hidden="true" class="info-button fa fa-question-circle"></i></a>:
               </div>
 							<input type="file" id="import_file" name="import_file" 
 								@change="fileUploadHandler" 

@@ -82,6 +82,14 @@
 										class="mb-0 pb-0">
 										<a href="#faq-q15">Can I download the results of a story on my own computer?</a>
 								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q30')"
+										class="mb-0 pb-0">
+										<a href="#faq-q30">Can I import my own data into Hoaxy's Visualization tool?</a>
+								</li>
+								<li v-on:click="changeFaqContentsColor('faq-q31')"
+										class="mb-0 pb-0">
+										<a href="#faq-q31">When importing files, what format does the data need to be in?</a>
+								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q16')"
 									  class="mb-0 pb-0">
 										<a href="#faq-q16">Do you access any private conversations?</a>
@@ -310,6 +318,16 @@
 								visualization and can be thought of as a tweet. The columns
 								correspond to the features of the tweet, e.g., who posted it,
 								who was mentioned, when the tweet was published, etc.
+					</dd>
+					
+					<dt id="faq-q30">Can I import my own data into Hoaxy's Visualization tool?</dt>
+        			<dd class="faq-element-contents">
+								Yes! Instead of searching for a specific query, click the "Or Import Data" button next to the "Search" button at the top of the Hoaxy home page.  From there, you can upload a CSV or JSON file containing Tweet information.  This works best with data exported directly from a previous Hoaxy query, however, correctly formatted files can be used regarless of source.
+					</dd>
+					
+					<dt id="faq-q31">When importing files, what format does the data need to be in?</dt>
+        			<dd class="faq-element-contents">
+								Hoaxy can visualize CSV and JSON files as long as the data is formatted correctly.  While this works best with data exported directly from a Hoaxy query, any data using the columns or field names found in the exported files should work.
         			</dd>
 
 
