@@ -352,7 +352,7 @@ function HoaxyGraph(options)
     if(score_stats.user_list[index] && score_stats.user_list[index] != undefined)
     {
       id = score_stats.user_list[index];
-      node = s.graph.nodes(id);
+      node = sigmaInstance.graph.nodes(id);
       sn = node.data.screenName;
 		  user = {screen_name: sn, user_id: id};
     }
