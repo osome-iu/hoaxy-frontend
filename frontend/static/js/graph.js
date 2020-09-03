@@ -194,20 +194,41 @@ function HoaxyGraph(options)
 						var user = results[i];
 						if(user)
 						{
-							var sn = user.user.screen_name;
-							var id = user.user.id;
-							var score = 0;
-							if(lang == 'en' || lang == 'en-gb')
-							{	
-								score = user.scores.english;
+							if( user.scores )
+							{
+								var sn = user.user.screen_name;
+								var id = user.user.id;
+								var score = 0;
+								if(lang == 'en' || lang == 'en-gb')
+								{	
+									score = user.scores.english;
+								}
+								else
+								{
+									score = user.scores.universal;
+								}
+								
+								botscores[id] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id, screen_name: sn };
+								updateNodeColor(id, score);
 							}
 							else
 							{
-								score = user.scores.universal;
+								var sn = user.user.user_data.screen_name;
+								var id = user.user.user_data.id;
+								var score = 0;
+								var lang = user.user.majority_lang
+								if(lang == 'en' || lang == 'en-gb')
+								{	
+									score = user.raw_scores.english.overall;
+								}
+								else
+								{
+									score = user.raw_scores.universal.overall;
+								}
+								
+								botscores[id] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.user_data.id, screen_name: sn };
+								updateNodeColor(id, score);
 							}
-							
-							botscores[id] = {score: score, old: !user.fresh, time: new Date(user.timestamp), user_id: user.user.id, screen_name: sn };
-							updateNodeColor(id, score);
 						}
 					}
 
@@ -552,53 +573,116 @@ function HoaxyGraph(options)
 		});
 		botscore.then(function(response){
 			// Storing the consistent account info for this given bot score retrieval
-			var newId = response.data.user.id_str;
-			var newScore = 0;
-			if(lang == 'en' || lang == 'en-gb')
-						{	
-				newScore = response.data.scores.english;
+
+			var data = response.data;
+			if(data.scores)
+			{
+				var newId = response.data.user.id_str;
+				var newScore = 0;
+				if(lang == 'en' || lang == 'en-gb')
+							{	
+					newScore = response.data.scores.english;
+				}
+				else
+				{
+					console.log("hit universal: " + response.data.scores);
+					newScore = response.data.scores.universal;
+				}
+
+				if (potentially_old_sn != response.data.user.screen_name) {
+					var oldSn = potentially_old_sn;
+					var newSn = response.data.user.screen_name;
+					var isStale = true;
+				} else {
+					var oldSn = potentially_old_sn;
+					var newSn = 'unchanged';
+					var isStale = false;
+				}
+
+				var completeAutomationProbability =
+					Math.round(response.data.cap.english * 100);
+
+				// Storing consistent account information to the global modal content
+				node_modal_content.staleAcctInfo.newId = newId;
+				node_modal_content.staleAcctInfo.oldSn = oldSn;
+				node_modal_content.staleAcctInfo.newSn = newSn;
+				node_modal_content.staleAcctInfo.isStale = isStale;
+				node_modal_content.completeAutomationProbability = completeAutomationProbability;
+
+				// Storing consistent account information to a global cache
+				botscores[id] = {
+					score: newScore,
+					old: false,
+					time: new Date(),
+					user_id: response.data.user.id,
+					screen_name: sn,
+					completeAutomationProbability:
+						completeAutomationProbability,
+					staleAcctInfo:
+					{
+						isStale: isStale,
+						newId: newId,
+						oldSn: oldSn,
+						newSn: newSn
+					}
+				}
 			}
 			else
 			{
-				console.log("hit universal: " + response.data.scores);
-				newScore = response.data.scores.universal;
-			}
+				var newId = data.user.user_data.id_str;
+				var newScore = 0;
+				var lang = data.user.majority_lang
+				var completeAutomationProbability
 
-			if (potentially_old_sn != response.data.user.screen_name) {
-				var oldSn = potentially_old_sn;
-				var newSn = response.data.user.screen_name;
-				var isStale = true;
-			} else {
-				var oldSn = potentially_old_sn;
-				var newSn = 'unchanged';
-				var isStale = false;
-			}
-
-			var completeAutomationProbability =
-				Math.round(response.data.cap.english * 100);
-
-			// Storing consistent account information to the global modal content
-			node_modal_content.staleAcctInfo.newId = newId;
-			node_modal_content.staleAcctInfo.oldSn = oldSn;
-			node_modal_content.staleAcctInfo.newSn = newSn;
-			node_modal_content.staleAcctInfo.isStale = isStale;
-			node_modal_content.completeAutomationProbability = completeAutomationProbability;
-
-			// Storing consistent account information to a global cache
-			botscores[id] = {
-				score: newScore,
-				old: false,
-				time: new Date(),
-				user_id: response.data.user.id,
-				screen_name: sn,
-				completeAutomationProbability:
-					completeAutomationProbability,
-				staleAcctInfo:
+				if(lang == 'en' || lang == 'en-gb')
+							{	
+					newScore = data.raw_scores.english.overall;
+					var completeAutomationProbability =
+						Math.round(data.cap.english * 100);
+				}
+				else
 				{
-					isStale: isStale,
-					newId: newId,
-					oldSn: oldSn,
-					newSn: newSn
+					console.log("hit universal: " + data.raw_scores);
+					newScore = data.raw_scores.universal.overall
+					var completeAutomationProbability =
+						Math.round(data.cap.universal * 100);
+				}
+
+				if (potentially_old_sn != data.user.user_data.screen_name) {
+					var oldSn = potentially_old_sn;
+					var newSn = data.user.user_data.screen_name;
+					var isStale = true;
+				} else {
+					var oldSn = potentially_old_sn;
+					var newSn = 'unchanged';
+					var isStale = false;
+				}
+
+				
+
+				// Storing consistent account information to the global modal content
+				node_modal_content.staleAcctInfo.newId = newId;
+				node_modal_content.staleAcctInfo.oldSn = oldSn;
+				node_modal_content.staleAcctInfo.newSn = newSn;
+				node_modal_content.staleAcctInfo.isStale = isStale;
+				node_modal_content.completeAutomationProbability = completeAutomationProbability;
+
+				// Storing consistent account information to a global cache
+				botscores[id] = {
+					score: newScore,
+					old: false,
+					time: new Date(),
+					user_id: data.user.user_data.id_str,
+					screen_name: sn,
+					completeAutomationProbability:
+						completeAutomationProbability,
+					staleAcctInfo:
+					{
+						isStale: isStale,
+						newId: newId,
+						oldSn: oldSn,
+						newSn: newSn
+					}
 				}
 			}
 
