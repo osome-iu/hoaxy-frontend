@@ -2193,17 +2193,37 @@ var app = new Vue({
 
               try {
                   var score = 0;
-                  if(v.lang == 'en' || v.lang == 'en-gb')
+
+                  var data = response.data;
+                  if(data.scores)
                   {
-                    score = response.data.scores.english;
+                    if(v.lang == 'en' || v.lang == 'en-gb')
+                    {
+                      score = response.data.scores.english;
+                    }
+                    else
+                    {
+                      score = response.data.scores.universal;
+                    }
                   }
                   else
                   {
-                    score = response.data.scores.universal;
+                    var lang = data.user.majority_lang;
+                    if(lang == 'en' || lang == 'en-gb')
+                    {
+                      score = data.raw_scores.english.overall;
+                    }
+                    else
+                    {
+                      score = data.raw_scores.universal.overall;
+                    }
                   }
                   v.node_modal_content.botscore = Math.floor(score * 100);
                   v.node_modal_content.botcolor = v.graph.getNodeColor(score);
                   v.node_modal_content.timestamp = new Date();
+
+
+
               }
               catch (e)
               {
