@@ -744,13 +744,13 @@ function HoaxyGraph(options)
 		{
 			return colors.node_colors["fact_checking"];
 		}
-		if(score === false)
+		if(score === false || isNaN(score) || score === "")
 		{
 			return {r: 255, g: 255, b: 255};
 		}
 
-    // Grey color for scores unable to be found, given value -1
-    if(score < 0)
+    	// Grey color for scores unable to be found, given value -1
+    	if(score < 0)
 		{
 			return {r: 230, g: 230, b: 230};
 		}
@@ -776,9 +776,13 @@ function HoaxyGraph(options)
 		{
 			color = node_colors[1];
 		}
-		else
+		else if(score <= 100)
 		{
 			color = node_colors[0];
+		}
+		else
+		{
+			return {r: 255, g: 255, b: 255};
 		}
 
 		color.r = color.red;
