@@ -1083,10 +1083,10 @@
 										 Warning: This account has changed its screen name from
 										 <a v-bind:href="'https://twitter.com/' + node_modal_content.staleAcctInfo.oldSn" target="_blank">
 											 @{{ node_modal_content.staleAcctInfo.oldSn }}
-										 </a> (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.oldSn" target="_blank">details</a>) to
+										 </a> (<a v-bind:href="'https://botometer.osome.iu.edu/?sn=' + node_modal_content.staleAcctInfo.oldSn" target="_blank">details</a>) to
 										 <a v-bind:href="'https://twitter.com/intent/user?user_id=' + node_modal_content.staleAcctInfo.newId" target="_blank">
 											 @{{ node_modal_content.staleAcctInfo.newSn }}
-										 </a> (<a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">details</a>)
+										 </a> (<a v-bind:href="'https://botometer.osome.iu.edu/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">details</a>)
 								</div>
 								<div class="alert bg-warning"
 										 v-if="node_modal_content.staleAcctInfo.openedModalWhileFetchingScores">
@@ -1098,11 +1098,11 @@
 								</div>
 								<div class="alert modal-informational"
 										 v-else-if="!node_modal_content.staleAcctInfo.isStale && node_modal_content.showStaleContent && !getting_bot_scores.running">
-										 We estimate a {{ node_modal_content.completeAutomationProbability }}% probability that this account is completely automated. Click <a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.oldSn" target="_blank">here</a> for more details from Botometer.
+										 We estimate a {{ node_modal_content.completeAutomationProbability }}% probability that this account is completely automated. Click <a v-bind:href="'https://botometer.osome.iu.edu/?sn=' + node_modal_content.staleAcctInfo.oldSn" target="_blank">here</a> for more details from Botometer.
 								</div>
 								<div class="alert modal-informational"
 										 v-else-if="node_modal_content.staleAcctInfo.isStale && node_modal_content.showStaleContent && !getting_bot_scores.running">
-										 We estimate a {{ node_modal_content.completeAutomationProbability }}% probability that this account is completely automated. Click <a v-bind:href="'https://botometer.iuni.iu.edu/#!/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">here</a> for more details from Botometer.
+										 We estimate a {{ node_modal_content.completeAutomationProbability }}% probability that this account is completely automated. Click <a v-bind:href="'https://botometer.osome.iu.edu/?sn=' + node_modal_content.staleAcctInfo.newSn" target="_blank">here</a> for more details from Botometer.
 								</div>
 							<p class="my-2">
 								<button v-if="!getting_bot_scores.running" 
