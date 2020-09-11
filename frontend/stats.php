@@ -85,7 +85,7 @@
                 <tr v-for="spreader in spreaders">
                   <td><a rel="noreferrer noopener" target="_blank" :href="'https://twitter.com/' + spreader.user_screen_name">{{spreader.user_screen_name}}</a></td>
                   <td>{{spreader.number_of_tweets}}</td>
-                  <td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
+                  <td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.osome.iu.edu/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
                 </tr>
                 <tr v-if="spreaders.length == 0">
                   <td colspan="3">Could not find any accounts</td>
@@ -110,7 +110,7 @@
                 <tr v-for="spreader in spreaders">
                   <td><a rel="noreferrer noopener" target="_blank" :href="'https://twitter.com/' + spreader.user_screen_name">{{spreader.user_screen_name}}</a></td>
                   <td>{{spreader.number_of_tweets}}</td>
-                  <td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.iuni.iu.edu/#!/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
+                  <td><a rel="noreferrer noopener" target="_blank" :href="'https://botometer.osome.iu.edu/?sn=' + spreader.user_screen_name">{{spreader.bot_percent}}</a></td>
                 </tr>
                 <tr v-if="spreaders.length == 0">
                   <td colspan="3">Could not find any accounts</td>
