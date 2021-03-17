@@ -162,11 +162,10 @@
         			<dd class="faq-element-contents">
         				The Hoaxy corpus tracks the social sharing of links to
 								stories published by two types of websites: (1) Low-credibility
-								sources that often publish inaccurate, unverified, or satirical
-								claims according to
-								<a href="https://docs.google.com/spreadsheets/d/1S5eDzOUEByRcHSwSNmSqjQMpaKcKXmUzYT6YlRy3UOg/edit?usp=sharing"
-									 target="_blank">lists</a> compiled and published by reputable
-								news and fact-checking organizations. (2) Independent
+								sources that often publish inaccurate or unverified
+								claims according to the 
+								<a href="https://iffy.news/iffy-plus/"
+									 target="_blank">iffy+</a> list. (2) Independent
 								fact-checking organizations, such as snopes.com, politifact.com,
 								and factcheck.org, that routinely fact check unverified claims.
 					</dd>
