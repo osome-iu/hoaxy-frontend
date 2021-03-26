@@ -164,11 +164,10 @@
 								stories published by two types of websites: (1) Independent
 								fact-checking organizations, such as snopes.com, politifact.com,
 								and factcheck.org, that routinely fact check unverified claims.
-								(2) Low-credibility sources that often publish inaccurate or unverified
-								claims according to the <a href="https://iffy.news/iffy-plus/"
-									 target="_blank">iffy+</a> list,
-								which aggreates lists of sites that regularly publish mis/disinformation
-								identified by major fact-checking and journalism organizations. 
+								(2) Low-credibility sources in the <a href="https://iffy.news/iffy-plus/"
+									 target="_blank">iffy+</a> list. These sources,
+								identified by major fact-checking and journalism organizations,
+								regularly publish mis/disinformation.
 					</dd>
 					
 					
