@@ -1716,8 +1716,17 @@ var app = new Vue({
           query_limit -= 1; 
           if (response.search_metadata.next_results) 
           {
-            // Retrieving the maximum id for which the next result we must return tweets smaller than, hence older than this tweet
-            max_id = response.statuses[response.statuses.length-1].id_str;
+            // Retrieving the max id from the next_results query string
+            let next_url = response.search_metadata.next_results;
+            let pieces = next_url.split("?")[1].split("&");
+            for(let i in pieces){
+                let piece = pieces[i];
+                let variable = piece.split("=");
+                if( variable[0] == 'max_id' ){
+                    max_id = variable[1];
+                    break;
+                }
+            }
           } 
           else 
           {
