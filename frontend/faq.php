@@ -237,7 +237,7 @@
 								automation. Bot scores are calculated using a machine learning algorithm
 								trained to classify the level of automation an account presents. More information
 								about this topic can be found in the
-								<a href="https://botometer.iuni.iu.edu/#!/faq"
+								<a href="https://botometer.osome.iu.edu/#!/faq"
 									 target="_blank">Botometer FAQ</a>.
 							</dd>
 
@@ -405,7 +405,7 @@
 									<a href="https://github.com/IUNetSci/hoaxy-frontend"
 										 target="_blank">frontend</a>.
 									Please contact
-									<a href="https://osome.iuni.iu.edu/contact/"
+									<a href="https://osome.iu.edu/contact/"
 										 target="_blank">us</a>
 									to let us know if you are using our code.
         				</dd>
@@ -420,7 +420,7 @@
 									Twitter personal information, nor do we use any permissions
 									or data to do anything beyond what is necessary to provide
 									the Hoaxy service. More information can be found on the
-									<a href="https://botometer.iuni.iu.edu/#!/faq"
+									<a href="https://botometer.osome.iu.edu/#!/faq"
 										 target="_blank">Botometer FAQ</a>.
 	        			</dd>
 
@@ -480,7 +480,7 @@
 								<dt id="faq-q23">How can I contact the Hoaxy team?</dt>
 								<dd class="faq-element-contents">
 									The best way to contact the team is by using the
-									<a href="https://osome.iuni.iu.edu/contact/"
+									<a href="https://osome.iu.edu/contact/"
 										 target="_blank">contact information</a>
 									found at the OSoMe website. You can also tweet us at
 									<a href="https://twitter.com/OSoMe_IU"
