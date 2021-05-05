@@ -1,3 +1,28 @@
+.btn:not(#searchByTwitter):not(#searchByHoaxy):not(#searchByTwitter2):not(#searchByHoaxy2)
+{
+	-webkit-box-shadow: 0px 2px 2px 2px rgba(50, 50, 50, 0.2);
+	-moz-box-shadow:    0px 2px 2px 2px rgba(50, 50, 50, 0.2);
+	box-shadow:         0px 2px 2px 2px rgba(50, 50, 50, 0.2);
+}
+.btn-primary
+{
+    background-color: #DFDFDF;
+    border-color: #8A8A8A;
+    color: black;
+}
+.btn-primary.disabled, .btn-primary:disabled
+{
+    background-color: #FAFAFA;
+    border-color: #ADADAD;
+    color: #797979;
+}
+.btn-primary:hover
+{
+    background-color: #ADADAD;
+    border-color: #797979;
+    background-color: #0062ff;
+    border-color: #005cbf;
+}
 .selected_node_filter
 {
     border: solid black 2px;

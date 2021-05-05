@@ -40,37 +40,37 @@
 			<div class="container">
 				<form v-if="import_or_search == 'search'" @submit.stop.prevent="submitForm()">
 					<div class="col-12 text-center">
-					  <div class="col-12 text-center d-md-flex align-items-center">
-              <div class="pr-2 text-nowrap">
-                Search by:
+            <div class="col-12 d-md-flex align-items-center">
+              <div class="btn-group-vertical btn-group-toggle">
+                <div class="col-12 d-md-flex align-items-center pl-0">
+                  <label class="btn btn-primary mb-3" :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
+                    <input id="searchByTwitter"
+                      type="radio"
+                      name="twitterOrHoaxy"
+                      autocomplete="off"
+                      checked
+                      @change="twitterSearch()"
+                      >
+                    Twitter
+                  </label>
+                  <div class="ml-2 mb-3">Visualize the spread of information on Twitter</div>
+                </div>
+                <div class="col-12 text-center d-md-flex align-items-center pl-0">
+                  <label class="btn btn-primary mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
+                    <input id="searchByHoaxy"
+                      type="radio"
+                      name="twitterOrHoaxy"
+                      autocomplete="off"
+                      @change="hoaxySearch()"
+                      >
+                    Articles
+                  </label>
+                  <div class="ml-2 mb-3">Visualize the spread of claims and fact checking</div>
+                </div>
               </div>
-              <div class="btn-group btn-group-toggle">
-                <button id="searchByTwitter" 
-                  data-toggle="tooltip" 
-                  data-delay="0" 
-                  title="search Twitter content from the past 7 days" 
-                  type="button"
-                  class="btn btn-primary"
-									v-on:click="twitterSearch()"
-									@mouseOver="hoverTooltip"
-									@mouseOut="hideTooltip"
-                  v-bind:class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
-                  Twitter
-                </button>
-                <button id="searchByHoaxy" 
-                  data-toggle="tooltip" 
-                  title="search articles from misinformation and fact-checking sources" 
-                  type="button"
-                  class="btn btn-primary"
-									@mouseOver="hoverTooltip"
-									@mouseOut="hideTooltip"
-                  v-on:click="hoaxySearch()"
-                  v-bind:class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
-                  Articles
-                </button>
-              </div>
-
-              <input id="query" 
+            </div>
+            <div class="col-12 text-center d-md-flex align-items-center">
+              <input id="query"
                 class="form-control my-2 my-md-0" 
                 style="margin-left: 8px"
                 type="text" ref="searchBox" 

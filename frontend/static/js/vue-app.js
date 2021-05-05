@@ -746,7 +746,7 @@ var app = new Vue({
     {
       this.query_sort = "relevant";
       this.searchBy = "Hoaxy";
-      this.searchPlaceholder = 'Example: vaccines';
+      this.searchPlaceholder = 'Example: breaking: the earth is flat';
       this.hoaxySearchSelected = true;
       this.twitterSearchSelected = false;
     },
