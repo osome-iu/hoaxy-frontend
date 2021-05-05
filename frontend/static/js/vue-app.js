@@ -204,8 +204,8 @@ var app = new Vue({
       searchBy: 'Hoaxy',
       searchedBy: '',
       searchPlaceholder: 'Example: vaccines',
-      hoaxySearchSelected: true,
-      twitterSearchSelected: false,
+      hoaxySearchSelected: false,
+      twitterSearchSelected: true,
 
       lang: '',
 
@@ -724,7 +724,7 @@ var app = new Vue({
     {
       this.query_sort = "relevant";
       this.searchBy = "Hoaxy";
-      this.searchPlaceholder = 'Example: vaccines';
+      this.searchPlaceholder = 'Example: breaking: the earth is flat';
       this.hoaxySearchSelected = true;
       this.twitterSearchSelected = false;
     },
