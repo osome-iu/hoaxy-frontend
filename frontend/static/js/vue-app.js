@@ -734,7 +734,7 @@ var app = new Vue({
     {
       this.twitter_result_type = 'mixed';
       this.searchBy = "Twitter";
-      this.searchPlaceholder = 'Examples: vaccines, www.wsj.com';
+      this.searchPlaceholder = 'Example: vaccines';
       this.twitterSearchSelected = true;
       this.hoaxySearchSelected = false;
     },
