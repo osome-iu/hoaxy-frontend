@@ -203,7 +203,7 @@ var app = new Vue({
       colors: colors,
       searchBy: 'Twitter',
       searchedBy: '',
-      searchPlaceholder: 'Examples: vaccines, www.wsj.com',
+      searchPlaceholder: 'Example: vaccines',
       hoaxySearchSelected: false,
       twitterSearchSelected: true,
 
