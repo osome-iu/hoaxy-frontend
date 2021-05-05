@@ -10,16 +10,16 @@ Changes specific to the live Branded Hoaxy Website at <http://hoaxy.iuni.iu.edu>
 
 ## Instructions
 
-### Method 1 - Updating directly on `carl`
+### Method 1 - Updating directly on `lisa`
 
-1) Log into `carl` using the truthy user.
+1) Log into `lisa` using the truthy user.
 2) cd to the repository: `cd /u/truthy/code/hoaxy-frontend`
 3) Confirm that you are on the development branch: `git branch` should display a list of branches and `deployment` should have a  `*` next to it as follows:
 
-        [truthy@carl hoaxy-frontend]$ git branch
+        truthy@lisa:~/code/hoaxy-frontend$ git branch
         * deployment
           master
-        [truthy@carl hoaxy-frontend]$
+        truthy@lisa:~/code/hoaxy-frontend$
 4) If not on `deployment` branch, switch branch to deployment using `git checkout deployment`
 5) Make changes using your favorite editor (e.g. `nano frontend/faq.html`).  Save your work.
 6) Commit changes (e.g. `git commit -a -m 'Updates FAQ'`)
@@ -38,14 +38,14 @@ Changes specific to the live Branded Hoaxy Website at <http://hoaxy.iuni.iu.edu>
 5) Make changes to the file.
 6) Add a commit message and make sure to select the radio button: "Commit directly to the `deployment` branch."
 7) Click "Commit changes" to commit the changes.
-8) Log into `carl` as the truthy user using your favorite SSH terminal
+8) Log into `lisa` as the truthy user using your favorite SSH terminal
 9) cd to the repository: `cd /u/truthy/code/hoaxy-frontend`
 10) Confirm that you are on the development branch: `git branch` should display a list of branches and `development` should have a  `*` next to it as follows:
 
-        [truthy@carl hoaxy-frontend]$ git branch
+        truthy@lisa:~/code/hoaxy-frontend$ git branch
         * deployment
           master
-        [truthy@carl hoaxy-frontend]$
+        truthy@lisa:~/code/hoaxy-frontend$
 11) If not on `deployment` branch, switch branch to deployment using `git checkout deployment`
 12) Pull changes from the github repo: `git pull origin deployment`
 13) Run the deployment script: `./deploy_website.sh`
@@ -62,14 +62,14 @@ Changes specific to the live Branded Hoaxy Website at <http://hoaxy.iuni.iu.edu>
 3) Pull any remote changes to sync your repo with the latest updates in github:  `git pull origin deployment`
 3) Make your updates, save your files, commit your changes.
 4) Push your changes to the github repo: `git push origin deployment`
-5) Log into `carl` as the truthy user using your favorite SSH terminal
+5) Log into `lisa` as the truthy user using your favorite SSH terminal
 6) cd to the repository: `cd /u/truthy/code/hoaxy-frontend`
 7) Confirm that you are on the development branch: `git branch` should display a list of branches and `development` should have a  `*` next to it as follows:
 
-        [truthy@carl hoaxy-frontend]$ git branch
+        truthy@lisa:~/code/hoaxy-frontend$ git branch
         * deployment
           master
-        [truthy@carl hoaxy-frontend]$
+        truthy@lisa:~/code/hoaxy-frontend$
 8) If not on `deployment` branch, switch branch to deployment using `git checkout deployment`
 9) Pull changes from the github repo: `git pull origin deployment`
 10) Run the deployment script: `./deploy_website.sh`
