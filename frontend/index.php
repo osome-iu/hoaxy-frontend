@@ -42,7 +42,7 @@
 					<div class="col-12 text-center">
             <div class="col-12 d-md-flex align-items-center">
               <div class="btn-group-vertical">
-                <div class="col-12 d-md-flex align-items-center">
+                <div class="col-12 d-md-flex align-items-center pl-2">
                   <label class="btn btn-primary mb-3" :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
                     <input id="searchByTwitter"
                       type="radio"
@@ -55,7 +55,7 @@
                   </label>
                   <div class="ml-2 mb-3">Visualize the spread of information on Twitter</div>
                 </div>
-                <div class="col-12 text-center d-md-flex align-items-center">
+                <div class="col-12 text-center d-md-flex align-items-center pl-2">
                   <label class="btn btn-primary mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
                     <input id="searchByHoaxy"
                       type="radio"
