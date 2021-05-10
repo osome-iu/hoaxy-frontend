@@ -82,9 +82,7 @@
                 v-model="query_text"
                 v-bind:placeholder="searchPlaceholder"
                 :disabled="input_disabled" />
-              &nbsp; &nbsp; &nbsp; &nbsp;
-
-              <div for="name" class="control-label" v-if="twitterSearchSelected">
+              <div for="name" class="control-label ml-3" v-if="twitterSearchSelected">
                 Language:&nbsp;
               </div>
               <select class="form-control" style="width: auto" v-if="twitterSearchSelected" v-model="lang">
