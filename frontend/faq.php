@@ -570,11 +570,5 @@
 	*/
 
 	</script>
-	<style lang="css">
-	#faq-q10:target + dd,
-	#faq-q30:target + dd {
-		background: rgb(204, 212, 226);
-	}
-	</style>
 </body>
 </html>
