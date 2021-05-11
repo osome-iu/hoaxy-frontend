@@ -54,6 +54,7 @@
                     Live Search
                   </label>
                   <div class="ml-2 mb-3">Any Twitter content from the past 7 days</div>
+                  <a href="/faq.php#faq-q10"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
                 </div>
                 <div class="col-12 text-center d-md-flex align-items-center pl-2">
                   <label class="btn btn-primary mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
@@ -66,6 +67,7 @@
                     Article Search
                   </label>
                   <div class="ml-2 mb-3">Twitter links to low-credibility and fact-checking sources</div>
+                  <a href="/faq.php#faq-q10"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
                 </div>
               </div>
             </div>
