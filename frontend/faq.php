@@ -28,11 +28,11 @@
 								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q10')"
 									  class="mb-0 pb-0">
-										<a href="#faq-q10">What is the difference between Articles search and Twitter search?</a>
+										<a href="#faq-q10">What is the difference between Article Search and Live Search?</a>
 								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q2')"
 										class="mb-0 pb-0">
-										<a href="#faq-q2">How does Articles search work?</a>
+										<a href="#faq-q2">How does Article Search work?</a>
 								</li>
 								<li v-on:click="changeFaqContentsColor('faq-twitter-search')"
 										class="mb-0 pb-0">
@@ -130,19 +130,19 @@
         			</dd>
 
 
-							<dt id="faq-q10">What is the difference between Articles search and Twitter
-									search?
+							<dt id="faq-q10">What is the difference between Article Search and Live
+									Search?
 							</dt>
 							<dd class="faq-element-contents">
 								There are two search modes.
-                                                                <b>Articles</b> search finds claims
+                                                                <b>Article Search</b> finds claims
 								and related fact checking in a limited corpus of articles from
 								low-credibility and fact-checking sources, dating back to 2016. 
 								This mode leverages the
 								<a href="https://rapidapi.com/truthy/api/hoaxy"
 									 target="_blank">Hoaxy API</a>
 								to retrieve relevant articles, accounts, and
-								tweets. <b>Twitter</b> search lets users track articles from any
+								tweets. <b>Live Search</b> lets users track articles from any
 								sources posted on Twitter, but only within the last 7 days. 
 								
 								
@@ -155,10 +155,10 @@
 								<a href="https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators"
 								target="_blank">advanced search operators</a>.
 								
-								At most, Hoaxy is capable of visualizing the top 1000 accounts and in the case of a Twitter search, this will be the most recently active 1000 accounts if sorted by <em>Recent</em>.
+								At most, Hoaxy is capable of visualizing the top 1000 accounts and in the case of a Live Search, this will be the most recently active 1000 accounts if sorted by <em>Recent</em>.
 							</dd>
 							
-        			<dt id="faq-q2">How does Articles search work?</dt>
+        			<dt id="faq-q2">How does Article Search work?</dt>
         			<dd class="faq-element-contents">
         				The Hoaxy corpus tracks the social sharing of links to
 								stories published by two types of websites: (1) Independent
@@ -287,7 +287,7 @@
 								We then fetch the page linked in the tweet and store the URL
 								and the text of the page of the article, adding them to our
 								corpus together with the tweet. When the user submits a query
-								in Articles search mode, we match the most relevant or recent
+								in Article Search mode, we match the most relevant or recent
 								articles (claims and fact checks) and select all the tweets
 								that linked to them.
         			</dd>
@@ -534,7 +534,7 @@
             },
 						changeFaqContentsColor: function(faqElement) {
 							// Resetting all faq content elements to have an inherited
-							// background olor
+							// background color
 							faqElements =
 								document.getElementsByClassName('faq-element-contents');
 					    for (var i = 0; i < faqElements.length; i++) {
@@ -570,5 +570,11 @@
 	*/
 
 	</script>
+	<style lang="css">
+	#faq-q10:target + dd,
+	#faq-q30:target + dd {
+		background: rgb(204, 212, 226);
+	}
+	</style>
 </body>
 </html>
