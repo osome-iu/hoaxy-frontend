@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Visualize the Spread of Information</title>
+  <title>Visualize the Spread of Information on Twitter</title>
   <?php include("./includes/includes.html"); ?>
 </head>
 <body>
@@ -50,9 +50,9 @@
                       checked
                       @change="twitterSearch()"
                       >
-                    Twitter
+                    Live Search
                   </label>
-                  <div class="ml-2 mb-3">Visualize the spread of information on Twitter</div>
+                  <div class="ml-2 mb-3">Any Twitter content from the past 7 days</div>
                 </div>
                 <div class="col-12 text-center d-md-flex align-items-center pl-0">
                   <label class="btn btn-primary mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
@@ -62,9 +62,9 @@
                       autocomplete="off"
                       @change="hoaxySearch()"
                       >
-                    Articles
+                    Article Search
                   </label>
-                  <div class="ml-2 mb-3">Visualize the spread of claims and fact checking</div>
+                  <div class="ml-2 mb-3">Twitter links to low-credibility and fact-checking sources</div>
                 </div>
               </div>
             </div>
