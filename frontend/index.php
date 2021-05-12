@@ -69,9 +69,21 @@
                   <div class="ml-2 mb-3">Twitter links to low-credibility and fact-checking sources</div>
                   <a href="/faq.php#faq-q10"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
                 </div>
+                <div class="col-12 text-center d-md-flex align-items-center pl-0">
+                  <label class="btn btn-primary search-btn mb-3">
+                    <input type="radio"
+                        name="twitterOrHoaxy"
+                        autocomplete="off"
+                        @change="import_or_search=(import_or_search=='import'?'search':'import')"
+                        >
+                      Import Data
+                    </label>
+                  <div class="ml-2 mb-3">Upload a CSV or JSON file containing Tweet information</div>
+                  <a href="/faq.php#faq-q30"><i aria-hidden="true" class="pl-2 info-button fa fa-question-circle"></i></a>
+                </div>
               </div>
             </div>
-            <div class="col-12 text-center d-md-flex align-items-center">
+            <div class="col-12 text-center d-md-flex align-items-center" v-if="twitterSearchSelected || hoaxySearchSelected">
               <input id="query"
                 class="form-control my-2 my-md-0" 
                 style="margin-left: 8px"
@@ -147,11 +159,6 @@
             <button class="btn btn-outline-primary" id="submit">
               {{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }}
             </button>
-            <button class="btn btn-primary ml-3" 
-              @click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">
-              Or Import Data
-            </button>
-            <a href="/faq.php#faq-q30"><i aria-hidden="true" class="pl-2 info-button fa fa-question-circle"></i></a>
           </div>
 				</form>
 
@@ -168,7 +175,6 @@
 						</div>
 					</div>
 
-					
 					<div class="col-12 text-center mt-3">
 							<input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
 							<button class="btn btn-outline-primary" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
@@ -1148,8 +1154,8 @@
                 <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
-						<h2>was quoted by: <span v-if="node_modal_content.is_quoted_by_count == 0">nobody</span></h2>
-						<template v-for="user in node_modal_content.is_quoted_by">
+						<h2>was quoted by: <span v-if="node_modal_content.was_quoted_by_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.was_quoted_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
                 <div class='article_headline'>{{title}}</div>
@@ -1164,8 +1170,8 @@
                 <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
-						<h2>was mentioned by: <span v-if="node_modal_content.is_mentioned_by_count == 0">nobody</span></h2>
-						<template v-for="user in node_modal_content.is_mentioned_by">
+						<h2>was mentioned by: <span v-if="node_modal_content.was_mentioned_by_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.was_mentioned_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
                 <div class='article_headline'>{{title}}</div>
@@ -1180,8 +1186,8 @@
                 <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
-						<h2>was retweeted by: <span v-if="node_modal_content.is_retweeted_by_count == 0">nobody</span></h2>
-						<template v-for="user in node_modal_content.is_retweeted_by">
+						<h2>was retweeted by: <span v-if="node_modal_content.was_retweeted_by_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.was_retweeted_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
                 <div class='article_headline'>{{title}}</div>

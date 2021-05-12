@@ -1181,20 +1181,20 @@ function HoaxyGraph(options)
     var node = e.data.node.data;
 
 		var tweets = {
-			is_mentioned_by: {},
+			was_mentioned_by: {},
 			has_quoted: {},
 			has_retweeted: {},
 			has_mentioned: {},
-			is_quoted_by: {},
-			is_retweeted_by: {}
+			was_quoted_by: {},
+			was_retweeted_by: {}
 		};
 		var counts = {
-			is_mentioned_by_count:0,
+			was_mentioned_by_count:0,
 			has_quoted_count:0,
 			has_retweeted_count:0,
 			has_mentioned_count:0,
-			is_quoted_by_count:0,
-			is_retweeted_by_count:0
+			was_quoted_by_count:0,
+			was_retweeted_by_count:0
 		};
 
 		for (var i in node.incoming)
@@ -1212,7 +1212,7 @@ function HoaxyGraph(options)
         
 				if(true == node.incoming[i].is_mentions[j] || "reply" == node.incoming[i].tweet_types[j])
 				{
-					tweet_type = "is_mentioned_by";
+					tweet_type = "was_mentioned_by";
 				}
 				else if ("quote" == node.incoming[i].tweet_types[j])
 				{
@@ -1257,11 +1257,11 @@ function HoaxyGraph(options)
 				}
 				else if ("quote" == node.outgoing[i].tweet_types[j])
 				{
-					tweet_type = "is_quoted_by";
+					tweet_type = "was_quoted_by";
 				}
 				else if("retweet" == node.outgoing[i].tweet_types[j])
 				{
-					tweet_type = "is_retweeted_by";
+					tweet_type = "was_retweeted_by";
         }
 				if(tweet_type == "")
         {
@@ -1281,20 +1281,20 @@ function HoaxyGraph(options)
     node_modal_content.has_quoted = tweets.has_quoted;
     node_modal_content.has_quoted_count = counts.has_quoted_count;
 
-    node_modal_content.is_quoted_by = tweets.is_quoted_by;
-    node_modal_content.is_quoted_by_count = counts.is_quoted_by_count;
+    node_modal_content.was_quoted_by = tweets.was_quoted_by;
+    node_modal_content.was_quoted_by_count = counts.was_quoted_by_count;
     
     node_modal_content.has_mentioned = tweets.has_mentioned;
     node_modal_content.has_mentioned_count = counts.has_mentioned_count;
 
-    node_modal_content.is_mentioned_by = tweets.is_mentioned_by;
-    node_modal_content.is_mentioned_by_count = counts.is_mentioned_by_count;
+    node_modal_content.was_mentioned_by = tweets.was_mentioned_by;
+    node_modal_content.was_mentioned_by_count = counts.was_mentioned_by_count;
 
     node_modal_content.has_retweeted = tweets.has_retweeted;
     node_modal_content.has_retweeted_count = counts.has_retweeted_count;
     
-		node_modal_content.is_retweeted_by = tweets.is_retweeted_by;
-    node_modal_content.is_retweeted_by_count = counts.is_retweeted_by_count;
+	node_modal_content.was_retweeted_by = tweets.was_retweeted_by;
+    node_modal_content.was_retweeted_by_count = counts.was_retweeted_by_count;
 	}
 
  // ######  #####    ##   #    #     #####  #####    ##   #####  #    #

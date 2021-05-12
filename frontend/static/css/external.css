@@ -23,6 +23,10 @@
     background-color: #0062ff;
     border-color: #005cbf;
 }
+.search-btn {
+    width: 140px;
+    text-align: left;
+}
 .selected_node_filter
 {
     border: solid black 2px;
