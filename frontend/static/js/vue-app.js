@@ -206,6 +206,7 @@ var app = new Vue({
       searchPlaceholder: 'Example: vaccines',
       hoaxySearchSelected: false,
       twitterSearchSelected: true,
+      importDataSelected: false,
 
       lang: '',
 
@@ -524,6 +525,7 @@ var app = new Vue({
       {
         v.hoaxySearchSelected = true;
         v.twitterSearchSelected = false;
+        v.importDataSelected = false;
         // v.hoaxyEdges.original_query = data[0].original_query;
         for (edge in v.hoaxyEdges)
         {
@@ -531,10 +533,11 @@ var app = new Vue({
         }
         v.changeURLParamsHoaxy();
       }
-      else
+      else if(v.searchBy == 'Twitter')
       {
         v.hoaxySearchSelected = false;
         v.twitterSearchSelected = true;
+        v.importDataSelected = false;
         // v.twitterEdges.original_query = data[0].original_query;
         for (edge in v.twitterEdges)
         {
@@ -542,6 +545,13 @@ var app = new Vue({
         }
         v.changeURLParamsTwitter();
       }
+      else 
+      {
+        v.hoaxySearchSelected = false;
+        v.twitterSearchSelected = false;
+        v.importDataSelected = true;
+      }
+
       
       // Loop filling twitterEdge data with imported_data
       for(var i in data)
@@ -737,6 +747,8 @@ var app = new Vue({
       this.searchPlaceholder = 'Example: vaccines';
       this.twitterSearchSelected = true;
       this.hoaxySearchSelected = false;
+      this.importDataSelected = false;
+      this.import_or_search = "search";
     },
 
     /**
@@ -749,6 +761,20 @@ var app = new Vue({
       this.searchPlaceholder = 'Example: breaking: the earth is flat';
       this.hoaxySearchSelected = true;
       this.twitterSearchSelected = false;
+      this.importDataSelected = false;
+      this.import_or_search = "search";
+    },
+
+    /**
+     * Used to set variables to handle importing data to search
+     */
+    importData: function()
+    {
+      this.searchBy = "Import";
+      this.hoaxySearchSelected = false;
+      this.twitterSearchSelected = false;
+      this.importDataSelected = true;
+      this.import_or_search = "import";
     },
 
     /**
