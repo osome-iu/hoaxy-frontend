@@ -321,7 +321,7 @@
 					
 					<dt id="faq-q30">Can I import my own data into Hoaxy's Visualization tool?</dt>
         			<dd class="faq-element-contents">
-								Yes! Instead of searching for a specific query, click the "Or Import Data" button next to the "Search" button at the top of the Hoaxy home page.  From there, you can upload a CSV or JSON file containing Tweet information.  This works best with data exported directly from a previous Hoaxy query, however, correctly formatted files can be used regarless of source.
+								Yes! Instead of searching for a specific query, click the "Or Import Data" button next to the "Search" button at the top of the Hoaxy home page.  From there, you can upload a CSV or JSON file containing Tweet information.  This works best with data exported directly from a previous Hoaxy query, however, correctly formatted files can be used regardless of source.
 					</dd>
 					
 					<dt id="faq-q31">When importing files, what format does the data need to be in?</dt>
@@ -463,9 +463,11 @@
 										target="_blank">Kaicheng Yang</a>,
 									<a href="http://iuni.iu.edu/about/people/person/chathuri-peli-kankanamalage"
 										target="_blank">Chathuri Peli Kankanamalage</a>,
+									<a href="http://iuni.iu.edu/about/people/person/marc_mccarty"
+										target="_blank">Marc McCarty</a>,
 									and
-									<a href="http://iuni.iu.edu/people/person/marc_mccarty"
-										target="_blank">Marc McCarty</a>.
+									<a href="http://iuni.iu.edu/people/person/sarah_beverton"
+										target="_blank">Sarah Beverton</a>.
 									We are members of the of
 									<a href="https://firstdraftnews.com/academic-partners/"
 									   target="_blank">First Draft Academic Partner Network</a>.
