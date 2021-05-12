@@ -321,7 +321,7 @@
 					
 					<dt id="faq-q30">Can I import my own data into Hoaxy's Visualization tool?</dt>
         			<dd class="faq-element-contents">
-								Yes! Instead of searching for a specific query, click the "Or Import Data" button next to the "Search" button at the top of the Hoaxy home page.  From there, you can upload a CSV or JSON file containing Tweet information.  This works best with data exported directly from a previous Hoaxy query, however, correctly formatted files can be used regardless of source.
+								Yes! Instead of searching for a specific query, click the "Import Data" button.  From there, you can upload a CSV or JSON file containing Tweet information.  This works best with data exported directly from a previous Hoaxy query, however, correctly formatted files can be used regardless of source.
 					</dd>
 					
 					<dt id="faq-q31">When importing files, what format does the data need to be in?</dt>
