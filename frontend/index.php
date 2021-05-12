@@ -1139,8 +1139,8 @@
                 <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
-						<h2>was quoted by: <span v-if="node_modal_content.is_quoted_by_count == 0">nobody</span></h2>
-						<template v-for="user in node_modal_content.is_quoted_by">
+						<h2>was quoted by: <span v-if="node_modal_content.was_quoted_by_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.was_quoted_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
                 <div class='article_headline'>{{title}}</div>
@@ -1155,8 +1155,8 @@
                 <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
-						<h2>was mentioned by: <span v-if="node_modal_content.is_mentioned_by_count == 0">nobody</span></h2>
-						<template v-for="user in node_modal_content.is_mentioned_by">
+						<h2>was mentioned by: <span v-if="node_modal_content.was_mentioned_by_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.was_mentioned_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
                 <div class='article_headline'>{{title}}</div>
@@ -1171,8 +1171,8 @@
                 <div class="modal_links">See <a target="_blank" :href="user.tweet_urls[index]">tweet</a><template v-if="searchedBy == 'Hoaxy'"> or <a target="_blank" :href="user.article_urls[index]">article</a></template></div>
 							</template>
 						</template>
-						<h2>was retweeted by: <span v-if="node_modal_content.is_retweeted_by_count == 0">nobody</span></h2>
-						<template v-for="user in node_modal_content.is_retweeted_by">
+						<h2>was retweeted by: <span v-if="node_modal_content.was_retweeted_by_count == 0">nobody</span></h2>
+						<template v-for="user in node_modal_content.was_retweeted_by">
 							<h3>Account:  <a target="_blank" v-bind:href="user.user_url">{{user.screenName}}</a></h3>
 							<template v-for="(title, index) in user.article_titles">
                 <div class='article_headline'>{{title}}</div>
