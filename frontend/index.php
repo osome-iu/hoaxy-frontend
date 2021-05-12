@@ -37,49 +37,49 @@
 	   -->
 		<section id="form" class="container">
 			<div class="container">
-				<form v-if="import_or_search == 'search'" @submit.stop.prevent="submitForm()">
-					<div class="col-12 text-center">
-            <div class="col-12 d-md-flex align-items-center">
-              <div class="btn-group-vertical btn-group-toggle">
-                <div class="col-12 d-md-flex align-items-center pl-0">
-                  <label class="btn btn-primary search-btn mb-3" :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
-                    <input id="searchByTwitter"
-                      type="radio"
+        <div class="col-12 text-center">
+          <div class="col-12 d-md-flex align-items-center">
+            <div class="btn-group-vertical">
+              <div class="col-12 d-md-flex align-items-center pl-0">
+                <label class="btn btn-primary search-btn mb-3" :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
+                  <input id="searchByTwitter"
+                    type="radio"
+                    name="twitterOrHoaxy"
+                    autocomplete="off"
+                    checked
+                    @change="twitterSearch()"
+                    >
+                  Live Search
+                </label>
+                <div class="ml-2 mb-3">Any Twitter content from the past 7 days</div>
+              </div>
+              <div class="col-12 text-center d-md-flex align-items-center pl-0">
+                <label class="btn btn-primary search-btn mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
+                  <input id="searchByHoaxy"
+                    type="radio"
+                    name="twitterOrHoaxy"
+                    autocomplete="off"
+                    @change="hoaxySearch()"
+                    >
+                  Article Search
+                </label>
+                <div class="ml-2 mb-3">Twitter links to low-credibility and fact-checking sources</div>
+              </div>
+              <div class="col-12 text-center d-md-flex align-items-center pl-0">
+                <label class="btn btn-primary search-btn mb-3" :class="{ 'active': importDataSelected, 'text-light': importDataSelected}">
+                  <input type="radio"
                       name="twitterOrHoaxy"
                       autocomplete="off"
-                      checked
-                      @change="twitterSearch()"
+                      @change="importData()"
                       >
-                    Live Search
+                    Import Data
                   </label>
-                  <div class="ml-2 mb-3">Any Twitter content from the past 7 days</div>
-                </div>
-                <div class="col-12 text-center d-md-flex align-items-center pl-0">
-                  <label class="btn btn-primary search-btn mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
-                    <input id="searchByHoaxy"
-                      type="radio"
-                      name="twitterOrHoaxy"
-                      autocomplete="off"
-                      @change="hoaxySearch()"
-                      >
-                    Article Search
-                  </label>
-                  <div class="ml-2 mb-3">Twitter links to low-credibility and fact-checking sources</div>
-                </div>
-                <div class="col-12 text-center d-md-flex align-items-center pl-0">
-                  <label class="btn btn-primary search-btn mb-3">
-                    <input type="radio"
-                        name="twitterOrHoaxy"
-                        autocomplete="off"
-                        @change="import_or_search=(import_or_search=='import'?'search':'import')"
-                        >
-                      Import Data
-                    </label>
-                  <div class="ml-2 mb-3">Upload a CSV or JSON file containing Tweet information</div>
-                </div>
+                <div class="ml-2 mb-3">Upload a CSV or JSON file containing Tweet information</div>
               </div>
             </div>
-            <div class="col-12 text-center d-md-flex align-items-center" v-if="twitterSearchSelected || hoaxySearchSelected">
+          </div>
+          <form v-if="import_or_search == 'search'" @submit.stop.prevent="submitForm()">
+            <div class="col-12 text-center d-md-flex align-items-center">
               <input id="query"
                 class="form-control my-2 my-md-0" 
                 type="text" ref="searchBox" 
@@ -113,68 +113,63 @@
                 <option value="tr">Turkish (Türkçe)</option>
               </select>
             </div>
-          </div>
 
-          <div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
-            <span class="radio-container">
-              <label class="">Show:
-                <input v-model="query_sort" type="radio" name="sort_by" id='sort_by_relevant' checked value="relevant"  :disabled="input_disabled" /> Relevant
-              </label>
-            </span>
-            <span class="radio-container">
-              <label class="">
-                <input v-model="query_sort" type="radio" name="sort_by" id="sort_by_recent" value="recent"  :disabled="input_disabled" /> Recent
-              </label>
-            </span>
-          </div>
+            <div v-if="searchBy == 'Hoaxy'" class="col-12 text-center form-group">
+              <span class="radio-container">
+                <label class="">Show:
+                  <input v-model="query_sort" type="radio" name="sort_by" id='sort_by_relevant' checked value="relevant"  :disabled="input_disabled" /> Relevant
+                </label>
+              </span>
+              <span class="radio-container">
+                <label class="">
+                  <input v-model="query_sort" type="radio" name="sort_by" id="sort_by_recent" value="recent"  :disabled="input_disabled" /> Recent
+                </label>
+              </span>
+            </div>
 
-          <div v-else class="col-12 text-center form-group">
-            <span class="radio-container">
-              <label class="">Show:
-                <input v-model="twitter_result_type" type="radio" name="result_type" id='search_by_recent' value="recent"  :disabled="input_disabled" /> Recent
-              </label>
-            </span>
-            <span class="radio-container">
-              <label class="">
-                <input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_popular" value="popular"  :disabled="input_disabled" /> Popular
-              </label>
-            </span>
-            <span class="radio-container">
-              <label class="">
-                <input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_mixed" checked value="mixed"  :disabled="input_disabled" /> Mixed
-              </label>
-            </span>           
-          </div>
+            <div v-if="searchBy == 'Twitter'" class="col-12 text-center form-group">
+              <span class="radio-container">
+                <label class="">Show:
+                  <input v-model="twitter_result_type" type="radio" name="result_type" id='search_by_recent' value="recent"  :disabled="input_disabled" /> Recent
+                </label>
+              </span>
+              <span class="radio-container">
+                <label class="">
+                  <input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_popular" value="popular"  :disabled="input_disabled" /> Popular
+                </label>
+              </span>
+              <span class="radio-container">
+                <label class="">
+                  <input v-model="twitter_result_type" type="radio" name="result_type" id="search_by_mixed" checked value="mixed"  :disabled="input_disabled" /> Mixed
+                </label>
+              </span>           
+            </div>
 
-          <div class="col-12 text-center">
-            <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-            <button class="btn btn-outline-primary btn-blue" id="submit" :disabled="search_disabled" >
-              {{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }}
-            </button>
-          </div>
-				</form>
+            <div class="col-12 text-center" v-if="import_or_search=='search'">
+              <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
+              <button class="btn btn-outline-primary btn-blue" id="submit" :disabled="search_disabled" >
+                {{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }}
+              </button>
+            </div>
+          </form>
 
-				<div v-if="import_or_search == 'import'" class="">
-					<div class="col-12 text-center">
-						<div class="col-12 text-center d-md-flex align-items-center">
-							<div class="pr-2 text-nowrap">
-                Visualize Existing Data:
+          <div v-if="import_or_search == 'import'">
+            <div class="col-12 text-center">
+              <div class="col-12 text-center d-md-flex align-items-center">
+                <input type="file" id="import_file" name="import_file" 
+                  @change="fileUploadHandler" 
+                  class="form-control form-control-file" />
               </div>
-							<input type="file" id="import_file" name="import_file" 
-								@change="fileUploadHandler" 
-								class="form-control form-control-file" />
-						</div>
-					</div>
+            </div>
 
-					<div class="col-12 text-center mt-3">
-            <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true" :disabled="input_disabled" />
-            <button class="btn btn-primary btn-blue" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
-            <button class="btn btn-secondary ml-3 btn-sm" 
-              @click.stop.prevent="import_or_search=(import_or_search=='import'?'search':'import')">Or Search</button>
-					</div>
-				</div>
-			</div>
-		</section>
+            <div class="col-12 text-center mt-3">
+              <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true" :disabled="input_disabled" />
+              <button class="btn btn-outline-primary btn-blue" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
 
 		<!-- TOP ARTICLES DASHBOARD -->
 		<section id="dashboard" class="text-center mb-3">
