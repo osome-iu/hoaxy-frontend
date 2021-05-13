@@ -161,13 +161,11 @@
         			<dt id="faq-q2">How does Article Search work?</dt>
         			<dd class="faq-element-contents">
         				The Hoaxy corpus tracks the social sharing of links to
-								stories published by two types of websites: (1) Independent
-								fact-checking organizations, such as snopes.com, politifact.com,
+								stories published by two types of websites: (1) Low-credibility sources 
+								that often publish inaccurate, unverified claims according to the 
+								<a href="https://iffy.news/iffy-plus/" target="_blank">iffy+</a> list. 
+								(2) Independent fact-checking organizations, such as snopes.com, politifact.com,
 								and factcheck.org, that routinely fact check unverified claims.
-								(2) Low-credibility sources in the <a href="https://iffy.news/iffy-plus/"
-									 target="_blank">iffy+</a> list. These sources,
-								identified by major fact-checking and journalism organizations,
-								regularly publish mis/disinformation.
 					</dd>
 					
 					
