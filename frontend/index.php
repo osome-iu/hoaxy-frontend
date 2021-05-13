@@ -160,12 +160,10 @@
           </form>
 
           <div v-if="import_or_search == 'import'">
-            <div class="col-12 text-center">
-              <div class="col-12 text-center d-md-flex align-items-center">
-                <input type="file" id="import_file" name="import_file" 
-                  @change="fileUploadHandler" 
-                  class="form-control form-control-file" />
-              </div>
+            <div class="col-12 text-center d-md-flex align-items-center">
+              <input type="file" id="import_file" name="import_file" 
+                @change="fileUploadHandler" 
+                class="form-control form-control-file" />
             </div>
 
             <div class="col-12 text-center mt-3">
