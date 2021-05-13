@@ -159,18 +159,21 @@
             </div>
           </form>
 
-          <div v-if="import_or_search == 'import'">
+          <form v-if="import_or_search == 'import'">
+            
             <div class="col-12 text-center d-md-flex align-items-center">
               <input type="file" id="import_file" name="import_file" 
                 @change="fileUploadHandler" 
-                class="form-control form-control-file" />
+                class="form-control"
+                style="margin-left: 8px" />
             </div>
+
 
             <div class="col-12 text-center mt-3">
               <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true" :disabled="input_disabled" />
               <button class="btn btn-outline-primary btn-blue" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </section>
