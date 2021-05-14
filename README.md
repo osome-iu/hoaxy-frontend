@@ -6,13 +6,13 @@ The name Hoaxy is a trademark of Indiana University. Neither the name "Hoaxy" no
 
 There are two primary branches in this repository.  The `master` branch is the generic, unbranded version of the frontend.  `deployment` features branding, styles, and customizations featured only on the official website.  `master` should be merged into `deployment` when new features have been added.  `deployment` should **never** be merged into `master`, and as such, should only include additions specific to the live site.
 
-More details regarding the deployment of the Hoaxy frontend to the official site at http://hoaxy.iuni.iu.edu can be found in the [DEPLOYMENT_README.md](https://github.com/IUNetSci/hoaxy-frontend/blob/deployment/DEPLOYMENT_README.md) file in the `deployment` branch of this repository.
+More details regarding the deployment of the Hoaxy frontend to the official site at http://hoaxy.osome.iu.edu can be found in the [DEPLOYMENT_README.md](https://github.com/IUNetSci/hoaxy-frontend/blob/deployment/DEPLOYMENT_README.md) file in the `deployment` branch of this repository.
 
 # Hoaxy frontend
 
 This is the frontend of [Hoaxy](http://hoaxy.iuni.iu.edu), and it is intended to be used in conjunction with an implementation of the Hoaxy backend platform, which is available at: http://github.com/iunetsci/hoaxy-backend
 
-We strongly recommend that you implement the Hoaxy backend before this frontend. For more information, including a description of the application and information on how to collaborate with the Hoaxy team, please visit [the official Hoaxy website](http://hoaxy.iuni.iu.edu).
+We strongly recommend that you implement the Hoaxy backend before this frontend. For more information, including a description of the application and information on how to collaborate with the Hoaxy team, please visit [the official Hoaxy website](http://hoaxy.osome.iu.edu).
 
 ## Requirements
 
