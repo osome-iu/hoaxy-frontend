@@ -319,7 +319,7 @@
                 class="btn btn-primary"
                 @click.prevent.stop="twitterSearch()"
                 :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
-                Twitter
+                Live Search
               </button>
 
               <button id="searchByHoaxy2"
@@ -329,7 +329,7 @@
                 class="btn btn-primary"
                 @click.prevent.stop="hoaxySearch()"
                 :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
-                Articles
+                Article Search
               </button>
             </div>
             <input class="form-control mr-md-2 mb-2 mb-md-0 "
