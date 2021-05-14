@@ -24,8 +24,11 @@
     border-color: #005cbf;
 }
 .search-btn {
-    width: 140px;
+    width: 170px;
     text-align: left;
+}
+#searchByTwitter2, #searchByHoaxy2 {
+    width: 150px;
 }
 .selected_node_filter
 {

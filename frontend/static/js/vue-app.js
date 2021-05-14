@@ -201,7 +201,7 @@ var app = new Vue({
 
       source_dropdown_open: false,
       colors: colors,
-      searchBy: 'Hoaxy',
+      searchBy: '',
       searchedBy: '',
       searchPlaceholder: 'Example: vaccines',
       hoaxySearchSelected: false,
@@ -503,7 +503,7 @@ var app = new Vue({
 
       v.query_text = urlKeyValues[1];
       v.searched_query_text = urlKeyValues[1];
-      v.searchBy = urlKeyValues[5];
+      // v.searchBy = urlKeyValues[5];
       v.searchedBy = urlKeyValues[5];
       v.lang = urlKeyValues[7]
 
@@ -513,7 +513,7 @@ var app = new Vue({
         v.twitterSearchSelected = false;
         v.importDataSelected = false;
         v.hoaxyEdges.original_query = data[0].original_query;
-        v.changeURLParamsHoaxy();
+        // v.changeURLParamsHoaxy();
       }
       else if(v.searchBy == 'Twitter')
       {
@@ -521,7 +521,7 @@ var app = new Vue({
         v.twitterSearchSelected = true;
         v.importDataSelected = false;
         v.twitterEdges.original_query = data[0].original_query;
-        v.changeURLParamsTwitter();
+        // v.changeURLParamsTwitter();
       }
       else 
       {
@@ -1115,12 +1115,21 @@ var app = new Vue({
         this.searchBy = 'Twitter';
         this.twitterSearchSelected = true;
         this.hoaxySearchSelected = false;
+        this.importDataSelected = false;
       } 
-      else 
+      else if (this.import_or_search == "import")
+      {
+        this.searchBy = 'Import';
+        this.twitterSearchSelected = false;
+        this.hoaxySearchSelected = false;
+        this.importDataSelected = true;
+      }
+      else
       {
         this.searchBy = 'Hoaxy';
         this.twitterSearchSelected = false;
         this.hoaxySearchSelected = true;
+        this.importDataSelected = false;
       }
       // change article query
       this.query_text = article;
@@ -2808,13 +2817,21 @@ var app = new Vue({
         {
           this.hoaxySearchSelected = true;
           this.twitterSearchSelected = false;
+          this.importDataSelected = false;
           this.query_sort = discerningSortBasedOnHoaxyOrTwitter;
         }
         else if (this.searchBy == 'Twitter')
         {
           this.twitterSearchSelected = true;
           this.hoaxySearchSelected = false;
+          this.importDataSelected = false;
           this.twitter_result_type = discerningSortBasedOnHoaxyOrTwitter;
+        }
+        else 
+        {
+          this.twitterSearchSelected = false;
+          this.hoaxySearchSelected = false;
+          this.importDataSelected = true;
         }
       }
       if(key == "lang")

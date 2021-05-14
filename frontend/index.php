@@ -162,7 +162,7 @@
 
             <div class="col-12 text-center mt-3">
               <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true" :disabled="input_disabled" />
-              <button class="btn btn-outline-primary btn-blue" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
+              <button class="btn btn-outline-primary" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
             </div>
           </div>
         </div>
@@ -319,7 +319,7 @@
                 class="btn btn-primary"
                 @click.prevent.stop="twitterSearch()"
                 :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
-                Twitter
+                Live Search
               </button>
 
               <button id="searchByHoaxy2"
@@ -329,7 +329,7 @@
                 class="btn btn-primary"
                 @click.prevent.stop="hoaxySearch()"
                 :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
-                Articles
+                Article Search
               </button>
             </div>
             <input class="form-control mr-md-2 mb-2 mb-md-0 "
