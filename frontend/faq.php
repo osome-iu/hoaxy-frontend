@@ -146,7 +146,7 @@
 								sources posted on Twitter, but only within the last 7 days. 
 								
 								
-								Twitter mode uses
+								Live Search mode uses
 								the
 								<a href="https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"
 								target="_blank">Twitter Search API</a>
