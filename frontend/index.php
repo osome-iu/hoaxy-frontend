@@ -47,7 +47,6 @@
                     type="radio"
                     name="twitterOrHoaxy"
                     autocomplete="off"
-                    checked
                     :checked="twitterSearchSelected"
                     @change="twitterSearch()"
                     >
