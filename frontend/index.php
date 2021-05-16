@@ -47,6 +47,7 @@
                     name="twitterOrHoaxy"
                     autocomplete="off"
                     checked
+                    :checked="twitterSearchSelected"
                     @change="twitterSearch()"
                     >
                   Live Search
@@ -59,6 +60,7 @@
                     type="radio"
                     name="twitterOrHoaxy"
                     autocomplete="off"
+                    :checked="hoaxySearchSelected"
                     @change="hoaxySearch()"
                     >
                   Article Search
@@ -70,6 +72,7 @@
                   <input type="radio"
                       name="twitterOrHoaxy"
                       autocomplete="off"
+                      :checked="importDataSelected"
                       @change="importData()"
                       >
                     Import Data
@@ -162,7 +165,7 @@
 
             <div class="col-12 text-center mt-3">
               <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true" :disabled="input_disabled" />
-              <button class="btn btn-outline-primary" @click.stop.prevent="visualizeImportedData":disabled="!ready_to_visualize">Visualize</button>
+              <button class="btn btn-outline-primary" @click.stop.prevent="visualizeImportedData" :disabled="!ready_to_visualize">Visualize</button>
             </div>
           </div>
         </div>
