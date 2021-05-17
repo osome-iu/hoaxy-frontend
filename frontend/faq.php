@@ -172,7 +172,7 @@
 
         			<dt id="faq-twitter-search">How do I use advanced Twitter search terms?</dt>
         			<dd class="faq-element-contents">
-							Twitter mode uses
+							Live Search mode uses
 							the
 							<a href="https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"
 							target="_blank">Twitter Search API</a>
