@@ -24,8 +24,23 @@
     border-color: #005cbf;
 }
 .search-btn {
-    width: 170px;
+    width: 150px;
     text-align: left;
+    word-wrap: break-word;
+    height: 100%;
+    position: relative;
+}
+.search-btn input[type='radio'] {
+    margin-top: -7px;
+    position: absolute;
+    top: 50%
+}
+.search-btn span {
+    margin-left: 20px;
+}
+.flex-label {
+    display: flex;
+    float: right;
 }
 #searchByTwitter2, #searchByHoaxy2 {
     width: 150px;
