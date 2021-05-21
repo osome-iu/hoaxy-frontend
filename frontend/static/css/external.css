@@ -26,21 +26,10 @@
 .search-btn {
     width: 150px;
     text-align: left;
-    word-wrap: break-word;
-    height: 100%;
-    position: relative;
-}
-.search-btn input[type='radio'] {
-    margin-top: -7px;
-    position: absolute;
-    top: 50%
+    position: relative; 
 }
 .search-btn span {
-    margin-left: 20px;
-}
-.flex-label {
-    display: flex;
-    float: right;
+    margin-left: 6px;
 }
 #searchByTwitter2, #searchByHoaxy2 {
     width: 150px;

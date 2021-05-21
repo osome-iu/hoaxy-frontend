@@ -41,8 +41,8 @@
         <div class="col-12 text-center">
           <div class="col-12 d-md-flex align-items-center">
             <div class="btn-group-vertical">
-              <div class="col-12 d-md-flex align-items-center pl-2">
-                <label class="flex-label btn btn-primary search-btn mb-3" :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
+              <div class="col-12 text-center d-md-flex align-items-center pl-2">
+                <label class="d-flex align-items-center btn btn-primary search-btn mb-3" :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
                   <input id="searchByTwitter"
                     type="radio"
                     name="twitterOrHoaxy"
@@ -50,13 +50,13 @@
                     :checked="twitterSearchSelected"
                     @change="twitterSearch()"
                     >
-                  <span>Live Search</span>
+                    <span>Live Search</span>
                 </label>
                 <div class="ml-2 mb-3">Any Twitter content from the past 7 days</div>
                 <a href="/faq.php#faq-q10"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
               </div>
               <div class="col-12 text-center d-md-flex align-items-center pl-2">
-                <label class="flex-label btn btn-primary search-btn mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
+                <label class="d-flex align-items-center btn btn-primary search-btn mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
                   <input id="searchByHoaxy"
                     type="radio"
                     name="twitterOrHoaxy"
@@ -64,19 +64,19 @@
                     :checked="hoaxySearchSelected"
                     @change="hoaxySearch()"
                     >
-                  <span>Article Search</span>
+                    <span>Article Search</span>
                 </label>
                 <div class="ml-2 mb-3">Twitter links to low-credibility and fact-checking sources</div>
                 <a href="/faq.php#faq-q10"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
               </div>
               <div class="col-12 text-center d-md-flex align-items-center pl-2">
-                <label class="flex-label btn btn-primary search-btn mb-3" :class="{ 'active': importDataSelected, 'text-light': importDataSelected}">
+                <label class="d-flex align-items-center btn btn-primary search-btn mb-3" :class="{ 'active': importDataSelected, 'text-light': importDataSelected}">
                   <input type="radio"
-                      name="twitterOrHoaxy"
-                      autocomplete="off"
-                      :checked="importDataSelected"
-                      @change="importData()"
-                      >
+                    name="twitterOrHoaxy"
+                    autocomplete="off"
+                    :checked="importDataSelected"
+                    @change="importData()"
+                    >
                     <span>Import Data</span>
                   </label>
                 <div class="ml-2 mb-3">Upload a CSV or JSON file containing Tweet information</div>
