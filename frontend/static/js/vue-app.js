@@ -362,12 +362,12 @@ var app = new Vue({
     {
       var v = this;
       var p = this.twitterLogIn();
-      p.then(function(response)
-      {
-        v.twitter_account_info = userData;
-        v.profile.image = userData.profile_image_url_https;
-        v.profile.name = "@" + userData.screen_name;
-      })
+      // p.then(function(response)
+      // {
+      //   v.twitter_account_info = userData;
+      //   v.profile.image = userData.profile_image_url_https;
+      //   v.profile.name = "@" + userData.screen_name;
+      // })
     },
 
     /**
@@ -378,11 +378,11 @@ var app = new Vue({
       var v = this;
       var p = this.twitterLogOut();
 
-      p.then(function(response)
-      {
-        v.profile.name = "";
-        v.profile.image = defaultProfileImage;
-      })
+      // p.then(function(response)
+      // {
+      //   v.profile.name = "";
+      //   v.profile.image = defaultProfileImage;
+      // })
     },
 
     /**
@@ -2866,6 +2866,9 @@ var app = new Vue({
 
     this.twitter = new Twitter(configuration.twitter_key);
     this.me = this.twitter.me();
+    if (localStorage.getItem('oauth_twitter_token')) {
+      this.twitterLogIn();
+    }
 
     // Callbacks allow for modal manipulation and loading spinner to be handled
     // by Vue.
