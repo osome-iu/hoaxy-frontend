@@ -518,14 +518,7 @@
 			show_tutorial_link: undefined,
 			tutorial: false,
 			menu_open: false,
-
-			twitter: false,
-			
-			profile:
-			{
-				name: "",
-				image: defaultProfileImage
-			},
+			twitter: false
 		},
 		methods: {
             show_tutorial: function(){
