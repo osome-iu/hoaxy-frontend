@@ -1877,8 +1877,18 @@ var app = new Vue({
 
           // Visualizing only the first claim by default
           v.checked_articles.push(v.articles[0].url_id);
-          v.getTimeline(v.checked_articles);
-          v.getNetwork(v.checked_articles);
+
+
+          // v.getTimeline(v.checked_articles);
+          // v.getNetwork(v.checked_articles);
+          
+          var timeline_request = v.getTimeline(v.checked_articles);
+          timeline_request.then(function(response) {
+            v.getNetwork(v.checked_articles);
+          }, function(error){
+            v.getNetwork(v.checked_articles);
+          });
+          
 
           v.spinStop("getArticles");
         },
