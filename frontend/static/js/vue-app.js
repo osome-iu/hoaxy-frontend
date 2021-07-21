@@ -2541,8 +2541,20 @@ var app = new Vue({
           return false;
         }
         this.graph.updateEdges([]);
-        this.getTimeline(this.checked_articles);
-        this.getNetwork(this.checked_articles);
+        
+        var v = this;
+
+        
+        var timeline_request = this.getTimeline(this.checked_articles);
+        timeline_request.then(function(response) {
+          v.getNetwork(v.checked_articles);
+        }, function(error){
+          v.getNetwork(v.checked_articles);
+        });
+        
+        
+        
+        
         this.spinStop();
       });
     },
