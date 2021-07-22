@@ -1877,18 +1877,8 @@ var app = new Vue({
 
           // Visualizing only the first claim by default
           v.checked_articles.push(v.articles[0].url_id);
-
-
-          // v.getTimeline(v.checked_articles);
-          // v.getNetwork(v.checked_articles);
-          
-          var timeline_request = v.getTimeline(v.checked_articles);
-          timeline_request.then(function(response) {
-            v.getNetwork(v.checked_articles);
-          }, function(error){
-            v.getNetwork(v.checked_articles);
-          });
-          
+          v.getTimeline(v.checked_articles);
+          v.getNetwork(v.checked_articles);
 
           v.spinStop("getArticles");
         },
@@ -2551,20 +2541,8 @@ var app = new Vue({
           return false;
         }
         this.graph.updateEdges([]);
-        
-        var v = this;
-
-        
-        var timeline_request = this.getTimeline(this.checked_articles);
-        timeline_request.then(function(response) {
-          v.getNetwork(v.checked_articles);
-        }, function(error){
-          v.getNetwork(v.checked_articles);
-        });
-        
-        
-        
-        
+        this.getTimeline(this.checked_articles);
+        this.getNetwork(this.checked_articles);
         this.spinStop();
       });
     },
