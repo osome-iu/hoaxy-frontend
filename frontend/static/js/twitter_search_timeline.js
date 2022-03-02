@@ -16,7 +16,7 @@ function TwitterSearchTimeline(settings){
   // Along with the new tweets on that time period
 	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
 			var currentTimeStepIndex;
-			// In Twitter case, we convert data from: MM/DD/YYYY HH:MM:DD (AM/PM)
+			// In Twitter case, we convert data from: MM/DD/YYYY HH:MM (AM/PM)
 			// and extract all components to create a date
 			var fullRawDate = chartData.value;
 			var dateSplits = fullRawDate.split(' ');
@@ -27,22 +27,24 @@ function TwitterSearchTimeline(settings){
 			var hoursMinutesSeconds = dateSplits[1].split(':');
 			var hours = hoursMinutesSeconds[0];
 			var minutes = hoursMinutesSeconds[1];
-			var seconds = hoursMinutesSeconds[2];
+                        // Twitter format is now only hours and minutes:
+			//var seconds = hoursMinutesSeconds[2];
 
 			// We subtract 1 from month because Date takes 0 indexed months
 			var currentTimeStepDate = new Date(parseInt(year), parseInt(month)-1,
-				parseInt(day), parseInt(hours), parseInt(minutes), parseInt(seconds)).getTime();
+				parseInt(day), parseInt(hours), parseInt(minutes)).getTime();
 			// Finding the date match from the chartDataWithTweetRates object
 			// We tried to directly use indexes before but indexes get changed
 			// Due to the way D3js handles tooltips/charts
 			for (dateRateIx in chartDataWithTweetRates[0].values) {
-				var dateRateMatch =
-					new Date(chartDataWithTweetRates[0].values[dateRateIx].x).getTime();
+				var dateRateMatchWithSeconds =
+					new Date(chartDataWithTweetRates[0].values[dateRateIx].x);
+                                // setting seconds to 0 to match Twitter format that now only includes HH:MM
+                                dateRateMatch = dateRateMatchWithSeconds.setSeconds(0)
 				if (currentTimeStepDate === dateRateMatch) {
 					currentTimeStepIndex = dateRateIx;
 				}
 			}
-
 			// Returning formatted and styled tooltip
 			return "<div><b>" + String(chartData.value)
 												+ "</b></div>"
