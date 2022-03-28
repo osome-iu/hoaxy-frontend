@@ -3,7 +3,7 @@ var max_articles = 20;
 
 var defaultProfileImage = "static/assets/Twitter_logo_blue_32-cropped.png";
 
-var defaultHoaxyLang = "en";
+var defaultHoaxyLang = "";
 
 var papa_parse_config =
 {
@@ -201,7 +201,7 @@ var app = new Vue({
 
       source_dropdown_open: false,
       colors: colors,
-      searchBy: '',
+      searchBy: 'Twitter',
       searchedBy: '',
       searchPlaceholder: 'Example: vaccines',
       hoaxySearchSelected: false,
@@ -341,6 +341,20 @@ var app = new Vue({
   // ##     ## ##          ##    ##     ## ##     ## ##     ## ##    ## 
   // ##     ## ########    ##    ##     ##  #######  ########   ######  
   methods: {
+    /**
+     * Listens to window.location.hash changes (to close modals)
+     */
+    hashChange: function()
+    {
+      this.modal_opacity = false;
+      this.showWidgetModal = false;
+      this.show_error_modal = false;
+      this.show_authenticate_modal = false;
+      this.show_edge_modal = false;
+      this.show_node_modal = false;
+      this.show_tutorial_modal = false;
+    },
+    
     /**
      * Login to Twitter for connected functionality
      */
@@ -512,7 +526,11 @@ var app = new Vue({
         v.hoaxySearchSelected = true;
         v.twitterSearchSelected = false;
         v.importDataSelected = false;
-        v.hoaxyEdges.original_query = data[0].original_query;
+        // v.hoaxyEdges.original_query = data[0].original_query;
+        for (edge in v.hoaxyEdges)
+        {
+          v.hoaxyEdges[edge].original_query = data[0].original_query;
+        }
         // v.changeURLParamsHoaxy();
       }
       else if(v.searchBy == 'Twitter')
@@ -520,7 +538,11 @@ var app = new Vue({
         v.hoaxySearchSelected = false;
         v.twitterSearchSelected = true;
         v.importDataSelected = false;
-        v.twitterEdges.original_query = data[0].original_query;
+        // v.twitterEdges.original_query = data[0].original_query;
+        for (edge in v.twitterEdges)
+        {
+          v.twitterEdges[edge].original_query = data[0].original_query;
+        }
         // v.changeURLParamsTwitter();
       }
       else 
@@ -1183,7 +1205,7 @@ var app = new Vue({
       {
         this.loading = false;
         this.input_disabled = false;
-        this.search_disabled = true;
+        // this.search_disabled = true;
         clearTimeout(this.spin_timer);
       }
     },
@@ -1197,7 +1219,7 @@ var app = new Vue({
       this.spin_key_table.push(key);
       this.loading = true;
       this.input_disabled = true;
-      this.search_disabled = true;
+      // this.search_disabled = true;
       // timeout after 90 seconds so we're not stuck in an endless spinning loop.
       var v = this;
       clearTimeout(this.spin_timer);
@@ -1734,7 +1756,7 @@ var app = new Vue({
 
       var lang = this.lang;
 
-      console.log(lang);
+      // console.log(lang);
 
       // This function will paginate tweet search requests and is recursive
       function paginateTwitterRequests() {
@@ -2715,7 +2737,7 @@ var app = new Vue({
       {
         this.lang = defaultHoaxyLang;
       }
-    }
+    },
   },
 
   //  #     #  ####  #    # #    # ##### ###### #####
@@ -2761,6 +2783,8 @@ var app = new Vue({
     this.mounted = true;
     this.show_articles = false;
     this.show_graphs = false;
+
+    window.addEventListener("hashchange", this.hashChange, false);
 
     //if there is posted imported data, it should be in an element called "post_data"
     //Can choose to not use JSON.parse to read the string (already comma-sep) to have it POSTed like that

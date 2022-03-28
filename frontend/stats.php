@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Claim and Fact Checking Spreading Dashboard</title>
+    <title>Hoaxy&reg; : Dashboard</title>
     <?php include("./includes/includes.html"); ?>
   </head>
 

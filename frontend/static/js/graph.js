@@ -173,15 +173,25 @@ function HoaxyGraph(options)
 			if(user_id_list_chunk.length === 0)
 			{
 				break;
-      }
+			}
+			  
+			var fixedChunk = user_id_list_chunk.filter(function(item){
+				if (item != "undefined")
+				{
+					return item;
+				}
+			});
+			
+			var dataToSend = {"user_id": fixedChunk.join(",")};
       
 			var botcache_request = axios({
 				method: 'post',
 				url: configuration.botcache_url,
 				responseType: "json",
-				data: {
-					"user_id": user_id_list_chunk.join(",")
-				}
+				data: dataToSend
+				// {
+				// 	"user_id": user_id_list_chunk.join(",")
+				// }
 			});
 
 			botcache_request
@@ -368,7 +378,7 @@ function HoaxyGraph(options)
     var sn = ""
     var user = ""
 
-    console.log(score_stats.user_list)
+    // console.log(score_stats.user_list)
     
     if(score_stats.user_list[index] && score_stats.user_list[index] != undefined)
     {
@@ -573,10 +583,10 @@ function HoaxyGraph(options)
 		});
 		botscore.then(function(response){
 			// Storing the consistent account info for this given bot score retrieval
-
+			
 			var data = response.data;
 			if(data.scores)
-			{
+				{
 				var newId = response.data.user.id_str;
 				var newScore = 0;
 				if(lang == 'en' || lang == 'en-gb')
@@ -685,7 +695,7 @@ function HoaxyGraph(options)
 					}
 				}
 			}
-
+			
 			node_modal_content.showStaleContent = true;
 			updateNodeColor(id, botscores[id].score);
 		},
@@ -975,22 +985,30 @@ function HoaxyGraph(options)
         edgeCount[from_user_id + " " + to_user_id] += 1;
       }
 			// put nodes into sigma
-      console.log(nodes, "nodes")
 
       var max_size = 0;
-      var min_size = 0;
+	  var min_size = 0;
+	  var max_edge_size = 0;
 			var node_count = 0;
       for(var i in nodes)
       {
-				node_count ++;
-        if(nodes[i].size > max_size)
-        {
-          max_size = nodes[i].size;
-        }
-        if(nodes[i].size < min_size)
-        {
-          min_size = nodes[i].size;
-        }
+		node_count ++;
+		if(nodes[i].size > max_size)
+		{
+		max_size = nodes[i].size;
+		}
+		if(nodes[i].size < min_size)
+		{
+		min_size = nodes[i].size;
+		}
+
+		for (var j in nodes[i].outgoing)
+		{
+			if (nodes[i].outgoing[j].count > max_edge_size)
+			{
+				max_edge_size = nodes[i].outgoing[j].count;
+			}
+		}
       }
 
 			var nodes_id = {};
@@ -1103,36 +1121,37 @@ function HoaxyGraph(options)
 
 			node_count = graph.nodes.length;
 			score_stats.total = node_count;
-
+			
 			// put edges into sigma
 			var edgeIndex = 0;
 			for (var i in nodes)
 			{
 				for (var j in nodes[i].outgoing)
 				{
+					var edgeWeight = Math.log(Number(nodes[i].outgoing[j].count));
 					graph.edges.push({
-            id: "e" + edgeIndex,
-            source: i,
-            target: j,
+						id: "e" + edgeIndex,
+						source: i,
+						target: j,
 
-            source_screenName: nodes[i].screenName,
-            target_screenName: nodes[j].screenName,
+						source_screenName: nodes[i].screenName,
+						target_screenName: nodes[j].screenName,
 
-            from_node_id: nodes_id[i],
-            to_node_id: nodes_id[j],
-            size: (Number(nodes[i].outgoing[j].count)),
-            type: "arrow",
-            edge_type: nodes[i].outgoing[j].type,
-            color: edge_colors[nodes[i].outgoing[j].type], // Giovanni said use a third color
-            count: edgeIndex,
-            min_tweet_created_at: nodes[i].outgoing[j].min_tweet_created_at,
-            max_tweet_created_at: nodes[i].outgoing[j].max_tweet_created_at,
-            outgoing_ids: nodes[i].outgoing[j].ids,
-            incoming_ids: nodes[j].incoming[i].ids,
-            url_raws: nodes[i].outgoing[j].url_raws,
-            titles: nodes[i].outgoing[j].titles,
-            tweet_types: nodes[i].outgoing[j].tweet_types
-          });
+						from_node_id: nodes_id[i],
+						to_node_id: nodes_id[j],
+						size: edgeWeight,
+						type: "arrow",
+						edge_type: nodes[i].outgoing[j].type,
+						color: edge_colors[nodes[i].outgoing[j].type], // Giovanni said use a third color
+						count: edgeIndex,
+						min_tweet_created_at: nodes[i].outgoing[j].min_tweet_created_at,
+						max_tweet_created_at: nodes[i].outgoing[j].max_tweet_created_at,
+						outgoing_ids: nodes[i].outgoing[j].ids,
+						incoming_ids: nodes[j].incoming[i].ids,
+						url_raws: nodes[i].outgoing[j].url_raws,
+						titles: nodes[i].outgoing[j].titles,
+						tweet_types: nodes[i].outgoing[j].tweet_types
+          			});
 					++edgeIndex;
 				}
       }
@@ -1304,17 +1323,19 @@ function HoaxyGraph(options)
         type: 'canvas'
       },
       settings: {
-				autoRescale: true,
-				scalingMode: "inside",
+		autoRescale: true,
+		scalingMode: "inside",
         edgeHoverExtremities: true,
         borderSize: 1,
-        minArrowSize: 6,
+		minArrowSize: 6,
+		minEdgeSize: 0.25,
+		maxEdgeSize: 2,
         labelThreshold: 8,
         enableEdgeHovering: true,
         edgeHoverSizeRatio: 2,
         singleHover: true,
-				rescaleIgnoreSize: true,
-				defaultNodeType: 'border',
+		rescaleIgnoreSize: true,
+		defaultNodeType: 'border',
         zoomingRatio: 1.2
       }
     });

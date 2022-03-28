@@ -8,23 +8,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Visualize the Spread of Information on Twitter</title>
-  <?php include("./includes/includes.html"); ?>
+	<title>Hoaxy&reg; by OSoMe</title>
+	<?php include("./includes/includes.html"); ?>
+	<meta charset="iso-639">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
-
-  <div id="post_data" hidden aria-hidden="true">
-    <?php echo json_encode($post_data, JSON_HEX_TAG); ?>
-  </div>
-	<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
-		<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
-			<span class="fa"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
-			<div :style="'display: block'">
-				<div>{{spinner_notices.articles}}</div>
-				<div>{{spinner_notices.timeline}}</div>
-				<div>{{spinner_notices.graph}}</div>
+	<div id="fb-root"></div>
+	<div id="post_data" hidden aria-hidden="true"><?php echo json_encode($post_data, JSON_HEX_TAG); ?></div>
+		<div id="vue-app" :class="{'modal-open':(show_edge_modal || show_node_modal)}">
+			<div id="spinner" v-if="loading" v-bind:class="{'transparent':mounted}">
+				<span class="fa outline"><i class="fa" :class="'fa-hourglass-' + spinner_state" :style="'transform: rotate('+spinner_rotate+'deg)'" aria-hidden="true"></i></span>
+				<div class="outline" :style="'display: block'">
+					<div>{{spinner_notices.articles}}</div>
+					<div>{{spinner_notices.timeline}}</div>
+					<div>{{spinner_notices.graph}}</div>
+				</div>
 			</div>
-		</div>
 		<?php include("./includes/header.html" ); ?>
 
 		<!--
@@ -35,12 +36,12 @@
 		#       #    # #   #  #    #
 		#        ####  #    # #    #
 	   -->
-		<section id="form" class="container">
+		<section id="form" class="container-fluid">
 			<div class="container">
         <div class="col-12 text-center">
           <div class="col-12 d-md-flex align-items-center">
             <div class="btn-group-vertical">
-              <div class="col-12 text-center d-md-flex align-items-center pl-0">
+              <div class="col-12 text-center d-md-flex align-items-center pl-2">
                 <label class="d-flex align-items-center btn btn-primary search-btn mb-3" :class="{ 'active': twitterSearchSelected, 'text-light': twitterSearchSelected}">
                   <input id="searchByTwitter"
                     type="radio"
@@ -52,8 +53,9 @@
                     <span>Live Search</span>
                 </label>
                 <div class="ml-2 mb-3">Any Twitter content from the past 7 days</div>
+                <a href="/faq.php#faq-q10"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
               </div>
-              <div class="col-12 text-center d-md-flex align-items-center pl-0">
+              <div class="col-12 text-center d-md-flex align-items-center pl-2">
                 <label class="d-flex align-items-center btn btn-primary search-btn mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
                   <input id="searchByHoaxy"
                     type="radio"
@@ -65,8 +67,9 @@
                     <span>Article Search</span>
                 </label>
                 <div class="ml-2 mb-3">Twitter links to low-credibility and fact-checking sources</div>
+                <a href="/faq.php#faq-q10"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
               </div>
-              <div class="col-12 text-center d-md-flex align-items-center pl-0">
+              <div class="col-12 text-center d-md-flex align-items-center pl-2">
                 <label class="d-flex align-items-center btn btn-primary search-btn mb-3" :class="{ 'active': importDataSelected, 'text-light': importDataSelected}">
                   <input type="radio"
                     name="twitterOrHoaxy"
@@ -77,6 +80,7 @@
                     <span>Import Data</span>
                   </label>
                 <div class="ml-2 mb-3">Upload a CSV or JSON file containing Tweet information</div>
+                <a href="/faq.php#faq-q30"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
               </div>
             </div>
           </div>
@@ -84,6 +88,7 @@
             <div class="col-12 text-center d-md-flex align-items-center">
               <input id="query"
                 class="form-control my-2 my-md-0" 
+                style="margin-left: 8px"
                 type="text" ref="searchBox" 
                 data-toggle="tooltip" 
                 v-bind:title="searchByDependencyTitle"
@@ -103,6 +108,7 @@
                 <option value="bg">Bulgarian (български език)</option>
                 <option value="zh">Chinese (中文, 汉语, 漢語)</option>
                 <option value="en">English</option>
+                <option value="fa">Farsi (فارسی)</option>
                 <option value="fr">French (français)</option>
                 <option value="de">German (Deutsch)</option>
                 <option value="hi">Hindi (हिन्दी)</option>
@@ -149,30 +155,33 @@
 
             <div class="col-12 text-center" v-if="import_or_search=='search'">
               <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true"  :disabled="input_disabled" />
-              <button class="btn btn-outline-primary btn-blue" id="submit" :disabled="search_disabled" >
+              <button class="btn btn-outline-primary" id="submit" :disabled="search_disabled" >
                 {{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }}
               </button>
             </div>
           </form>
 
-          <div v-if="import_or_search == 'import'">
+          <form v-if="import_or_search == 'import'">
+            
             <div class="col-12 text-center d-md-flex align-items-center">
               <input type="file" id="import_file" name="import_file" 
                 @change="fileUploadHandler" 
-                class="form-control form-control-file" />
+                class="form-control"
+                style="margin-left: 8px" />
             </div>
+
 
             <div class="col-12 text-center mt-3">
               <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true" value="true" :disabled="input_disabled" />
               <button class="btn btn-outline-primary" @click.stop.prevent="visualizeImportedData" :disabled="!ready_to_visualize">Visualize</button>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </section>
 
 		<!-- TOP ARTICLES DASHBOARD -->
-		<section id="dashboard" class="text-center mb-3">
+		<section id="dashboard" class="text-center">
       <div class="col-md-3 d-inline-block align-top m-0 p-0">
         <div class="table-responsive m-0 p-0">
           <table class="table table-borderless m-0 p-0">
@@ -344,11 +353,12 @@
               v-model="query_text"
               v-bind:placeholder="searchPlaceholder"
               :disabled="input_disabled || show_full_articles_list == true" />
+            <!-- Removed disable since it's not used. 
+                 :disabled="search_disabled"-->
             <button 
               type="submit" 
               v-if="!show_articles || !show_full_articles_list" 
-              class="btn btn-primary btn-blue" 
-              :disabled="search_disabled" >
+              class="btn btn-outline-primary">
               {{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} 
             </button>
             <button 
@@ -369,20 +379,23 @@
           <transition name="slide_in">
 
             <div id="article_list_container" v-show="show_articles && show_full_articles_list">
-              <div class="card p-2">
-                <div class="text-right d-flex align-items-center">
-                  <p class="text-left mt-3">
-                    Select up to 20 articles from the list and click "Visualize Articles" to generate a timeline and network graph based on your selection.
-                  </p> 
-                  <div>
-                    <button 
-                      @click.stop.prevent="visualizeSelectedArticles();" 
-                      :disabled="checked_articles.length <= 0" 
-                      class="btn btn-primary">
-                      Visualize {{checked_articles.length}} article{{checked_articles.length!=1?"s":""}}
-                    </button>
-                  </div>
+            <div class="card p-2">
+              <div class="text-right d-flex align-items-center flex-column flex-sm-row" >
+								<label class="mt-3 d-block" style="white-space: nowrap">
+									<input type="checkbox" id="select_all" @change="selectTop20" :checked="all_selected" style="display: none"/>
+									<span class="check_icons text-center">
+										<i class="fa fa-square-o fw" aria-hidden="true"></i>
+										<i class="fa fa-check-square-o fw" aria-hidden="true"></i>
+									</span>
+									<span class="ml-2 article_title">Select Top 20</span>
+								</label>
+                <div class="text-left m-3">
+                  Select up to 20 articles from the list and click "Visualize Articles" to generate a timeline and network graph based on your selection.
                 </div>
+                <div class="mb-3 mb-sm-0">
+                  <button @click.stop.prevent="visualizeSelectedArticles();" :disabled="checked_articles.length <= 0" class="btn btn-primary">Visualize {{checked_articles.length}} article{{checked_articles.length!=1?"s":""}}</button>
+                </div>
+              </div>
                 <div class="d-flex row">
                   <div class="col-12">
                     <ul class="list-unstyled d-block" id="article_list">
@@ -692,26 +705,22 @@
 									:style="'background-color: rgba('+ colors.node_colors.botscores[0].red + ','+ colors.node_colors.botscores[0].green + ','+ colors.node_colors.botscores[0].blue + ', .9)'">
 									<span v-text="botscoreCount(.8, 1.1)">100</span>
 								</div>
-								<div @click="filterNodesByScore(.6, .8)" 
-									class="d-flex justify-content-center align-items-center bot_legend_section" 
+								<div @click="filterNodesByScore(.6, .8)" class="d-flex justify-content-center align-items-center bot_legend_section" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '0.8 0.6'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[1].red + ','+ colors.node_colors.botscores[1].green + ','+ colors.node_colors.botscores[1].blue + ', .9)'">
 									<span v-text="botscoreCount(.6, .8)">200</span>
 								</div>
-								<div @click="filterNodesByScore(.4, .6)" 
-									class="d-flex justify-content-center align-items-center bot_legend_section" 
+								<div @click="filterNodesByScore(.4, .6)" class="d-flex justify-content-center align-items-center bot_legend_section" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '0.6 0.4'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[2].red + ','+ colors.node_colors.botscores[2].green + ','+ colors.node_colors.botscores[2].blue + ', .9)'">
 									<span v-text="botscoreCount(.4, .6)">500</span>
 								</div>
-								<div @click="filterNodesByScore(.2, .4)" 
-									class="d-flex justify-content-center align-items-center bot_legend_section" 
+								<div @click="filterNodesByScore(.2, .4)" class="d-flex justify-content-center align-items-center bot_legend_section" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '0.4 0.2'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[3].red + ','+ colors.node_colors.botscores[3].green + ','+ colors.node_colors.botscores[3].blue + ', .9)'">
 									<span v-text="botscoreCount(.2, .4)">300</span>
 								</div>
-								<div @click="filterNodesByScore(0, .20)" 
-									class="d-flex justify-content-center align-items-center bot_legend_section rounded-bottom" 
+								<div @click="filterNodesByScore(0, .20)" class="d-flex justify-content-center align-items-center bot_legend_section rounded-bottom" 
 									:class="{'selected_node_filter': nodes_filtered_by_score == '0.2 0'}"
 									:style="'background-color: rgba('+ colors.node_colors.botscores[4].red + ','+ colors.node_colors.botscores[4].green + ','+ colors.node_colors.botscores[4].blue + ', .9)'">
 									<span v-text="botscoreCount(0, .20)">100</span>
@@ -855,7 +864,7 @@
 							<span class="pl-2">{{info_text}}</span>
 						</div>
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer modal-border-top"> <!-- `modal-footer` class added from master; remove if looks dumb -->
             <button type="button" 
               class="btn btn-secondary" 
               @click="info_text = ''">
@@ -912,7 +921,7 @@
       aria-labelledby="nodeModalLabel">
       <div class="modal-dialog" role="document">
         <div @click.stop="" class="alert m-5 alert-info">
-          <div class="modal-header">
+          <div class="modal-header modal-border-bottom"> <!-- `modal-header` class added from master; remove if looks dumb -->
             <h4 class="modal-title text-center" id="authenticateModalLabel">
 							Twitter Error
             </h4>
@@ -933,7 +942,7 @@
 							</p>
 						</div>
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer modal-border-top"> <!-- `modal-footer` class added from master; remove if looks dumb -->
               <button type="button" class="btn btn-secondary" @click="toggleModal('authenticate')">Close</button>
           </div>
         </div>
@@ -952,7 +961,7 @@
       aria-labelledby="nodeModalLabel">
       <div class="modal-dialog" role="document">
         <div @click.stop="" class="alert m-5 alert-danger">
-          <div class="modal-header">
+          <div class="modal-header modal-border-bottom"> <!-- `modal-header` class added from master; remove if looks dumb -->
             <h4 class="modal-title text-center" id="errorModalLabel">
 							An Error Occurred
             </h4>
@@ -969,7 +978,7 @@
 							<span>{{error_message}}</span>
 						</div>
           </div>
-          <div class="modal-footer">
+          <div class="modal-footer modal-border-top"> <!-- `modal-footer` class added from master; remove if looks dumb -->
             <button type="button" 
               class="btn btn-secondary" 
               @click="toggleErrorModal()">
@@ -1016,7 +1025,7 @@
               </div>
 						</template>
 					</div>
-					<div class="modal-footer">
+					<div class="modal-border-top">
 						<button type="button" class="btn btn-default" @click="toggleEdgeModal()">Close</button>
 					</div>
 				</div>
@@ -1050,7 +1059,7 @@
 							<h5>Botometer Score: <span v-if="!node_modal_content.botscore"><b>Unavailable</b></span></h5>
 								<div class="text-center" v-if="node_modal_content.botscore > 0">
 									<div class="botscore alert" :style="{'background-color': node_modal_content.botcolor, 'color': node_modal_content.botscore !== false && node_modal_content.botscore >= 0 && node_modal_content.botscore < 35 ?'black':'black' }">
-										<h1 class="m-0 p-0">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
+										<h1 class="m-0 p-0" style="color: black">{{Number((node_modal_content.botscore/100) * 5 ).toFixed(1)}} / 5</h1>
 									</div>
 									<div class="d-flex justify-content-center h3">
 										<div class="botimages">
@@ -1181,8 +1190,8 @@
 							</template>
 						</template>
 					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" @click.stop="toggleNodeModal()">Close</button>
+					<div style="border-top: 1px solid #ccc;">
+						<button type="button" class="btn btn-primary" style="float: right" @click.stop="toggleNodeModal()">Close</button>
 					</div>
 				</div>
 			</div>
@@ -1200,7 +1209,7 @@
 		</div>
 	</div>
 	<?php include("./includes/footer.html"); ?>
-	<script src="/static/js/vue-app.js"></script>
+	<script src="./static/js/vue-app.js"></script>
 	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>

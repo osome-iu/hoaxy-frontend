@@ -61,6 +61,11 @@
     background-image: url(../5bots.png);
 }
 
+#faq-q10:target + dd,
+#faq-q30:target + dd {
+	background: rgb(204, 212, 226);
+}
+
 
 #tutorial
 {
@@ -272,7 +277,7 @@ li label
 }
 li
 {
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
 
 .claim_label, .fact_checking_label
@@ -338,7 +343,7 @@ li
     width: 150px;
     margin-left: -75px;
     margin-top: -75px;
-    /* vertical-align: middle; */
+    /*vertical-align: middle;*/
     text-align: center;
 
     /*font-size: 6rem;*/

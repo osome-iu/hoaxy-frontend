@@ -1,7 +1,27 @@
-<footer class="container-fluid">
+<!-- <footer class="container-fluid">
 	<div class="col-md-12 text-center">
 		<p>
 			<a href="https://github.com/IUNetSci/hoaxy-frontend" target="_blank ">Github Repo</a>
+		</p>
+	</div>
+</footer> -->
+
+<footer class="container-fluid">
+	<div class="col-md-12 text-center">
+		<p>
+			<a href="http://iuni.iu.edu/" target="_blank ">IUNI</a> | <a href="http://cnets.indiana.edu/"
+			target="_blank ">CNetS</a> | <a href="http://soic.indiana.edu/" target="_blank">SICE</a>
+		</p>
+		<p>
+			Hoaxy&reg; is <a href="http://www.indiana.edu/comments/copyright.shtml" target="_blank">Copyright</a> &copy; the Trustees of <a href="http://indiana.edu/" target="_blank">Indiana University</a> 2016 -
+            <span id="current_year"></span>
+            <script type="text/javascript ">
+            var date = new Date();
+            var yy = date.getYear();
+            var year = (yy < 1000) ? yy + 1900 : yy;
+            // document.write(year);
+            document.getElementById("current_year").innerHTML = year;
+            </script>
 		</p>
 	</div>
 </footer>

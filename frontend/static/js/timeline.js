@@ -83,6 +83,21 @@ function HoaxyTimeline(settings){
 
 	chart.color([colors.edge_colors.claim, colors.edge_colors.fact_checking, "#00ff00"]); //color match with those of nodes
 
+
+	// var insertLinebreaks = function (d) {
+	// 	var el = d3.select(this);
+	// 	var words = d.split(' ');
+	// 	el.text('');
+	
+	// 	for (var i = 0; i < words.length; i++) {
+	// 		var tspan = el.append('tspan').text(words[i]);
+	// 		if (i > 0)
+	// 			tspan.attr('x', 0).attr('dy', '15');
+	// 	}
+	// };
+	
+	// svg.selectAll('g.x.axis g text').each(insertLinebreaks);
+
   /**
    * Redraw the timeline
    */
@@ -111,7 +126,9 @@ function HoaxyTimeline(settings){
    * @return {String} The formatted time
    */
 	function dateFormatter(d) {
-		return d3.time.format('%x')(new Date(d))
+		var date = new Date(d);
+		var formattedDate = d3.time.format('%x %H:%M')(date);
+		return formattedDate;
 	}
 
   /**
@@ -142,7 +159,7 @@ function HoaxyTimeline(settings){
 
 			// Calculating New Claims for time stsep
 			var currentClaims = chartDataWithTweetRates[0].values[i].y;
-		  chartDataWithTweetRates[0].values[i].y =
+		    chartDataWithTweetRates[0].values[i].y =
 				currentClaims - previousTimestepClaims;
 			previousTimestepClaims = currentClaims;
 
