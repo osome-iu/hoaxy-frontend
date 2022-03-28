@@ -27,7 +27,9 @@ function TwitterSearchTimeline(settings){
 			var hoursMinutesSeconds = dateSplits[1].split(':');
 			var hours = hoursMinutesSeconds[0];
 			var minutes = hoursMinutesSeconds[1];
-                        // Twitter format is now only hours and minutes:
+
+			// Twitter format is now only hours and minutes:
+
 			//var seconds = hoursMinutesSeconds[2];
 
 			// We subtract 1 from month because Date takes 0 indexed months
@@ -39,8 +41,10 @@ function TwitterSearchTimeline(settings){
 			for (dateRateIx in chartDataWithTweetRates[0].values) {
 				var dateRateMatchWithSeconds =
 					new Date(chartDataWithTweetRates[0].values[dateRateIx].x);
-                                // setting seconds to 0 to match Twitter format that now only includes HH:MM
-                                dateRateMatch = dateRateMatchWithSeconds.setSeconds(0)
+
+        // setting seconds to 0 to match Twitter format that now only includes HH:MM
+				var dateRateMatch = dateRateMatchWithSeconds.setSeconds(0)
+
 				if (currentTimeStepDate === dateRateMatch) {
 					currentTimeStepIndex = dateRateIx;
 				}

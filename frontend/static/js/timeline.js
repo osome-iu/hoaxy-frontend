@@ -17,7 +17,13 @@ function HoaxyTimeline(settings){
 	chart.interactiveLayer.tooltip.contentGenerator(function(chartData) {
 			var currentTimeStepIndex;
 			// Date comes from Hoaxy as MM/DD/YYYY in this timeline as local time zone
-			var currDateLocal = new Date(chartData.value);
+			// Now the date comes in as MM/DD/YYYY HH:MM:SS, so we need to remove the HH:MM:SS part
+			// for the tooltip to work
+			var chartDataValueArr = chartData.value.split(' ')
+			var chartLocalValue = chartDataValueArr[0]
+			var currDateLocal = new Date(chartLocalValue);
+
+			// var currDateLocal = new Date(chartData.value);
 			var currentTimeStepDate = currDateLocal.getTime();
 
 			// Finding the date match from the chartDataWithTweetRates object
@@ -32,7 +38,7 @@ function HoaxyTimeline(settings){
 			}
 
 			// Returning formatted and styled tooltip
-			return "<div><b>" + String(chartData.value)
+			return "<div><b>" + String(chartLocalValue)
 												+ "</b></div>"
 												+ "<div style='display:flex;\
 																			 justify-content:left;\
