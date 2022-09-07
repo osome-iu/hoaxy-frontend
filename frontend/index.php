@@ -55,7 +55,7 @@
                 <div class="ml-2 mb-3">Any Twitter content from the past 7 days</div>
                 <a href="/faq.php#faq-q10"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
               </div>
-              <div class="col-12 text-center d-md-flex align-items-center pl-2">
+              <!-- <div class="col-12 text-center d-md-flex align-items-center pl-2">
                 <label class="d-flex align-items-center btn btn-primary search-btn mb-3" :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
                   <input id="searchByHoaxy"
                     type="radio"
@@ -68,7 +68,7 @@
                 </label>
                 <div class="ml-2 mb-3">Twitter links to low-credibility and fact-checking sources (to be discontinued in 2022)</div>
                 <a href="/faq.php#faq-q10"><i aria-hidden="true" class="pl-2 pb-3 info-button fa fa-question-circle"></i></a>
-              </div>
+              </div> -->
               <div class="col-12 text-center d-md-flex align-items-center pl-2">
                 <label class="d-flex align-items-center btn btn-primary search-btn mb-3" :class="{ 'active': importDataSelected, 'text-light': importDataSelected}">
                   <input type="radio"
@@ -181,7 +181,7 @@
     </section>
 
 		<!-- TOP ARTICLES DASHBOARD -->
-		<section id="dashboard" class="text-center">
+		<!-- <section id="dashboard" class="text-center">
       <div class="col-md-3 d-inline-block align-top m-0 p-0">
         <div class="table-responsive m-0 p-0">
           <table class="table table-borderless m-0 p-0">
@@ -315,14 +315,14 @@
           </table>
         </div>
       </div>
-    </section>
+    </section> -->
     <section id="secondary_form" v-if="show_graphs">
       <div class="container pt-5">
         <form @submit.stop.prevent="show_full_articles_list = false; submitForm()">
           <input v-model="query_sort" type="hidden" name="sort_by" :disabled="input_disabled" />
           <input type="hidden" v-model="query_include_mentions" name="include_user_mentions" id="include_user_mentions_true2" value="true"  :disabled="input_disabled" />
-          <div class="d-block d-md-flex justify-content-center align-items-center">
-            <div class="btn-group btn-group-toggle mr-md-2 mb-2 mb-md-0 d-md-flex justify-content-md-center d-inline-block">
+          <div class="d-block d-md-flex justify-content-center align-items-center" style="max-width:50em;">
+            <!-- <div class="btn-group btn-group-toggle mr-md-2 mb-2 mb-md-0 d-md-flex justify-content-md-center d-inline-block">
               <button id="searchByTwitter2"
 								type="button"
                 data-toggle="tooltip"
@@ -342,7 +342,7 @@
                 :class="{ 'active': hoaxySearchSelected, 'text-light': hoaxySearchSelected}">
                 Article Search
               </button>
-            </div>
+            </div> -->
             <input class="form-control mr-md-2 mb-2 mb-md-0 "
               type="text"
               ref="searchBox2"
@@ -361,7 +361,7 @@
               class="btn btn-outline-primary">
               {{ searchBy == 'Hoaxy' ? 'Search' : 'Search' }} 
             </button>
-            <button 
+            <!-- <button 
               @click.stop.prevent="show_full_articles_list = true" 
               class="btn btn-secondary ml-md-2" 
               v-if="show_articles && !show_full_articles_list">
@@ -373,7 +373,7 @@
               class="btn btn-secondary ml-md-2" 
               v-if="show_articles && show_full_articles_list">
               Cancel
-            </button>
+            </button> -->
           </div>
           
           <transition name="slide_in">
@@ -745,7 +745,7 @@
 		    <div id="tutorial-content" class="d-flex text-center align-items-center justify-content-center">
 			    <div id="tutorial-carousel" class="carousel slide h-100 pt-5">
 			      <ol class="carousel-indicators">
-			        <li v-for="number, index in [ 1, 2, 3, 4, 5]"
+			        <li v-for="number, index in [ 1, 2 ]"
 					      @click="tutorialGotoSlide(number)"
 					      :class="{'active':tutorial.active_slide == number}">
               </li>
@@ -755,7 +755,7 @@
 			      </div>
 			      <div class="carousel-inner  rounded">
               <div class="carousel-item text-center"
-					      v-for="number, index in [1, 2, 3, 4, 5]"
+					      v-for="number, index in [1, 2]"
 					      :class="{'active':tutorial.active_slide == number}">
 				        <div class="d-flex">
                   <img class="d-block rounded align-self-center" 
@@ -771,14 +771,14 @@
 			          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
 			          <span class="sr-only">Previous</span>
 			      </a>
-            <a v-if="tutorial.active_slide < 5" 
+            <a v-if="tutorial.active_slide < 2" 
               @click="tutorialNextSlide()" 
               class="carousel-control-next" 
               role="button">
               <span class="carousel-control-next-icon" aria-hidden="true"></span>
               <span class="sr-only">Next</span>
             </a>
-            <a v-if="tutorial.active_slide == 5" 
+            <a v-if="tutorial.active_slide == 2" 
               @click="tutorialHide()" 
               class="carousel-control-next" 
               role="button">
