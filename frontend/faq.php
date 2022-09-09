@@ -28,24 +28,24 @@
 								</li>
 								<li v-on:click="changeFaqContentsColor('faq-q10')"
 									  class="mb-0 pb-0">
-										<a href="#faq-q10">What is the difference between Article Search and Live Search?</a>
+										<a href="#faq-q10">How does Live Search work?</a>
 								</li>
-								<li v-on:click="changeFaqContentsColor('faq-q2')"
+								<!-- <li v-on:click="changeFaqContentsColor('faq-q2')"
 										class="mb-0 pb-0">
 										<a href="#faq-q2">How does Article Search work?</a>
-								</li>
+								</li> -->
 								<li v-on:click="changeFaqContentsColor('faq-twitter-search')"
 										class="mb-0 pb-0">
 										<a href="#faq-twitter-search">How do I use advanced Twitter search terms?</a>
 								</li>
-								<li v-on:click="changeFaqContentsColor('faq-q3')"
+								<!-- <li v-on:click="changeFaqContentsColor('faq-q3')"
 										class="mb-0 pb-0">
 										<a href="#faq-q3">What is a “claim”? Who decides what is true or not?</a>
-								</li>
-								<li v-on:click="changeFaqContentsColor('faq-q4')"
+								</li> -->
+								<!-- <li v-on:click="changeFaqContentsColor('faq-q4')"
 										class="mb-0 pb-0">
 										<a href="#faq-q4">Do you have an editorial team?</a>
-								</li>
+								</li> -->
 								<li v-on:click="changeFaqContentsColor('faq-q5')"
 									  class="mb-0 pb-0">
 										<a href="#faq-q5">What does the visualization show?</a>
@@ -58,18 +58,18 @@
 								    class="mb-0 pb-0">
 										<a href="#faq-q8">What if I see some bot scores that are wrong? How can I help?</a>
 								</li>
-								<li v-on:click="changeFaqContentsColor('faq-q9')"
+								<!-- <li v-on:click="changeFaqContentsColor('faq-q9')"
 									  class="mb-0 pb-0">
 										<a href="#faq-q9">What are Trending News, Popular Claims, and Fact-Checks in the landing page panel?</a>
-								</li>
-								<li v-on:click="changeFaqContentsColor('faq-q11')"
+								</li> -->
+								<!-- <li v-on:click="changeFaqContentsColor('faq-q11')"
 								    class="mb-0 pb-0">
 										<a href="#faq-q11">How do you match claims to fact-checks?</a>
-								</li>
-								<li v-on:click="changeFaqContentsColor('faq-q12')"
+								</li> -->
+								<!-- <li v-on:click="changeFaqContentsColor('faq-q12')"
 										class="mb-0 pb-0">
 										<a href="#faq-q12">How does Hoaxy track the spread of articles?</a>
-								</li>
+								</li> -->
 								<li v-on:click="changeFaqContentsColor('faq-q13')"
 									  class="mb-0 pb-0">
 										<a href="#faq-q13">What is the source of social media data?</a>
@@ -94,10 +94,10 @@
 									  class="mb-0 pb-0">
 										<a href="#faq-q16">Do you access any private conversations?</a>
 								</li>
-								<li v-on:click="changeFaqContentsColor('faq-q17')"
+								<!-- <li v-on:click="changeFaqContentsColor('faq-q17')"
 									  class="mb-0 pb-0">
 										<a href="#faq-q17">Do you provide an API to the data you collect?</a>
-								</li>
+								</li> -->
 								<li v-on:click="changeFaqContentsColor('faq-q18')"
 										class="mb-0 pb-0">
 										<a href="#faq-q18">Can I cite Hoaxy in my work?</a>
@@ -125,16 +125,14 @@
 
         			<dt id="faq-q1">What is Hoaxy?</dt>
         			<dd class="faq-element-contents">
-        				Hoaxy is a tool that visualizes the spread of articles online. Articles can
-								be found on Twitter, or in a corpus of claims and related fact checking.
+        				Hoaxy is a tool that visualizes the spread of information online using the Twitter Search API.
         			</dd>
 
 
-							<dt id="faq-q10">What is the difference between Article Search and Live
-									Search?
+							<dt id="faq-q10">How does Live Search work?
 							</dt>
 							<dd class="faq-element-contents">
-								There are two search modes.
+								<!-- There are two search modes.
                                                                 <b>Article Search</b> finds claims
 								and related fact checking in a limited corpus of articles from
 								low-credibility and fact-checking sources, dating back to 2016. 
@@ -143,10 +141,8 @@
 									 target="_blank">Hoaxy API</a>
 								to retrieve relevant articles, accounts, and
 								tweets. <b>Live Search</b> lets users track articles from any
-								sources posted on Twitter, but only within the last 7 days. 
-								
-								
-								Live Search mode uses
+								sources posted on Twitter, but only within the last 7 days.  -->
+								Live Search uses
 								the
 								<a href="https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"
 								target="_blank">Twitter Search API</a>
@@ -158,7 +154,7 @@
 								At most, Hoaxy is capable of visualizing the top 1000 accounts and in the case of a Live Search, this will be the most recently active 1000 accounts if sorted by <em>Recent</em>.
 							</dd>
 							
-        			<dt id="faq-q2">How does Article Search work?</dt>
+        			<!-- <dt id="faq-q2">How does Article Search work?</dt>
         			<dd class="faq-element-contents">
         				The Hoaxy corpus tracks the social sharing of links to
 								stories published by two types of websites: (1) Low-credibility sources 
@@ -166,7 +162,7 @@
 								<a href="https://iffy.news/iffy-plus/" target="_blank">iffy+</a> list. 
 								(2) Independent fact-checking organizations, such as snopes.com, politifact.com,
 								and factcheck.org, that routinely fact check unverified claims.
-					</dd>
+					</dd> -->
 					
 					
 
@@ -184,7 +180,7 @@
 
         			</dd>
 
-							<dt id="faq-q3">What is a “claim”? Who decides what is true or not?</dt>
+							<!-- <dt id="faq-q3">What is a “claim”? Who decides what is true or not?</dt>
         			<dd class="faq-element-contents">
         				<u>We do <em>not</em> decide what is true or false</u>.
 								Low-credibility sources often publish false news, hoaxes,
@@ -198,16 +194,16 @@
 								fact-checking sites to see what they’ve found in their research,
 								but it’s up to you to evaluate the evidence about a claim and
 								its rebuttals.
-        			</dd>
+        			</dd> -->
 
-							<dt id="faq-q4">Do you have an editorial team?</dt>
+							<!-- <dt id="faq-q4">Do you have an editorial team?</dt>
         			<dd class="faq-element-contents">
 								No. Hoaxy tracks claims and fact checks automatically, 24/7.
 								We do not read the contents of the articles we track.
 								This is why we cannot establish whether a claim is accurate,
 								nor whether a particular claim was verified by a particular
 								fact check.
-							</dd>
+							</dd> -->
 
         			<dt id="faq-q5">What does the visualization show?</dt>
         			<dd class="faq-element-contents">
@@ -256,7 +252,7 @@
 								so your help is greatly appreciated.
 							</dd>
 
-							<dt id="faq-q9">What are Trending News, Popular Claims, and Fact-Checks in
+							<!-- <dt id="faq-q9">What are Trending News, Popular Claims, and Fact-Checks in
 								the landing page panel?
 							</dt>
 							<dd class="faq-element-contents">
@@ -267,9 +263,9 @@
 								month. Similarly, Popular Fact-Checks are the most tweeted
 								articles in the last month published by fact-checking
 								organizations.
-							</dd>
+							</dd> -->
 
-        			<dt id="faq-q11">How do you match claims to fact-checks? </dt>
+        			<!-- <dt id="faq-q11">How do you match claims to fact-checks? </dt>
         			<dd class="faq-element-contents">
 								We use search engine technology (think of Google) to
 								retrieve claims and fact checks. The user enters a query and
@@ -277,9 +273,9 @@
 								articles. We perform the same procedure to find fact checks
 								matching the query. The user can select claims and
 								fact-checking articles to be visualized.
-        			</dd>
+        			</dd> -->
 
-        			<dt id="faq-q12">How does Hoaxy track the spread of articles?</dt>
+        			<!-- <dt id="faq-q12">How does Hoaxy track the spread of articles?</dt>
         			<dd class="faq-element-contents">
 								We collect public tweets that include links to stories.
 								We then fetch the page linked in the tweet and store the URL
@@ -288,7 +284,7 @@
 								in Article Search mode, we match the most relevant or recent
 								articles (claims and fact checks) and select all the tweets
 								that linked to them.
-        			</dd>
+        			</dd> -->
 
 
         			<dt id="faq-q13">What is the source of social media data?</dt>
@@ -334,13 +330,13 @@
         			</dd>
 
 
-        			<dt id="faq-q17">Do you provide an API to the data you collect?</dt>
+        			<!-- <dt id="faq-q17">Do you provide an API to the data you collect?</dt>
         			<dd class="faq-element-contents">
         				Yes, check out the free
 								<a href="https://rapidapi.com/truthy/api/hoaxy"
 								   target="_blank">Hoaxy API</a>
 							  available on Rapid API.
-        			</dd>
+        			</dd> -->
 
 
         			<dt id="faq-q18">Can I cite Hoaxy in my work?</dt>
