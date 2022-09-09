@@ -121,6 +121,10 @@
 									  class="mb-0 pb-0">
 										<a href="#faq-q23">How can I contact the Hoaxy team?</a>
 								</li>
+                                <li v-on:click="changeFaqContentsColor('faq-q24')"
+									  class="mb-0 pb-0">
+										<a href="#faq-q24">What happened to Article Search?</a>
+								</li>
 							</ul>
 
         			<dt id="faq-q1">What is Hoaxy?</dt>
@@ -369,20 +373,20 @@
 
         				<dt id="faq-q19">What technology does Hoaxy use?</dt>
         				<dd class="faq-element-contents">
-									Hoaxy is written primarily in Python. On the back-end we
+									<!-- Hoaxy is written primarily in Python. On the back-end we
 									use Apache Lucene (for full-text indexing and retrieval),
 									Scrapy (for web crawling), Apache Tika
 									(for metadata extraction), RSS (for feed aggregation),
 									PostgreSQL (for data indexing and storage), and SQLAlchemy
-									(for object-relational mapping). On the front-end we use
-									Javascript, Bootstrap, NV.D3 (for the chart), and Sigma-js
+									(for object-relational mapping).  -->
+                                    Hoaxy uses Javascript, Bootstrap, NV.D3 (for the chart), and Sigma-js
 									(for the network). We collect data from Twitter using the
 									<a href="https://developer.twitter.com/en/docs/tweets/filter-realtime/overview"
 									   target="_blank">Filter API</a>.
-									Top trending articles in the dashboard of the landing page
+									<!-- Top trending articles in the dashboard of the landing page
 									are powered by the
 									<a href="https://newsapi.org/"
-										 target="_blank">News API</a>.
+										 target="_blank">News API</a>. -->
 								</dd>
 
 
@@ -482,6 +486,15 @@
 									<a href="https://twitter.com/OSoMe_IU"
 										 target="_blank">@OSoMe_IU</a>
 									but we cannot promise to monitor Twitter at all times.
+								</dd>
+
+                                <dt id="faq-q24">What happened to Article Search?</dt>
+								<dd class="faq-element-contents">
+									Yes, we used to have this feature, but lack the resources
+                                    to maintain its functionality. We realized that the live search of the 
+                                    <a href="https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets"
+							        target="_blank">Twitter Search API</a> provides the most value from Hoaxy, 
+                                    so we decided to devote resources to improving that functionality instead.
 								</dd>
 
         			</dl>
